@@ -5,19 +5,19 @@ using UnityEngine;
 public class VacuumScript : MonoBehaviour {
     
     [SerializeField]
-    CTRL_PlayerCharacter pchar;
+    PlayerCharacterCtrlr pchar;
     
-    List<CTRL_Enemy> enemiesToDamage;
+    List<EnemyBase> enemiesToDamage;
     int defaultListSize = 10;
     
     void Awake() {
-        enemiesToDamage = new List<CTRL_Enemy>(defaultListSize);
+        enemiesToDamage = new List<EnemyBase>(defaultListSize);
     }
     
     void FixedUpdate() {
         if (enemiesToDamage.Count > 0) {
             for (int i = enemiesToDamage.Count - 1; i >= 0; i--) {
-                CTRL_Enemy en = enemiesToDamage.ElementAt(i);
+                EnemyBase en = enemiesToDamage.ElementAt(i);
                 // TODO maybe?: apply force on enemy towards vacuum
                 if (Time.time - en.lastVacuumHitTime >= pchar.VacuumDamageRate) {
                     // TODO: Check that the enemy isn't behind a wall
@@ -32,13 +32,13 @@ public class VacuumScript : MonoBehaviour {
     }
     
     void OnTriggerEnter(Collider other) {
-        if (!other.TryGetComponent(out CTRL_Enemy enemyComp)) return;
+        if (!other.TryGetComponent(out EnemyBase enemyComp)) return;
         enemyComp.vacuumArrayIndex = enemiesToDamage.Count;
         enemiesToDamage.Add(enemyComp);
     }
     
     void OnTriggerExit(Collider other) {
-        if (!other.TryGetComponent(out CTRL_Enemy enemyComp)) return;
+        if (!other.TryGetComponent(out EnemyBase enemyComp)) return;
         enemiesToDamage.RemoveAt(enemyComp.vacuumArrayIndex);
         enemyComp.vacuumArrayIndex = -1;
     }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class CTRL_Enemy : MonoBehaviour {
+public class EnemyBase : MonoBehaviour {
     
     public float MaxHealth { private set; get; } = 50;
     public float health { private set; get; }

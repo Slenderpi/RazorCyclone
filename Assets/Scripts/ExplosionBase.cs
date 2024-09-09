@@ -4,7 +4,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class CTRL_Explosion : MonoBehaviour {
+public class ExplosionBase : MonoBehaviour {
     
     int MaxHits = 20;
     float ExplosionRadius = 3f; // Area of effect for damage and knockback. Effect sizes are scaled with this
@@ -33,7 +33,7 @@ public class CTRL_Explosion : MonoBehaviour {
                 if (!Physics.Raycast(transform.position, (co.transform.position - transform.position).normalized, dist, ~MovableLayerMask)) {
                     rb.AddExplosionForce(ExplosionForce, transform.position, ExplosionRadius + 0.5f);
                     rb.AddForce(Vector3.up * AdditionalUpwardForce, ForceMode.Impulse);
-                    if (co.TryGetComponent(out CTRL_Enemy en)) {
+                    if (co.TryGetComponent(out EnemyBase en)) {
                         en.TakeDamage(damage);
                     }
                 }

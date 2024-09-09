@@ -8,7 +8,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
-public class CTRL_PlayerCharacter : MonoBehaviour {
+public class PlayerCharacterCtrlr : MonoBehaviour {
     
     PlayerInputActions.PlayerActions pInputActions;
     InputAction lookInput;
@@ -33,7 +33,7 @@ public class CTRL_PlayerCharacter : MonoBehaviour {
     [SerializeField]
     Transform canonTip;
     [SerializeField]
-    CTRL_Projectile projectilePrefab;
+    ProjectileBase projectilePrefab;
     [SerializeField]
     Slider fuelSlider;
     
@@ -183,7 +183,7 @@ public class CTRL_PlayerCharacter : MonoBehaviour {
         // TODO maybe?: Switch fire direction of projectile to be based off a raycast from camera to ~10000 units forward
         //              Might be weird to figure out. Makes sense when shooting straight, but what about left/right/etc of camera?
         // Ray ray = new Ray(canonTip.position);
-        CTRL_Projectile proj = Instantiate(projectilePrefab, canonTip.position, canonTip.rotation);
+        ProjectileBase proj = Instantiate(projectilePrefab, canonTip.position, canonTip.rotation);
         proj.damage = CanonDamage;
         proj.GetComponent<Rigidbody>().AddForce(canonTip.forward * CanonProjSpeed, ForceMode.VelocityChange);
         AddFuel(-CanonFuelCost);

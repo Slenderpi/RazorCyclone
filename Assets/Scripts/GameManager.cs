@@ -7,14 +7,14 @@ using UnityEngine;
 public class GameManager : MonoBehaviour {
     
     public static GameManager Instance;
-    public static CTRL_PlayerCharacter CurrentPlayer;
+    public static PlayerCharacterCtrlr CurrentPlayer;
     
     [SerializeField]
     Transform spawnPoint;
     [SerializeField]
-    CTRL_PlayerCharacter playerPrefab;
+    PlayerCharacterCtrlr playerPrefab;
     [SerializeField]
-    CTRL_Enemy enemyPrefab;
+    EnemyBase enemyPrefab;
     [SerializeField]
     Transform enemySpawnPoint;
     
@@ -37,7 +37,7 @@ public class GameManager : MonoBehaviour {
     }
     
     void spawnPlayer() {
-        CurrentPlayer = Instantiate(playerPrefab, spawnPoint.position, spawnPoint.rotation).GetComponent<CTRL_PlayerCharacter>();
+        CurrentPlayer = Instantiate(playerPrefab, spawnPoint.position, spawnPoint.rotation).GetComponent<PlayerCharacterCtrlr>();
     }
     
     public void OnEnemyDied() {

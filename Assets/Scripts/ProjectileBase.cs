@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class CTRL_Projectile : MonoBehaviour {
+public class ProjectileBase : MonoBehaviour {
     
     public float damage;
     public GameObject explosionEffect;
@@ -17,14 +17,14 @@ public class CTRL_Projectile : MonoBehaviour {
     
     void OnCollisionEnter(Collision collision) {
         if (collision.gameObject.tag != "Player" && collision.gameObject.tag != "Projectile") {
-            CTRL_Enemy enemy = collision.gameObject.GetComponent<CTRL_Enemy>();
+            EnemyBase enemy = collision.gameObject.GetComponent<EnemyBase>();
             if (enemy != null) {
                 // enemy.TakeDamage(damage);
                 // print("Hit enemy! New enemy health: " + enemy.health);
             } else {
                 // print("Hit other: " + collision.gameObject.name);
             }
-            CTRL_Explosion exp = Instantiate(explosionEffect, transform.position, Quaternion.identity).GetComponent<CTRL_Explosion>();
+            ExplosionBase exp = Instantiate(explosionEffect, transform.position, Quaternion.identity).GetComponent<ExplosionBase>();
             exp.damage = damage;
             Destroy(gameObject);
         }
