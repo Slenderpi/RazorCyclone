@@ -13,7 +13,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     PlayerInputActions.PlayerActions pInputActions;
     InputAction lookInput;
     // InputAction rotationInputs;
-    InputAction vacuumInput;
+    // InputAction vacuumInput;
     InputAction canonInput;
     InputAction timeSlowInput;
     
@@ -74,7 +74,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         pInputActions = new PlayerInputActions().Player;
         lookInput = pInputActions.Look;
         // rotationInputs = pInputActions.RotationInputs;
-        vacuumInput = pInputActions.Vacuum;
+        // vacuumInput = pInputActions.Vacuum;
         canonInput = pInputActions.Canon;
         timeSlowInput = pInputActions.SlowTime;
         
@@ -111,6 +111,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     }
     
     void FixedUpdate() {
+        // print(desiredRotation);
         if (isVacuumOn) {
             if (currentFuel <= 0) {
                 isVacuumOn = false;
@@ -140,13 +141,27 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         Vector2 v = context.ReadValue<Vector2>();
         desiredRotation.x = v.x;
         desiredRotation.z = v.y;
+        
+        if (desiredRotation.magnitude > 0)
+            StartVacuum();
+        else
+            StopVacuum();
     }
 
     private void VertInputChanged(InputAction.CallbackContext context) {
         desiredRotation.y = context.ReadValue<float>();
+        
+        if (desiredRotation.magnitude > 0)
+            StartVacuum();
+        else
+            StopVacuum();
     }
 
     private void FireVacuumStarted(InputAction.CallbackContext context) {
+        StartVacuum();
+    }
+    
+    void StartVacuum() {
         if (currentFuel <= 0) {
             print("Not enough fuel (" + currentFuel + ") for vacuum (need " + vacuumFuelCost + ").");
             return;
@@ -154,10 +169,14 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         isVacuumOn = true;
         vacuumHitbox.SetActive(true);
     }
-
-    private void FireVacuumCanceled(InputAction.CallbackContext context) {
+    
+    void StopVacuum() {
         isVacuumOn = false;
         vacuumHitbox.SetActive(false);
+    }
+
+    private void FireVacuumCanceled(InputAction.CallbackContext context) {
+        StopVacuum();
     }
 
     private void FireCanonStarted(InputAction.CallbackContext context) {
@@ -213,7 +232,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         pInputActions.TurnInputs.Enable();
         pInputActions.VertInputs.Enable();
         // rotationInputs.Enable(); //
-        vacuumInput.Enable();
+        // vacuumInput.Enable();
         canonInput.Enable();
         timeSlowInput.Enable();
         
@@ -223,8 +242,8 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         pInputActions.VertInputs.canceled += VertInputChanged;
         
         // rotationInputs.performed += RotateInputPerformed;
-        vacuumInput.started += FireVacuumStarted;
-        vacuumInput.canceled += FireVacuumCanceled;
+        // vacuumInput.started += FireVacuumStarted;
+        // vacuumInput.canceled += FireVacuumCanceled;
         canonInput.started += FireCanonStarted;
         canonInput.canceled += FireCanonCanceled;
         timeSlowInput.started += OnTimeSlowStarted;
@@ -240,7 +259,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         pInputActions.TurnInputs.Disable();
         pInputActions.VertInputs.Disable();
         // rotationInputs.Disable();
-        vacuumInput.Disable();
+        // vacuumInput.Disable();
         canonInput.Disable();
         timeSlowInput.Disable();
         
@@ -250,8 +269,8 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         pInputActions.VertInputs.canceled -= VertInputChanged;
         
         // rotationInputs.performed -= RotateInputPerformed;
-        vacuumInput.started -= FireVacuumStarted;
-        vacuumInput.canceled -= FireVacuumCanceled;
+        // vacuumInput.started -= FireVacuumStarted;
+        // vacuumInput.canceled -= FireVacuumCanceled;
         canonInput.started -= FireCanonStarted;
         canonInput.canceled -= FireCanonCanceled;
         timeSlowInput.started -= OnTimeSlowStarted;

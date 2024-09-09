@@ -33,15 +33,6 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Vacuum",
-                    "type": "Button",
-                    "id": "ab940a49-4afc-456a-bde4-ed6ff6fa19f6",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
                     "name": "Canon",
                     "type": "Button",
                     "id": "be2569c7-1106-4074-902a-f9247744bdcd",
@@ -73,7 +64,7 @@
                 {
                     "name": "",
                     "id": "4c812bc2-fb3f-4991-b7f3-f2c809d39503",
-                    "path": "<Mouse>/rightButton",
+                    "path": "<Mouse>/leftButton",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -89,28 +80,6 @@
                     "processors": "",
                     "groups": "",
                     "action": "Canon",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "160527e1-442c-46aa-9691-12c21ae7922d",
-                    "path": "<Mouse>/leftButton",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Vacuum",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "53fee877-2259-4883-be48-1762f9f34b33",
-                    "path": "<Gamepad>/rightTrigger",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Vacuum",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
