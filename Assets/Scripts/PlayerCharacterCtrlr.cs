@@ -99,7 +99,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         Vector2 lookDelta = lookInput.ReadValue<Vector2>() * mouseSensitivity;
         lookVertRot = Mathf.Clamp(lookVertRot - lookDelta.y, -90f, 90f);
         camtrans.localEulerAngles = new Vector3(lookVertRot, camtrans.localEulerAngles.y + lookDelta.x, 0);
-        charModel.localEulerAngles = new Vector3(0, camtrans.localEulerAngles.y + lookDelta.x, 0);
+        charModel.localEulerAngles = camtrans.localEulerAngles;
         // if (desiredRotation.y == 0) {
         //     charModel.localEulerAngles = new Vector3(lookVertRot, camtrans.localEulerAngles.y + lookDelta.x, 0);
         // } else {
@@ -157,9 +157,9 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
             StopVacuum();
     }
 
-    private void FireVacuumStarted(InputAction.CallbackContext context) {
-        StartVacuum();
-    }
+    // private void FireVacuumStarted(InputAction.CallbackContext context) {
+    //     StartVacuum();
+    // }
     
     void StartVacuum() {
         if (currentFuel <= 0) {
@@ -175,9 +175,9 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         vacuumHitbox.SetActive(false);
     }
 
-    private void FireVacuumCanceled(InputAction.CallbackContext context) {
-        StopVacuum();
-    }
+    // private void FireVacuumCanceled(InputAction.CallbackContext context) {
+    //     StopVacuum();
+    // }
 
     private void FireCanonStarted(InputAction.CallbackContext context) {
         if (currentFuel < CanonFuelCost) {
