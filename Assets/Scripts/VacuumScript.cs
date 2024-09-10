@@ -16,8 +16,6 @@ public class VacuumScript : MonoBehaviour {
     List<EnemyBase> enemiesInRange;
     int defaultListSize = 10;
     
-    float VacuumPullForce = 8500f;
-    
     void Awake() {
         enemiesInRange = new List<EnemyBase>(defaultListSize);
     }
@@ -29,42 +27,27 @@ public class VacuumScript : MonoBehaviour {
                 if (!en) {
                     enemiesInRange.RemoveAt(i);
                     continue;
-                } else if (Time.time - en.lastVacuumHitTime >= pchar.VacuumDamageRate) {
+                } else if (Time.time - en.lastVacuumHitTime >= pchar.VacuumSuckRate) {
                     // TODO: Check that the enemy isn't behind a wall
                     // en.lastVacuumHitTime = Time.time;
                     // en.TakeDamage(pchar.VacuumDamage);
                     if (en.health <= 0)
                         enemiesInRange.RemoveAt(i);
                     
-                    en.GetComponent<Rigidbody>().AddForce((VacuumKillbox.position - en.transform.position).normalized * VacuumPullForce);
+                    en.GetComponent<Rigidbody>().AddForce((VacuumKillbox.position - en.transform.position).normalized * pchar.VacuumSuckForce);
                 }
             }
         }
     }
     
-    // void OnTriggerEnter(Collider other) {
-    //     if (!other.TryGetComponent(out EnemyBase enemyComp)) return;
-    //     enemyComp.vacuumArrayIndex = enemiesInRange.Count;
-    //     enemiesInRange.Add(enemyComp);
-    // }
-    
-    // void OnTriggerExit(Collider other) {
-    //     if (!other.TryGetComponent(out EnemyBase enemyComp)) return;
-    //     enemiesInRange.RemoveAt(enemyComp.vacuumArrayIndex);
-    //     enemyComp.vacuumArrayIndex = -1;
-    // }
-    
     void onSuckboxEnter(Collider collider) {
         if (!collider.TryGetComponent(out EnemyBase enemyComp)) return;
-        enemyComp.vacuumArrayIndex = enemiesInRange.Count;
         enemiesInRange.Add(enemyComp);
-        
     }
     
     void onSuckboxExit(Collider collider) {
         if (!collider.TryGetComponent(out EnemyBase enemyComp)) return;
-        enemiesInRange.RemoveAt(enemyComp.vacuumArrayIndex);
-        enemyComp.vacuumArrayIndex = -1;
+        enemiesInRange.Remove(enemyComp);
     }
     
     void onKillboxEnter(Collider collider) {

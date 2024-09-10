@@ -41,7 +41,8 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     [Header("Weapon Settings")]
     [SerializeField]
     float VacuumForce = 20f;
-    public float VacuumDamageRate { private set; get; } = 0.1f; // per second
+    public float VacuumSuckForce = 8500f;
+    public float VacuumSuckRate { private set; get; } = 0.1f; // per second
     public float VacuumDamage {private set; get; } = 7f;
     [SerializeField]
     float CanonForce = 8f;
@@ -99,7 +100,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         Vector2 lookDelta = lookInput.ReadValue<Vector2>() * mouseSensitivity;
         lookVertRot = Mathf.Clamp(lookVertRot - lookDelta.y, -90f, 90f);
         camtrans.localEulerAngles = new Vector3(lookVertRot, camtrans.localEulerAngles.y + lookDelta.x, 0);
-        charModel.localEulerAngles = camtrans.localEulerAngles;
+        charModel.localEulerAngles = new Vector3(0, camtrans.localEulerAngles.y, 0);
         // if (desiredRotation.y == 0) {
         //     charModel.localEulerAngles = new Vector3(lookVertRot, camtrans.localEulerAngles.y + lookDelta.x, 0);
         // } else {
@@ -116,7 +117,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
             if (currentFuel <= 0) {
                 isVacuumOn = false;
                 vacuumHitbox.SetActive(false);
-                print("Not enough fuel (" + currentFuel + ") for vacuum (need " + vacuumFuelCost + ").");
+                // print("Not enough fuel (" + currentFuel + ") for vacuum (need " + vacuumFuelCost + ").");
             } else {
                 AddFuel(-vacuumFuelCost);
                 rb.AddForce(charPivot.forward * VacuumForce, ForceMode.Acceleration);
@@ -163,7 +164,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     
     void StartVacuum() {
         if (currentFuel <= 0) {
-            print("Not enough fuel (" + currentFuel + ") for vacuum (need " + vacuumFuelCost + ").");
+            // print("Not enough fuel (" + currentFuel + ") for vacuum (need " + vacuumFuelCost + ").");
             return;
         }
         isVacuumOn = true;
@@ -180,21 +181,21 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     // }
 
     private void FireCanonStarted(InputAction.CallbackContext context) {
-        if (currentFuel < CanonFuelCost) {
-            print("Not enough fuel (" + currentFuel + ") for canon (need " + CanonFuelCost + ").");
+        if (currentFuel <= 0) {
+            // print("Not enough fuel (" + currentFuel + ") for canon (need " + CanonFuelCost + ").");
             return;
         }
-        Time.timeScale = 0.15f;
-        // fireCanon();
+        // Time.timeScale = 0.15f;
+        fireCanon();
     }
 
     private void FireCanonCanceled(InputAction.CallbackContext context) {
-        Time.timeScale = 1f;
-        if (currentFuel < CanonFuelCost) {
-            print("Not enough fuel (" + currentFuel + ") for canon (need " + CanonFuelCost + ").");
+        // Time.timeScale = 1f;
+        if (currentFuel <= 0) {
+            // print("Not enough fuel (" + currentFuel + ") for canon (need " + CanonFuelCost + ").");
             return;
         }
-        fireCanon();
+        // fireCanon();
     }
     
     void fireCanon() {
@@ -204,7 +205,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         // Ray ray = new Ray(canonTip.position);
         ProjectileBase proj = Instantiate(projectilePrefab, canonTip.position, canonTip.rotation);
         proj.damage = CanonDamage;
-        proj.GetComponent<Rigidbody>().AddForce(canonTip.forward * CanonProjSpeed, ForceMode.VelocityChange);
+        proj.GetComponent<Rigidbody>().AddForce(canonTip.forward * CanonProjSpeed + rb.velocity, ForceMode.VelocityChange);
         AddFuel(-CanonFuelCost);
     }
     

@@ -9,7 +9,6 @@ public class EnemyBase : MonoBehaviour {
     public float health { private set; get; }
     
     public float lastVacuumHitTime = 0f;
-    public int vacuumArrayIndex = -1;
     
     [Header("Enemy movement force")]
     [SerializeField]
@@ -46,11 +45,11 @@ public class EnemyBase : MonoBehaviour {
         health -= amnt;
         GameManager.CurrentPlayer.AddFuel(amnt * 0.2f);
         if (health <= 0) {
-            print("'" + gameObject.name + "' died.");
+            // print("'" + gameObject.name + "' died.");
             GameManager.Instance.OnEnemyDied();
             Destroy(gameObject);
         } else {
-            print("'" + gameObject.name + "' health now " + health);
+            // print("'" + gameObject.name + "' health now " + health);
         }
     }
     
