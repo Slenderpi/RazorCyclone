@@ -11,11 +11,6 @@ using UnityEngine.UI;
 public class PlayerCharacterCtrlr : MonoBehaviour {
     
     PlayerInputActions.PlayerActions pInputActions;
-    InputAction lookInput;
-    // InputAction rotationInputs;
-    // InputAction vacuumInput;
-    InputAction canonInput;
-    InputAction timeSlowInput;
     
     Vector3 desiredRotation = Vector3.zero;
     
@@ -73,11 +68,11 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     
     void Awake() {
         pInputActions = new PlayerInputActions().Player;
-        lookInput = pInputActions.Look;
+        // lookInput = pInputActions.Look;
         // rotationInputs = pInputActions.RotationInputs;
         // vacuumInput = pInputActions.Vacuum;
-        canonInput = pInputActions.Canon;
-        timeSlowInput = pInputActions.SlowTime;
+        // canonInput = pInputActions.Canon;
+        // timeSlowInput = pInputActions.SlowTime;
         
         mainCamera = Camera.main;
         rb = GetComponent<Rigidbody>();
@@ -97,7 +92,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     
     void Update() {
         // Rotate camera and character based on mouse input
-        Vector2 lookDelta = lookInput.ReadValue<Vector2>() * mouseSensitivity;
+        Vector2 lookDelta = pInputActions.Look.ReadValue<Vector2>() * mouseSensitivity;
         lookVertRot = Mathf.Clamp(lookVertRot - lookDelta.y, -90f, 90f);
         camtrans.localEulerAngles = new Vector3(lookVertRot, camtrans.localEulerAngles.y + lookDelta.x, 0);
         charModel.localEulerAngles = new Vector3(0, camtrans.localEulerAngles.y, 0);
@@ -143,26 +138,22 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         desiredRotation.x = v.x;
         desiredRotation.z = v.y;
         
-        if (desiredRotation.magnitude > 0)
-            StartVacuum();
-        else
-            StopVacuum();
+        // if (desiredRotation.magnitude > 0)
+        //     StartVacuum();
+        // else
+        //     StopVacuum();
     }
 
     private void VertInputChanged(InputAction.CallbackContext context) {
         desiredRotation.y = context.ReadValue<float>();
         
-        if (desiredRotation.magnitude > 0)
-            StartVacuum();
-        else
-            StopVacuum();
+        // if (desiredRotation.magnitude > 0)
+        //     StartVacuum();
+        // else
+        //     StopVacuum();
     }
 
-    // private void FireVacuumStarted(InputAction.CallbackContext context) {
-    //     StartVacuum();
-    // }
-    
-    void StartVacuum() {
+    private void FireVacuumStarted(InputAction.CallbackContext context) {
         if (currentFuel <= 0) {
             // print("Not enough fuel (" + currentFuel + ") for vacuum (need " + vacuumFuelCost + ").");
             return;
@@ -171,14 +162,24 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         vacuumHitbox.SetActive(true);
     }
     
-    void StopVacuum() {
+    // void StartVacuum() {
+    //     if (currentFuel <= 0) {
+    //         // print("Not enough fuel (" + currentFuel + ") for vacuum (need " + vacuumFuelCost + ").");
+    //         return;
+    //     }
+    //     isVacuumOn = true;
+    //     vacuumHitbox.SetActive(true);
+    // }
+    
+    // void StopVacuum() {
+    //     isVacuumOn = false;
+    //     vacuumHitbox.SetActive(false);
+    // }
+
+    private void FireVacuumCanceled(InputAction.CallbackContext context) {
         isVacuumOn = false;
         vacuumHitbox.SetActive(false);
     }
-
-    // private void FireVacuumCanceled(InputAction.CallbackContext context) {
-    //     StopVacuum();
-    // }
 
     private void FireCanonStarted(InputAction.CallbackContext context) {
         if (currentFuel <= 0) {
@@ -229,13 +230,13 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     }
     
     void OnEnable() {
-        lookInput.Enable();
+        pInputActions.Look.Enable();
         pInputActions.TurnInputs.Enable();
         pInputActions.VertInputs.Enable();
         // rotationInputs.Enable(); //
-        // vacuumInput.Enable();
-        canonInput.Enable();
-        timeSlowInput.Enable();
+        pInputActions.Vacuum.Enable();
+        pInputActions.Canon.Enable();
+        pInputActions.SlowTime.Enable();
         
         pInputActions.TurnInputs.performed += TurnInputChanged;
         pInputActions.TurnInputs.canceled += TurnInputChanged;
@@ -243,12 +244,12 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         pInputActions.VertInputs.canceled += VertInputChanged;
         
         // rotationInputs.performed += RotateInputPerformed;
-        // vacuumInput.started += FireVacuumStarted;
-        // vacuumInput.canceled += FireVacuumCanceled;
-        canonInput.started += FireCanonStarted;
-        canonInput.canceled += FireCanonCanceled;
-        timeSlowInput.started += OnTimeSlowStarted;
-        timeSlowInput.canceled += OnTimeSlowCanceled;
+        pInputActions.Vacuum.started += FireVacuumStarted;
+        pInputActions.Vacuum.canceled += FireVacuumCanceled;
+        pInputActions.Canon.started += FireCanonStarted;
+        pInputActions.Canon.canceled += FireCanonCanceled;
+        pInputActions.SlowTime.started += OnTimeSlowStarted;
+        pInputActions.SlowTime.canceled += OnTimeSlowCanceled;
         
         // Y lock toggle feature is for testing and likely not for final gameplay
         pInputActions._AddFuel.Enable();
@@ -256,13 +257,13 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     }
 
     void OnDisable() {
-        lookInput.Disable();
+        pInputActions.Look.Disable();
         pInputActions.TurnInputs.Disable();
         pInputActions.VertInputs.Disable();
         // rotationInputs.Disable();
-        // vacuumInput.Disable();
-        canonInput.Disable();
-        timeSlowInput.Disable();
+        pInputActions.Vacuum.Disable();
+        pInputActions.Canon.Disable();
+        pInputActions.SlowTime.Disable();
         
         pInputActions.TurnInputs.performed -= TurnInputChanged;
         pInputActions.TurnInputs.canceled -= TurnInputChanged;
@@ -270,12 +271,12 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         pInputActions.VertInputs.canceled -= VertInputChanged;
         
         // rotationInputs.performed -= RotateInputPerformed;
-        // vacuumInput.started -= FireVacuumStarted;
-        // vacuumInput.canceled -= FireVacuumCanceled;
-        canonInput.started -= FireCanonStarted;
-        canonInput.canceled -= FireCanonCanceled;
-        timeSlowInput.started -= OnTimeSlowStarted;
-        timeSlowInput.canceled -= OnTimeSlowCanceled;
+        pInputActions.Vacuum.started -= FireVacuumStarted;
+        pInputActions.Vacuum.canceled -= FireVacuumCanceled;
+        pInputActions.Canon.started -= FireCanonStarted;
+        pInputActions.Canon.canceled -= FireCanonCanceled;
+        pInputActions.SlowTime.started -= OnTimeSlowStarted;
+        pInputActions.SlowTime.canceled -= OnTimeSlowCanceled;
         
         // Y lock toggle feature is for testing and likely not for final gameplay
         pInputActions._AddFuel.Disable();

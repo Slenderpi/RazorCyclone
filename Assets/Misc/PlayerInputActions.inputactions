@@ -33,6 +33,15 @@
                     "initialStateCheck": false
                 },
                 {
+                    "name": "Vacuum",
+                    "type": "Button",
+                    "id": "d5664c60-226a-4f78-a0bd-a3f65d6cd959",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "Canon",
                     "type": "Button",
                     "id": "be2569c7-1106-4074-902a-f9247744bdcd",
@@ -64,7 +73,7 @@
                 {
                     "name": "",
                     "id": "4c812bc2-fb3f-4991-b7f3-f2c809d39503",
-                    "path": "<Mouse>/leftButton",
+                    "path": "<Mouse>/rightButton",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -313,6 +322,28 @@
                     "action": "VertInputs",
                     "isComposite": false,
                     "isPartOfComposite": true
+                },
+                {
+                    "name": "",
+                    "id": "39f40fb8-7425-4e86-af83-40fbecff3eac",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Vacuum",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "52b27a46-5976-42a6-a234-627f40b2f5e6",
+                    "path": "<Gamepad>/rightTrigger",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Vacuum",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         }
