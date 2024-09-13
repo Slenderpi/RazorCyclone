@@ -35,12 +35,20 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     bool isVacuumOn;
     [Header("Weapon Settings")]
     [SerializeField]
-    float VacuumForce = 20f;
+    [Tooltip("The force the vacuum pulls the player")]
+    float VacuumForce;
+    [SerializeField]
+    [Tooltip("The force of the vacuum pull when the player is at low speeds")]
+    float VacuumForceLowSpeed;
+    [SerializeField]
+    [Tooltip("The max speed for VacuumForceLowSpeed to be used at")]
+    float VacuumForceNormalSpeed = 8;
+    [Tooltip("The force applied to rigidbodies caught in the vacuum's hitbox")]
     public float VacuumSuckForce = 8500f;
     public float VacuumSuckRate { private set; get; } = 0.1f; // per second
     public float VacuumDamage {private set; get; } = 7f;
     [SerializeField]
-    float CanonForce = 8f;
+    float CanonForce;
     [SerializeField]
     float CanonProjSpeed = 100f;
     [SerializeField]
@@ -68,11 +76,6 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     
     void Awake() {
         pInputActions = new PlayerInputActions().Player;
-        // lookInput = pInputActions.Look;
-        // rotationInputs = pInputActions.RotationInputs;
-        // vacuumInput = pInputActions.Vacuum;
-        // canonInput = pInputActions.Canon;
-        // timeSlowInput = pInputActions.SlowTime;
         
         mainCamera = Camera.main;
         rb = GetComponent<Rigidbody>();
@@ -115,7 +118,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
                 // print("Not enough fuel (" + currentFuel + ") for vacuum (need " + vacuumFuelCost + ").");
             } else {
                 AddFuel(-vacuumFuelCost);
-                rb.AddForce(charPivot.forward * VacuumForce, ForceMode.Acceleration);
+                rb.AddForce(charPivot.forward * (rb.velocity.magnitude <= VacuumForceNormalSpeed ? VacuumForceLowSpeed : VacuumForce), ForceMode.Acceleration);
             }
         }
     }
