@@ -34,6 +34,8 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     [SerializeField]
     Transform canonTip;
     [SerializeField]
+    Transform canonPointer;
+    [SerializeField]
     ProjectileBase projectilePrefab;
     [SerializeField]
     Slider fuelSlider;
@@ -75,6 +77,10 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     float currentHealth;
     
     float lookVertRot = 0;
+    Vector3 aimPoint = Vector3.zero;
+    float AimRayMaxDist = 1000f;
+    // float AimRayMinDist = 0f;
+    int AimRayLayerMask;
     
     void Awake() {
         pInputActions = new PlayerInputActions().Player;
@@ -84,6 +90,8 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         rb = GetComponent<Rigidbody>();
         
         vacuumHitbox.SetActive(false);
+        
+        AimRayLayerMask = ~(1 << LayerMask.NameToLayer("Player"));
         
         AddFuel(MaxFuel);
         vacuumFuelCost = MaxFuel / VacuumFuelTime * Time.fixedDeltaTime;
@@ -110,8 +118,11 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         
         // Rotate character pivot based on rotation inputs
         charPivot.localEulerAngles = Quaternion.LookRotation(desiredRotation.magnitude > 0.00001 ? desiredRotation : prevDesiredRotation).eulerAngles;
+        
+        // Raycast player aim direction
+        updateRayCastedAimPoint();
     }
-    
+
     void FixedUpdate() {
         // print(desiredRotation);
         if (isVacuumOn) {
@@ -210,7 +221,8 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         // Ray ray = new Ray(canonTip.position);
         ProjectileBase proj = Instantiate(projectilePrefab, canonTip.position, canonTip.rotation);
         proj.damage = CanonDamage;
-        proj.GetComponent<Rigidbody>().AddForce(canonTip.forward * CanonProjSpeed + rb.velocity, ForceMode.VelocityChange);
+        // proj.GetComponent<Rigidbody>().AddForce(canonTip.forward * CanonProjSpeed + rb.velocity, ForceMode.VelocityChange);
+        proj.GetComponent<Rigidbody>().AddForce((aimPoint - canonTip.position).normalized * CanonProjSpeed + rb.velocity, ForceMode.VelocityChange);
         AddFuel(-CanonFuelCost);
     }
     
@@ -233,6 +245,21 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         mainCamera.transform.rotation = camtrans.rotation;
         rearCamera.transform.position = camtrans.position;
         rearCamera.transform.rotation = Quaternion.LookRotation(canonTip.forward, canonTip.up);
+    }
+
+    void updateRayCastedAimPoint() {
+        Ray ray = new Ray(camtrans.position, canonTip.forward);
+        RaycastHit hit;
+        Debug.DrawRay(ray.origin, ray.direction * AimRayMaxDist);
+        aimPoint = ray.origin + ray.direction * AimRayMaxDist;
+        if (Physics.Raycast(ray: ray, maxDistance: AimRayMaxDist, layerMask: AimRayLayerMask, hitInfo: out hit)) {
+            // aimPoint = hit.distance > AimRayMinDist ? hit.point : ray.origin + ray.direction * AimRayMinDist;
+            aimPoint = hit.point;
+        }
+        
+        // Reangle laser pointer
+        canonPointer.LookAt(aimPoint);
+        canonPointer.localScale = new Vector3(1, 1, (aimPoint - canonPointer.position).magnitude);
     }
     
     void OnEnable() {

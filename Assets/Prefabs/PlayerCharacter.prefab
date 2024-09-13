@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8629852985814836286}
-  m_Layer: 3
+  m_Layer: 6
   m_Name: CharacterModel
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -41,7 +41,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 647242247470878322}
-  m_Layer: 3
+  m_Layer: 6
   m_Name: Pivot
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -77,7 +77,7 @@ GameObject:
   - component: {fileID: 5996656781272805719}
   - component: {fileID: 5944905113018247773}
   - component: {fileID: 3976039394162308616}
-  m_Layer: 3
+  m_Layer: 6
   m_Name: VacuumKillbox
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -136,7 +136,7 @@ GameObject:
   - component: {fileID: 7022164669552160897}
   - component: {fileID: 8117565940619059565}
   - component: {fileID: 2813589002232458322}
-  m_Layer: 3
+  m_Layer: 6
   m_Name: Canvas
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -236,7 +236,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5220782388977135288}
   - component: {fileID: 4550780614666969354}
-  m_Layer: 3
+  m_Layer: 6
   m_Name: FuelSlider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -328,7 +328,7 @@ GameObject:
   - component: {fileID: 584861972847971073}
   - component: {fileID: 4737954927943833615}
   - component: {fileID: 2295354625790707943}
-  m_Layer: 3
+  m_Layer: 6
   m_Name: Handle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -405,7 +405,7 @@ GameObject:
   - component: {fileID: 2891318792771983367}
   - component: {fileID: 726438411730522680}
   - component: {fileID: 6511833261215818194}
-  m_Layer: 3
+  m_Layer: 6
   m_Name: PlayerCharacter
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -442,11 +442,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ad1eb8074300cf41b3206d26bb51def, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  mouseSensitivity: 0.11
   camtrans: {fileID: 6546781092907837047}
   charModel: {fileID: 8629852985814836286}
   charPivot: {fileID: 647242247470878322}
   vacuumHitbox: {fileID: 7635587825747637255}
   canonTip: {fileID: 1158141871152860794}
+  canonPointer: {fileID: 6221111270915424506}
   projectilePrefab: {fileID: 926027913916158325, guid: b847a6b45c135a4409f379593532cfce, type: 3}
   fuelSlider: {fileID: 4550780614666969354}
   VacuumForce: 20
@@ -459,7 +461,6 @@ MonoBehaviour:
   MaxFuel: 100
   CanonFuelCost: 6
   VacuumFuelTime: 8
-  mouseSensitivity: 0.7
 --- !u!54 &726438411730522680
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -500,7 +501,7 @@ GameObject:
   - component: {fileID: 7505018304563732706}
   - component: {fileID: 3087004606109880585}
   - component: {fileID: 3902922890896135655}
-  m_Layer: 3
+  m_Layer: 6
   m_Name: Fill
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -574,7 +575,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6546781092907837047}
-  m_Layer: 3
+  m_Layer: 6
   m_Name: CameraTransform
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -607,7 +608,7 @@ GameObject:
   - component: {fileID: 4826576570863280527}
   - component: {fileID: 7650593830850615493}
   - component: {fileID: 6560025763620748369}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: mesh
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -688,7 +689,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4064184702655020402}
-  m_Layer: 3
+  m_Layer: 6
   m_Name: Handle Slide Area
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -726,7 +727,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6221111270915424506}
   - component: {fileID: 6582406081825018126}
-  m_Layer: 3
+  m_Layer: 6
   m_Name: CanonPointer
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -742,7 +743,7 @@ Transform:
   m_GameObject: {fileID: 6259958554205923377}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1000.0001}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1158141871152860794}
@@ -756,7 +757,7 @@ LineRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6259958554205923377}
   m_Enabled: 1
-  m_CastShadows: 1
+  m_CastShadows: 0
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
   m_StaticShadowCaster: 0
@@ -856,7 +857,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1158141871152860794}
-  m_Layer: 3
+  m_Layer: 6
   m_Name: CanonTip
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -872,7 +873,7 @@ Transform:
   m_GameObject: {fileID: 6820678197557786777}
   m_LocalRotation: {x: -2.4868996e-14, y: -1, z: -0.0000002682209, w: -0.000000014901158}
   m_LocalPosition: {x: 0, y: -0.56, z: -0.8}
-  m_LocalScale: {x: 0.20000003, y: 0.2, z: 0.28000003}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 6221111270915424506}
@@ -890,7 +891,7 @@ GameObject:
   - component: {fileID: 3500842597728527259}
   - component: {fileID: 5687524445052112912}
   - component: {fileID: 5606634276175282418}
-  m_Layer: 3
+  m_Layer: 6
   m_Name: CrosshairCursor
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -967,7 +968,7 @@ GameObject:
   - component: {fileID: 6250770712706610529}
   - component: {fileID: 3705812300406307404}
   - component: {fileID: 5914963894386641903}
-  m_Layer: 3
+  m_Layer: 6
   m_Name: VacuumHitbox
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -1043,7 +1044,7 @@ GameObject:
   - component: {fileID: 3469553917150596824}
   - component: {fileID: 4344240376983353827}
   - component: {fileID: 3099480709392396222}
-  m_Layer: 3
+  m_Layer: 6
   m_Name: Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1117,7 +1118,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6980147992904670119}
-  m_Layer: 3
+  m_Layer: 6
   m_Name: Fill Area
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1152,9 +1153,25 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 8847639879034609891}
     m_Modifications:
+    - target: {fileID: 291445284644066583, guid: a0997d77d72feb94c9a09c9ddc4d4a6b, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 4469395407625105478, guid: a0997d77d72feb94c9a09c9ddc4d4a6b, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 4469395408236746822, guid: a0997d77d72feb94c9a09c9ddc4d4a6b, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
     - target: {fileID: 4469395409173780280, guid: a0997d77d72feb94c9a09c9ddc4d4a6b, type: 3}
       propertyPath: m_Name
       value: VacuumSuck
+      objectReference: {fileID: 0}
+    - target: {fileID: 4469395409173780280, guid: a0997d77d72feb94c9a09c9ddc4d4a6b, type: 3}
+      propertyPath: m_Layer
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 4469395409173780281, guid: a0997d77d72feb94c9a09c9ddc4d4a6b, type: 3}
       propertyPath: m_RootOrder

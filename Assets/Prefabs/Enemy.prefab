@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 2270565935625957240}
   - component: {fileID: 8271683393624485035}
   - component: {fileID: 3002155336526666685}
-  m_Layer: 3
+  m_Layer: 7
   m_Name: Capsule
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -95,7 +95,7 @@ GameObject:
   - component: {fileID: 4682280902325755084}
   - component: {fileID: 1988783225518556781}
   - component: {fileID: 9113617427949065013}
-  m_Layer: 3
+  m_Layer: 7
   m_Name: Enemy
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -130,6 +130,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 09129ffe74e62e343a7c6ef35ff55517, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  MaxHealth: 50
   lastVacuumHitTime: 0
   MovementForce: 0
 --- !u!136 &1988783225518556781
@@ -171,7 +172,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7802558663474256315}
-  m_Layer: 3
+  m_Layer: 7
   m_Name: Model
   m_TagString: Untagged
   m_Icon: {fileID: 0}

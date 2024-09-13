@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 7161423610750410142}
   - component: {fileID: 4682280902325755084}
   - component: {fileID: 9113617427949065013}
-  m_Layer: 3
+  m_Layer: 7
   m_Name: Hunter
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -75,7 +75,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7802558663474256315}
-  m_Layer: 3
+  m_Layer: 7
   m_Name: Model
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -109,7 +109,7 @@ GameObject:
   - component: {fileID: 5006046562858187485}
   - component: {fileID: 888463763102588832}
   - component: {fileID: 4390644868106737556}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Sphere
   m_TagString: Untagged
   m_Icon: {fileID: 0}

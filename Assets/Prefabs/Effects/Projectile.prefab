@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 926027913916158325}
   - component: {fileID: 456872262032847242}
   - component: {fileID: 6017591074590153630}
-  m_Layer: 6
+  m_Layer: 8
   m_Name: Projectile
   m_TagString: Projectile
   m_Icon: {fileID: 0}
@@ -91,7 +91,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6988546926308192418}
   - component: {fileID: 98281349670889601}
-  m_Layer: 6
+  m_Layer: 8
   m_Name: Trail (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -222,7 +222,7 @@ GameObject:
   m_Component:
   - component: {fileID: 894174802290400536}
   - component: {fileID: 5933157888239754978}
-  m_Layer: 6
+  m_Layer: 8
   m_Name: Trail
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -354,7 +354,7 @@ GameObject:
   - component: {fileID: 1356091766573024984}
   - component: {fileID: 2138627505567410983}
   - component: {fileID: 3784962779888332758}
-  m_Layer: 6
+  m_Layer: 8
   m_Name: ConstantRing
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5166,7 +5166,7 @@ GameObject:
   - component: {fileID: 828368234716588005}
   - component: {fileID: 1613155571485343055}
   - component: {fileID: 1688065825811753020}
-  m_Layer: 6
+  m_Layer: 8
   m_Name: ConstantOrb
   m_TagString: Untagged
   m_Icon: {fileID: 0}

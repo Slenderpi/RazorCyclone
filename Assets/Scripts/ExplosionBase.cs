@@ -13,12 +13,12 @@ public class ExplosionBase : MonoBehaviour {
     float AdditionalUpwardForce = 190f; // Rigidbodies hit will experience an additional upward boost
     
     public float damage;
-    int MovableLayerMask;
+    int ExplosionLayerMask;
     
     Collider[] hitColliders;
     
     void Awake() {
-        MovableLayerMask = 1 << LayerMask.NameToLayer("Movable");
+        ExplosionLayerMask = 1 << LayerMask.NameToLayer("Movable");
         hitColliders = new Collider[MaxHits];
         ParticleSystem[] particleEffects = GetComponentsInChildren<ParticleSystem>();
         foreach (ParticleSystem p in particleEffects)
@@ -26,11 +26,11 @@ public class ExplosionBase : MonoBehaviour {
     }
     
     void Start() {
-        Physics.OverlapSphereNonAlloc(transform.position, ExplosionRadius, hitColliders, MovableLayerMask);
+        Physics.OverlapSphereNonAlloc(transform.position, ExplosionRadius, hitColliders, ExplosionLayerMask);
         foreach (Collider co in hitColliders) {
             if (co && co.TryGetComponent(out Rigidbody rb)) {
                 float dist = Vector3.Distance(transform.position, co.transform.position);
-                if (!Physics.Raycast(transform.position, (co.transform.position - transform.position).normalized, dist, ~MovableLayerMask)) {
+                if (!Physics.Raycast(transform.position, (co.transform.position - transform.position).normalized, dist, ~ExplosionLayerMask)) {
                     rb.AddExplosionForce(ExplosionForce, transform.position, ExplosionRadius + 0.5f);
                     rb.AddForce(Vector3.up * AdditionalUpwardForce, ForceMode.Impulse);
                     if (co.TryGetComponent(out EnemyBase en)) {
