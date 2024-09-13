@@ -118,11 +118,12 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         //     charModel.localEulerAngles = new Vector3(0, camtrans.localEulerAngles.y + lookDelta.x, 0);
         // }
         
+        updateRayCastedAimPoint();
+        
         // Rotate character pivot based on rotation inputs
         charPivot.localEulerAngles = Quaternion.LookRotation(desiredRotation.magnitude > 0.00001 ? desiredRotation : prevDesiredRotation).eulerAngles;
         
-        // Raycast player aim direction
-        updateRayCastedAimPoint();
+        
     }
 
     void FixedUpdate() {
