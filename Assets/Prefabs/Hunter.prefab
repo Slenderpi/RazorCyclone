@@ -49,7 +49,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MaxHealth: 1000
   lastVacuumHitTime: 0
-  MovementForce: 25000
+  MovementForce: 3000
 --- !u!54 &9113617427949065013
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -59,7 +59,7 @@ Rigidbody:
   m_GameObject: {fileID: 3890492832594851018}
   serializedVersion: 2
   m_Mass: 100
-  m_Drag: 0.13
+  m_Drag: 1
   m_AngularDrag: 1
   m_UseGravity: 0
   m_IsKinematic: 0

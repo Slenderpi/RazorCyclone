@@ -67,6 +67,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "CycleCrosshair",
+                    "type": "Button",
+                    "id": "6707b499-9332-4655-9d7e-59a5dde129bf",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -215,7 +224,7 @@
                 },
                 {
                     "name": "",
-                    "id": "ed7e6059-ef8b-4a9c-9a36-01132d5c540a",
+                    "id": "a2db3675-2a8d-4043-818f-78ae3ee0fc6d",
                     "path": "<Gamepad>/buttonWest",
                     "interactions": "",
                     "processors": "",
@@ -443,6 +452,39 @@
                     "action": "Vacuum",
                     "isComposite": false,
                     "isPartOfComposite": false
+                },
+                {
+                    "name": "1D Axis",
+                    "id": "5bfb5ca2-5c93-433d-874f-b4ae8449e39c",
+                    "path": "1DAxis",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "CycleCrosshair",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "negative",
+                    "id": "cc4049de-7cb8-4504-ba5a-5e3cd52259ad",
+                    "path": "<Keyboard>/comma",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "CycleCrosshair",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "positive",
+                    "id": "e07a042b-7587-48d1-9fa0-adea5a635598",
+                    "path": "<Keyboard>/period",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "CycleCrosshair",
+                    "isComposite": false,
+                    "isPartOfComposite": true
                 }
             ]
         }

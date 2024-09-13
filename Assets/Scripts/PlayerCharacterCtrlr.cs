@@ -16,6 +16,10 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     Vector3 prevDesiredRotation = Vector3.forward;
 
     [SerializeField] Transform rearCamPos;
+
+    int crosshairIndex = 0;
+    [SerializeField] Image mirrorCrosshair;
+    [SerializeField] Sprite[] crosshairs;
     
     [Header("Mouse sens")]
     [SerializeField]
@@ -90,7 +94,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         mainCamera = Camera.main;
         rearCamera = GameManager.Instance.rearCamera;
         rb = GetComponent<Rigidbody>();
-        
+
         vacuumHitbox.SetActive(false);
         
         AimRayLayerMask = ~(1 << LayerMask.NameToLayer("Player"));
@@ -98,6 +102,10 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         AddFuel(MaxFuel);
         vacuumFuelCost = MaxFuel / VacuumFuelTime * Time.fixedDeltaTime;
         currentHealth = MaxHealth;
+
+        crosshairs =  Resources.LoadAll<Sprite>("White") ;
+        print(crosshairs.Length);
+
     }
     
     void Start() {
@@ -264,6 +272,23 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         // canonPointer.LookAt(aimPoint);
         // canonPointer.localScale = new Vector3(1, 1, (aimPoint - canonPointer.position).magnitude);
     }
+
+    void OnCycleCrosshairInput(InputAction.CallbackContext context) {
+        bool goNext = context.ReadValue<float>() > 0;
+        if (goNext) {
+            if (++crosshairIndex >= 200)
+                crosshairIndex = 0;
+        } else {
+            crosshairIndex--;
+            if (crosshairIndex < 0)
+                crosshairIndex = 199;
+        }
+
+        print(crosshairIndex);
+        mirrorCrosshair.sprite = crosshairs[crosshairIndex];
+
+        print(crosshairIndex);
+    }
     
     void OnEnable() {
         pInputActions.Look.Enable();
@@ -273,12 +298,16 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         pInputActions.Vacuum.Enable();
         pInputActions.Canon.Enable();
         pInputActions.SlowTime.Enable();
+
+        pInputActions.CycleCrosshair.Enable();
         
         pInputActions.TurnInputs.performed += TurnInputChanged;
         pInputActions.TurnInputs.canceled += TurnInputChanged;
         pInputActions.VertInputs.performed += VertInputChanged;
         pInputActions.VertInputs.canceled += VertInputChanged;
-        
+
+        pInputActions.CycleCrosshair.performed += OnCycleCrosshairInput;
+
         // rotationInputs.performed += RotateInputPerformed;
         pInputActions.Vacuum.started += FireVacuumStarted;
         pInputActions.Vacuum.canceled += FireVacuumCanceled;
