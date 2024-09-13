@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.18028305, g: 0.22571313, b: 0.3069213, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028378, g: 0.22571412, b: 0.30692285, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -6485,7 +6485,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1016769309}
   - component: {fileID: 1016769311}
-  m_Layer: 8
+  m_Layer: 9
   m_Name: WeaponCam
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6538,7 +6538,7 @@ Camera:
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 256
+    m_Bits: 768
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -9564,7 +9564,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1405411709}
   - component: {fileID: 1405411711}
-  m_Layer: 9
+  m_Layer: 10
   m_Name: MirrorCam
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9617,7 +9617,7 @@ Camera:
   m_Depth: 1
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 640
+    m_Bits: 1024
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
