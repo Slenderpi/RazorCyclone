@@ -13,8 +13,10 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     PlayerInputActions.PlayerActions pInputActions;
     
     Vector3 desiredRotation = Vector3.zero;
+    Vector3 prevDesiredRotation = Vector3.forward;
     
     Camera mainCamera;
+    Camera rearCamera;
     [Header("References")]
     [SerializeField]
     Transform camtrans;
@@ -78,6 +80,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         pInputActions = new PlayerInputActions().Player;
         
         mainCamera = Camera.main;
+        rearCamera = GameManager.Instance.rearCamera;
         rb = GetComponent<Rigidbody>();
         
         vacuumHitbox.SetActive(false);
@@ -106,7 +109,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         // }
         
         // Rotate character pivot based on rotation inputs
-        charPivot.localEulerAngles = Quaternion.LookRotation(desiredRotation.magnitude != 0 ? desiredRotation : Vector3.forward).eulerAngles;
+        charPivot.localEulerAngles = Quaternion.LookRotation(desiredRotation.magnitude > 0.00001 ? desiredRotation : prevDesiredRotation).eulerAngles;
     }
     
     void FixedUpdate() {
@@ -141,19 +144,17 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         desiredRotation.x = v.x;
         desiredRotation.z = v.y;
         
-        // if (desiredRotation.magnitude > 0)
-        //     StartVacuum();
-        // else
-        //     StopVacuum();
+        if (desiredRotation.magnitude > 0.00001) {
+            prevDesiredRotation = desiredRotation;
+        }
     }
 
     private void VertInputChanged(InputAction.CallbackContext context) {
         desiredRotation.y = context.ReadValue<float>();
         
-        // if (desiredRotation.magnitude > 0)
-        //     StartVacuum();
-        // else
-        //     StopVacuum();
+        if (desiredRotation.magnitude > 0.00001) {
+            prevDesiredRotation = desiredRotation;
+        }
     }
 
     private void FireVacuumStarted(InputAction.CallbackContext context) {
@@ -230,6 +231,8 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     void updateCameraTransform() {
         mainCamera.transform.position = camtrans.position;
         mainCamera.transform.rotation = camtrans.rotation;
+        rearCamera.transform.position = camtrans.position;
+        rearCamera.transform.rotation = Quaternion.LookRotation(canonTip.forward, canonTip.up);
     }
     
     void OnEnable() {

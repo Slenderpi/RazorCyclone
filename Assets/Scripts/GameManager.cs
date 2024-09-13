@@ -17,6 +17,7 @@ public class GameManager : MonoBehaviour {
     EnemyBase enemyPrefab;
     [SerializeField]
     Transform enemySpawnPoint;
+    public Camera rearCamera;
     
     bool hasSpawnedPlayer = false;
     
