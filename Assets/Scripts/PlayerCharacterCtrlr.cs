@@ -35,8 +35,8 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     GameObject vacuumHitbox;
     [SerializeField]
     Transform canonTip;
-    [SerializeField]
-    Transform canonPointer;
+    // [SerializeField]
+    // Transform canonPointer;
     [SerializeField]
     ProjectileBase projectilePrefab;
     [SerializeField]
@@ -259,9 +259,9 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
             aimPoint = hit.point;
         }
         
-        // Reangle laser pointer
-        canonPointer.LookAt(aimPoint);
-        canonPointer.localScale = new Vector3(1, 1, (aimPoint - canonPointer.position).magnitude);
+        // // Reangle laser pointer
+        // canonPointer.LookAt(aimPoint);
+        // canonPointer.localScale = new Vector3(1, 1, (aimPoint - canonPointer.position).magnitude);
     }
     
     void OnEnable() {
