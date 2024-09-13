@@ -14,6 +14,8 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     
     Vector3 desiredRotation = Vector3.zero;
     Vector3 prevDesiredRotation = Vector3.forward;
+
+    [SerializeField] Transform rearCamPos;
     
     [Header("Mouse sens")]
     [SerializeField]
@@ -243,7 +245,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     void updateCameraTransform() {
         mainCamera.transform.position = camtrans.position;
         mainCamera.transform.rotation = camtrans.rotation;
-        rearCamera.transform.position = camtrans.position;
+        rearCamera.transform.position = rearCamPos.position;
         rearCamera.transform.rotation = Quaternion.LookRotation(canonTip.forward, canonTip.up);
     }
 
