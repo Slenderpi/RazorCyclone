@@ -42,7 +42,7 @@ public class GameManager : MonoBehaviour {
     
     public void OnEnemyDied() {
         CurrentPlayer.AddFuel(100f);
-        Instantiate(enemyPrefab, enemySpawnPoint.position, enemySpawnPoint.rotation);
+        //Instantiate(enemyPrefab, enemySpawnPoint.position, enemySpawnPoint.rotation);
     }
     
 }

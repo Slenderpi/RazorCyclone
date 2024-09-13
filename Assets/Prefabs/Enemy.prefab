@@ -131,8 +131,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lastVacuumHitTime: 0
-  vacuumArrayIndex: -1
-  MovementForce: 800
+  MovementForce: 0
 --- !u!136 &1988783225518556781
 CapsuleCollider:
   m_ObjectHideFlags: 0

@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class EnemyBase : MonoBehaviour {
     
-    public float MaxHealth { private set; get; } = 50;
+    public float MaxHealth = 50;
     public float health { private set; get; }
     
     public float lastVacuumHitTime = 0f;
