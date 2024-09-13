@@ -4554,7 +4554,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
 --- !u!1 &712521570
 GameObject:
@@ -6086,7 +6086,7 @@ Transform:
   - {fileID: 2112423717}
   - {fileID: 1939387474}
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &930353773 stripped
 Transform:
@@ -6471,7 +6471,7 @@ Transform:
   - {fileID: 1916081321}
   - {fileID: 280322504}
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &1019000286 stripped
 Transform:
@@ -8228,7 +8228,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1293637727
 PrefabInstance:
@@ -12658,7 +12658,7 @@ Transform:
   m_Children:
   - {fileID: 1169302544}
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &1888113764 stripped
 Transform:
@@ -13316,6 +13316,7 @@ MonoBehaviour:
   playerPrefab: {fileID: 2891318792771983367, guid: ebefb66ac461b4941a6d0863c3d1515d, type: 3}
   enemyPrefab: {fileID: 4682280902325755084, guid: 7cf1fba186346694eb69b97032290412, type: 3}
   enemySpawnPoint: {fileID: 0}
+  rearCamera: {fileID: 1237125974}
 --- !u!4 &1951102240
 Transform:
   m_ObjectHideFlags: 0

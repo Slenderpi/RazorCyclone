@@ -15,6 +15,10 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     Vector3 desiredRotation = Vector3.zero;
     Vector3 prevDesiredRotation = Vector3.forward;
     
+    [Header("Mouse sens")]
+    [SerializeField]
+    float mouseSensitivity = 0.11f;
+    
     Camera mainCamera;
     Camera rearCamera;
     [Header("References")]
@@ -70,10 +74,6 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     float MaxHealth = 100f;
     float currentHealth;
     
-    // [SerializeField]
-    [Header("Mouse sens")]
-    [SerializeField]
-    float mouseSensitivity = 0.11f;
     float lookVertRot = 0;
     
     void Awake() {
