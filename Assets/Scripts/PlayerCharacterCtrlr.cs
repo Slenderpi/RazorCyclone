@@ -155,20 +155,11 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
 
     private void TurnInputChanged(InputAction.CallbackContext context) {
         Vector2 v = context.ReadValue<Vector2>();
-        desiredRotation.x = v.x;
-        desiredRotation.z = v.y;
-        
-        if (desiredRotation.magnitude > 0.00001) {
-            prevDesiredRotation = desiredRotation;
-        }
+        setDesiredRotation(v.x, desiredRotation.y, v.y);
     }
 
     private void VertInputChanged(InputAction.CallbackContext context) {
-        desiredRotation.y = context.ReadValue<float>();
-        
-        if (desiredRotation.magnitude > 0.00001) {
-            prevDesiredRotation = desiredRotation;
-        }
+        setDesiredRotation(desiredRotation.x, context.ReadValue<float>(), desiredRotation.z);
     }
 
     private void FireVacuumStarted(InputAction.CallbackContext context) {
@@ -217,18 +208,6 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         // fireCanon();
     }
     
-    void fireCanon() {
-        rb.AddForce(charPivot.forward * CanonForce * 100000);
-        // TODO maybe?: Switch fire direction of projectile to be based off a raycast from camera to ~10000 units forward
-        //              Might be weird to figure out. Makes sense when shooting straight, but what about left/right/etc of camera?
-        // Ray ray = new Ray(canonTip.position);
-        ProjectileBase proj = Instantiate(projectilePrefab, canonTip.position, canonTip.rotation);
-        proj.damage = CanonDamage;
-        // proj.GetComponent<Rigidbody>().AddForce(canonTip.forward * CanonProjSpeed + rb.velocity, ForceMode.VelocityChange);
-        proj.GetComponent<Rigidbody>().AddForce((aimPoint - canonTip.position).normalized * CanonProjSpeed + rb.velocity, ForceMode.VelocityChange);
-        AddFuel(-CanonFuelCost);
-    }
-    
     private void OnTimeSlowStarted(InputAction.CallbackContext context) {
         // frontIsVacuum = !frontIsVacuum;
         Time.timeScale = 0.1f;
@@ -249,9 +228,31 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         rearCamera.transform.position = rearCamPos.position;
         rearCamera.transform.rotation = Quaternion.LookRotation(canonTip.forward, canonTip.up);
     }
+    
+    void setDesiredRotation(float x, float y, float z) {
+        desiredRotation.x = x;
+        desiredRotation.y = y;
+        desiredRotation.z = z;
+        if (desiredRotation.magnitude > 0.00001) {
+            prevDesiredRotation = desiredRotation;
+        }
+    }
+    
+    void fireCanon() {
+        rb.AddForce(charPivot.forward * CanonForce * 100000);
+        // TODO maybe?: Switch fire direction of projectile to be based off a raycast from camera to ~10000 units forward
+        //              Might be weird to figure out. Makes sense when shooting straight, but what about left/right/etc of camera?
+        // Ray ray = new Ray(canonTip.position);
+        ProjectileBase proj = Instantiate(projectilePrefab, canonTip.position, canonTip.rotation);
+        proj.damage = CanonDamage;
+        // proj.GetComponent<Rigidbody>().AddForce(canonTip.forward * CanonProjSpeed + rb.velocity, ForceMode.VelocityChange);
+        proj.GetComponent<Rigidbody>().AddForce((aimPoint - canonTip.position).normalized * CanonProjSpeed + rb.velocity, ForceMode.VelocityChange);
+        AddFuel(-CanonFuelCost);
+    }
 
     void updateRayCastedAimPoint() {
-        Ray ray = new Ray(camtrans.position, canonTip.forward);
+        Vector3 dir = (desiredRotation.magnitude > 0.00001 ? desiredRotation : prevDesiredRotation).normalized;
+        Ray ray = new Ray(camtrans.position, charModel.rotation * -dir);
         RaycastHit hit;
         Debug.DrawRay(ray.origin, ray.direction * AimRayMaxDist);
         aimPoint = ray.origin + ray.direction * AimRayMaxDist;
