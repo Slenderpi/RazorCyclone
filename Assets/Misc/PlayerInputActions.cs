@@ -89,6 +89,15 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""CycleCrosshair"",
+                    ""type"": ""Button"",
+                    ""id"": ""6707b499-9332-4655-9d7e-59a5dde129bf"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -237,7 +246,7 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""491ba779-f80b-43c6-98fc-951e0f458f9f"",
+                    ""id"": ""a2db3675-2a8d-4043-818f-78ae3ee0fc6d"",
                     ""path"": ""<Gamepad>/buttonWest"",
                     ""interactions"": """",
                     ""processors"": """",
@@ -465,6 +474,39 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
                     ""action"": ""Vacuum"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""1D Axis"",
+                    ""id"": ""5bfb5ca2-5c93-433d-874f-b4ae8449e39c"",
+                    ""path"": ""1DAxis"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""CycleCrosshair"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""negative"",
+                    ""id"": ""cc4049de-7cb8-4504-ba5a-5e3cd52259ad"",
+                    ""path"": ""<Keyboard>/comma"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""CycleCrosshair"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""positive"",
+                    ""id"": ""e07a042b-7587-48d1-9fa0-adea5a635598"",
+                    ""path"": ""<Keyboard>/period"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""CycleCrosshair"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
                 }
             ]
         }
@@ -480,6 +522,7 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
         m_Player_Canon = m_Player.FindAction("Canon", throwIfNotFound: true);
         m_Player_SlowTime = m_Player.FindAction("SlowTime", throwIfNotFound: true);
         m_Player__AddFuel = m_Player.FindAction("_AddFuel", throwIfNotFound: true);
+        m_Player_CycleCrosshair = m_Player.FindAction("CycleCrosshair", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -546,6 +589,7 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Canon;
     private readonly InputAction m_Player_SlowTime;
     private readonly InputAction m_Player__AddFuel;
+    private readonly InputAction m_Player_CycleCrosshair;
     public struct PlayerActions
     {
         private @PlayerInputActions m_Wrapper;
@@ -557,6 +601,7 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
         public InputAction @Canon => m_Wrapper.m_Player_Canon;
         public InputAction @SlowTime => m_Wrapper.m_Player_SlowTime;
         public InputAction @_AddFuel => m_Wrapper.m_Player__AddFuel;
+        public InputAction @CycleCrosshair => m_Wrapper.m_Player_CycleCrosshair;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -587,6 +632,9 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
                 @_AddFuel.started -= m_Wrapper.m_PlayerActionsCallbackInterface.On_AddFuel;
                 @_AddFuel.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.On_AddFuel;
                 @_AddFuel.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.On_AddFuel;
+                @CycleCrosshair.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCycleCrosshair;
+                @CycleCrosshair.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCycleCrosshair;
+                @CycleCrosshair.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCycleCrosshair;
             }
             m_Wrapper.m_PlayerActionsCallbackInterface = instance;
             if (instance != null)
@@ -612,6 +660,9 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
                 @_AddFuel.started += instance.On_AddFuel;
                 @_AddFuel.performed += instance.On_AddFuel;
                 @_AddFuel.canceled += instance.On_AddFuel;
+                @CycleCrosshair.started += instance.OnCycleCrosshair;
+                @CycleCrosshair.performed += instance.OnCycleCrosshair;
+                @CycleCrosshair.canceled += instance.OnCycleCrosshair;
             }
         }
     }
@@ -625,5 +676,6 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
         void OnCanon(InputAction.CallbackContext context);
         void OnSlowTime(InputAction.CallbackContext context);
         void On_AddFuel(InputAction.CallbackContext context);
+        void OnCycleCrosshair(InputAction.CallbackContext context);
     }
 }
