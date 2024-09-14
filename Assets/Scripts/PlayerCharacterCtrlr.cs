@@ -35,8 +35,6 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     GameObject vacuumHitbox;
     [SerializeField]
     Transform canonTip;
-    // [SerializeField]
-    // Transform canonPointer;
     [SerializeField]
     ProjectileBase projectilePrefab;
     [SerializeField]
@@ -83,6 +81,10 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     float AimRayMaxDist = 1000f;
     // float AimRayMinDist = 0f;
     int AimRayLayerMask;
+    float desiredRotationUpdateTime = 0;
+    Quaternion rotBeforeInputUpdate = Quaternion.identity;
+    float pivotRotLerpPower = 4;
+    float pivotRotLerpTime = 0.1f;
     
     void Awake() {
         pInputActions = new PlayerInputActions().Player;
@@ -118,12 +120,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         //     charModel.localEulerAngles = new Vector3(0, camtrans.localEulerAngles.y + lookDelta.x, 0);
         // }
         
-        updateRayCastedAimPoint();
-        
-        // Rotate character pivot based on rotation inputs
-        charPivot.localEulerAngles = Quaternion.LookRotation(desiredRotation.magnitude > 0.00001 ? desiredRotation : prevDesiredRotation).eulerAngles;
-        
-        
+        interpRotPivot();
     }
 
     void FixedUpdate() {
@@ -230,6 +227,9 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     }
     
     void setDesiredRotation(float x, float y, float z) {
+        desiredRotationUpdateTime = Time.time;
+        rotBeforeInputUpdate = charPivot.localRotation;
+        
         desiredRotation.x = x;
         desiredRotation.y = y;
         desiredRotation.z = z;
@@ -239,10 +239,9 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     }
     
     void fireCanon() {
+        updateRayCastedAimPoint();
+        // TODO: Push force direction should be based on look direction instead of charPivot, like for the ray-casted aim point
         rb.AddForce(charPivot.forward * CanonForce * 100000);
-        // TODO maybe?: Switch fire direction of projectile to be based off a raycast from camera to ~10000 units forward
-        //              Might be weird to figure out. Makes sense when shooting straight, but what about left/right/etc of camera?
-        // Ray ray = new Ray(canonTip.position);
         ProjectileBase proj = Instantiate(projectilePrefab, canonTip.position, canonTip.rotation);
         proj.damage = CanonDamage;
         // proj.GetComponent<Rigidbody>().AddForce(canonTip.forward * CanonProjSpeed + rb.velocity, ForceMode.VelocityChange);
@@ -260,10 +259,20 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
             // aimPoint = hit.distance > AimRayMinDist ? hit.point : ray.origin + ray.direction * AimRayMinDist;
             aimPoint = hit.point;
         }
-        
-        // // Reangle laser pointer
-        // canonPointer.LookAt(aimPoint);
-        // canonPointer.localScale = new Vector3(1, 1, (aimPoint - canonPointer.position).magnitude);
+    }
+
+    void interpRotPivot() {
+        Quaternion rot = Quaternion.LookRotation(desiredRotation.magnitude > 0.00001 ? desiredRotation : prevDesiredRotation);
+        /* This alpha calculation forms a curve with a steep start (f'(0) > 0) and a flat end (f'(1) = 0), creating a snappy feel
+         * To increase snappiness, increase pivotRotLerpPower. If lowered to a power of 1, the curve is linear. If below 1, it
+         *     creates a sense of lag by delaying the rotation, so it's better to keep the power above 1.
+         * To increase/decrease the speed of the animation, decrease/increase pivotRotLerpTime. This variable determines the
+         *     amount of time the animation takes (a time of 0.6 means it takes of 0.6 seconds to make the rotation).
+         * The equation for alpha is alpha = -(-alphaX + 1)^lerpPowewr + 1
+         */
+        float alphaX = Mathf.Min((Time.time - desiredRotationUpdateTime) / pivotRotLerpTime, 1f);
+        float alpha = -Mathf.Pow(-alphaX + 1, pivotRotLerpPower) + 1f;
+        charPivot.localRotation = Quaternion.Lerp(rotBeforeInputUpdate, rot, alpha);
     }
     
     void OnEnable() {
