@@ -6,6 +6,7 @@ using Unity.VisualScripting;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Rendering;
 using UnityEngine.UI;
 
 public class PlayerCharacterCtrlr : MonoBehaviour {
@@ -38,6 +39,10 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     ProjectileBase projectilePrefab;
     [SerializeField]
     Slider fuelSlider;
+    [SerializeField]
+    RectTransform mainVacuumCrosshair;
+    [SerializeField]
+    RectTransform mainCanonCrosshair;
     [SerializeField]
     Transform rearCamPos;
     Sprite[] crosshairSprites = new Sprite[200];
@@ -129,6 +134,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         // }
         
         interpRotPivot();
+        
     }
 
     void FixedUpdate() {
@@ -147,8 +153,9 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     
     void LateUpdate() {
         updateCameraTransform();
+        updateMainCrosshairPositions();
     }
-    
+
     public void AddFuel(float amount) {
         currentFuel = Mathf.Clamp(currentFuel + amount, 0, MaxFuel);
         fuelSlider.value = currentFuel / MaxFuel;
@@ -261,7 +268,6 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         Vector3 dir = (desiredRotation.magnitude > 0.00001 ? desiredRotation : prevDesiredRotation).normalized;
         Ray ray = new Ray(camtrans.position, charModel.rotation * -dir);
         RaycastHit hit;
-        Debug.DrawRay(ray.origin, ray.direction * AimRayMaxDist);
         aimPoint = ray.origin + ray.direction * AimRayMaxDist;
         if (Physics.Raycast(ray: ray, maxDistance: AimRayMaxDist, layerMask: AimRayLayerMask, hitInfo: out hit)) {
             // aimPoint = hit.distance > AimRayMinDist ? hit.point : ray.origin + ray.direction * AimRayMinDist;
@@ -281,6 +287,25 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         float alphaX = Mathf.Min((Time.time - desiredRotationUpdateTime) / pivotRotLerpTime, 1f);
         float alpha = -Mathf.Pow(-alphaX + 1, pivotRotLerpPower) + 1f;
         charPivot.localRotation = Quaternion.Lerp(rotBeforeInputUpdate, rot, alpha);
+    }
+    
+    void updateMainCrosshairPositions() {
+        Vector3 screenPointVacuum = mainCamera.WorldToScreenPoint(camtrans.position + charPivot.forward);
+        Vector3 screenPointCanon = mainCamera.WorldToScreenPoint( // This one accounts for the player's velocity
+            camtrans.position + charPivot.forward + (rb.velocity.magnitude > 0.001f ? -rb.velocity / CanonProjSpeed : Vector3.zero)
+        );
+        if (screenPointVacuum.z > 0.01f) {
+            if (!mainVacuumCrosshair.gameObject.activeSelf) mainVacuumCrosshair.gameObject.SetActive(true);
+            mainVacuumCrosshair.position = screenPointVacuum;
+        } else {
+            if (mainVacuumCrosshair.gameObject.activeSelf) mainVacuumCrosshair.gameObject.SetActive(false);
+        }
+        if (screenPointCanon.z < 0.01f) {
+            if (!mainCanonCrosshair.gameObject.activeSelf) mainCanonCrosshair.gameObject.SetActive(true);
+            mainCanonCrosshair.position = screenPointCanon;
+        } else {
+            if (mainCanonCrosshair.gameObject.activeSelf) mainCanonCrosshair.gameObject.SetActive(false);
+        }
     }
 
     void OnCycleCrosshairInput(InputAction.CallbackContext context) {
