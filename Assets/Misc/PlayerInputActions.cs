@@ -257,17 +257,6 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": ""WASD"",
-                    ""id"": ""ed7e6059-ef8b-4a9c-9a36-01132d5c540a"",
-                    ""path"": ""<Gamepad>/buttonWest"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""_AddFuel"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": ""WASD"",
                     ""id"": ""d7107e90-c60d-4181-a1cf-9f2210a31a9e"",
                     ""path"": ""2DVector"",
                     ""interactions"": """",

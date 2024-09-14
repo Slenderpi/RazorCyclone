@@ -49,7 +49,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MaxHealth: 1000
   lastVacuumHitTime: 0
-  MovementForce: 3000
+  MovementForce: 2000
 --- !u!54 &9113617427949065013
 Rigidbody:
   m_ObjectHideFlags: 0
