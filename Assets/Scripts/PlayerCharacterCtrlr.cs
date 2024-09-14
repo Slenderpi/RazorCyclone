@@ -14,12 +14,6 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     
     Vector3 desiredRotation = Vector3.zero;
     Vector3 prevDesiredRotation = Vector3.forward;
-
-    [SerializeField] Transform rearCamPos;
-
-    int crosshairIndex = 0;
-    [SerializeField] Image mirrorCrosshair;
-    [SerializeField] Sprite[] crosshairs;
     
     [Header("Mouse sens")]
     [SerializeField]
@@ -27,6 +21,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     
     Camera mainCamera;
     Camera rearCamera;
+    
     [Header("References")]
     [SerializeField]
     Transform camtrans;
@@ -43,6 +38,11 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     ProjectileBase projectilePrefab;
     [SerializeField]
     Slider fuelSlider;
+    [SerializeField]
+    Transform rearCamPos;
+    Sprite[] crosshairSprites = new Sprite[200];
+    int crosshairIndex = 0;
+    [SerializeField] Image mirrorCrosshair;
     
     bool isVacuumOn;
     [Header("Weapon Settings")]
@@ -105,8 +105,8 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         vacuumFuelCost = MaxFuel / VacuumFuelTime * Time.fixedDeltaTime;
         currentHealth = MaxHealth;
 
-        crosshairs =  Resources.LoadAll<Sprite>("White") ;
-        print(crosshairs.Length);
+        crosshairSprites =  Resources.LoadAll<Sprite>("White") ;
+        print(crosshairSprites.Length);
 
     }
     
@@ -284,8 +284,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     }
 
     void OnCycleCrosshairInput(InputAction.CallbackContext context) {
-        bool goNext = context.ReadValue<float>() > 0;
-        if (goNext) {
+        if (context.ReadValue<float>() > 0) {
             if (++crosshairIndex >= 200)
                 crosshairIndex = 0;
         } else {
@@ -293,11 +292,9 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
             if (crosshairIndex < 0)
                 crosshairIndex = 199;
         }
-
-        print(crosshairIndex);
-        mirrorCrosshair.sprite = crosshairs[crosshairIndex];
-
-        print(crosshairIndex);
+        
+        mirrorCrosshair.sprite = crosshairSprites[crosshairIndex];
+        print("Current mirror crosshair: \"" + crosshairSprites[crosshairIndex].name + "\"");
     }
     
     void OnEnable() {
