@@ -69,9 +69,18 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "CycleCrosshair",
+                    "name": "_CycleCrosshair",
                     "type": "Button",
                     "id": "6707b499-9332-4655-9d7e-59a5dde129bf",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "_ToggleMirror",
+                    "type": "Button",
+                    "id": "622a0427-1d76-47cc-977f-e5a7b8b11e5f",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -449,7 +458,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "CycleCrosshair",
+                    "action": "_CycleCrosshair",
                     "isComposite": true,
                     "isPartOfComposite": false
                 },
@@ -460,7 +469,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "CycleCrosshair",
+                    "action": "_CycleCrosshair",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -471,9 +480,20 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "CycleCrosshair",
+                    "action": "_CycleCrosshair",
                     "isComposite": false,
                     "isPartOfComposite": true
+                },
+                {
+                    "name": "",
+                    "id": "518834d8-f541-4e50-80e3-5e15690e526e",
+                    "path": "<Keyboard>/m",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "_ToggleMirror",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         }

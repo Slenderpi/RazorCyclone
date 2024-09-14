@@ -45,8 +45,6 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     RectTransform mainCanonCrosshair;
     [SerializeField]
     Transform rearCamPos;
-    Sprite[] crosshairSprites = new Sprite[200];
-    int crosshairIndex = 0;
     [SerializeField] Image mirrorCrosshair;
     
     bool isVacuumOn;
@@ -95,6 +93,17 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     float pivotRotLerpPower = 4;
     float pivotRotLerpTime = 0.1f;
     
+    
+    /** Variables for likely to be temporary features **/
+    [Header("Temporary/testing")]
+    [SerializeField]
+    GameObject rearMirrorModel;
+    bool mirrorModelEnabled = true;
+    Sprite[] crosshairSprites = new Sprite[200];
+    int crosshairIndex = 0;
+    
+    
+    
     void Awake() {
         pInputActions = new PlayerInputActions().Player;
         
@@ -109,10 +118,11 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         AddFuel(MaxFuel);
         vacuumFuelCost = MaxFuel / VacuumFuelTime * Time.fixedDeltaTime;
         currentHealth = MaxHealth;
-
+        
+        
+        /** Temp stuff **/
         crosshairSprites =  Resources.LoadAll<Sprite>("White") ;
-        print(crosshairSprites.Length);
-
+        rearMirrorModel.SetActive(mirrorModelEnabled);
     }
     
     void Start() {
@@ -161,10 +171,6 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         fuelSlider.value = currentFuel / MaxFuel;
     }
 
-    // private void RotateInputPerformed(InputAction.CallbackContext context) {
-    //     desiredRotation = context.ReadValue<Vector3>();
-    // }
-
     private void TurnInputChanged(InputAction.CallbackContext context) {
         Vector2 v = context.ReadValue<Vector2>();
         setDesiredRotation(v.x, desiredRotation.y, v.y);
@@ -182,20 +188,6 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         isVacuumOn = true;
         vacuumHitbox.SetActive(true);
     }
-    
-    // void StartVacuum() {
-    //     if (currentFuel <= 0) {
-    //         // print("Not enough fuel (" + currentFuel + ") for vacuum (need " + vacuumFuelCost + ").");
-    //         return;
-    //     }
-    //     isVacuumOn = true;
-    //     vacuumHitbox.SetActive(true);
-    // }
-    
-    // void StopVacuum() {
-    //     isVacuumOn = false;
-    //     vacuumHitbox.SetActive(false);
-    // }
 
     private void FireVacuumCanceled(InputAction.CallbackContext context) {
         isVacuumOn = false;
@@ -227,11 +219,6 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     
     private void OnTimeSlowCanceled(InputAction.CallbackContext context) {
         Time.timeScale = 1f;
-    }
-    
-    private void OnAddFuelKey(InputAction.CallbackContext context) {
-        print("Fully refueling fuel.");
-        AddFuel(MaxFuel);
     }
 
     void updateCameraTransform() {
@@ -307,20 +294,6 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
             if (mainCanonCrosshair.gameObject.activeSelf) mainCanonCrosshair.gameObject.SetActive(false);
         }
     }
-
-    void OnCycleCrosshairInput(InputAction.CallbackContext context) {
-        if (context.ReadValue<float>() > 0) {
-            if (++crosshairIndex >= 200)
-                crosshairIndex = 0;
-        } else {
-            crosshairIndex--;
-            if (crosshairIndex < 0)
-                crosshairIndex = 199;
-        }
-        
-        mirrorCrosshair.sprite = crosshairSprites[crosshairIndex];
-        print("Current mirror crosshair: \"" + crosshairSprites[crosshairIndex].name + "\"");
-    }
     
     void OnEnable() {
         pInputActions.Look.Enable();
@@ -330,15 +303,11 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         pInputActions.Vacuum.Enable();
         pInputActions.Canon.Enable();
         pInputActions.SlowTime.Enable();
-
-        pInputActions.CycleCrosshair.Enable();
         
         pInputActions.TurnInputs.performed += TurnInputChanged;
         pInputActions.TurnInputs.canceled += TurnInputChanged;
         pInputActions.VertInputs.performed += VertInputChanged;
         pInputActions.VertInputs.canceled += VertInputChanged;
-
-        pInputActions.CycleCrosshair.performed += OnCycleCrosshairInput;
 
         // rotationInputs.performed += RotateInputPerformed;
         pInputActions.Vacuum.started += FireVacuumStarted;
@@ -348,9 +317,14 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         pInputActions.SlowTime.started += OnTimeSlowStarted;
         pInputActions.SlowTime.canceled += OnTimeSlowCanceled;
         
-        // Y lock toggle feature is for testing and likely not for final gameplay
+        
+        /** Features not necessarily meant for final gameplay **/
         pInputActions._AddFuel.Enable();
         pInputActions._AddFuel.started += OnAddFuelKey;
+        pInputActions._CycleCrosshair.Enable();
+        pInputActions._CycleCrosshair.performed += OnCycleCrosshairInput;
+        pInputActions._ToggleMirror.Enable();
+        pInputActions._ToggleMirror.performed += OnToggleMirrorInput;
     }
 
     void OnDisable() {
@@ -375,9 +349,38 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         pInputActions.SlowTime.started -= OnTimeSlowStarted;
         pInputActions.SlowTime.canceled -= OnTimeSlowCanceled;
         
-        // Y lock toggle feature is for testing and likely not for final gameplay
+        
+        /** Features not necessarily meant for final gameplay **/
         pInputActions._AddFuel.Disable();
         pInputActions._AddFuel.started -= OnAddFuelKey;
+        pInputActions._CycleCrosshair.Disable();
+        pInputActions._CycleCrosshair.performed -= OnCycleCrosshairInput;
+        pInputActions._ToggleMirror.Disable();
+        pInputActions._ToggleMirror.performed -= OnToggleMirrorInput;
+    }
+    
+    private void OnAddFuelKey(InputAction.CallbackContext context) {
+        print("Fully refueling fuel.");
+        AddFuel(MaxFuel);
+    }
+
+    void OnCycleCrosshairInput(InputAction.CallbackContext context) {
+        if (context.ReadValue<float>() > 0) {
+            if (++crosshairIndex >= 200)
+                crosshairIndex = 0;
+        } else {
+            crosshairIndex--;
+            if (crosshairIndex < 0)
+                crosshairIndex = 199;
+        }
+        
+        mirrorCrosshair.sprite = crosshairSprites[crosshairIndex];
+        print("Current mirror crosshair: \"" + crosshairSprites[crosshairIndex].name + "\"");
+    }
+
+    private void OnToggleMirrorInput(InputAction.CallbackContext context) {
+        mirrorModelEnabled = !mirrorModelEnabled;
+        rearMirrorModel.SetActive(mirrorModelEnabled);
     }
     
 }
