@@ -5,7 +5,6 @@ using System.ComponentModel;
 using System.IO;
 using TMPro;
 using Unity.VisualScripting;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Rendering;
@@ -54,21 +53,21 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     
     [Header("Key overlay")]
     [SerializeField]
-    TMP_Text TextKeyW;
+    Image KeyImageW;
     [SerializeField]
-    TMP_Text TextKeyA;
+    Image KeyImageA;
     [SerializeField]
-    TMP_Text TextKeyS;
+    Image KeyImageS;
     [SerializeField]
-    TMP_Text TextKeyD;
+    Image KeyImageD;
     [SerializeField]
     TMP_Text TextKeyM1;
     [SerializeField]
     TMP_Text TextKeyM2;
     [SerializeField]
-    TMP_Text TextKeySpace;
+    Image KeyImageSpace;
     [SerializeField]
-    TMP_Text TextKeyShift;
+    Image KeyImageShift;
     
     bool isVacuumOn;
     [Header("Weapon Settings")]
@@ -206,14 +205,14 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     }
 
     private void FireVacuumStarted(InputAction.CallbackContext context) {
+        TextKeyM1.color = Color.white;
+        
         if (currentFuel <= 0) {
             // print("Not enough fuel (" + currentFuel + ") for vacuum (need " + vacuumFuelCost + ").");
             return;
         }
         isVacuumOn = true;
         vacuumHitbox.SetActive(true);
-        
-        TextKeyM1.color = Color.white;
     }
 
     private void FireVacuumCanceled(InputAction.CallbackContext context) {
@@ -224,25 +223,25 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     }
 
     private void FireCanonStarted(InputAction.CallbackContext context) {
+        TextKeyM2.color = Color.white;
+        
         if (currentFuel <= 0) {
             // print("Not enough fuel (" + currentFuel + ") for canon (need " + CanonFuelCost + ").");
             return;
         }
         // Time.timeScale = 0.15f;
         fireCanon();
-        
-        TextKeyM2.color = Color.white;
     }
 
     private void FireCanonCanceled(InputAction.CallbackContext context) {
+        TextKeyM2.color = Color.gray;
+        
         // Time.timeScale = 1f;
         if (currentFuel <= 0) {
             // print("Not enough fuel (" + currentFuel + ") for canon (need " + CanonFuelCost + ").");
             return;
         }
         // fireCanon();
-        
-        TextKeyM2.color = Color.gray;
     }
     
     private void OnTimeSlowStarted(InputAction.CallbackContext context) {
@@ -270,35 +269,36 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         desiredRotation.z = z;
         if (desiredRotation.magnitude > 0.00001) {
             prevDesiredRotation = desiredRotation;
-            print(desiredRotation);
-            if (z > 0.001f) { // Forward
-                TextKeyW.color = Color.white;
-                TextKeyS.color = Color.gray;
+            
+            /** Input overlay stuff **/
+            if (z > 0.001f) { // Forward/backward
+                KeyImageW.color = Color.white;
+                KeyImageS.color = Color.gray;
             } else if (z < -0.001f) {
-                TextKeyW.color = Color.gray;
-                TextKeyS.color = Color.white;
+                KeyImageW.color = Color.gray;
+                KeyImageS.color = Color.white;
             }
-            if (x > 0.001f) { // Left/right
-                TextKeyD.color = Color.white;
-                TextKeyA.color = Color.gray;
+            if (x > 0.001f) { // Right/left
+                KeyImageD.color = Color.white;
+                KeyImageA.color = Color.gray;
             } else if (x < -0.001f) {
-                TextKeyD.color = Color.gray;
-                TextKeyA.color = Color.white;
+                KeyImageD.color = Color.gray;
+                KeyImageA.color = Color.white;
             }
-            if (y > 0.001f) { // Left/right
-                TextKeySpace.color = Color.white;
-                TextKeyShift.color = Color.gray;
+            if (y > 0.001f) { // Up/down
+                KeyImageSpace.color = Color.white;
+                KeyImageShift.color = Color.gray;
             } else if (y < -0.001f) {
-                TextKeySpace.color = Color.gray;
-                TextKeyShift.color = Color.white;
+                KeyImageSpace.color = Color.gray;
+                KeyImageShift.color = Color.white;
             }
         } else {
-            TextKeyW.color = Color.gray;
-            TextKeyA.color = Color.gray;
-            TextKeyS.color = Color.gray;
-            TextKeyD.color = Color.gray;
-            TextKeySpace.color = Color.gray;
-            TextKeyShift.color = Color.gray;
+            KeyImageW.color = Color.gray;
+            KeyImageA.color = Color.gray;
+            KeyImageS.color = Color.gray;
+            KeyImageD.color = Color.gray;
+            KeyImageSpace.color = Color.gray;
+            KeyImageShift.color = Color.gray;
         }
     }
     
