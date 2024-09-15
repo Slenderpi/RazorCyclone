@@ -16,6 +16,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     
     Vector3 desiredRotation = Vector3.zero;
     Vector3 prevDesiredRotation = Vector3.forward;
+    Vector3 weaponRelativeRot = Vector3.zero;
     
     [Header("Mouse sens")]
     [SerializeField]
@@ -159,18 +160,11 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         lookVertRot = Mathf.Clamp(lookVertRot - lookDelta.y, -90f, 90f);
         camtrans.localEulerAngles = new Vector3(lookVertRot, camtrans.localEulerAngles.y + lookDelta.x, 0);
         charModel.localEulerAngles = new Vector3(0, camtrans.localEulerAngles.y, 0);
-        // if (desiredRotation.y == 0) {
-        //     charModel.localEulerAngles = new Vector3(lookVertRot, camtrans.localEulerAngles.y + lookDelta.x, 0);
-        // } else {
-        //     charModel.localEulerAngles = new Vector3(0, camtrans.localEulerAngles.y + lookDelta.x, 0);
-        // }
         
         interpRotPivot();
-        
     }
 
     void FixedUpdate() {
-        // print(desiredRotation);
         if (isVacuumOn) {
             if (currentFuel <= 0) {
                 isVacuumOn = false;
@@ -269,6 +263,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         desiredRotation.z = z;
         if (desiredRotation.magnitude > 0.00001) {
             prevDesiredRotation = desiredRotation;
+            weaponRelativeRot = desiredRotation.normalized;
             
             /** Input overlay stuff **/
             if (z > 0.001f) { // Forward/backward
@@ -293,6 +288,8 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
                 KeyImageShift.color = Color.white;
             }
         } else {
+            weaponRelativeRot = prevDesiredRotation.normalized;
+            
             KeyImageW.color = Color.gray;
             KeyImageA.color = Color.gray;
             KeyImageS.color = Color.gray;
@@ -304,28 +301,24 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     
     void fireCanon() {
         updateRayCastedAimPoint();
-        // TODO: Push force direction should be based on look direction instead of charPivot, like for the ray-casted aim point
-        rb.AddForce(charPivot.forward * CanonForce * 100000);
+        rb.AddForce((charModel.rotation * weaponRelativeRot).normalized * CanonForce * 100000);
         ProjectileBase proj = Instantiate(projectilePrefab, canonTip.position, canonTip.rotation);
         proj.damage = CanonDamage;
-        // proj.GetComponent<Rigidbody>().AddForce(canonTip.forward * CanonProjSpeed + rb.velocity, ForceMode.VelocityChange);
         proj.GetComponent<Rigidbody>().AddForce((aimPoint - canonTip.position).normalized * CanonProjSpeed + rb.velocity, ForceMode.VelocityChange);
         AddFuel(-CanonFuelCost);
     }
 
     void updateRayCastedAimPoint() {
-        Vector3 dir = (desiredRotation.magnitude > 0.00001 ? desiredRotation : prevDesiredRotation).normalized;
-        Ray ray = new Ray(camtrans.position, charModel.rotation * -dir);
+        Ray ray = new Ray(camtrans.position, charModel.rotation * -weaponRelativeRot);
         RaycastHit hit;
         aimPoint = ray.origin + ray.direction * AimRayMaxDist;
         if (Physics.Raycast(ray: ray, maxDistance: AimRayMaxDist, layerMask: AimRayLayerMask, hitInfo: out hit)) {
-            // aimPoint = hit.distance > AimRayMinDist ? hit.point : ray.origin + ray.direction * AimRayMinDist;
             aimPoint = hit.point;
         }
     }
 
     void interpRotPivot() {
-        Quaternion rot = Quaternion.LookRotation(desiredRotation.magnitude > 0.00001 ? desiredRotation : prevDesiredRotation);
+        Quaternion rot = Quaternion.LookRotation(weaponRelativeRot);
         /* This alpha calculation forms a curve with a steep start (f'(0) > 0) and a flat end (f'(1) = 0), creating a snappy feel
          * To increase snappiness, increase pivotRotLerpPower. If lowered to a power of 1, the curve is linear. If below 1, it
          *     creates a sense of lag by delaying the rotation, so it's better to keep the power above 1.
