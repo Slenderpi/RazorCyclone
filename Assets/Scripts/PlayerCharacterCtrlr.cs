@@ -2,6 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
@@ -45,7 +47,28 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     RectTransform mainCanonCrosshair;
     [SerializeField]
     Transform rearCamPos;
-    [SerializeField] Image mirrorCrosshair;
+    [SerializeField]
+    Image mirrorCrosshairImageComp;
+    [SerializeField]
+    RectTransform mirrorCrosshairRectTrans;
+    
+    [Header("Key overlay")]
+    [SerializeField]
+    TMP_Text TextKeyW;
+    [SerializeField]
+    TMP_Text TextKeyA;
+    [SerializeField]
+    TMP_Text TextKeyS;
+    [SerializeField]
+    TMP_Text TextKeyD;
+    [SerializeField]
+    TMP_Text TextKeyM1;
+    [SerializeField]
+    TMP_Text TextKeyM2;
+    [SerializeField]
+    TMP_Text TextKeySpace;
+    [SerializeField]
+    TMP_Text TextKeyShift;
     
     bool isVacuumOn;
     [Header("Weapon Settings")]
@@ -163,7 +186,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     
     void LateUpdate() {
         updateCameraTransform();
-        updateMainCrosshairPositions();
+        updateCrosshairPositions();
     }
 
     public void AddFuel(float amount) {
@@ -174,6 +197,8 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     private void TurnInputChanged(InputAction.CallbackContext context) {
         Vector2 v = context.ReadValue<Vector2>();
         setDesiredRotation(v.x, desiredRotation.y, v.y);
+        
+        // print(context.control.name + " - pf: " + context.performed + " | st: " + context.started + " | ca: " + context.canceled);
     }
 
     private void VertInputChanged(InputAction.CallbackContext context) {
@@ -187,11 +212,15 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         }
         isVacuumOn = true;
         vacuumHitbox.SetActive(true);
+        
+        TextKeyM1.color = Color.white;
     }
 
     private void FireVacuumCanceled(InputAction.CallbackContext context) {
         isVacuumOn = false;
         vacuumHitbox.SetActive(false);
+        
+        TextKeyM1.color = Color.gray;
     }
 
     private void FireCanonStarted(InputAction.CallbackContext context) {
@@ -201,6 +230,8 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         }
         // Time.timeScale = 0.15f;
         fireCanon();
+        
+        TextKeyM2.color = Color.white;
     }
 
     private void FireCanonCanceled(InputAction.CallbackContext context) {
@@ -210,6 +241,8 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
             return;
         }
         // fireCanon();
+        
+        TextKeyM2.color = Color.gray;
     }
     
     private void OnTimeSlowStarted(InputAction.CallbackContext context) {
@@ -237,6 +270,35 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         desiredRotation.z = z;
         if (desiredRotation.magnitude > 0.00001) {
             prevDesiredRotation = desiredRotation;
+            print(desiredRotation);
+            if (z > 0.001f) { // Forward
+                TextKeyW.color = Color.white;
+                TextKeyS.color = Color.gray;
+            } else if (z < -0.001f) {
+                TextKeyW.color = Color.gray;
+                TextKeyS.color = Color.white;
+            }
+            if (x > 0.001f) { // Left/right
+                TextKeyD.color = Color.white;
+                TextKeyA.color = Color.gray;
+            } else if (x < -0.001f) {
+                TextKeyD.color = Color.gray;
+                TextKeyA.color = Color.white;
+            }
+            if (y > 0.001f) { // Left/right
+                TextKeySpace.color = Color.white;
+                TextKeyShift.color = Color.gray;
+            } else if (y < -0.001f) {
+                TextKeySpace.color = Color.gray;
+                TextKeyShift.color = Color.white;
+            }
+        } else {
+            TextKeyW.color = Color.gray;
+            TextKeyA.color = Color.gray;
+            TextKeyS.color = Color.gray;
+            TextKeyD.color = Color.gray;
+            TextKeySpace.color = Color.gray;
+            TextKeyShift.color = Color.gray;
         }
     }
     
@@ -276,11 +338,12 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         charPivot.localRotation = Quaternion.Lerp(rotBeforeInputUpdate, rot, alpha);
     }
     
-    void updateMainCrosshairPositions() {
+    void updateCrosshairPositions() {
+        Vector3 rbVelocityCompensation = rb.velocity.magnitude > 0.001f ? rb.velocity / CanonProjSpeed : Vector3.zero;
+        // This one does not account for the plyaer's velocity
         Vector3 screenPointVacuum = mainCamera.WorldToScreenPoint(camtrans.position + charPivot.forward);
-        Vector3 screenPointCanon = mainCamera.WorldToScreenPoint( // This one accounts for the player's velocity
-            camtrans.position + charPivot.forward + (rb.velocity.magnitude > 0.001f ? -rb.velocity / CanonProjSpeed : Vector3.zero)
-        );
+        // This one accounts for the player's velocity
+        Vector3 screenPointCanon = mainCamera.WorldToScreenPoint(camtrans.position + charPivot.forward + -rbVelocityCompensation);
         if (screenPointVacuum.z > 0.01f) {
             if (!mainVacuumCrosshair.gameObject.activeSelf) mainVacuumCrosshair.gameObject.SetActive(true);
             mainVacuumCrosshair.position = screenPointVacuum;
@@ -293,6 +356,10 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         } else {
             if (mainCanonCrosshair.gameObject.activeSelf) mainCanonCrosshair.gameObject.SetActive(false);
         }
+        
+        // // Position mirror's crosshair
+        // Vector3 screenPointCanonMirror = rearCamera.WorldToScreenPoint(rearCamPos.position + rearCamPos.forward + rbVelocityCompensation);
+        // mirrorCrosshairRectTrans.position = screenPointCanonMirror;
     }
     
     void OnEnable() {
@@ -374,7 +441,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
                 crosshairIndex = 199;
         }
         
-        mirrorCrosshair.sprite = crosshairSprites[crosshairIndex];
+        mirrorCrosshairImageComp.sprite = crosshairSprites[crosshairIndex];
         print("Current mirror crosshair: \"" + crosshairSprites[crosshairIndex].name + "\"");
     }
 
