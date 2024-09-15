@@ -12,15 +12,14 @@ using UnityEngine.UI;
 
 public class PlayerCharacterCtrlr : MonoBehaviour {
     
-    PlayerInputActions.PlayerActions pInputActions;
+    PlayerInputActions.PlayerActions inputActions;
     
-    Vector3 desiredRotation = Vector3.zero;
+    Vector3 desiredRotation = Vector3.forward;
     Vector3 prevDesiredRotation = Vector3.forward;
-    Vector3 weaponRelativeRot = Vector3.zero;
+    Vector3 weaponRelativeRot = Vector3.forward;
     
-    [Header("Mouse sens")]
-    [SerializeField]
-    float mouseSensitivity = 0.11f;
+    [HideInInspector]
+    public float mouseSensitivity;
     
     Camera mainCamera;
     Camera rearCamera;
@@ -40,35 +39,25 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     [SerializeField]
     ProjectileBase projectilePrefab;
     [SerializeField]
-    Slider fuelSlider;
-    [SerializeField]
-    RectTransform mainVacuumCrosshair;
-    [SerializeField]
-    RectTransform mainCanonCrosshair;
-    [SerializeField]
     Transform rearCamPos;
+    // RectTransform mirrorCrosshairRectTrans;
+    
+    // ui
+    RectTransform _mainVacuumCrosshair;
+    RectTransform _mainCanonCrosshair;
+    Slider _fuelSlider;
+    GameObject _gamePanel;
+    GameObject _pausePanel;
+    Image _keyImageW;
+    Image _keyImageA;
+    Image _keyImageS;
+    Image _keyImageD;
+    Image _keyImageSpace;
+    Image _keyImageShift;
+    TMP_Text _textKeyM1;
+    TMP_Text _textKeyM2;
     [SerializeField]
     Image mirrorCrosshairImageComp;
-    [SerializeField]
-    RectTransform mirrorCrosshairRectTrans;
-    
-    [Header("Key overlay")]
-    [SerializeField]
-    Image KeyImageW;
-    [SerializeField]
-    Image KeyImageA;
-    [SerializeField]
-    Image KeyImageS;
-    [SerializeField]
-    Image KeyImageD;
-    [SerializeField]
-    TMP_Text TextKeyM1;
-    [SerializeField]
-    TMP_Text TextKeyM2;
-    [SerializeField]
-    Image KeyImageSpace;
-    [SerializeField]
-    Image KeyImageShift;
     
     bool isVacuumOn;
     [Header("Weapon Settings")]
@@ -128,7 +117,22 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     
     
     void Awake() {
-        pInputActions = new PlayerInputActions().Player;
+        inputActions = GameManager.PInputActions.Player;
+        _fuelSlider = GameManager.Instance.FuelSlider;
+        _gamePanel = GameManager.Instance.GamePanel;
+        _pausePanel = GameManager.Instance.PausePanel;
+        _mainVacuumCrosshair = GameManager.Instance.MainVacuumCrosshair;
+        _mainCanonCrosshair = GameManager.Instance.MainCanonCrosshair;
+        _keyImageW = GameManager.Instance.KeyImageW;
+        _keyImageA = GameManager.Instance.KeyImageA;
+        _keyImageS = GameManager.Instance.KeyImageS;
+        _keyImageD = GameManager.Instance.KeyImageD;
+        _keyImageSpace = GameManager.Instance.KeyImageSpace;
+        _keyImageShift = GameManager.Instance.KeyImageShift;
+        _textKeyM1 = GameManager.Instance.TextKeyM1;
+        _textKeyM2 = GameManager.Instance.TextKeyM2;
+        
+        mouseSensitivity = GameManager.Instance.CurrentMouseSensitivity;
         
         mainCamera = Camera.main;
         rearCamera = GameManager.Instance.rearCamera;
@@ -142,6 +146,8 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         vacuumFuelCost = MaxFuel / VacuumFuelTime * Time.fixedDeltaTime;
         currentHealth = MaxHealth;
         
+        _pausePanel.SetActive(false);
+        
         
         /** Temp stuff **/
         crosshairSprites =  Resources.LoadAll<Sprite>("White") ;
@@ -150,13 +156,14 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     
     void Start() {
         Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
         
         updateCameraTransform();
     }
     
     void Update() {
         // Rotate camera and character based on mouse input
-        Vector2 lookDelta = pInputActions.Look.ReadValue<Vector2>() * mouseSensitivity;
+        Vector2 lookDelta = inputActions.Look.ReadValue<Vector2>() * mouseSensitivity;
         lookVertRot = Mathf.Clamp(lookVertRot - lookDelta.y, -90f, 90f);
         camtrans.localEulerAngles = new Vector3(lookVertRot, camtrans.localEulerAngles.y + lookDelta.x, 0);
         charModel.localEulerAngles = new Vector3(0, camtrans.localEulerAngles.y, 0);
@@ -184,22 +191,57 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
 
     public void AddFuel(float amount) {
         currentFuel = Mathf.Clamp(currentFuel + amount, 0, MaxFuel);
-        fuelSlider.value = currentFuel / MaxFuel;
+        _fuelSlider.value = currentFuel / MaxFuel;
     }
 
     private void TurnInputChanged(InputAction.CallbackContext context) {
         Vector2 v = context.ReadValue<Vector2>();
         setDesiredRotation(v.x, desiredRotation.y, v.y);
         
+        /** Input overlay stuff **/
+        if (v.y > 0.001f) { // Forward/backward
+            _keyImageW.color = Color.white;
+            _keyImageS.color = Color.gray;
+        } else if (v.y < -0.001f) {
+            _keyImageW.color = Color.gray;
+            _keyImageS.color = Color.white;
+        } else {
+            _keyImageW.color = Color.gray;
+            _keyImageS.color = Color.gray;
+        }
+        if (v.x > 0.001f) { // Right/left
+            _keyImageD.color = Color.white;
+            _keyImageA.color = Color.gray;
+        } else if (v.x < -0.001f) {
+            _keyImageD.color = Color.gray;
+            _keyImageA.color = Color.white;
+        } else {
+            _keyImageD.color = Color.gray;
+            _keyImageA.color = Color.gray;
+        }
+        
         // print(context.control.name + " - pf: " + context.performed + " | st: " + context.started + " | ca: " + context.canceled);
     }
 
     private void VertInputChanged(InputAction.CallbackContext context) {
         setDesiredRotation(desiredRotation.x, context.ReadValue<float>(), desiredRotation.z);
+        
+        /** Input overlay stuff **/
+        float y = context.ReadValue<float>();
+        if (y > 0.001f) { // Up/down
+            _keyImageSpace.color = Color.white;
+            _keyImageShift.color = Color.gray;
+        } else if (y < -0.001f) {
+            _keyImageSpace.color = Color.gray;
+            _keyImageShift.color = Color.white;
+        } else {
+            _keyImageSpace.color = Color.gray;
+            _keyImageShift.color = Color.gray;
+        }
     }
 
     private void FireVacuumStarted(InputAction.CallbackContext context) {
-        TextKeyM1.color = Color.white;
+        _textKeyM1.color = Color.white;
         
         if (currentFuel <= 0) {
             // print("Not enough fuel (" + currentFuel + ") for vacuum (need " + vacuumFuelCost + ").");
@@ -213,11 +255,11 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         isVacuumOn = false;
         vacuumHitbox.SetActive(false);
         
-        TextKeyM1.color = Color.gray;
+        _textKeyM1.color = Color.gray;
     }
 
     private void FireCanonStarted(InputAction.CallbackContext context) {
-        TextKeyM2.color = Color.white;
+        _textKeyM2.color = Color.white;
         
         if (currentFuel <= 0) {
             // print("Not enough fuel (" + currentFuel + ") for canon (need " + CanonFuelCost + ").");
@@ -228,7 +270,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     }
 
     private void FireCanonCanceled(InputAction.CallbackContext context) {
-        TextKeyM2.color = Color.gray;
+        _textKeyM2.color = Color.gray;
         
         // Time.timeScale = 1f;
         if (currentFuel <= 0) {
@@ -245,6 +287,18 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     
     private void OnTimeSlowCanceled(InputAction.CallbackContext context) {
         Time.timeScale = 1f;
+    }
+
+    public void OnPauseGame() {
+        SetPlayerControlsEnabled(false);
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+    }
+    
+    public void OnResumeGame() {
+        SetPlayerControlsEnabled(true);
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
     }
 
     void updateCameraTransform() {
@@ -264,38 +318,8 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         if (desiredRotation.magnitude > 0.00001) {
             prevDesiredRotation = desiredRotation;
             weaponRelativeRot = desiredRotation.normalized;
-            
-            /** Input overlay stuff **/
-            if (z > 0.001f) { // Forward/backward
-                KeyImageW.color = Color.white;
-                KeyImageS.color = Color.gray;
-            } else if (z < -0.001f) {
-                KeyImageW.color = Color.gray;
-                KeyImageS.color = Color.white;
-            }
-            if (x > 0.001f) { // Right/left
-                KeyImageD.color = Color.white;
-                KeyImageA.color = Color.gray;
-            } else if (x < -0.001f) {
-                KeyImageD.color = Color.gray;
-                KeyImageA.color = Color.white;
-            }
-            if (y > 0.001f) { // Up/down
-                KeyImageSpace.color = Color.white;
-                KeyImageShift.color = Color.gray;
-            } else if (y < -0.001f) {
-                KeyImageSpace.color = Color.gray;
-                KeyImageShift.color = Color.white;
-            }
         } else {
             weaponRelativeRot = prevDesiredRotation.normalized;
-            
-            KeyImageW.color = Color.gray;
-            KeyImageA.color = Color.gray;
-            KeyImageS.color = Color.gray;
-            KeyImageD.color = Color.gray;
-            KeyImageSpace.color = Color.gray;
-            KeyImageShift.color = Color.gray;
         }
     }
     
@@ -338,16 +362,16 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         // This one accounts for the player's velocity
         Vector3 screenPointCanon = mainCamera.WorldToScreenPoint(camtrans.position + charPivot.forward + -rbVelocityCompensation);
         if (screenPointVacuum.z > 0.01f) {
-            if (!mainVacuumCrosshair.gameObject.activeSelf) mainVacuumCrosshair.gameObject.SetActive(true);
-            mainVacuumCrosshair.position = screenPointVacuum;
+            if (!_mainVacuumCrosshair.gameObject.activeSelf) _mainVacuumCrosshair.gameObject.SetActive(true);
+            _mainVacuumCrosshair.position = screenPointVacuum;
         } else {
-            if (mainVacuumCrosshair.gameObject.activeSelf) mainVacuumCrosshair.gameObject.SetActive(false);
+            if (_mainVacuumCrosshair.gameObject.activeSelf) _mainVacuumCrosshair.gameObject.SetActive(false);
         }
         if (screenPointCanon.z < 0.01f) {
-            if (!mainCanonCrosshair.gameObject.activeSelf) mainCanonCrosshair.gameObject.SetActive(true);
-            mainCanonCrosshair.position = screenPointCanon;
+            if (!_mainCanonCrosshair.gameObject.activeSelf) _mainCanonCrosshair.gameObject.SetActive(true);
+            _mainCanonCrosshair.position = screenPointCanon;
         } else {
-            if (mainCanonCrosshair.gameObject.activeSelf) mainCanonCrosshair.gameObject.SetActive(false);
+            if (_mainCanonCrosshair.gameObject.activeSelf) _mainCanonCrosshair.gameObject.SetActive(false);
         }
         
         // // Position mirror's crosshair
@@ -356,68 +380,80 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     }
     
     void OnEnable() {
-        pInputActions.Look.Enable();
-        pInputActions.TurnInputs.Enable();
-        pInputActions.VertInputs.Enable();
-        // rotationInputs.Enable(); //
-        pInputActions.Vacuum.Enable();
-        pInputActions.Canon.Enable();
-        pInputActions.SlowTime.Enable();
-        
-        pInputActions.TurnInputs.performed += TurnInputChanged;
-        pInputActions.TurnInputs.canceled += TurnInputChanged;
-        pInputActions.VertInputs.performed += VertInputChanged;
-        pInputActions.VertInputs.canceled += VertInputChanged;
-
-        // rotationInputs.performed += RotateInputPerformed;
-        pInputActions.Vacuum.started += FireVacuumStarted;
-        pInputActions.Vacuum.canceled += FireVacuumCanceled;
-        pInputActions.Canon.started += FireCanonStarted;
-        pInputActions.Canon.canceled += FireCanonCanceled;
-        pInputActions.SlowTime.started += OnTimeSlowStarted;
-        pInputActions.SlowTime.canceled += OnTimeSlowCanceled;
-        
-        
-        /** Features not necessarily meant for final gameplay **/
-        pInputActions._AddFuel.Enable();
-        pInputActions._AddFuel.started += OnAddFuelKey;
-        pInputActions._CycleCrosshair.Enable();
-        pInputActions._CycleCrosshair.performed += OnCycleCrosshairInput;
-        pInputActions._ToggleMirror.Enable();
-        pInputActions._ToggleMirror.performed += OnToggleMirrorInput;
+        SetPlayerControlsEnabled(true);
     }
 
     void OnDisable() {
-        pInputActions.Look.Disable();
-        pInputActions.TurnInputs.Disable();
-        pInputActions.VertInputs.Disable();
-        // rotationInputs.Disable();
-        pInputActions.Vacuum.Disable();
-        pInputActions.Canon.Disable();
-        pInputActions.SlowTime.Disable();
-        
-        pInputActions.TurnInputs.performed -= TurnInputChanged;
-        pInputActions.TurnInputs.canceled -= TurnInputChanged;
-        pInputActions.VertInputs.performed -= VertInputChanged;
-        pInputActions.VertInputs.canceled -= VertInputChanged;
-        
-        // rotationInputs.performed -= RotateInputPerformed;
-        pInputActions.Vacuum.started -= FireVacuumStarted;
-        pInputActions.Vacuum.canceled -= FireVacuumCanceled;
-        pInputActions.Canon.started -= FireCanonStarted;
-        pInputActions.Canon.canceled -= FireCanonCanceled;
-        pInputActions.SlowTime.started -= OnTimeSlowStarted;
-        pInputActions.SlowTime.canceled -= OnTimeSlowCanceled;
-        
-        
-        /** Features not necessarily meant for final gameplay **/
-        pInputActions._AddFuel.Disable();
-        pInputActions._AddFuel.started -= OnAddFuelKey;
-        pInputActions._CycleCrosshair.Disable();
-        pInputActions._CycleCrosshair.performed -= OnCycleCrosshairInput;
-        pInputActions._ToggleMirror.Disable();
-        pInputActions._ToggleMirror.performed -= OnToggleMirrorInput;
+        SetPlayerControlsEnabled(false);
     }
+
+    public void SetPlayerControlsEnabled(bool newEnabled) {
+        if (newEnabled) {
+            inputActions.Look.Enable();
+            inputActions.TurnInputs.Enable();
+            inputActions.VertInputs.Enable();
+            inputActions.Vacuum.Enable();
+            inputActions.Canon.Enable();
+            inputActions.SlowTime.Enable();
+            
+            inputActions.TurnInputs.performed += TurnInputChanged;
+            inputActions.TurnInputs.canceled += TurnInputChanged;
+            inputActions.VertInputs.started += VertInputChanged;
+            inputActions.VertInputs.canceled += VertInputChanged;
+
+            inputActions.Vacuum.started += FireVacuumStarted;
+            inputActions.Vacuum.canceled += FireVacuumCanceled;
+            inputActions.Canon.started += FireCanonStarted;
+            inputActions.Canon.canceled += FireCanonCanceled;
+            inputActions.SlowTime.started += OnTimeSlowStarted;
+            inputActions.SlowTime.canceled += OnTimeSlowCanceled;
+            
+            
+            /** Featurescessarily meant for final gameplay **/
+            inputActions._AddFuel.Enable();
+            inputActions._AddFuel.started += OnAddFuelKey;
+            inputActions._CycleCrosshair.Enable();
+            inputActions._CycleCrosshair.started += OnCycleCrosshairInput;
+            inputActions._ToggleMirror.Enable();
+            inputActions._ToggleMirror.started += OnToggleMirrorInput;
+        } else {
+            inputActions.Look.Disable();
+            inputActions.TurnInputs.Disable();
+            inputActions.VertInputs.Disable();
+            inputActions.Vacuum.Disable();
+            inputActions.Canon.Disable();
+            inputActions.SlowTime.Disable();
+            
+            inputActions.TurnInputs.performed -= TurnInputChanged;
+            inputActions.TurnInputs.canceled -= TurnInputChanged;
+            inputActions.VertInputs.started -= VertInputChanged;
+            inputActions.VertInputs.canceled -= VertInputChanged;
+            
+            inputActions.Vacuum.started -= FireVacuumStarted;
+            inputActions.Vacuum.canceled -= FireVacuumCanceled;
+            inputActions.Canon.started -= FireCanonStarted;
+            inputActions.Canon.canceled -= FireCanonCanceled;
+            inputActions.SlowTime.started -= OnTimeSlowStarted;
+            inputActions.SlowTime.canceled -= OnTimeSlowCanceled;
+            
+            
+            /** Features not necessarily meant for final gameplay **/
+            inputActions._AddFuel.Disable();
+            inputActions._AddFuel.started -= OnAddFuelKey;
+            inputActions._CycleCrosshair.Disable();
+            inputActions._CycleCrosshair.started -= OnCycleCrosshairInput;
+            inputActions._ToggleMirror.Disable();
+            inputActions._ToggleMirror.started -= OnToggleMirrorInput;
+        }
+    }
+    
+    
+    
+    
+    
+    
+    
+    /*****  Probably temporary stuff  *****/
     
     private void OnAddFuelKey(InputAction.CallbackContext context) {
         print("Fully refueling fuel.");

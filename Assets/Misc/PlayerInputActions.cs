@@ -82,6 +82,15 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
+                    ""name"": ""Escape"",
+                    ""type"": ""Button"",
+                    ""id"": ""f95fecd4-f100-42ad-b8c3-fb82c29b093b"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
                     ""name"": ""_AddFuel"",
                     ""type"": ""Button"",
                     ""id"": ""b56b262c-fc67-4979-b99f-a7145e542950"",
@@ -516,8 +525,25 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
                     ""action"": ""_ToggleMirror"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""f2cd586f-a8c9-41bc-80ab-3d37b62009e5"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Escape"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""PauseMenu"",
+            ""id"": ""96fecc3c-1941-4204-8ce9-180390c599f1"",
+            ""actions"": [],
+            ""bindings"": []
         }
     ],
     ""controlSchemes"": []
@@ -530,9 +556,12 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
         m_Player_Vacuum = m_Player.FindAction("Vacuum", throwIfNotFound: true);
         m_Player_Canon = m_Player.FindAction("Canon", throwIfNotFound: true);
         m_Player_SlowTime = m_Player.FindAction("SlowTime", throwIfNotFound: true);
+        m_Player_Escape = m_Player.FindAction("Escape", throwIfNotFound: true);
         m_Player__AddFuel = m_Player.FindAction("_AddFuel", throwIfNotFound: true);
         m_Player__CycleCrosshair = m_Player.FindAction("_CycleCrosshair", throwIfNotFound: true);
         m_Player__ToggleMirror = m_Player.FindAction("_ToggleMirror", throwIfNotFound: true);
+        // PauseMenu
+        m_PauseMenu = asset.FindActionMap("PauseMenu", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -598,6 +627,7 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Vacuum;
     private readonly InputAction m_Player_Canon;
     private readonly InputAction m_Player_SlowTime;
+    private readonly InputAction m_Player_Escape;
     private readonly InputAction m_Player__AddFuel;
     private readonly InputAction m_Player__CycleCrosshair;
     private readonly InputAction m_Player__ToggleMirror;
@@ -611,6 +641,7 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
         public InputAction @Vacuum => m_Wrapper.m_Player_Vacuum;
         public InputAction @Canon => m_Wrapper.m_Player_Canon;
         public InputAction @SlowTime => m_Wrapper.m_Player_SlowTime;
+        public InputAction @Escape => m_Wrapper.m_Player_Escape;
         public InputAction @_AddFuel => m_Wrapper.m_Player__AddFuel;
         public InputAction @_CycleCrosshair => m_Wrapper.m_Player__CycleCrosshair;
         public InputAction @_ToggleMirror => m_Wrapper.m_Player__ToggleMirror;
@@ -641,6 +672,9 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
                 @SlowTime.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSlowTime;
                 @SlowTime.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSlowTime;
                 @SlowTime.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSlowTime;
+                @Escape.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnEscape;
+                @Escape.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnEscape;
+                @Escape.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnEscape;
                 @_AddFuel.started -= m_Wrapper.m_PlayerActionsCallbackInterface.On_AddFuel;
                 @_AddFuel.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.On_AddFuel;
                 @_AddFuel.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.On_AddFuel;
@@ -672,6 +706,9 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
                 @SlowTime.started += instance.OnSlowTime;
                 @SlowTime.performed += instance.OnSlowTime;
                 @SlowTime.canceled += instance.OnSlowTime;
+                @Escape.started += instance.OnEscape;
+                @Escape.performed += instance.OnEscape;
+                @Escape.canceled += instance.OnEscape;
                 @_AddFuel.started += instance.On_AddFuel;
                 @_AddFuel.performed += instance.On_AddFuel;
                 @_AddFuel.canceled += instance.On_AddFuel;
@@ -685,6 +722,31 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
         }
     }
     public PlayerActions @Player => new PlayerActions(this);
+
+    // PauseMenu
+    private readonly InputActionMap m_PauseMenu;
+    private IPauseMenuActions m_PauseMenuActionsCallbackInterface;
+    public struct PauseMenuActions
+    {
+        private @PlayerInputActions m_Wrapper;
+        public PauseMenuActions(@PlayerInputActions wrapper) { m_Wrapper = wrapper; }
+        public InputActionMap Get() { return m_Wrapper.m_PauseMenu; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(PauseMenuActions set) { return set.Get(); }
+        public void SetCallbacks(IPauseMenuActions instance)
+        {
+            if (m_Wrapper.m_PauseMenuActionsCallbackInterface != null)
+            {
+            }
+            m_Wrapper.m_PauseMenuActionsCallbackInterface = instance;
+            if (instance != null)
+            {
+            }
+        }
+    }
+    public PauseMenuActions @PauseMenu => new PauseMenuActions(this);
     public interface IPlayerActions
     {
         void OnLook(InputAction.CallbackContext context);
@@ -693,8 +755,12 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
         void OnVacuum(InputAction.CallbackContext context);
         void OnCanon(InputAction.CallbackContext context);
         void OnSlowTime(InputAction.CallbackContext context);
+        void OnEscape(InputAction.CallbackContext context);
         void On_AddFuel(InputAction.CallbackContext context);
         void On_CycleCrosshair(InputAction.CallbackContext context);
         void On_ToggleMirror(InputAction.CallbackContext context);
+    }
+    public interface IPauseMenuActions
+    {
     }
 }
