@@ -8,6 +8,9 @@ using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using UnityEditor;
 using System;
+using Palmmedia.ReportGenerator.Core;
+using UnityEngine.Windows;
+using UnityEditor.SceneManagement;
 
 public class GameManager : MonoBehaviour {
     
@@ -61,6 +64,10 @@ public class GameManager : MonoBehaviour {
     
     public bool gameIsPaused = false;
     
+    /******  PROGRAMMER SPECIFIC  ******/
+    [Header("Programmer Specific")]
+    [SerializeField] TextAsset programmerPreferenceJson;
+    
     void Awake() {
         if (!Instance) {
             Instance = this;
@@ -76,6 +83,13 @@ public class GameManager : MonoBehaviour {
         GamePanel.SetActive(false);
         CurrentMouseSensitivity = DefaultMouseSensitivity;
         MouseSenseSlider.value = (CurrentMouseSensitivity - LowestSensitivity) / (HighestSensitivity - LowestSensitivity);
+        
+        /******  PROGRAMMER SPECIFIC  ******/
+        if (programmerPreferenceJson != null) {
+            ProgrammerPreferences _prefs = JsonUtility.FromJson<ProgrammerPreferences>(programmerPreferenceJson.text);
+            if (_prefs != null) _prefs.SetPreferences();
+            else Debug.LogWarning("Programmer preferences failed to load. Make sure your json file is written correctly.");
+        }
     }
     
     void Start() {
@@ -143,4 +157,22 @@ public class GameManager : MonoBehaviour {
         Application.Quit();
     }
     
+}
+
+
+
+/******  PROGRAMMER SPECIFIC  ******/
+[Serializable]
+class ProgrammerPreferences {
+    
+    public bool UsePreferences;
+    public float MouseSensitivity;
+
+    internal void SetPreferences() {
+        if (!UsePreferences) return;
+        GameManager.Instance.CurrentMouseSensitivity = MouseSensitivity;
+        float highSens = GameManager.Instance.HighestSensitivity;
+        float lowSens = GameManager.Instance.LowestSensitivity;
+        GameManager.Instance.MouseSenseSlider.value = (GameManager.Instance.CurrentMouseSensitivity - lowSens) / (highSens - lowSens);
+    }
 }
