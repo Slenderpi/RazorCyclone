@@ -39,6 +39,7 @@ public class GameManager : MonoBehaviour {
     public RectTransform MainVacuumCrosshair;
     public RectTransform MainCanonCrosshair;
     public TMP_Text MouseSenseLabel;
+    public TMP_Text Speedometer;
     public Slider MouseSenseSlider;
     public Image KeyImageW;
     public Image KeyImageA;

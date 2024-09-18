@@ -110,7 +110,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     [Header("Temporary/testing")]
     [SerializeField]
     GameObject rearMirrorModel;
-    bool mirrorModelEnabled = true;
+    bool mirrorModelEnabled = false;
     Sprite[] crosshairSprites = new Sprite[200];
     int crosshairIndex = 0;
     
@@ -148,7 +148,6 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         
         _pausePanel.SetActive(false);
         
-        
         /** Temp stuff **/
         crosshairSprites =  Resources.LoadAll<Sprite>("White") ;
         rearMirrorModel.SetActive(mirrorModelEnabled);
@@ -182,6 +181,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
                 rb.AddForce(charPivot.forward * (rb.velocity.magnitude <= VacuumForceNormalSpeed ? VacuumForceLowSpeed : VacuumForce), ForceMode.Acceleration);
             }
         }
+        GameManager.Instance.Speedometer.text = string.Format("{0:0.0}", rb.velocity.magnitude) + "";
     }
     
     void LateUpdate() {
