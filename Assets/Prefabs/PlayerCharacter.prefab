@@ -282,11 +282,11 @@ MonoBehaviour:
   projectilePrefab: {fileID: 926027913916158325, guid: b847a6b45c135a4409f379593532cfce, type: 3}
   rearCamPos: {fileID: 4826576570863280527}
   mirrorCrosshairImageComp: {fileID: 8219208521935797663}
-  VacuumForce: 28
-  VacuumForceLowSpeed: 45
+  VacuumForce: 26
+  VacuumForceLowSpeed: 25
   VacuumForceNormalSpeed: 8
   VacuumSuckForce: 8500
-  CanonForce: 10
+  CanonForce: 8
   CanonProjSpeed: 100
   CanonDamage: 50
   MaxFuel: 100
