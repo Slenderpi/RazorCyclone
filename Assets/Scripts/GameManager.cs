@@ -45,8 +45,8 @@ public class GameManager : MonoBehaviour {
     public Image KeyImageA;
     public Image KeyImageS;
     public Image KeyImageD;
-    public TMP_Text TextKeyM1;
-    public TMP_Text TextKeyM2;
+    public Image KeyImageM1;
+    public Image KeyImageM2;
     public Image KeyImageSpace;
     public Image KeyImageShift;
     

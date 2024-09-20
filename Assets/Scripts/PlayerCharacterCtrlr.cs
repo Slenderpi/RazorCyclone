@@ -54,8 +54,8 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     Image _keyImageD;
     Image _keyImageSpace;
     Image _keyImageShift;
-    TMP_Text _textKeyM1;
-    TMP_Text _textKeyM2;
+    Image _keyImageM1;
+    Image _keyImageM2;
     [SerializeField]
     Image mirrorCrosshairImageComp;
     
@@ -129,8 +129,8 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         _keyImageD = GameManager.Instance.KeyImageD;
         _keyImageSpace = GameManager.Instance.KeyImageSpace;
         _keyImageShift = GameManager.Instance.KeyImageShift;
-        _textKeyM1 = GameManager.Instance.TextKeyM1;
-        _textKeyM2 = GameManager.Instance.TextKeyM2;
+        _keyImageM1 = GameManager.Instance.KeyImageM1;
+        _keyImageM2 = GameManager.Instance.KeyImageM2;
         
         mouseSensitivity = GameManager.Instance.CurrentMouseSensitivity;
         
@@ -241,7 +241,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     }
 
     private void FireVacuumStarted(InputAction.CallbackContext context) {
-        _textKeyM1.color = Color.white;
+        _keyImageM1.color = Color.white;
         
         if (currentFuel <= 0) {
             // print("Not enough fuel (" + currentFuel + ") for vacuum (need " + vacuumFuelCost + ").");
@@ -255,11 +255,11 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         isVacuumOn = false;
         vacuumHitbox.SetActive(false);
         
-        _textKeyM1.color = Color.gray;
+        _keyImageM1.color = Color.gray;
     }
 
     private void FireCanonStarted(InputAction.CallbackContext context) {
-        _textKeyM2.color = Color.white;
+        _keyImageM2.color = Color.white;
         
         if (currentFuel <= 0) {
             // print("Not enough fuel (" + currentFuel + ") for canon (need " + CanonFuelCost + ").");
@@ -270,7 +270,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     }
 
     private void FireCanonCanceled(InputAction.CallbackContext context) {
-        _textKeyM2.color = Color.gray;
+        _keyImageM2.color = Color.gray;
         
         // Time.timeScale = 1f;
         if (currentFuel <= 0) {
