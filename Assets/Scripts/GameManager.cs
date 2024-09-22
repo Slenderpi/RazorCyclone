@@ -65,10 +65,6 @@ public class GameManager : MonoBehaviour {
     
     public bool gameIsPaused = false;
     
-    /******  PROGRAMMER SPECIFIC  ******/
-    [Header("Programmer Specific")]
-    [SerializeField] TextAsset programmerPreferenceJson;
-    
     void Awake() {
         if (!Instance) {
             Instance = this;
@@ -86,10 +82,15 @@ public class GameManager : MonoBehaviour {
         MouseSenseSlider.value = (CurrentMouseSensitivity - LowestSensitivity) / (HighestSensitivity - LowestSensitivity);
         
         /******  PROGRAMMER SPECIFIC  ******/
+        TextAsset programmerPreferenceJson = Resources.Load<TextAsset>("ProgrammerPreferences");
         if (programmerPreferenceJson != null) {
             ProgrammerPreferences _prefs = JsonUtility.FromJson<ProgrammerPreferences>(programmerPreferenceJson.text);
-            if (_prefs != null) _prefs.SetPreferences();
-            else Debug.LogWarning("Programmer preferences failed to load. Make sure your json file is written correctly.");
+            if (_prefs != null) {
+                _prefs.SetPreferences();
+                Debug.Log("Note: a 'ProgrammerPreferences' file was found in the Resources folder and will be loaded in.");
+            } else Debug.LogWarning("Programmer preferences failed to load. Make sure your json file is written correctly.");
+        } else {
+            // Debug.Log("Note: no 'ProgrammerPreferences' file found in Resources folder, so no preferences were loaded.");
         }
     }
     
