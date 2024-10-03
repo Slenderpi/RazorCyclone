@@ -11,12 +11,22 @@ using System;
 using Palmmedia.ReportGenerator.Core;
 using UnityEngine.Windows;
 using UnityEditor.SceneManagement;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour {
     
     public static GameManager Instance;
     public static PlayerCharacterCtrlr CurrentPlayer;
     public static PlayerInputActions PInputActions;
+    
+    // Events
+    public static event Action A_GamePaused;
+    public static event Action A_GameResumed;
+    public static event Action<PlayerCharacterCtrlr> A_PlayerSpawned;
+    
+    [Header("UI References")]
+    public UIGamePanel GamePanel;
+    public UIPausePanel PausePanel;
     
     [Header("Player Settings")]
     float _currentMouseSensitivity;
@@ -25,43 +35,25 @@ public class GameManager : MonoBehaviour {
         set {
             _currentMouseSensitivity = value;
             if (CurrentPlayer != null) CurrentPlayer.mouseSensitivity = _currentMouseSensitivity;
-            MouseSenseLabel.text = "Mouse Sensitivity: " + _currentMouseSensitivity.ToString("0.00");
+            PausePanel.SetMouseSenseText(_currentMouseSensitivity);
         }
     }
     public float DefaultMouseSensitivity = 0.7f;
     public float LowestSensitivity = 0.02f;
     public float HighestSensitivity = 1.2f;
     
-    [Header("UI References")]
-    public GameObject GamePanel;
-    public GameObject PausePanel;
-    public Slider FuelSlider;
-    public RectTransform MainVacuumCrosshair;
-    public RectTransform MainCanonCrosshair;
-    public TMP_Text MouseSenseLabel;
-    public TMP_Text Speedometer;
-    public Slider MouseSenseSlider;
-    public Image KeyImageW;
-    public Image KeyImageA;
-    public Image KeyImageS;
-    public Image KeyImageD;
-    public Image KeyImageM1;
-    public Image KeyImageM2;
-    public Image KeyImageSpace;
-    public Image KeyImageShift;
-    
     [Header("Other")]
-    [SerializeField]
+    // [SerializeField]
     Transform spawnPoint;
     [SerializeField]
     PlayerCharacterCtrlr playerPrefab;
     [SerializeField]
     EnemyBase enemyPrefab;
-    [SerializeField]
+    // [SerializeField]
     Transform enemySpawnPoint;
     public Camera rearCamera;
     
-    bool hasSpawnedPlayer = false;
+    // bool hasSpawnedPlayer = false;
     
     public bool gameIsPaused = false;
     
@@ -71,15 +63,24 @@ public class GameManager : MonoBehaviour {
             PInputActions = new PlayerInputActions();
         } else {
             Debug.LogWarning("GameManager singleton instantiated more than once!");
+            return;
         }
+        
+        SceneManager.sceneLoaded += OnSceneLoaded;
         
         PInputActions.Player.Escape.Enable();
         PInputActions.Player.Escape.started += PauseInputPressed;
         
         PausePanel.SetActive(false);
         GamePanel.SetActive(false);
+        A_GamePaused += PausePanel.OnGamePaused;
+        A_GamePaused += GamePanel.OnGamePaused;
+        A_GameResumed += PausePanel.OnGameResumed;
+        A_GameResumed += GamePanel.OnGameResumed;
+        A_PlayerSpawned += PausePanel.OnPlayerSpawned;
+        A_PlayerSpawned += GamePanel.OnPlayerSpawned;
         CurrentMouseSensitivity = DefaultMouseSensitivity;
-        MouseSenseSlider.value = (CurrentMouseSensitivity - LowestSensitivity) / (HighestSensitivity - LowestSensitivity);
+        PausePanel.MouseSenseSlider.value = (CurrentMouseSensitivity - LowestSensitivity) / (HighestSensitivity - LowestSensitivity);
         
         /******  PROGRAMMER SPECIFIC  ******/
         TextAsset programmerPreferenceJson = Resources.Load<TextAsset>("ProgrammerPreferences");
@@ -98,16 +99,27 @@ public class GameManager : MonoBehaviour {
         
     }
     
+    public void OnSceneStarted(SceneStarter ss) {
+        spawnPoint = ss.playerSpawnPoint != null ? ss.playerSpawnPoint.transform : null;
+        spawnPlayer();
+    }
+    
     void Update() {
-        if (!hasSpawnedPlayer && Time.time > 0.1) {
-            hasSpawnedPlayer = true;
-            spawnPlayer();
-        }
+        // if (!hasSpawnedPlayer && Time.time > 0.1) {
+        //     hasSpawnedPlayer = true;
+        //     spawnPlayer();
+        // }
     }
     
     void spawnPlayer() {
-        CurrentPlayer = Instantiate(playerPrefab, spawnPoint.position, spawnPoint.rotation).GetComponent<PlayerCharacterCtrlr>();
-        GamePanel.SetActive(true);
+        Vector3 spawnPos = Vector3.zero;
+        Quaternion spawnRot = Quaternion.identity;
+        if (spawnPoint != null) {
+            spawnPos = spawnPoint.position;
+            spawnRot = spawnPoint.rotation;
+        }
+        CurrentPlayer = Instantiate(playerPrefab, spawnPos, spawnRot).GetComponent<PlayerCharacterCtrlr>();
+        A_PlayerSpawned?.Invoke(CurrentPlayer);
     }
     
     public void OnEnemyDied() {
@@ -116,17 +128,13 @@ public class GameManager : MonoBehaviour {
     }
     
     void PauseGame() {
-        CurrentPlayer.OnPauseGame();
-        PausePanel.SetActive(true);
-        GamePanel.SetActive(false);
+        A_GamePaused?.Invoke();
         SetPauseControlsEnabled(true);
         Time.timeScale = 0;
     }
     
     void ResumeGame() {
-        CurrentPlayer.OnResumeGame();
-        PausePanel.SetActive(false);
-        GamePanel.SetActive(true);
+        A_GameResumed?.Invoke();
         SetPauseControlsEnabled(false);
         Time.timeScale = 1;
     }
@@ -152,11 +160,25 @@ public class GameManager : MonoBehaviour {
     /******  Pause menu  ******/
     
     public void OnMouseSenseSliderChanged() {
-        CurrentMouseSensitivity = Mathf.Lerp(LowestSensitivity, HighestSensitivity, MouseSenseSlider.value);
+        CurrentMouseSensitivity = Mathf.Lerp(LowestSensitivity, HighestSensitivity, PausePanel.MouseSenseSlider.value);
     }
     
-    public void OnCloseGameButtonClicked() {
-        Application.Quit();
+    public void TestSceneChange() {
+        ResumeGame();
+        if (SceneManager.GetSceneByName("TestScene").IsValid()) {
+            SceneManager.UnloadSceneAsync("TestScene");
+            SceneManager.LoadSceneAsync("SampleScene", LoadSceneMode.Additive);
+        } else {
+            SceneManager.UnloadSceneAsync("SampleScene");
+            SceneManager.LoadScene("TestScene", LoadSceneMode.Additive);
+            // SceneManager.SetActiveScene(SceneManager.GetSceneByName());
+        }
+    }
+    
+    public void OnSceneLoaded(Scene scene, LoadSceneMode mode) {
+        if (scene.name != "CoreScene") {
+            SceneManager.SetActiveScene(scene);
+        }
     }
     
 }
@@ -175,6 +197,6 @@ class ProgrammerPreferences {
         GameManager.Instance.CurrentMouseSensitivity = MouseSensitivity;
         float highSens = GameManager.Instance.HighestSensitivity;
         float lowSens = GameManager.Instance.LowestSensitivity;
-        GameManager.Instance.MouseSenseSlider.value = (GameManager.Instance.CurrentMouseSensitivity - lowSens) / (highSens - lowSens);
+        GameManager.Instance.PausePanel.MouseSenseSlider.value = (GameManager.Instance.CurrentMouseSensitivity - lowSens) / (highSens - lowSens);
     }
 }
