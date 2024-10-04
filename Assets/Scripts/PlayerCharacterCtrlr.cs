@@ -1,13 +1,6 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.IO;
-using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.Rendering;
 using UnityEngine.UI;
 
 public class PlayerCharacterCtrlr : MonoBehaviour {
@@ -17,6 +10,10 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     Vector3 desiredRotation = Vector3.forward;
     Vector3 prevDesiredRotation = Vector3.forward;
     Vector3 weaponRelativeRot = Vector3.forward;
+    
+    // Events
+    public event Action<float, float> A_FuelChanged; // float changeAmnt, float fuelPerc
+    // public event Action<float> A_HealthChanged; // float changeAmnt
     
     [HideInInspector]
     public float mouseSensitivity;
@@ -43,20 +40,9 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     // RectTransform mirrorCrosshairRectTrans;
     
     // ui
-    RectTransform _mainVacuumCrosshair;
-    RectTransform _mainCanonCrosshair;
-    Slider _fuelSlider;
-    GameObject _gamePanel;
-    GameObject _pausePanel;
-    Image _keyImageW;
-    Image _keyImageA;
-    Image _keyImageS;
-    Image _keyImageD;
-    Image _keyImageSpace;
-    Image _keyImageShift;
-    Image _keyImageM1;
-    Image _keyImageM2;
-    [SerializeField]
+    UIGamePanel _gamePanel;
+    UIPausePanel _pausePanel;
+    // [SerializeField]
     Image mirrorCrosshairImageComp;
     
     bool isVacuumOn;
@@ -117,20 +103,13 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     
     
     void Awake() {
-        inputActions = GameManager.PInputActions.Player;
-        _fuelSlider = GameManager.Instance.FuelSlider;
+        // inputActions = GameManager.PInputActions.Player;
+        inputActions = new PlayerInputActions().Player;
         _gamePanel = GameManager.Instance.GamePanel;
         _pausePanel = GameManager.Instance.PausePanel;
-        _mainVacuumCrosshair = GameManager.Instance.MainVacuumCrosshair;
-        _mainCanonCrosshair = GameManager.Instance.MainCanonCrosshair;
-        _keyImageW = GameManager.Instance.KeyImageW;
-        _keyImageA = GameManager.Instance.KeyImageA;
-        _keyImageS = GameManager.Instance.KeyImageS;
-        _keyImageD = GameManager.Instance.KeyImageD;
-        _keyImageSpace = GameManager.Instance.KeyImageSpace;
-        _keyImageShift = GameManager.Instance.KeyImageShift;
-        _keyImageM1 = GameManager.Instance.KeyImageM1;
-        _keyImageM2 = GameManager.Instance.KeyImageM2;
+        
+        // GameManager.A_GamePaused += OnPauseGame;
+        // GameManager.A_GameResumed += OnResumeGame;
         
         mouseSensitivity = GameManager.Instance.CurrentMouseSensitivity;
         
@@ -146,7 +125,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         vacuumFuelCost = MaxFuel / VacuumFuelTime * Time.fixedDeltaTime;
         currentHealth = MaxHealth;
         
-        _pausePanel.SetActive(false);
+        // _pausePanel.SetActive(false);
         
         /** Temp stuff **/
         crosshairSprites =  Resources.LoadAll<Sprite>("White") ;
@@ -181,7 +160,9 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
                 rb.AddForce(charPivot.forward * (rb.velocity.magnitude <= VacuumForceNormalSpeed ? VacuumForceLowSpeed : VacuumForce), ForceMode.Acceleration);
             }
         }
-        GameManager.Instance.Speedometer.text = string.Format("{0:0.0}", rb.velocity.magnitude) + "";
+        
+        _gamePanel.SetSpeedText(rb.velocity.magnitude);
+        
     }
     
     void LateUpdate() {
@@ -191,7 +172,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
 
     public void AddFuel(float amount) {
         currentFuel = Mathf.Clamp(currentFuel + amount, 0, MaxFuel);
-        _fuelSlider.value = currentFuel / MaxFuel;
+        A_FuelChanged?.Invoke(amount, currentFuel / MaxFuel);
     }
 
     private void TurnInputChanged(InputAction.CallbackContext context) {
@@ -199,26 +180,8 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         setDesiredRotation(v.x, desiredRotation.y, v.y);
         
         /** Input overlay stuff **/
-        if (v.y > 0.001f) { // Forward/backward
-            _keyImageW.color = Color.white;
-            _keyImageS.color = Color.gray;
-        } else if (v.y < -0.001f) {
-            _keyImageW.color = Color.gray;
-            _keyImageS.color = Color.white;
-        } else {
-            _keyImageW.color = Color.gray;
-            _keyImageS.color = Color.gray;
-        }
-        if (v.x > 0.001f) { // Right/left
-            _keyImageD.color = Color.white;
-            _keyImageA.color = Color.gray;
-        } else if (v.x < -0.001f) {
-            _keyImageD.color = Color.gray;
-            _keyImageA.color = Color.white;
-        } else {
-            _keyImageD.color = Color.gray;
-            _keyImageA.color = Color.gray;
-        }
+        // A_TurnInputChanged?.Invoke(v);
+        _gamePanel.OnTurnInputChanged(v);
         
         // print(context.control.name + " - pf: " + context.performed + " | st: " + context.started + " | ca: " + context.canceled);
     }
@@ -227,21 +190,12 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         setDesiredRotation(desiredRotation.x, context.ReadValue<float>(), desiredRotation.z);
         
         /** Input overlay stuff **/
-        float y = context.ReadValue<float>();
-        if (y > 0.001f) { // Up/down
-            _keyImageSpace.color = Color.white;
-            _keyImageShift.color = Color.gray;
-        } else if (y < -0.001f) {
-            _keyImageSpace.color = Color.gray;
-            _keyImageShift.color = Color.white;
-        } else {
-            _keyImageSpace.color = Color.gray;
-            _keyImageShift.color = Color.gray;
-        }
+        // A_VertInputChanged?.Invoke(context.ReadValue<float>());
+        _gamePanel.OnVertInputChanged(context.ReadValue<float>());
     }
 
     private void FireVacuumStarted(InputAction.CallbackContext context) {
-        _keyImageM1.color = Color.white;
+        _gamePanel.OnFireVacuum(true);
         
         if (currentFuel <= 0) {
             // print("Not enough fuel (" + currentFuel + ") for vacuum (need " + vacuumFuelCost + ").");
@@ -255,11 +209,11 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         isVacuumOn = false;
         vacuumHitbox.SetActive(false);
         
-        _keyImageM1.color = Color.gray;
+        _gamePanel.OnFireVacuum(false);
     }
 
     private void FireCanonStarted(InputAction.CallbackContext context) {
-        _keyImageM2.color = Color.white;
+        _gamePanel.OnFireCanon(true);
         
         if (currentFuel <= 0) {
             // print("Not enough fuel (" + currentFuel + ") for canon (need " + CanonFuelCost + ").");
@@ -270,7 +224,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     }
 
     private void FireCanonCanceled(InputAction.CallbackContext context) {
-        _keyImageM2.color = Color.gray;
+        _gamePanel.OnFireCanon(false);
         
         // Time.timeScale = 1f;
         if (currentFuel <= 0) {
@@ -361,30 +315,29 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         Vector3 screenPointVacuum = mainCamera.WorldToScreenPoint(camtrans.position + charPivot.forward);
         // This one accounts for the player's velocity
         Vector3 screenPointCanon = mainCamera.WorldToScreenPoint(camtrans.position + charPivot.forward + -rbVelocityCompensation);
-        if (screenPointVacuum.z > 0.01f) {
-            if (!_mainVacuumCrosshair.gameObject.activeSelf) _mainVacuumCrosshair.gameObject.SetActive(true);
-            _mainVacuumCrosshair.position = screenPointVacuum;
-        } else {
-            if (_mainVacuumCrosshair.gameObject.activeSelf) _mainVacuumCrosshair.gameObject.SetActive(false);
-        }
-        if (screenPointCanon.z < 0.01f) {
-            if (!_mainCanonCrosshair.gameObject.activeSelf) _mainCanonCrosshair.gameObject.SetActive(true);
-            _mainCanonCrosshair.position = screenPointCanon;
-        } else {
-            if (_mainCanonCrosshair.gameObject.activeSelf) _mainCanonCrosshair.gameObject.SetActive(false);
-        }
         
-        // // Position mirror's crosshair
-        // Vector3 screenPointCanonMirror = rearCamera.WorldToScreenPoint(rearCamPos.position + rearCamPos.forward + rbVelocityCompensation);
-        // mirrorCrosshairRectTrans.position = screenPointCanonMirror;
+        _gamePanel.UpdateCrosshairPositions(screenPointVacuum, screenPointCanon, rbVelocityCompensation);
     }
     
     void OnEnable() {
+        GameManager.A_GamePaused += OnPauseGame;
+        GameManager.A_GameResumed += OnResumeGame;
         SetPlayerControlsEnabled(true);
     }
 
     void OnDisable() {
+        GameManager.A_GamePaused -= OnPauseGame;
+        GameManager.A_GameResumed -= OnResumeGame;
         SetPlayerControlsEnabled(false);
+    }
+    
+    void OnDestroy() {
+        /* A GameObject is only truly destroyed the frame after Destroy() is called on it.
+         * OnDestroy() is called right before the object is destroyed. However, this means
+         * OnDestroy() is still only caleld the frame right after.
+         * If you want to do something at the moment the player (or any game object) gets
+         * destroyed, do that code in OnDisable() instead.
+         */
     }
 
     public void SetPlayerControlsEnabled(bool newEnabled) {
