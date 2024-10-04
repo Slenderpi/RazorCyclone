@@ -93,6 +93,9 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     
     
     /** Variables for likely to be temporary features **/
+    bool isInThirdPerson = false;
+    [SerializeField]
+    float thirdPersonDist = 1.2f;
     [Header("Temporary/testing")]
     [SerializeField]
     GameObject rearMirrorModel;
@@ -256,7 +259,11 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     }
 
     void updateCameraTransform() {
-        mainCamera.transform.position = camtrans.position;
+        if (!isInThirdPerson) {
+            mainCamera.transform.position = camtrans.position;
+        } else {
+            mainCamera.transform.position = camtrans.position - camtrans.forward * thirdPersonDist;
+        }
         mainCamera.transform.rotation = camtrans.rotation;
         rearCamera.transform.position = rearCamPos.position;
         rearCamera.transform.rotation = Quaternion.LookRotation(canonTip.forward, canonTip.up);
@@ -311,12 +318,26 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     
     void updateCrosshairPositions() {
         Vector3 rbVelocityCompensation = rb.velocity.magnitude > 0.001f ? rb.velocity / CanonProjSpeed : Vector3.zero;
-        // This one does not account for the plyaer's velocity
-        Vector3 screenPointVacuum = mainCamera.WorldToScreenPoint(camtrans.position + charPivot.forward);
-        // This one accounts for the player's velocity
-        Vector3 screenPointCanon = mainCamera.WorldToScreenPoint(camtrans.position + charPivot.forward + -rbVelocityCompensation);
+        // The vacuum does not account for the player's velocity
+        Vector3 screenPointVacuum;
+        if (!isInThirdPerson) {
+            screenPointVacuum = mainCamera.WorldToScreenPoint(camtrans.position + charPivot.forward);
+        } else {
+            screenPointVacuum = mainCamera.WorldToScreenPoint(charModel.position + charPivot.forward * 1.5f);
+        }
+        // The canon does account for the player's velocity
+        Vector3 screenPointCanon;
+        if (!isInThirdPerson) {
+            screenPointCanon = mainCamera.WorldToScreenPoint(camtrans.position + charPivot.forward + -rbVelocityCompensation);
+        } else {
+            updateRayCastedAimPoint();
+            screenPointCanon = mainCamera.WorldToScreenPoint(
+                aimPoint + rbVelocityCompensation * (aimPoint - mainCamera.transform.position).magnitude
+            );
+            screenPointCanon.z *= -1;
+        }
         
-        _gamePanel.UpdateCrosshairPositions(screenPointVacuum, screenPointCanon, rbVelocityCompensation);
+        _gamePanel.UpdateCrosshairPositions(screenPointVacuum, screenPointCanon);
     }
     
     void OnEnable() {
@@ -362,7 +383,9 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
             inputActions.SlowTime.canceled += OnTimeSlowCanceled;
             
             
-            /** Featurescessarily meant for final gameplay **/
+            /** Features not necessarily meant for final gameplay **/
+            inputActions._ToggleTP.Enable();
+            inputActions._ToggleTP.started += OnToggleThirdPerson;
             inputActions._AddFuel.Enable();
             inputActions._AddFuel.started += OnAddFuelKey;
             inputActions._CycleCrosshair.Enable();
@@ -391,6 +414,8 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
             
             
             /** Features not necessarily meant for final gameplay **/
+            inputActions._ToggleTP.Disable();
+            inputActions._ToggleTP.started -= OnToggleThirdPerson;
             inputActions._AddFuel.Disable();
             inputActions._AddFuel.started -= OnAddFuelKey;
             inputActions._CycleCrosshair.Disable();
@@ -399,16 +424,25 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
             inputActions._ToggleMirror.started -= OnToggleMirrorInput;
         }
     }
-    
-    
-    
-    
-    
-    
-    
+
+
+
+
+
+
+
     /*****  Probably temporary stuff  *****/
     
-    private void OnAddFuelKey(InputAction.CallbackContext context) {
+    void OnToggleThirdPerson(InputAction.CallbackContext context) {
+        isInThirdPerson = !isInThirdPerson;
+        if (isInThirdPerson) {
+            
+        } else {
+            
+        }
+    }
+
+    void OnAddFuelKey(InputAction.CallbackContext context) {
         print("Fully refueling fuel.");
         AddFuel(MaxFuel);
     }
@@ -427,7 +461,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         print("Current mirror crosshair: \"" + crosshairSprites[crosshairIndex].name + "\"");
     }
 
-    private void OnToggleMirrorInput(InputAction.CallbackContext context) {
+    void OnToggleMirrorInput(InputAction.CallbackContext context) {
         mirrorModelEnabled = !mirrorModelEnabled;
         rearMirrorModel.SetActive(mirrorModelEnabled);
     }

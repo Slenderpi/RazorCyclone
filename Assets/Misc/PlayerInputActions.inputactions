@@ -60,6 +60,15 @@
                     "initialStateCheck": false
                 },
                 {
+                    "name": "_ToggleTP",
+                    "type": "Button",
+                    "id": "b3044324-7a2a-4982-81cc-75e007b91973",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "_AddFuel",
                     "type": "Button",
                     "id": "b56b262c-fc67-4979-b99f-a7145e542950",
@@ -492,6 +501,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "_ToggleMirror",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "abbafb76-1f16-4df5-bda9-38be448cff86",
+                    "path": "<Keyboard>/p",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "_ToggleTP",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

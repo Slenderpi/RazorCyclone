@@ -30,7 +30,7 @@ public class UIGamePanel : UIPanel {
         KeyImageM1.color = started ? Color.white : Color.gray;
     }
 
-    internal void UpdateCrosshairPositions(Vector3 screenPointVacuum, Vector3 screenPointCanon, Vector3 rbVelocityCompensation) {
+    internal void UpdateCrosshairPositions(Vector3 screenPointVacuum, Vector3 screenPointCanon) {
         if (screenPointVacuum.z > 0.01f) {
             if (!MainVacuumCrosshair.gameObject.activeSelf) MainVacuumCrosshair.gameObject.SetActive(true);
             MainVacuumCrosshair.position = screenPointVacuum;

@@ -82,6 +82,15 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
+                    ""name"": ""_ToggleTP"",
+                    ""type"": ""Button"",
+                    ""id"": ""b3044324-7a2a-4982-81cc-75e007b91973"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
                     ""name"": ""_AddFuel"",
                     ""type"": ""Button"",
                     ""id"": ""b56b262c-fc67-4979-b99f-a7145e542950"",
@@ -516,6 +525,17 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
                     ""action"": ""_ToggleMirror"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""abbafb76-1f16-4df5-bda9-38be448cff86"",
+                    ""path"": ""<Keyboard>/p"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""_ToggleTP"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -558,6 +578,7 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
         m_Player_Vacuum = m_Player.FindAction("Vacuum", throwIfNotFound: true);
         m_Player_Canon = m_Player.FindAction("Canon", throwIfNotFound: true);
         m_Player_SlowTime = m_Player.FindAction("SlowTime", throwIfNotFound: true);
+        m_Player__ToggleTP = m_Player.FindAction("_ToggleTP", throwIfNotFound: true);
         m_Player__AddFuel = m_Player.FindAction("_AddFuel", throwIfNotFound: true);
         m_Player__CycleCrosshair = m_Player.FindAction("_CycleCrosshair", throwIfNotFound: true);
         m_Player__ToggleMirror = m_Player.FindAction("_ToggleMirror", throwIfNotFound: true);
@@ -629,6 +650,7 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Vacuum;
     private readonly InputAction m_Player_Canon;
     private readonly InputAction m_Player_SlowTime;
+    private readonly InputAction m_Player__ToggleTP;
     private readonly InputAction m_Player__AddFuel;
     private readonly InputAction m_Player__CycleCrosshair;
     private readonly InputAction m_Player__ToggleMirror;
@@ -642,6 +664,7 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
         public InputAction @Vacuum => m_Wrapper.m_Player_Vacuum;
         public InputAction @Canon => m_Wrapper.m_Player_Canon;
         public InputAction @SlowTime => m_Wrapper.m_Player_SlowTime;
+        public InputAction @_ToggleTP => m_Wrapper.m_Player__ToggleTP;
         public InputAction @_AddFuel => m_Wrapper.m_Player__AddFuel;
         public InputAction @_CycleCrosshair => m_Wrapper.m_Player__CycleCrosshair;
         public InputAction @_ToggleMirror => m_Wrapper.m_Player__ToggleMirror;
@@ -672,6 +695,9 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
                 @SlowTime.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSlowTime;
                 @SlowTime.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSlowTime;
                 @SlowTime.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSlowTime;
+                @_ToggleTP.started -= m_Wrapper.m_PlayerActionsCallbackInterface.On_ToggleTP;
+                @_ToggleTP.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.On_ToggleTP;
+                @_ToggleTP.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.On_ToggleTP;
                 @_AddFuel.started -= m_Wrapper.m_PlayerActionsCallbackInterface.On_AddFuel;
                 @_AddFuel.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.On_AddFuel;
                 @_AddFuel.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.On_AddFuel;
@@ -703,6 +729,9 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
                 @SlowTime.started += instance.OnSlowTime;
                 @SlowTime.performed += instance.OnSlowTime;
                 @SlowTime.canceled += instance.OnSlowTime;
+                @_ToggleTP.started += instance.On_ToggleTP;
+                @_ToggleTP.performed += instance.On_ToggleTP;
+                @_ToggleTP.canceled += instance.On_ToggleTP;
                 @_AddFuel.started += instance.On_AddFuel;
                 @_AddFuel.performed += instance.On_AddFuel;
                 @_AddFuel.canceled += instance.On_AddFuel;
@@ -757,6 +786,7 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
         void OnVacuum(InputAction.CallbackContext context);
         void OnCanon(InputAction.CallbackContext context);
         void OnSlowTime(InputAction.CallbackContext context);
+        void On_ToggleTP(InputAction.CallbackContext context);
         void On_AddFuel(InputAction.CallbackContext context);
         void On_CycleCrosshair(InputAction.CallbackContext context);
         void On_ToggleMirror(InputAction.CallbackContext context);
