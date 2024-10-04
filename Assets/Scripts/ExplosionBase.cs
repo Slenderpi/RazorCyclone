@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public class ExplosionBase : MonoBehaviour {
     
     int MaxHits = 20;
-    float ExplosionRadius = 3f; // Area of effect for damage and knockback. Effect sizes are scaled with this
+    [SerializeField] float ExplosionRadius = 3f; // Area of effect for damage and knockback. Effect sizes are scaled with this
     float ExplosionRadForEffectSize = 0.98f; // Expected radius for explosion when effect is made. Determines scaling of effects given explosionRadius
     float ExplosionForce = 0f;
     float AdditionalUpwardForce = 190f; // Rigidbodies hit will experience an additional upward boost

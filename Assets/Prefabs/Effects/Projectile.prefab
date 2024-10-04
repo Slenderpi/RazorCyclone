@@ -50,7 +50,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 37a1e3093b1dcfb47ae9b8341447edd6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  damage: 0
+  damage: 100
   explosionEffect: {fileID: 4772271045912793400, guid: 1ea0b4aed0201304d8198ddb98729913, type: 3}
 --- !u!54 &456872262032847242
 Rigidbody:

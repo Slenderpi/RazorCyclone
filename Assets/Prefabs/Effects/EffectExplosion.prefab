@@ -9810,10 +9810,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e4e77cd727d162e4eb301bace426ad4b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  damage: 0
-  movableLayerMask:
-    serializedVersion: 2
-    m_Bits: 8
+  ExplosionRadius: 1
+  damage: 100
 --- !u!1 &6566584483533840960
 GameObject:
   m_ObjectHideFlags: 0
