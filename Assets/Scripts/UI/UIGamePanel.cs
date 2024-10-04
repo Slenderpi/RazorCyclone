@@ -92,11 +92,24 @@ public class UIGamePanel : UIPanel {
     public override void OnGamePaused() {
         SetActive(false);
     }
-
+    
     public override void OnPlayerSpawned(PlayerCharacterCtrlr plr) {
-        // plr.A_FuelChanged += OnFuelChanged;
-        // plr.A_TurnInputChanged += OnTurnInputChanged;
-        // plr.A_VertInputChanged += OnVertInputChanged;
+        plr.A_FuelChanged += OnFuelChanged;
+        ResetUIElements();
         SetActive(true);
     }
+
+    public override void OnPlayerDestroying(PlayerCharacterCtrlr plr) {
+        plr.A_FuelChanged -= OnFuelChanged;
+        SetActive(false);
+    }
+    
+    public void ResetUIElements() {
+        OnFuelChanged(0, 1);
+        OnTurnInputChanged(Vector2.zero);
+        OnVertInputChanged(0);
+        OnFireVacuum(false);
+        OnFireCanon(false);
+    }
+
 }

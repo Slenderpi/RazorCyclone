@@ -1,28 +1,24 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.Net.Sockets;
-using Unity.VisualScripting;
-using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.UI;
-using UnityEditor;
 using System;
-using Palmmedia.ReportGenerator.Core;
-using UnityEngine.Windows;
-using UnityEditor.SceneManagement;
 using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour {
     
     public static GameManager Instance;
     public static PlayerCharacterCtrlr CurrentPlayer;
-    public static PlayerInputActions PInputActions;
     
     // Events
     public static event Action A_GamePaused;
     public static event Action A_GameResumed;
     public static event Action<PlayerCharacterCtrlr> A_PlayerSpawned;
+    public static event Action<PlayerCharacterCtrlr> A_PlayerDestroying;
+    
+    // Current scene runner
+    SceneRunner currentSceneRunner;
+    
+    // Pause menu input actions
+    PlayerInputActions.PauseMenuActions PauseInputActions;
     
     [Header("UI References")]
     public UIGamePanel GamePanel;
@@ -43,42 +39,38 @@ public class GameManager : MonoBehaviour {
     public float HighestSensitivity = 1.2f;
     
     [Header("Other")]
-    // [SerializeField]
-    Transform spawnPoint;
     [SerializeField]
     PlayerCharacterCtrlr playerPrefab;
     [SerializeField]
     EnemyBase enemyPrefab;
     // [SerializeField]
-    Transform enemySpawnPoint;
+    // Transform enemySpawnPoint;
     public Camera rearCamera;
     
-    // bool hasSpawnedPlayer = false;
-    
+    [HideInInspector]
     public bool gameIsPaused = false;
     
     void Awake() {
-        if (!Instance) {
-            Instance = this;
-            PInputActions = new PlayerInputActions();
-        } else {
-            Debug.LogWarning("GameManager singleton instantiated more than once!");
+        if (Instance != null) {
+            Debug.LogError("GameManager singleton instantiated more than once!");
             return;
         }
-        
+        Instance = this;
         SceneManager.sceneLoaded += OnSceneLoaded;
         
-        PInputActions.Player.Escape.Enable();
-        PInputActions.Player.Escape.started += PauseInputPressed;
-        
+        PauseInputActions = new PlayerInputActions().PauseMenu;
+        PauseInputActions.Escape.Enable();
+        PauseInputActions.Escape.started += PauseInputPressed;
         PausePanel.SetActive(false);
         GamePanel.SetActive(false);
-        A_GamePaused += PausePanel.OnGamePaused;
         A_GamePaused += GamePanel.OnGamePaused;
-        A_GameResumed += PausePanel.OnGameResumed;
+        A_GamePaused += PausePanel.OnGamePaused;
         A_GameResumed += GamePanel.OnGameResumed;
-        A_PlayerSpawned += PausePanel.OnPlayerSpawned;
+        A_GameResumed += PausePanel.OnGameResumed;
         A_PlayerSpawned += GamePanel.OnPlayerSpawned;
+        A_PlayerSpawned += PausePanel.OnPlayerSpawned;
+        A_PlayerDestroying += GamePanel.OnPlayerDestroying;
+        A_PlayerDestroying += PausePanel.OnPlayerDestroying;
         CurrentMouseSensitivity = DefaultMouseSensitivity;
         PausePanel.MouseSenseSlider.value = (CurrentMouseSensitivity - LowestSensitivity) / (HighestSensitivity - LowestSensitivity);
         
@@ -99,27 +91,27 @@ public class GameManager : MonoBehaviour {
         
     }
     
-    public void OnSceneStarted(SceneStarter ss) {
-        spawnPoint = ss.playerSpawnPoint != null ? ss.playerSpawnPoint.transform : null;
-        spawnPlayer();
+    public void OnSceneStarted(SceneRunner sr) {
+        currentSceneRunner = sr;
     }
     
     void Update() {
-        // if (!hasSpawnedPlayer && Time.time > 0.1) {
-        //     hasSpawnedPlayer = true;
-        //     spawnPlayer();
-        // }
+        
     }
     
-    void spawnPlayer() {
-        Vector3 spawnPos = Vector3.zero;
-        Quaternion spawnRot = Quaternion.identity;
-        if (spawnPoint != null) {
-            spawnPos = spawnPoint.position;
-            spawnRot = spawnPoint.rotation;
-        }
-        CurrentPlayer = Instantiate(playerPrefab, spawnPos, spawnRot).GetComponent<PlayerCharacterCtrlr>();
+    public void SpawnPlayer() {
+        CurrentPlayer = Instantiate(
+            playerPrefab,
+            currentSceneRunner.playerSpawnPoint != null ? currentSceneRunner.playerSpawnPoint.position : Vector3.zero,
+            currentSceneRunner.playerSpawnPoint != null ? currentSceneRunner.playerSpawnPoint.rotation : Quaternion.identity
+        ).GetComponent<PlayerCharacterCtrlr>();
         A_PlayerSpawned?.Invoke(CurrentPlayer);
+    }
+    
+    public void DestroyPlayer() {
+        A_PlayerDestroying?.Invoke(CurrentPlayer);
+        Destroy(CurrentPlayer.gameObject);
+        CurrentPlayer = null;
     }
     
     public void OnEnemyDied() {
@@ -127,32 +119,23 @@ public class GameManager : MonoBehaviour {
         //Instantiate(enemyPrefab, enemySpawnPoint.position, enemySpawnPoint.rotation);
     }
     
-    void PauseGame() {
+    public void PauseGame() {
+        gameIsPaused = true;
         A_GamePaused?.Invoke();
-        SetPauseControlsEnabled(true);
         Time.timeScale = 0;
     }
     
-    void ResumeGame() {
+    public void ResumeGame() {
+        gameIsPaused = false;
         A_GameResumed?.Invoke();
-        SetPauseControlsEnabled(false);
         Time.timeScale = 1;
     }
 
-    private void PauseInputPressed(InputAction.CallbackContext context) {
-        if (Time.timeScale == 0) {
+    public void PauseInputPressed(InputAction.CallbackContext context) {
+        if (gameIsPaused)
             ResumeGame();
-        } else {
+        else
             PauseGame();
-        }
-    }
-    
-    void SetPauseControlsEnabled(bool newEnabled) {
-        if (newEnabled) {
-            // PInputActions.PauseMenu.Escape.Enable();
-        } else {
-            
-        }
     }
     
     
@@ -165,13 +148,13 @@ public class GameManager : MonoBehaviour {
     
     public void TestSceneChange() {
         ResumeGame();
-        if (SceneManager.GetSceneByName("TestScene").IsValid()) {
-            SceneManager.UnloadSceneAsync("TestScene");
+        string sceneToToggleTo = "TestScene";
+        if (SceneManager.GetSceneByName(sceneToToggleTo).IsValid()) {
+            SceneManager.UnloadSceneAsync(sceneToToggleTo);
             SceneManager.LoadSceneAsync("SampleScene", LoadSceneMode.Additive);
         } else {
             SceneManager.UnloadSceneAsync("SampleScene");
-            SceneManager.LoadScene("TestScene", LoadSceneMode.Additive);
-            // SceneManager.SetActiveScene(SceneManager.GetSceneByName());
+            SceneManager.LoadScene(sceneToToggleTo, LoadSceneMode.Additive);
         }
     }
     

@@ -1,3 +1,4 @@
+using System.Collections;
 using TMPro;
 using UnityEditor.SearchService;
 using UnityEngine;
@@ -17,6 +18,11 @@ public class UIPausePanel : UIPanel {
         GameManager.Instance.TestSceneChange();
     }
     
+    public void OnResetPlayerCharacterClicked() {
+        GameManager.Instance.DestroyPlayer();
+        GameManager.Instance.SpawnPlayer();
+    }
+    
     public void OnCloseGameButtonClicked() {
         Application.Quit();
     }
@@ -30,8 +36,12 @@ public class UIPausePanel : UIPanel {
     }
 
     public override void OnPlayerSpawned(PlayerCharacterCtrlr plr) {
-        
+        if (GameManager.Instance.gameIsPaused) {
+            GameManager.Instance.ResumeGame();
+        }
         SetActive(false);
     }
-    
+
+    public override void OnPlayerDestroying(PlayerCharacterCtrlr plr) {}
+
 }

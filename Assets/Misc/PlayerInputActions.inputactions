@@ -60,15 +60,6 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Escape",
-                    "type": "Button",
-                    "id": "f95fecd4-f100-42ad-b8c3-fb82c29b093b",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
                     "name": "_AddFuel",
                     "type": "Button",
                     "id": "b56b262c-fc67-4979-b99f-a7145e542950",
@@ -503,10 +494,27 @@
                     "action": "_ToggleMirror",
                     "isComposite": false,
                     "isPartOfComposite": false
-                },
+                }
+            ]
+        },
+        {
+            "name": "PauseMenu",
+            "id": "96fecc3c-1941-4204-8ce9-180390c599f1",
+            "actions": [
+                {
+                    "name": "Escape",
+                    "type": "Button",
+                    "id": "d15aebfc-5b76-40eb-a751-1b68cad3f22c",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
                 {
                     "name": "",
-                    "id": "f2cd586f-a8c9-41bc-80ab-3d37b62009e5",
+                    "id": "1a5ef6d2-1e77-4756-a406-31ad54c64962",
                     "path": "<Keyboard>/escape",
                     "interactions": "",
                     "processors": "",
@@ -516,12 +524,6 @@
                     "isPartOfComposite": false
                 }
             ]
-        },
-        {
-            "name": "PauseMenu",
-            "id": "96fecc3c-1941-4204-8ce9-180390c599f1",
-            "actions": [],
-            "bindings": []
         }
     ],
     "controlSchemes": []

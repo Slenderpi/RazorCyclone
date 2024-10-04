@@ -7816,7 +7816,7 @@ GameObject:
   - component: {fileID: 878298624}
   - component: {fileID: 878298623}
   m_Layer: 0
-  m_Name: SceneStarter
+  m_Name: SceneRunner
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7834,7 +7834,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8030f83b647cf094e8d2af649818c37f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerSpawnPoint: {fileID: 951687406}
+  playerSpawnPoint: {fileID: 951687407}
 --- !u!4 &878298624
 Transform:
   m_ObjectHideFlags: 0

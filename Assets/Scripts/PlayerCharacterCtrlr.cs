@@ -1,13 +1,6 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.IO;
-using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.Rendering;
 using UnityEngine.UI;
 
 public class PlayerCharacterCtrlr : MonoBehaviour {
@@ -19,10 +12,8 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     Vector3 weaponRelativeRot = Vector3.forward;
     
     // Events
-    // public event Action<float, float> A_FuelChanged; // float changeAmnt, float fuelPerc
+    public event Action<float, float> A_FuelChanged; // float changeAmnt, float fuelPerc
     // public event Action<float> A_HealthChanged; // float changeAmnt
-    // public event Action<Vector2> A_TurnInputChanged; // Vector2 newTurnInp
-    // public event Action<float> A_VertInputChanged; // float newVertInp
     
     [HideInInspector]
     public float mouseSensitivity;
@@ -49,19 +40,8 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     // RectTransform mirrorCrosshairRectTrans;
     
     // ui
-    // RectTransform _mainVacuumCrosshair;
-    // RectTransform _mainCanonCrosshair;
-    // Slider _fuelSlider;
     UIGamePanel _gamePanel;
     UIPausePanel _pausePanel;
-    // Image _keyImageW;
-    // Image _keyImageA;
-    // Image _keyImageS;
-    // Image _keyImageD;
-    // Image _keyImageSpace;
-    // Image _keyImageShift;
-    // Image _keyImageM1;
-    // Image _keyImageM2;
     // [SerializeField]
     Image mirrorCrosshairImageComp;
     
@@ -123,12 +103,13 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     
     
     void Awake() {
-        inputActions = GameManager.PInputActions.Player;
+        // inputActions = GameManager.PInputActions.Player;
+        inputActions = new PlayerInputActions().Player;
         _gamePanel = GameManager.Instance.GamePanel;
         _pausePanel = GameManager.Instance.PausePanel;
         
-        GameManager.A_GamePaused += OnPauseGame;
-        GameManager.A_GameResumed += OnResumeGame;
+        // GameManager.A_GamePaused += OnPauseGame;
+        // GameManager.A_GameResumed += OnResumeGame;
         
         mouseSensitivity = GameManager.Instance.CurrentMouseSensitivity;
         
@@ -144,7 +125,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         vacuumFuelCost = MaxFuel / VacuumFuelTime * Time.fixedDeltaTime;
         currentHealth = MaxHealth;
         
-        _pausePanel.SetActive(false);
+        // _pausePanel.SetActive(false);
         
         /** Temp stuff **/
         crosshairSprites =  Resources.LoadAll<Sprite>("White") ;
@@ -180,7 +161,6 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
             }
         }
         
-        // GameManager.Instance.Speedometer.text = string.Format("{0:0.0}", rb.velocity.magnitude) + "";
         _gamePanel.SetSpeedText(rb.velocity.magnitude);
         
     }
@@ -192,8 +172,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
 
     public void AddFuel(float amount) {
         currentFuel = Mathf.Clamp(currentFuel + amount, 0, MaxFuel);
-        // A_FuelChanged?.Invoke(amount, currentFuel / MaxFuel);
-        _gamePanel.OnFuelChanged(amount, currentFuel / MaxFuel);
+        A_FuelChanged?.Invoke(amount, currentFuel / MaxFuel);
     }
 
     private void TurnInputChanged(InputAction.CallbackContext context) {
@@ -341,17 +320,24 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     }
     
     void OnEnable() {
+        GameManager.A_GamePaused += OnPauseGame;
+        GameManager.A_GameResumed += OnResumeGame;
         SetPlayerControlsEnabled(true);
     }
 
     void OnDisable() {
+        GameManager.A_GamePaused -= OnPauseGame;
+        GameManager.A_GameResumed -= OnResumeGame;
         SetPlayerControlsEnabled(false);
     }
     
     void OnDestroy() {
-        GameManager.A_GamePaused -= OnPauseGame;
-        GameManager.A_GameResumed -= OnResumeGame;
-        SetPlayerControlsEnabled(false);
+        /* A GameObject is only truly destroyed the frame after Destroy() is called on it.
+         * OnDestroy() is called right before the object is destroyed. However, this means
+         * OnDestroy() is still only caleld the frame right after.
+         * If you want to do something at the moment the player (or any game object) gets
+         * destroyed, do that code in OnDisable() instead.
+         */
     }
 
     public void SetPlayerControlsEnabled(bool newEnabled) {
@@ -446,13 +432,4 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         rearMirrorModel.SetActive(mirrorModelEnabled);
     }
     
-}
-
-public class EA_FuelChanged : EventArgs {
-    
-    public EA_FuelChanged(params object[] args) {
-        Args = args;
-    }
-
-    public object[] Args { get; set; }
 }
