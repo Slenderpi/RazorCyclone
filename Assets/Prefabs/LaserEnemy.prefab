@@ -70,6 +70,8 @@ MonoBehaviour:
   pauseBeforeFiring: 0.3
   rotationSpeed: 2
   laserDamage: 10
+  fuelPrefab: {fileID: 8934087127753941361, guid: bb72521b10fb34d7bbbed5f6f77687b4, type: 3}
+  fuelAmount: 1
 --- !u!1 &6222467218173797210
 GameObject:
   m_ObjectHideFlags: 0

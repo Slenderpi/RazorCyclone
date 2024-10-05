@@ -69,6 +69,8 @@ MonoBehaviour:
   isStunned: 0
   stunDuration: 5
   shieldActive: 1
+  fuelPrefab: {fileID: 8934087127753941361, guid: bb72521b10fb34d7bbbed5f6f77687b4, type: 3}
+  fuelAmount: 1
 --- !u!135 &8161223251265051182
 SphereCollider:
   m_ObjectHideFlags: 0
