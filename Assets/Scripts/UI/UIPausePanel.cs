@@ -7,13 +7,6 @@ using UnityEngine.UI;
 
 public class UIPausePanel : UIPanel {
     
-    public TMP_Text MouseSenseLabel;
-    public Slider MouseSenseSlider;
-    
-    public void SetMouseSenseText(float sens) {
-        MouseSenseLabel.text = "Mouse Sensitivity: " + sens.ToString("0.00");
-    }
-    
     public void OnChangeSceneButtonClicked() {
         GameManager.Instance.TestSceneChange();
     }
@@ -28,18 +21,18 @@ public class UIPausePanel : UIPanel {
     }
 
     public override void OnGameResumed() {
-        SetActive(false);
+        // SetActive(false);
     }
 
     public override void OnGamePaused() {
-        SetActive(true);
+        // SetActive(true);
     }
 
     public override void OnPlayerSpawned(PlayerCharacterCtrlr plr) {
         if (GameManager.Instance.gameIsPaused) {
             GameManager.Instance.ResumeGame();
         }
-        SetActive(false);
+        // SetActive(false);
     }
 
     public override void OnPlayerDestroying(PlayerCharacterCtrlr plr) {}

@@ -21,19 +21,24 @@ public class GameManager : MonoBehaviour {
     PlayerInputActions.PauseMenuActions PauseInputActions;
     
     [Header("UI References")]
+    public UIMainCanvas MainCanvas;
+    [HideInInspector]
     public UIGamePanel GamePanel;
+    [HideInInspector]
     public UIPausePanel PausePanel;
+    [HideInInspector]
+    public UISettingsPanel SettingsPanel;
     
-    [Header("Player Settings")]
     float _currentMouseSensitivity;
     public float CurrentMouseSensitivity {
         get { return _currentMouseSensitivity; }
         set {
             _currentMouseSensitivity = value;
             if (CurrentPlayer != null) CurrentPlayer.mouseSensitivity = _currentMouseSensitivity;
-            PausePanel.SetMouseSenseText(_currentMouseSensitivity);
+            SettingsPanel.SetMouseSenseText(_currentMouseSensitivity);
         }
     }
+    [Header("Player Settings")]
     public float DefaultMouseSensitivity = 0.7f;
     public float LowestSensitivity = 0.02f;
     public float HighestSensitivity = 1.2f;
@@ -61,18 +66,11 @@ public class GameManager : MonoBehaviour {
         PauseInputActions = new PlayerInputActions().PauseMenu;
         PauseInputActions.Escape.Enable();
         PauseInputActions.Escape.started += PauseInputPressed;
-        PausePanel.SetActive(false);
-        GamePanel.SetActive(false);
-        A_GamePaused += GamePanel.OnGamePaused;
-        A_GamePaused += PausePanel.OnGamePaused;
-        A_GameResumed += GamePanel.OnGameResumed;
-        A_GameResumed += PausePanel.OnGameResumed;
-        A_PlayerSpawned += GamePanel.OnPlayerSpawned;
-        A_PlayerSpawned += PausePanel.OnPlayerSpawned;
-        A_PlayerDestroying += GamePanel.OnPlayerDestroying;
-        A_PlayerDestroying += PausePanel.OnPlayerDestroying;
+        GamePanel = MainCanvas.GamePanel;
+        PausePanel = MainCanvas.PausePanel;
+        SettingsPanel = MainCanvas.SettingsPanel;
         CurrentMouseSensitivity = DefaultMouseSensitivity;
-        PausePanel.MouseSenseSlider.value = (CurrentMouseSensitivity - LowestSensitivity) / (HighestSensitivity - LowestSensitivity);
+        SettingsPanel.MouseSenseSlider.value = (CurrentMouseSensitivity - LowestSensitivity) / (HighestSensitivity - LowestSensitivity);
         
         /******  PROGRAMMER SPECIFIC  ******/
         TextAsset programmerPreferenceJson = Resources.Load<TextAsset>("ProgrammerPreferences");
@@ -143,7 +141,7 @@ public class GameManager : MonoBehaviour {
     /******  Pause menu  ******/
     
     public void OnMouseSenseSliderChanged() {
-        CurrentMouseSensitivity = Mathf.Lerp(LowestSensitivity, HighestSensitivity, PausePanel.MouseSenseSlider.value);
+        CurrentMouseSensitivity = Mathf.Lerp(LowestSensitivity, HighestSensitivity, SettingsPanel.MouseSenseSlider.value);
     }
     
     public void TestSceneChange() {
@@ -180,6 +178,6 @@ class ProgrammerPreferences {
         GameManager.Instance.CurrentMouseSensitivity = MouseSensitivity;
         float highSens = GameManager.Instance.HighestSensitivity;
         float lowSens = GameManager.Instance.LowestSensitivity;
-        GameManager.Instance.PausePanel.MouseSenseSlider.value = (GameManager.Instance.CurrentMouseSensitivity - lowSens) / (highSens - lowSens);
+        GameManager.Instance.SettingsPanel.MouseSenseSlider.value = (GameManager.Instance.CurrentMouseSensitivity - lowSens) / (highSens - lowSens);
     }
 }

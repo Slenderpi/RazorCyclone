@@ -18,6 +18,7 @@ public class SceneRunner : MonoBehaviour {
     
     public void BeginScene() {
         GameManager.Instance.OnSceneStarted(this);
+        GameManager.Instance.MainCanvas.SetCanvasState(UIMainCanvas.ECanvasState.None);
         GameManager.Instance.SpawnPlayer();
     }
     

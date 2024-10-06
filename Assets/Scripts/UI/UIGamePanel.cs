@@ -18,6 +18,8 @@ public class UIGamePanel : UIPanel {
     public Image KeyImageSpace;
     public Image KeyImageShift;
     
+    
+    
     public void SetSpeedText(float speed) {
         Speedometer.text = string.Format("{0:0.0}", speed) + "";
     }
@@ -86,22 +88,22 @@ public class UIGamePanel : UIPanel {
     }
 
     public override void OnGameResumed() {
-        SetActive(true);
+        // SetActive(true);
     }
 
     public override void OnGamePaused() {
-        SetActive(false);
+        // SetActive(false);
     }
     
     public override void OnPlayerSpawned(PlayerCharacterCtrlr plr) {
         plr.A_FuelChanged += OnFuelChanged;
         ResetUIElements();
-        SetActive(true);
+        // SetActive(true);
     }
 
     public override void OnPlayerDestroying(PlayerCharacterCtrlr plr) {
         plr.A_FuelChanged -= OnFuelChanged;
-        SetActive(false);
+        // SetActive(false);
     }
     
     public void ResetUIElements() {

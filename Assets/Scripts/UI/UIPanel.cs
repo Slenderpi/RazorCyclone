@@ -14,5 +14,11 @@ public abstract class UIPanel : MonoBehaviour {
         gameObject.SetActive(newActive);
     }
     
+    void Awake() {
+        GameManager.A_GamePaused += OnGamePaused;
+        GameManager.A_GameResumed += OnGameResumed;
+        GameManager.A_PlayerSpawned += OnPlayerSpawned;
+        GameManager.A_PlayerDestroying += OnPlayerDestroying;
+    }
     
 }
