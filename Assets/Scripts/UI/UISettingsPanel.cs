@@ -63,15 +63,12 @@ public class UISettingsPanel : UIPanel {
     public void SetMouseSenseText(float sens) {
         MouseSenseLabel.text = "Mouse Sensitivity: " + sens.ToString("0.00");
     }
-    
-    public override void OnGamePaused() {}
 
-    public override void OnGameResumed() {}
+    public override void Init() {
+        base.Init();
+        SetSettingsCategory(EActiveCategory.Controls);
+    }
 
-    public override void OnPlayerDestroying(PlayerCharacterCtrlr plr) {}
-
-    public override void OnPlayerSpawned(PlayerCharacterCtrlr plr) {}
-    
     void setAllCategoriesInactive() {
         CategoryControls.SetActive(false);
         CategoryVideo.SetActive(false);
@@ -82,18 +79,6 @@ public class UISettingsPanel : UIPanel {
         ControlsButton.interactable = true;
         VideoButton.interactable = true;
         AudioButton.interactable = true;
-    }
-
-    void Start() {
-        
-    }
-    
-    void Update() {
-        
-    }
-    
-    void OnEnable() {
-        // SetSettingsCategory(EActiveCategory.Controls);
     }
     
 }

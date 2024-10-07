@@ -39,10 +39,8 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     Transform rearCamPos;
     // RectTransform mirrorCrosshairRectTrans;
     
-    // ui
+    // UI variables
     UIGamePanel _gamePanel;
-    UIPausePanel _pausePanel;
-    // [SerializeField]
     Image mirrorCrosshairImageComp;
     
     bool isVacuumOn;
@@ -108,11 +106,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     void Awake() {
         // inputActions = GameManager.PInputActions.Player;
         inputActions = new PlayerInputActions().Player;
-        _gamePanel = GameManager.Instance.GamePanel;
-        _pausePanel = GameManager.Instance.PausePanel;
-        
-        // GameManager.A_GamePaused += OnPauseGame;
-        // GameManager.A_GameResumed += OnResumeGame;
+        _gamePanel = GameManager.Instance.MainCanvas.GamePanel;
         
         mouseSensitivity = GameManager.Instance.CurrentMouseSensitivity;
         

@@ -7,11 +7,11 @@ using UnityEngine.UI;
 
 public class UIPausePanel : UIPanel {
     
-    public void OnChangeSceneButtonClicked() {
-        GameManager.Instance.TestSceneChange();
+    public void OnButton_ReturnMain() {
+        GameManager.Instance.currentSceneRunner.SwitchToScene("MainMenuScene");
     }
     
-    public void OnResetPlayerCharacterClicked() {
+    public void OnButton_ResetPlayer() {
         GameManager.Instance.DestroyPlayer();
         GameManager.Instance.SpawnPlayer();
     }
