@@ -101,7 +101,9 @@ public class UIGamePanel : UIPanel {
     }
     
     public void OnOutOfFuel() {
-        FuelOutlineAnimator.SetTrigger("OutOfFuel");
+        AnimatorStateInfo asi = FuelOutlineAnimator.GetCurrentAnimatorStateInfo(0);
+        if (!asi.IsName("OutOfFuelBlink") || asi.normalizedTime >= 0.8f)
+            FuelOutlineAnimator.SetTrigger("OutOfFuel");
     }
 
     public override void OnGameResumed() {
