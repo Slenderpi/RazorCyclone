@@ -152,6 +152,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
                 isVacuumOn = false;
                 vacuumHitbox.SetActive(false);
                 // print("Not enough fuel (" + currentFuel + ") for vacuum (need " + vacuumFuelCost + ").");
+                // signifyOutOfFuel();
             } else {
                 AddFuel(-vacuumFuelCost);
                 rb.AddForce(charPivot.forward * (rb.velocity.magnitude <= VacuumForceNormalSpeed ? VacuumForceLowSpeed : VacuumForce), ForceMode.Acceleration);
@@ -170,6 +171,11 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     public void AddFuel(float amount) {
         currentFuel = Mathf.Clamp(currentFuel + amount, 0, MaxFuel);
         A_FuelChanged?.Invoke(amount, currentFuel / MaxFuel);
+    }
+    
+    void signifyOutOfFuel() {
+        GameManager.Instance.Audio2D.PlayClipSFX(AudioPlayer2D.EClipSFX.Plr_OutOfFuel);
+        _gamePanel.OnOutOfFuel();
     }
 
     private void TurnInputChanged(InputAction.CallbackContext context) {
@@ -196,6 +202,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         
         if (currentFuel <= 0) {
             // print("Not enough fuel (" + currentFuel + ") for vacuum (need " + vacuumFuelCost + ").");
+            signifyOutOfFuel();
             return;
         }
         isVacuumOn = true;
@@ -214,6 +221,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         
         if (currentFuel <= 0) {
             // print("Not enough fuel (" + currentFuel + ") for canon (need " + CanonFuelCost + ").");
+            signifyOutOfFuel();
             return;
         }
         // Time.timeScale = 0.15f;
@@ -226,6 +234,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         // Time.timeScale = 1f;
         if (currentFuel <= 0) {
             // print("Not enough fuel (" + currentFuel + ") for canon (need " + CanonFuelCost + ").");
+            // signifyOutOfFuel();
             return;
         }
         // fireCanon();
@@ -285,6 +294,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         proj.damage = CanonDamage;
         proj.GetComponent<Rigidbody>().AddForce((aimPoint - canonTip.position).normalized * CanonProjSpeed + rb.velocity, ForceMode.VelocityChange);
         AddFuel(-CanonFuelCost);
+        GameManager.Instance.Audio2D.PlayClipSFX(AudioPlayer2D.EClipSFX.Weapon_CanonShot);
     }
 
     void updateRayCastedAimPoint() {

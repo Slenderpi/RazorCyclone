@@ -21,10 +21,11 @@ public class GameManager : MonoBehaviour {
     // Pause menu input actions
     PlayerInputActions.PauseMenuActions PauseInputActions;
     
-    [Header("UI References")]
+    [Header("Core References")]
     public UIMainCanvas MainCanvas;
     [HideInInspector]
     public UISettingsPanel SettingsPanel;
+    public AudioPlayer2D Audio2D;
     
     float _currentMouseSensitivity;
     public float CurrentMouseSensitivity {

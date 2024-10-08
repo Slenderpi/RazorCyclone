@@ -32,6 +32,13 @@ public class SceneRunner : MonoBehaviour {
     }
     
     void startScene() {
+        if (GameManager.Instance == null) {
+            Debug.LogError("!! SceneRunner awoke before GameManager !!  --  " + 
+                           "Did you run the game with the CoreScene already open? " +
+                           "If so, double click the CoreScene in the hierarchy to " +
+                           "make it the active scene. Its name should become bolded.");
+            return;
+        }
         GameManager.Instance.OnSceneStarted(this);
         GameManager.Instance.MainCanvas.SetCanvasState(UIMainCanvas.ECanvasState.None);
         BeginScene();
