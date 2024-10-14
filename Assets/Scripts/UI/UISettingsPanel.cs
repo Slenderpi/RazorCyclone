@@ -1,7 +1,12 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.PlasticSCM.Editor.WebApi;
+using Unity.VisualScripting;
+using UnityEditor.Compilation;
 using UnityEngine;
+using UnityEngine.Audio;
 using UnityEngine.InputSystem.Controls;
 using UnityEngine.UI;
 
@@ -23,11 +28,105 @@ public class UISettingsPanel : UIPanel {
     public Button VideoButton;
     public Button AudioButton;
     
-    [Header("Other UI References")]
+    [Header("Controls References")]
     public TMP_Text MouseSenseLabel;
     public Slider MouseSenseSlider;
     
+    [Header("Video References")]
+    public Toggle fullscreenToggle;
+    public TMP_Dropdown resolutionDropdown;
+    public Slider fpsLimitSlider;
+    public TMP_InputField fpsLimitInputField;
+    public Toggle vsyncToggle;
+    public TMP_Dropdown shadowResolutionDropdown;
     
+    [Header("Audio References")]
+    public Slider masterVolSlider;
+    public TMP_InputField masterVolInputField;
+    public Slider sfxVolSlider;
+    public TMP_InputField sfxVolInputField;
+    public Slider musicVolSlider;
+    public TMP_InputField musicVolInputField;
+    
+    Resolution[] resolutionOptions;
+    
+    
+    
+    /*****  VIDEO SETTINGS  *****/
+    
+    public void OnToggle_FullScreen(bool isOn) {
+        Resolution currRes = Screen.currentResolution;
+        Screen.SetResolution(currRes.width, currRes.height, isOn);
+    }
+    
+    public void OnDropdown_Resolution(int option) {
+        Resolution resop = resolutionOptions[option];
+        print("Selected: " + resop.width + " x " + resop.height + " " + resop.refreshRate + " Hz");
+        Screen.SetResolution(resop.width, resop.height, Screen.fullScreen, resop.refreshRate);
+    }
+    
+    public void OnSlider_FPSLimit(float val) {
+        setFrameLimit((int)val);
+    }
+    
+    public void OnField_FPSLimit(string str) {
+        if (int.TryParse(str, out int fps)) {
+            setFrameLimit(fps);
+        }
+    }
+    
+    public void OnToggle_VSync(bool isOn) {
+        QualitySettings.vSyncCount = isOn ? 1 : 0;
+    }
+    
+    public void OnDropdown_ShadowResolution(int option) {
+        switch (option) {
+        case 0:
+            QualitySettings.shadowResolution = ShadowResolution.VeryHigh;
+            break;
+        case 1:
+            QualitySettings.shadowResolution = ShadowResolution.High;
+            break;
+        case 2:
+            QualitySettings.shadowResolution = ShadowResolution.Medium;
+            break;
+        case 3:
+            QualitySettings.shadowResolution = ShadowResolution.Low;
+            break;
+        }
+    }
+    
+    
+    
+    /*****  AUDIO SETTINGS  *****/
+    
+    public void OnSlider_VolMaster(float val) {
+        setVolumeMaster(Mathf.RoundToInt(val));
+    }
+    
+    public void OnField_VolMaster(string str) {
+        setVolumeMaster(Math.Clamp(int.Parse(str), 0, 100));
+    }
+    
+    public void OnSlider_VolSFX(float val) {
+        setVolumeSFX(Mathf.RoundToInt(val));
+    }
+    
+    public void OnField_VolSFX(string str) {
+        setVolumeSFX(Math.Clamp(int.Parse(str), 0, 100));
+    }
+    
+    public void OnSlider_VolMusic(float val) {
+        setVolumeMusic(Mathf.RoundToInt(val));
+    }
+    
+    public void OnField_VolMusic(string str) {
+        setVolumeMusic(Math.Clamp(int.Parse(str), 0, 100));
+    }
+    
+    
+    
+    /*****  CATEGORY BUTTONS  *****/
     
     public void OnButton_Controls() {
         SetSettingsCategory(EActiveCategory.Controls);
@@ -41,21 +140,27 @@ public class UISettingsPanel : UIPanel {
         SetSettingsCategory(EActiveCategory.Audio);
     }
     
+    
+    
+    /*****  OTHER  *****/
+    
     public void SetSettingsCategory(EActiveCategory newCategory) {
         setAllCategoriesInactive();
         setAllButtonsInteractable();
         switch (newCategory) {
         case EActiveCategory.Controls:
-            CategoryControls.SetActive(true);
             ControlsButton.interactable = false;
+            CategoryControls.SetActive(true);
             break;
         case EActiveCategory.Video:
-            CategoryVideo.SetActive(true);
+            updateVideoOptions();
             VideoButton.interactable = false;
+            CategoryVideo.SetActive(true);
             break;
         case EActiveCategory.Audio:
-            CategoryAudio.SetActive(true);
+            updateAudioOptions();
             AudioButton.interactable = false;
+            CategoryAudio.SetActive(true);
             break;
         }
     }
@@ -79,6 +184,94 @@ public class UISettingsPanel : UIPanel {
         ControlsButton.interactable = true;
         VideoButton.interactable = true;
         AudioButton.interactable = true;
+    }
+    
+    void setResolutionOptions() {
+        resolutionOptions = Screen.resolutions;
+        resolutionDropdown.ClearOptions();
+        List<string> optstrs = new List<string>();
+        for (int i = 0; i < resolutionOptions.Length; i++) {
+            Resolution res = resolutionOptions[i];
+            optstrs.Add(res.width + " x " + res.height + " " + res.refreshRate + " Hz");
+        }
+        resolutionDropdown.AddOptions(optstrs);
+    }
+    
+    void setFrameLimit(int val) {
+        val = Math.Clamp(val, 20, 241);
+        if (val == 241) {
+            Application.targetFrameRate = -1;
+            fpsLimitInputField.SetTextWithoutNotify("Unlimited");
+            fpsLimitSlider.SetValueWithoutNotify(241);
+        } else {
+            Application.targetFrameRate = val;
+            fpsLimitInputField.SetTextWithoutNotify(val.ToString());
+            fpsLimitSlider.SetValueWithoutNotify(val);
+        }
+    }
+    
+    void setVolumeMaster(int val) {
+        masterVolSlider.SetValueWithoutNotify(val);
+        masterVolInputField.SetTextWithoutNotify(val.ToString());
+        AudioPlayer2D.Instance.SetMasterVolume(val);
+    }
+    
+    void setVolumeSFX(int val) {
+        sfxVolSlider.SetValueWithoutNotify(val);
+        sfxVolInputField.SetTextWithoutNotify(val.ToString());
+        AudioPlayer2D.Instance.SetSFXVolume(val);
+    }
+    
+    void setVolumeMusic(int val) {
+        musicVolSlider.SetValueWithoutNotify(val);
+        musicVolInputField.SetTextWithoutNotify(val.ToString());
+        AudioPlayer2D.Instance.SetMusicVolume(val);
+    }
+    
+    void updateVideoOptions() {
+        fullscreenToggle.SetIsOnWithoutNotify(Screen.fullScreen);
+        setResolutionOptions();
+        int resopi = 0;
+        bool found = false;
+        Resolution currRes = Screen.currentResolution;
+        for (; resopi < resolutionOptions.Length; resopi++) {
+            if (resolutionOptions[resopi].width == currRes.width &&
+                resolutionOptions[resopi].height == currRes.height) {
+                found = true;
+                break;
+            }
+        }
+        if (!found) print("RESOLUTION NOT FOUND.");
+        resolutionDropdown.SetValueWithoutNotify(resopi);
+        setFrameLimit(Application.targetFrameRate <= 0 ? 241 : Application.targetFrameRate);
+        vsyncToggle.SetIsOnWithoutNotify(QualitySettings.vSyncCount > 0);
+        int shadresopi = 0;
+        switch (QualitySettings.shadowResolution) {
+        case ShadowResolution.Low:
+            shadresopi = 3;
+            break;
+        case ShadowResolution.Medium:
+            shadresopi = 2;
+            break;
+        case ShadowResolution.High:
+            shadresopi = 1;
+            break;
+        case ShadowResolution.VeryHigh:
+            shadresopi = 0;
+            break;
+        }
+        shadowResolutionDropdown.SetValueWithoutNotify(shadresopi);
+    }
+    
+    void updateAudioOptions() {
+        AudioMixer mam = AudioPlayer2D.Instance.MainAudioMixer;
+        float val;
+        mam.GetFloat("volMaster", out val);
+        setVolumeMaster(Mathf.RoundToInt((1 - val / -80f) * 100f));
+        mam.GetFloat("volSFX", out val);
+        setVolumeSFX(Mathf.RoundToInt((1 - val / -80f) * 100f));
+        mam.GetFloat("volMusic", out val);
+        setVolumeMusic(Mathf.RoundToInt((1 - val / -80f) * 100f));
     }
     
 }

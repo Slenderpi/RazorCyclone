@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using System.Diagnostics.Tracing;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Audio;
 
 public class AudioPlayer2D : MonoBehaviour {
+    
+    public static AudioPlayer2D Instance;
     
     public enum EClipSFX {
         Kill_DirectHit,
@@ -17,7 +20,8 @@ public class AudioPlayer2D : MonoBehaviour {
         None
     }
     
-    [Header("Audio Source References")]
+    [Header("Audio Source and Mixer References")]
+    public AudioMixer MainAudioMixer;
     public AudioSource asSFX;
     public AudioSource asMusic;
     
@@ -60,6 +64,22 @@ public class AudioPlayer2D : MonoBehaviour {
             asMusic.Stop();
             break;
         }
+    }
+    
+    public void SetMasterVolume(float volume) {
+        MainAudioMixer.SetFloat("volMaster", Mathf.Lerp(-80, 0, volume / 100f));
+    }
+    
+    public void SetSFXVolume(float volume) {
+        MainAudioMixer.SetFloat("volSFX", Mathf.Lerp(-80, 0, volume / 100f));
+    }
+    
+    public void SetMusicVolume(float volume) {
+        MainAudioMixer.SetFloat("volMusic", Mathf.Lerp(-80, 0, volume / 100f));
+    }
+    
+    void Awake() {
+        Instance = this;
     }
     
 }

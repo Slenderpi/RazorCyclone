@@ -98,8 +98,8 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     [SerializeField]
     GameObject rearMirrorModel;
     bool mirrorModelEnabled = false;
-    Sprite[] crosshairSprites = new Sprite[200];
-    int crosshairIndex = 0;
+    // Sprite[] crosshairSprites = new Sprite[200];
+    // int crosshairIndex = 0;
     
     
     
@@ -125,7 +125,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         // _pausePanel.SetActive(false);
         
         /** Temp stuff **/
-        crosshairSprites =  Resources.LoadAll<Sprite>("White") ;
+        // crosshairSprites = Resources.LoadAll<Sprite>("White") ;
         rearMirrorModel.SetActive(mirrorModelEnabled);
     }
     
@@ -392,8 +392,8 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
             inputActions._ToggleTP.started += OnToggleThirdPerson;
             inputActions._AddFuel.Enable();
             inputActions._AddFuel.started += OnAddFuelKey;
-            inputActions._CycleCrosshair.Enable();
-            inputActions._CycleCrosshair.started += OnCycleCrosshairInput;
+            // inputActions._CycleCrosshair.Enable();
+            // inputActions._CycleCrosshair.started += OnCycleCrosshairInput;
             inputActions._ToggleMirror.Enable();
             inputActions._ToggleMirror.started += OnToggleMirrorInput;
         } else {
@@ -422,8 +422,8 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
             inputActions._ToggleTP.started -= OnToggleThirdPerson;
             inputActions._AddFuel.Disable();
             inputActions._AddFuel.started -= OnAddFuelKey;
-            inputActions._CycleCrosshair.Disable();
-            inputActions._CycleCrosshair.started -= OnCycleCrosshairInput;
+            // inputActions._CycleCrosshair.Disable();
+            // inputActions._CycleCrosshair.started -= OnCycleCrosshairInput;
             inputActions._ToggleMirror.Disable();
             inputActions._ToggleMirror.started -= OnToggleMirrorInput;
         }
@@ -452,17 +452,17 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     }
 
     void OnCycleCrosshairInput(InputAction.CallbackContext context) {
-        if (context.ReadValue<float>() > 0) {
-            if (++crosshairIndex >= 200)
-                crosshairIndex = 0;
-        } else {
-            crosshairIndex--;
-            if (crosshairIndex < 0)
-                crosshairIndex = 199;
-        }
+        // if (context.ReadValue<float>() > 0) {
+        //     if (++crosshairIndex >= 200)
+        //         crosshairIndex = 0;
+        // } else {
+        //     crosshairIndex--;
+        //     if (crosshairIndex < 0)
+        //         crosshairIndex = 199;
+        // }
         
-        mirrorCrosshairImageComp.sprite = crosshairSprites[crosshairIndex];
-        print("Current mirror crosshair: \"" + crosshairSprites[crosshairIndex].name + "\"");
+        // mirrorCrosshairImageComp.sprite = crosshairSprites[crosshairIndex];
+        // print("Current mirror crosshair: \"" + crosshairSprites[crosshairIndex].name + "\"");
     }
 
     void OnToggleMirrorInput(InputAction.CallbackContext context) {
