@@ -17,7 +17,8 @@ public class AudioPlayer2D : MonoBehaviour {
     }
     
     public enum EClipMusic {
-        None
+        None,
+        Test
     }
     
     [Header("Audio Source and Mixer References")]
@@ -34,6 +35,12 @@ public class AudioPlayer2D : MonoBehaviour {
     AudioClip sfx_Plr_OutOfFuel;
     [SerializeField]
     AudioClip sfx_Plr_PickupFuel;
+    
+    [Header("Music references")]
+    [SerializeField]
+    AudioClip mus_Test;
+    
+    
     
     public void PlayClipSFX(EClipSFX clip) {
         switch (clip) {
@@ -63,19 +70,28 @@ public class AudioPlayer2D : MonoBehaviour {
         case EClipMusic.None:
             asMusic.Stop();
             break;
+        case EClipMusic.Test:
+            asMusic.clip = mus_Test;
+            asMusic.Play();
+            break;
         }
     }
     
     public void SetMasterVolume(float volume) {
-        MainAudioMixer.SetFloat("volMaster", Mathf.Lerp(-80, 0, volume / 100f));
+        MainAudioMixer.SetFloat("volMaster", calcLogarithmicVolume(volume));
     }
     
     public void SetSFXVolume(float volume) {
-        MainAudioMixer.SetFloat("volSFX", Mathf.Lerp(-80, 0, volume / 100f));
+        MainAudioMixer.SetFloat("volSFX", calcLogarithmicVolume(volume));
     }
     
     public void SetMusicVolume(float volume) {
-        MainAudioMixer.SetFloat("volMusic", Mathf.Lerp(-80, 0, volume / 100f));
+        MainAudioMixer.SetFloat("volMusic", calcLogarithmicVolume(volume));
+    }
+    
+    float calcLogarithmicVolume(float volume) {
+        volume /= 100f;
+        return volume <= 0.01f ? -80 : 20 * Mathf.Log10(volume);
     }
     
     void Awake() {
