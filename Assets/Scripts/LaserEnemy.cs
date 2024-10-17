@@ -2,9 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class LaserEnemy : MonoBehaviour
+public class LaserEnemy : EnemyBase
 {
-    public GameObject player;
     public LineRenderer laser;
     public float attackCooldown = 5f;
     public float windUpTime = 3f;
@@ -12,9 +11,6 @@ public class LaserEnemy : MonoBehaviour
     public float pauseBeforeFiring = 0.3f;
     public float rotationSpeed = 2f;
     public float laserDamage = 10f;
-
-    public GameObject fuelPrefab;
-    public int fuelAmount = 1;
 
     private bool isAttacking = false;
     private bool isLaserActive = false;
@@ -106,16 +102,4 @@ public class LaserEnemy : MonoBehaviour
         }
     }
 
-    void DropFuel()
-    {
-        for (int i = 0; i < fuelAmount; i++)
-        {
-            GameObject fuel = Instantiate(fuelPrefab, transform.position, Quaternion.identity);
-            Rigidbody fuelRb = fuel.GetComponent<Rigidbody>();
-            if (fuelRb != null)
-            {
-                fuelRb.useGravity = true;
-            }
-        }
-    }
 }

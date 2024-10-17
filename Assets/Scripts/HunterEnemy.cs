@@ -2,23 +2,25 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class HunterEnemy : MonoBehaviour
+public class HunterEnemy : EnemyBase
 {
     public float moveSpeed = 5f;
-    public GameObject player;
     public bool isStunned = false;
     public float stunDuration = 5f;
     public bool shieldActive = true;
 
-    public GameObject fuelPrefab;
-    public int fuelAmount = 1;
+    // for prefab testing purposes
+    public Material shieldActiveMaterial;
+    public Material shieldInactiveMaterial;
 
-    private Rigidbody rb;
+    private Renderer enemyRenderer;
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
+        enemyRenderer = GetComponent<Renderer>();
         shieldActive = true;
+        UpdateMaterial();
     }
 
     void Update()
@@ -41,6 +43,7 @@ public class HunterEnemy : MonoBehaviour
         {
             isStunned = true;
             shieldActive = false;
+            UpdateMaterial();
             rb.velocity = Vector3.zero;
             StartCoroutine(StunRecovery());
         }
@@ -51,6 +54,19 @@ public class HunterEnemy : MonoBehaviour
         yield return new WaitForSeconds(stunDuration);
         isStunned = false;
         shieldActive = true;
+        UpdateMaterial();
+    }
+
+    void UpdateMaterial()
+    {
+        if (shieldActive)
+        {
+            enemyRenderer.material = shieldActiveMaterial;
+        }
+        else
+        {
+            enemyRenderer.material = shieldInactiveMaterial;
+        }
     }
 
     public bool IsVulnerable()

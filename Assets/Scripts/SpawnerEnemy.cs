@@ -1,11 +1,12 @@
 using UnityEngine;
 using System.Collections;
 
-public class Enemy : MonoBehaviour
+public class Enemy : EnemyBase
 {
     public GameObject hunterEnemy;
     public float spawnDelay = 3f;
     public float spawnInterval = 10f;
+
     private bool canSpawnHunter = false;
 
     void Start()
@@ -36,4 +37,5 @@ public class Enemy : MonoBehaviour
 
         canSpawnHunter = true; 
     }
+
 }

@@ -7,14 +7,15 @@ public class EnemyBase : MonoBehaviour {
     
     public float MaxHealth = 50;
     public float health { private set; get; }
-    
     public float lastVacuumHitTime = 0f;
+    public GameObject fuelPrefab;
+    public int fuelAmount = 1;
+    public Rigidbody rb;
+    public PlayerCharacterCtrlr player = GameManager.CurrentPlayer;
     
     [Header("Enemy movement force")]
     [SerializeField]
-    float MovementForce = 425f;
-    
-    Rigidbody rb;
+    float MovementForce = 425f; 
     
     void Awake() {
         if (MaxHealth <= 0) Debug.LogWarning("Enemy MaxHealth set to a value <= 0 (set to " + MaxHealth + ").");
@@ -50,6 +51,19 @@ public class EnemyBase : MonoBehaviour {
             Destroy(gameObject);
         } else {
             // print("'" + gameObject.name + "' health now " + health);
+        }
+    }
+
+    public void DropFuel()
+    {
+        for (int i = 0; i < fuelAmount; i++)
+        {
+            GameObject fuel = Instantiate(fuelPrefab, transform.position, Quaternion.identity);
+            Rigidbody fuelRb = fuel.GetComponent<Rigidbody>();
+            if (fuelRb != null)
+            {
+                fuelRb.useGravity = true;
+            }
         }
     }
     
