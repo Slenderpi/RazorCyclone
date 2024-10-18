@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class LaserEnemy : EnemyBase
 {
-    public LineRenderer laser;
     public float attackCooldown = 5f;
     public float windUpTime = 3f;
     public float laserDuration = 3f;
@@ -12,6 +11,7 @@ public class LaserEnemy : EnemyBase
     public float rotationSpeed = 2f;
     public float laserDamage = 10f;
 
+    private LineRenderer laser;
     private bool isAttacking = false;
     private bool isLaserActive = false;
     private float attackTimer;
@@ -19,6 +19,7 @@ public class LaserEnemy : EnemyBase
     void Start()
     {
         attackTimer = attackCooldown;
+        laser = GetComponent<LineRenderer>();
         laser.enabled = false;
     }
 
@@ -28,6 +29,7 @@ public class LaserEnemy : EnemyBase
 
         if (!isAttacking && attackTimer <= 0f)
         {
+            Debug.Log("performing attack");
             StartCoroutine(PerformAttack());
             attackTimer = attackCooldown;
         }
@@ -72,15 +74,21 @@ public class LaserEnemy : EnemyBase
 
     void RotateTowardsPlayer()
     {
-        Vector3 direction = (player.transform.position - transform.position).normalized;
-        Quaternion lookRotation = Quaternion.LookRotation(direction);
-        transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * rotationSpeed);
+        if (player != null) {
+            Vector3 direction = (player.transform.position - transform.position).normalized;
+            Quaternion lookRotation = Quaternion.LookRotation(direction);
+            transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * rotationSpeed);
+        }
     }
 
     void UpdateLaserLine()
     {
-        laser.SetPosition(0, transform.position);
-        laser.SetPosition(1, player.transform.position);
+        if (player != null) {
+            Debug.Log("player position: " + player.transform.position);
+
+            laser.SetPosition(0, transform.position);
+            laser.SetPosition(1, player.transform.position);
+        }
     }
 
     IEnumerator FireLaser()
@@ -92,14 +100,15 @@ public class LaserEnemy : EnemyBase
         }
     }
 
+    // testing purposes
     void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Vacuum") || other.CompareTag("Cannon"))
-        {
+        // if (other.CompareTag("Vacuum") || other.CompareTag("Cannon"))
+        // {
             Debug.Log("successfullly hit laser enemy");
             DropFuel();
             Destroy(gameObject);
-        }
+        // }
     }
 
 }

@@ -9,16 +9,15 @@ public class HunterEnemy : EnemyBase
     public float stunDuration = 5f;
     public bool shieldActive = true;
 
-    // for prefab testing purposes
     public Material shieldActiveMaterial;
     public Material shieldInactiveMaterial;
-
-    private Renderer enemyRenderer;
+    private MeshRenderer enemyRenderer;
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
-        enemyRenderer = GetComponent<Renderer>();
+        Transform sphereTransform = transform.Find("Sphere");
+        enemyRenderer = sphereTransform.GetComponent<MeshRenderer>();
         shieldActive = true;
         UpdateMaterial();
     }
@@ -33,14 +32,18 @@ public class HunterEnemy : EnemyBase
 
     void ChasePlayer()
     {
-        Vector3 direction = (player.transform.position - transform.position).normalized;
-        rb.velocity = direction * moveSpeed;
+        if (player != null) {
+            Debug.Log("chasing player");
+            Vector3 direction = (player.transform.position - transform.position).normalized;
+            rb.velocity = direction * moveSpeed;
+        }
     }
 
     public void GetStunned()
     {
         if (!isStunned)
         {
+            Debug.Log("enemy stunned");
             isStunned = true;
             shieldActive = false;
             UpdateMaterial();
@@ -61,11 +64,13 @@ public class HunterEnemy : EnemyBase
     {
         if (shieldActive)
         {
-            enemyRenderer.material = shieldActiveMaterial;
+            Debug.Log("changing to white");
+            enemyRenderer.material.color = Color.white;
         }
         else
-        {
-            enemyRenderer.material = shieldInactiveMaterial;
+        {            
+            Debug.Log("changing to red");
+            enemyRenderer.material.color = Color.red;
         }
     }
 
@@ -74,13 +79,15 @@ public class HunterEnemy : EnemyBase
         return !shieldActive;
     }
 
+    // testing purposes
     void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Projectile"))
-        {
+        // if (other.CompareTag("Projectile"))
+        // {
             GetStunned();
-        }
+        // }
 
+        /*
         if (other.CompareTag("Vacuum") && IsVulnerable())
         {
             Debug.Log("hunter got vaccuuuuumed up");
@@ -94,6 +101,7 @@ public class HunterEnemy : EnemyBase
             DropFuel();
             Destroy(gameObject);
         }
+        */
     }
 
     void DropFuel()
