@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
+using UnityEngine.Video;
 
 public class PlayerCharacterCtrlr : MonoBehaviour {
     
@@ -279,11 +280,16 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         desiredRotation.x = x;
         desiredRotation.y = y;
         desiredRotation.z = z;
-        if (desiredRotation.magnitude > 0.00001) {
+        if (desiredRotation.magnitude > 0.0001f) {
             prevDesiredRotation = desiredRotation;
+            Vector3 prevWpRelRot = weaponRelativeRot;
             weaponRelativeRot = desiredRotation.normalized;
+            if (prevWpRelRot != weaponRelativeRot) {
+                AudioPlayer2D.Instance.PlayClipSFX(AudioPlayer2D.EClipSFX.Plr_RotateWoosh);
+            }
         } else {
             weaponRelativeRot = prevDesiredRotation.normalized;
+            print(2);
         }
     }
     

@@ -5931,7 +5931,9 @@ MonoBehaviour:
   sfx_Weapon_CanonShot: {fileID: 8300000, guid: 34bde0edf6af6c04583b01c7cc8734f4, type: 3}
   sfx_Plr_OutOfFuel: {fileID: 8300000, guid: b97018fd007c6da498b8ff207cd2f500, type: 3}
   sfx_Plr_PickupFuel: {fileID: 8300000, guid: aaf9625f52008374cb46ed0b7ee11769, type: 3}
+  sfx_Plr_RotateWoosh: {fileID: 8300000, guid: 9dd2054915a8ff142bea04773809a36c, type: 3}
   mus_Test: {fileID: 8300000, guid: b911a7ff974af9e479b08a0be309998e, type: 3}
+  enableRotationSound: 1
 --- !u!1 &903107656
 GameObject:
   m_ObjectHideFlags: 0

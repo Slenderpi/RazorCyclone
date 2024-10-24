@@ -13,7 +13,8 @@ public class AudioPlayer2D : MonoBehaviour {
         Kill_DirectHit,
         Weapon_CanonShot,
         Plr_OutOfFuel,
-        Plr_PickupFuel
+        Plr_PickupFuel,
+        Plr_RotateWoosh
     }
     
     public enum EClipMusic {
@@ -35,12 +36,22 @@ public class AudioPlayer2D : MonoBehaviour {
     AudioClip sfx_Plr_OutOfFuel;
     [SerializeField]
     AudioClip sfx_Plr_PickupFuel;
+    [SerializeField]
+    AudioClip sfx_Plr_RotateWoosh;
     
     [Header("Music references")]
     [SerializeField]
     AudioClip mus_Test;
     
+    [Header("Temporary")]
+    public bool enableRotationSound = true;
     
+    
+    
+    void Awake() {
+        Instance = this;
+        // TODO: Create multiple sfx players to play sounds from
+    }
     
     public void PlayClipSFX(EClipSFX clip) {
         switch (clip) {
@@ -61,6 +72,11 @@ public class AudioPlayer2D : MonoBehaviour {
             // asSFX.clip = sfx_Plr_PickupFuel;
             // asSFX.Play();
             asSFX.PlayOneShot(sfx_Plr_PickupFuel);
+            break;
+        case EClipSFX.Plr_RotateWoosh:
+            if (!enableRotationSound) return;
+            asSFX.clip = sfx_Plr_RotateWoosh;
+            asSFX.Play();
             break;
         }
     }
@@ -92,10 +108,6 @@ public class AudioPlayer2D : MonoBehaviour {
     float calcLogarithmicVolume(float volume) {
         volume /= 100f;
         return volume <= 0.01f ? -80 : 20 * Mathf.Log10(volume);
-    }
-    
-    void Awake() {
-        Instance = this;
     }
     
 }
