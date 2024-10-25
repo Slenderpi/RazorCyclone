@@ -107,6 +107,24 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""_TakeDamage"",
+                    ""type"": ""Button"",
+                    ""id"": ""77e3a2cc-c913-4e44-9b56-9d60ff4e9df0"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""_HealHealth"",
+                    ""type"": ""Button"",
+                    ""id"": ""5b539fa7-d0b4-46c8-9e83-7a98ab60e7ff"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -494,6 +512,28 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
                     ""action"": ""_ToggleTP"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""cf4274c0-d575-4d1c-9c4f-72a05b169e9c"",
+                    ""path"": ""<Keyboard>/g"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""_TakeDamage"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""7df5a030-d01c-465d-a18a-de58207c1726"",
+                    ""path"": ""<Keyboard>/h"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""_HealHealth"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -539,6 +579,8 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
         m_Player__ToggleTP = m_Player.FindAction("_ToggleTP", throwIfNotFound: true);
         m_Player__AddFuel = m_Player.FindAction("_AddFuel", throwIfNotFound: true);
         m_Player__ToggleMirror = m_Player.FindAction("_ToggleMirror", throwIfNotFound: true);
+        m_Player__TakeDamage = m_Player.FindAction("_TakeDamage", throwIfNotFound: true);
+        m_Player__HealHealth = m_Player.FindAction("_HealHealth", throwIfNotFound: true);
         // PauseMenu
         m_PauseMenu = asset.FindActionMap("PauseMenu", throwIfNotFound: true);
         m_PauseMenu_Escape = m_PauseMenu.FindAction("Escape", throwIfNotFound: true);
@@ -610,6 +652,8 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
     private readonly InputAction m_Player__ToggleTP;
     private readonly InputAction m_Player__AddFuel;
     private readonly InputAction m_Player__ToggleMirror;
+    private readonly InputAction m_Player__TakeDamage;
+    private readonly InputAction m_Player__HealHealth;
     public struct PlayerActions
     {
         private @PlayerInputActions m_Wrapper;
@@ -623,6 +667,8 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
         public InputAction @_ToggleTP => m_Wrapper.m_Player__ToggleTP;
         public InputAction @_AddFuel => m_Wrapper.m_Player__AddFuel;
         public InputAction @_ToggleMirror => m_Wrapper.m_Player__ToggleMirror;
+        public InputAction @_TakeDamage => m_Wrapper.m_Player__TakeDamage;
+        public InputAction @_HealHealth => m_Wrapper.m_Player__HealHealth;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -659,6 +705,12 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
                 @_ToggleMirror.started -= m_Wrapper.m_PlayerActionsCallbackInterface.On_ToggleMirror;
                 @_ToggleMirror.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.On_ToggleMirror;
                 @_ToggleMirror.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.On_ToggleMirror;
+                @_TakeDamage.started -= m_Wrapper.m_PlayerActionsCallbackInterface.On_TakeDamage;
+                @_TakeDamage.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.On_TakeDamage;
+                @_TakeDamage.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.On_TakeDamage;
+                @_HealHealth.started -= m_Wrapper.m_PlayerActionsCallbackInterface.On_HealHealth;
+                @_HealHealth.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.On_HealHealth;
+                @_HealHealth.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.On_HealHealth;
             }
             m_Wrapper.m_PlayerActionsCallbackInterface = instance;
             if (instance != null)
@@ -690,6 +742,12 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
                 @_ToggleMirror.started += instance.On_ToggleMirror;
                 @_ToggleMirror.performed += instance.On_ToggleMirror;
                 @_ToggleMirror.canceled += instance.On_ToggleMirror;
+                @_TakeDamage.started += instance.On_TakeDamage;
+                @_TakeDamage.performed += instance.On_TakeDamage;
+                @_TakeDamage.canceled += instance.On_TakeDamage;
+                @_HealHealth.started += instance.On_HealHealth;
+                @_HealHealth.performed += instance.On_HealHealth;
+                @_HealHealth.canceled += instance.On_HealHealth;
             }
         }
     }
@@ -738,6 +796,8 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
         void On_ToggleTP(InputAction.CallbackContext context);
         void On_AddFuel(InputAction.CallbackContext context);
         void On_ToggleMirror(InputAction.CallbackContext context);
+        void On_TakeDamage(InputAction.CallbackContext context);
+        void On_HealHealth(InputAction.CallbackContext context);
     }
     public interface IPauseMenuActions
     {

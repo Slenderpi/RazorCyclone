@@ -117,12 +117,10 @@ public class UIGamePanel : UIPanel {
     public override void OnPlayerSpawned(PlayerCharacterCtrlr plr) {
         plr.A_FuelChanged += OnFuelChanged;
         ResetUIElements();
-        // SetActive(true);
     }
 
     public override void OnPlayerDestroying(PlayerCharacterCtrlr plr) {
         plr.A_FuelChanged -= OnFuelChanged;
-        // SetActive(false);
     }
     
     public void ResetUIElements() {

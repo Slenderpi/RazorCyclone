@@ -14,7 +14,8 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     
     // Events
     public event Action<float, float> A_FuelChanged; // float changeAmnt, float fuelPerc
-    // public event Action<float> A_HealthChanged; // float changeAmnt
+    public event Action<float> A_PlayerTakenDamage; // float amount
+    public event Action<float> A_PlayerHealed; // float amount
     
     [HideInInspector]
     public float mouseSensitivity;
@@ -172,6 +173,18 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     public void AddFuel(float amount) {
         currentFuel = Mathf.Clamp(currentFuel + amount, 0, MaxFuel);
         A_FuelChanged?.Invoke(amount, currentFuel / MaxFuel);
+    }
+    
+    public void TakeDamage(float amount) {
+        // TODO
+        
+        A_PlayerTakenDamage?.Invoke(amount);
+    }
+    
+    public void HealHealth(float amount) {
+        // TODO
+        
+        A_PlayerHealed?.Invoke(amount);
     }
     
     void signifyOutOfFuel() {
@@ -395,13 +408,15 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
             
             /** Features not necessarily meant for final gameplay **/
             inputActions._ToggleTP.Enable();
-            inputActions._ToggleTP.started += OnToggleThirdPerson;
+            inputActions._ToggleTP.started += On_ToggleThirdPerson;
             inputActions._AddFuel.Enable();
-            inputActions._AddFuel.started += OnAddFuelKey;
-            // inputActions._CycleCrosshair.Enable();
-            // inputActions._CycleCrosshair.started += OnCycleCrosshairInput;
+            inputActions._AddFuel.started += On_AddFuelKey;
             inputActions._ToggleMirror.Enable();
-            inputActions._ToggleMirror.started += OnToggleMirrorInput;
+            inputActions._ToggleMirror.started += On_ToggleMirrorInput;
+            inputActions._TakeDamage.Enable();
+            inputActions._TakeDamage.started += On_TakeDamage;
+            inputActions._HealHealth.Enable();
+            inputActions._HealHealth.started += On_HealHealth;
         } else {
             inputActions.Look.Disable();
             inputActions.TurnInputs.Disable();
@@ -425,13 +440,15 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
             
             /** Features not necessarily meant for final gameplay **/
             inputActions._ToggleTP.Disable();
-            inputActions._ToggleTP.started -= OnToggleThirdPerson;
+            inputActions._ToggleTP.started -= On_ToggleThirdPerson;
             inputActions._AddFuel.Disable();
-            inputActions._AddFuel.started -= OnAddFuelKey;
-            // inputActions._CycleCrosshair.Disable();
-            // inputActions._CycleCrosshair.started -= OnCycleCrosshairInput;
+            inputActions._AddFuel.started -= On_AddFuelKey;
             inputActions._ToggleMirror.Disable();
-            inputActions._ToggleMirror.started -= OnToggleMirrorInput;
+            inputActions._ToggleMirror.started -= On_ToggleMirrorInput;
+            inputActions._TakeDamage.Disable();
+            inputActions._TakeDamage.started -= On_TakeDamage;
+            inputActions._HealHealth.Disable();
+            inputActions._HealHealth.started -= On_HealHealth;
         }
     }
 
@@ -443,37 +460,30 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
 
     /*****  Probably temporary stuff  *****/
     
-    void OnToggleThirdPerson(InputAction.CallbackContext context) {
+    void On_ToggleThirdPerson(InputAction.CallbackContext context) {
         isInThirdPerson = !isInThirdPerson;
-        if (isInThirdPerson) {
-            
-        } else {
-            
-        }
     }
 
-    void OnAddFuelKey(InputAction.CallbackContext context) {
-        print("Fully refueling fuel.");
+    void On_AddFuelKey(InputAction.CallbackContext context) {
+        print("Fully refueling fuel (F cheat key).");
         AddFuel(MaxFuel);
     }
 
-    void OnCycleCrosshairInput(InputAction.CallbackContext context) {
-        // if (context.ReadValue<float>() > 0) {
-        //     if (++crosshairIndex >= 200)
-        //         crosshairIndex = 0;
-        // } else {
-        //     crosshairIndex--;
-        //     if (crosshairIndex < 0)
-        //         crosshairIndex = 199;
-        // }
-        
-        // mirrorCrosshairImageComp.sprite = crosshairSprites[crosshairIndex];
-        // print("Current mirror crosshair: \"" + crosshairSprites[crosshairIndex].name + "\"");
-    }
-
-    void OnToggleMirrorInput(InputAction.CallbackContext context) {
+    void On_ToggleMirrorInput(InputAction.CallbackContext context) {
         mirrorModelEnabled = !mirrorModelEnabled;
         rearMirrorModel.SetActive(mirrorModelEnabled);
+    }
+    
+    void On_TakeDamage(InputAction.CallbackContext context) {
+        float DamageAmount = 10;
+        print("Damaging player for " + DamageAmount + " damage.");
+        TakeDamage(DamageAmount);
+    }
+    
+    void On_HealHealth(InputAction.CallbackContext context) {
+        float HealAmount = 10;
+        print("Healing player for " + HealAmount + " health.");
+        HealHealth(HealAmount);
     }
     
 }
