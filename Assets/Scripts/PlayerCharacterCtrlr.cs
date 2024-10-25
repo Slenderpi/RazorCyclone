@@ -68,8 +68,6 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     float CanonDamage = 30;
     
     [Header("Fuel Settings")]
-    [HideInInspector]
-    public float MaxFuel = 100f;
     [SerializeField]
     float CanonFuelCost = 6f;
     [SerializeField]
@@ -77,11 +75,14 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     float VacuumFuelTime = 8f; // The amount of seconds to spend 100 fuel
     float vacuumFuelCost; // Calculated based on VacuumFuelTime
     [HideInInspector]
+    public float MaxFuel = 100f;
+    [HideInInspector]
     public float currentFuel;
     
     // NOTE: Player current health will be represented by MaxFuel. True maximum health (and fuel) is then MaxHealth
     [Tooltip("The true maximum health of the player. MaximumFuel will be capped by this value.")]
-    public float MaxHealth = 100f;
+    // [HideInInspector]
+    public float MaxHealth = 200;
     // float currentHealth;
     
     float lookVertRot = 0;
@@ -96,10 +97,10 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     
     
     /** Variables for likely to be temporary features **/
-    bool isInThirdPerson = false;
+    [Header("Temporary/testing")]
     [SerializeField]
     float thirdPersonDist = 1.2f;
-    [Header("Temporary/testing")]
+    bool isInThirdPerson = false;
     [SerializeField]
     GameObject rearMirrorModel;
     bool mirrorModelEnabled = false;
@@ -125,7 +126,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         
         AddFuel(MaxFuel);
         vacuumFuelCost = MaxFuel / VacuumFuelTime * Time.fixedDeltaTime;
-        MaxFuel = MaxHealth;
+        // MaxFuel = MaxHealth;
         
         // _pausePanel.SetActive(false);
         

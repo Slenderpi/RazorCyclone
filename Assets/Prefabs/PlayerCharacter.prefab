@@ -291,6 +291,8 @@ MonoBehaviour:
   MaxFuel: 100
   CanonFuelCost: 15
   VacuumFuelTime: 10
+  currentFuel: 0
+  MaxHealth: 200
   thirdPersonDist: 1.2
   rearMirrorModel: {fileID: 2843522477064941511}
 --- !u!54 &726438411730522680

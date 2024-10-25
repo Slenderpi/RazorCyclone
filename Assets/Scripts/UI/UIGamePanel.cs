@@ -142,8 +142,13 @@ public class UIGamePanel : UIPanel {
     }
     
     public void ResetUIElements() {
-        OnFuelChanged(0, 1);
-        FuelLimit.localScale = new Vector3(0, 1, 1);
+        float flx = 0;
+        if (GameManager.CurrentPlayer) {
+            PlayerCharacterCtrlr plr = GameManager.CurrentPlayer;
+            flx = plr.MaxFuel / plr.MaxHealth;
+        }
+        OnFuelChanged(0, flx);
+        FuelLimit.localScale = new Vector3(1 - flx, 1, 1);
         OnTurnInputChanged(Vector2.zero);
         OnVertInputChanged(0);
         OnFireVacuum(false);
