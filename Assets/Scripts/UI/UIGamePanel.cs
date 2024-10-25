@@ -8,6 +8,7 @@ public class UIGamePanel : UIPanel {
     [Header("Fuel Gauge")]
     public Slider FuelSlider;
     public Animator FuelOutlineAnimator;
+    public RectTransform FuelLimit;
     
     [Header("Crosshairs")]
     public RectTransform MainVacuumCrosshair;
@@ -92,12 +93,25 @@ public class UIGamePanel : UIPanel {
     }
     
     public void OnFuelChanged(float changeAmnt, float perc) {
-        FuelSlider.value = perc;
+        PlayerCharacterCtrlr plr = GameManager.CurrentPlayer;
+        FuelSlider.value = plr.currentFuel / plr.MaxHealth;
         if (changeAmnt > 0) {
             FuelOutlineAnimator.SetTrigger("RefillFuel");
             // Temporary?
             GameManager.Instance.Audio2D.PlayClipSFX(AudioPlayer2D.EClipSFX.Plr_PickupFuel);
         }
+    }
+    
+    public void OnPlayerTakenDamage(float dmgAmnt, float newMaxHealth) {
+        PlayerCharacterCtrlr plr = GameManager.CurrentPlayer;
+        FuelSlider.value = plr.currentFuel / plr.MaxHealth;
+        FuelLimit.localScale = new Vector3(1 - newMaxHealth / plr.MaxHealth, 1, 1);
+    }
+    
+    public void OnPlayerHealed(float healAmnt, float newMaxHealth) {
+        PlayerCharacterCtrlr plr = GameManager.CurrentPlayer;
+        FuelSlider.value = plr.currentFuel / plr.MaxHealth;
+        FuelLimit.localScale = new Vector3(1 - newMaxHealth / plr.MaxHealth, 1, 1);
     }
     
     public void OnOutOfFuel() {
@@ -116,15 +130,20 @@ public class UIGamePanel : UIPanel {
     
     public override void OnPlayerSpawned(PlayerCharacterCtrlr plr) {
         plr.A_FuelChanged += OnFuelChanged;
+        plr.A_PlayerTakenDamage += OnPlayerTakenDamage;
+        plr.A_PlayerHealed += OnPlayerHealed;
         ResetUIElements();
     }
 
     public override void OnPlayerDestroying(PlayerCharacterCtrlr plr) {
         plr.A_FuelChanged -= OnFuelChanged;
+        plr.A_PlayerTakenDamage -= OnPlayerTakenDamage;
+        plr.A_PlayerHealed -= OnPlayerHealed;
     }
     
     public void ResetUIElements() {
         OnFuelChanged(0, 1);
+        FuelLimit.localScale = new Vector3(0, 1, 1);
         OnTurnInputChanged(Vector2.zero);
         OnVertInputChanged(0);
         OnFireVacuum(false);

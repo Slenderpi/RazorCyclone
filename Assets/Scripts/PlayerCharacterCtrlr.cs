@@ -14,8 +14,8 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     
     // Events
     public event Action<float, float> A_FuelChanged; // float changeAmnt, float fuelPerc
-    public event Action<float> A_PlayerTakenDamage; // float amount
-    public event Action<float> A_PlayerHealed; // float amount
+    public event Action<float, float> A_PlayerTakenDamage; // float dmgAmnt, float newMaxHealth
+    public event Action<float, float> A_PlayerHealed; // float dmgAmnt, float newMaxHealth
     
     [HideInInspector]
     public float mouseSensitivity;
@@ -68,18 +68,21 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     float CanonDamage = 30;
     
     [Header("Fuel Settings")]
-    [SerializeField]
-    float MaxFuel = 100f;
+    [HideInInspector]
+    public float MaxFuel = 100f;
     [SerializeField]
     float CanonFuelCost = 6f;
     [SerializeField]
     [Tooltip("The amount of seconds to spend 100 fuel")]
     float VacuumFuelTime = 8f; // The amount of seconds to spend 100 fuel
     float vacuumFuelCost; // Calculated based on VacuumFuelTime
-    float currentFuel;
+    [HideInInspector]
+    public float currentFuel;
     
-    float MaxHealth = 100f;
-    float currentHealth;
+    // NOTE: Player current health will be represented by MaxFuel. True maximum health (and fuel) is then MaxHealth
+    [Tooltip("The true maximum health of the player. MaximumFuel will be capped by this value.")]
+    public float MaxHealth = 100f;
+    // float currentHealth;
     
     float lookVertRot = 0;
     Vector3 aimPoint = Vector3.zero;
@@ -122,7 +125,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         
         AddFuel(MaxFuel);
         vacuumFuelCost = MaxFuel / VacuumFuelTime * Time.fixedDeltaTime;
-        currentHealth = MaxHealth;
+        MaxFuel = MaxHealth;
         
         // _pausePanel.SetActive(false);
         
@@ -176,15 +179,20 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     }
     
     public void TakeDamage(float amount) {
-        // TODO
-        
-        A_PlayerTakenDamage?.Invoke(amount);
+        // NOTE: Health is tied to maximum fuel
+        MaxFuel = Mathf.Max(MaxFuel - amount, 0);
+        currentFuel = Mathf.Min(currentFuel, MaxFuel);
+        A_PlayerTakenDamage?.Invoke(amount, MaxFuel);
+        if (MaxFuel == 0) {
+            print("Player died!");
+        }
     }
     
     public void HealHealth(float amount) {
-        // TODO
-        
-        A_PlayerHealed?.Invoke(amount);
+        // NOTE: Health is tied to maximum fuel
+        MaxFuel = Mathf.Min(MaxFuel + amount, MaxHealth);
+        currentFuel = Mathf.Min(currentFuel + amount, MaxFuel); // currentFuel is increased by same amount
+        A_PlayerHealed?.Invoke(amount, MaxFuel);
     }
     
     void signifyOutOfFuel() {
