@@ -31,6 +31,7 @@ public class EnemyBase : MonoBehaviour {
         
     }
     
+    /*
     void FixedUpdate() {
         if (GameManager.CurrentPlayer) {
             rb.AddForce(
@@ -38,6 +39,21 @@ public class EnemyBase : MonoBehaviour {
                 (GameManager.CurrentPlayer.transform.position - transform.position).normalized * MovementForce,
                 ForceMode.Force
             );
+        }
+    }
+    */
+
+    // modify depending on enemy specifics / actual health system
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Player"))
+        {
+            PlayerCharacterCtrlr player = GameManager.CurrentPlayer;
+            if (player != null)
+            {
+                player.DepleteHealth(1);
+                Debug.Log("player health reduced");
+            }
         }
     }
     
