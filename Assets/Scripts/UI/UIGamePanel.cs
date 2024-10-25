@@ -9,6 +9,10 @@ public class UIGamePanel : UIPanel {
     public Slider FuelSlider;
     public Animator FuelOutlineAnimator;
     
+    [Header("Health")]
+    public Slider Healthbar;
+    public Image HealthbarFill;
+    
     [Header("Crosshairs")]
     public RectTransform MainVacuumCrosshair;
     public RectTransform MainCanonCrosshair;
@@ -100,6 +104,14 @@ public class UIGamePanel : UIPanel {
         }
     }
     
+    public void OnPlayerTakenDamage(float dmgAmnt, float perc) {
+        updateHealthbarVisual(perc);
+    }
+    
+    public void OnPlayerHealed(float healAmnt, float perc) {
+        updateHealthbarVisual(perc);
+    }
+    
     public void OnOutOfFuel() {
         AnimatorStateInfo asi = FuelOutlineAnimator.GetCurrentAnimatorStateInfo(0);
         if (!asi.IsName("OutOfFuelBlink") || asi.normalizedTime >= 0.8f)
@@ -116,20 +128,31 @@ public class UIGamePanel : UIPanel {
     
     public override void OnPlayerSpawned(PlayerCharacterCtrlr plr) {
         plr.A_FuelChanged += OnFuelChanged;
+        plr.A_PlayerTakenDamage += OnPlayerTakenDamage;
+        plr.A_PlayerHealed += OnPlayerHealed;
         ResetUIElements();
     }
 
     public override void OnPlayerDestroying(PlayerCharacterCtrlr plr) {
         plr.A_FuelChanged -= OnFuelChanged;
+        plr.A_PlayerTakenDamage -= OnPlayerTakenDamage;
+        plr.A_PlayerHealed -= OnPlayerHealed;
     }
     
     public void ResetUIElements() {
         OnFuelChanged(0, 1);
+        OnPlayerHealed(0, 1);
         OnTurnInputChanged(Vector2.zero);
         OnVertInputChanged(0);
         OnFireVacuum(false);
         OnFireCanon(false);
         FuelOutlineAnimator.SetTrigger("Reset");
+    }
+    
+    void updateHealthbarVisual(float perc) {
+        PlayerCharacterCtrlr plr = GameManager.CurrentPlayer;
+        Healthbar.value = perc;
+        HealthbarFill.color = plr.currentHealth <= plr.HealthDebuffMaxedAtRaw ? Color.red : Color.green;
     }
 
 }

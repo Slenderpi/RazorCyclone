@@ -14,8 +14,8 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     
     // Events
     public event Action<float, float> A_FuelChanged; // float changeAmnt, float fuelPerc
-    public event Action<float> A_PlayerTakenDamage; // float amount
-    public event Action<float> A_PlayerHealed; // float amount
+    public event Action<float, float> A_PlayerTakenDamage; // float dmgAmnt, float healthPerc
+    public event Action<float, float> A_PlayerHealed; // float healAmnt, float healthPerc
     
     [HideInInspector]
     public float mouseSensitivity;
@@ -78,8 +78,18 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     float vacuumFuelCost; // Calculated based on VacuumFuelTime
     float currentFuel;
     
-    float MaxHealth = 100f;
-    float currentHealth;
+    [HideInInspector]
+    public float MaxHealth = 100f;
+    [HideInInspector]
+    public float currentHealth;
+    [Header("Health to Debuff Settings")]
+    [Tooltip("Lowest (raw) health that debuffs can be applied. For example, a value of 30 means debuff is maxed (and capped at max) for health <= 30.")]
+    public float HealthDebuffMaxedAtRaw = 30; // If raw health <= this then debuff is at maximum
+    [Tooltip("Maximum debuff power. For example, a value of 0.7 means when health <= HealthDebuffMaxedAtRaw, canon force is at 70% power.")]
+    public float HealthDebuffMaxDebuffPerc = 0.7f; // Maximum debuff power. E.g. 0.7f can be 0.7 of max force
+    [HideInInspector]
+    public float currDebuffMultiplier = 1;
+    public bool HealWhenFuelIsAdded = true;
     
     float lookVertRot = 0;
     Vector3 aimPoint = Vector3.zero;
@@ -93,10 +103,10 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     
     
     /** Variables for likely to be temporary features **/
-    bool isInThirdPerson = false;
+    [Header("Temporary/testing")]
     [SerializeField]
     float thirdPersonDist = 1.2f;
-    [Header("Temporary/testing")]
+    bool isInThirdPerson = false;
     [SerializeField]
     GameObject rearMirrorModel;
     bool mirrorModelEnabled = false;
@@ -120,9 +130,9 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         
         AimRayLayerMask = ~(1 << LayerMask.NameToLayer("Player"));
         
-        AddFuel(MaxFuel);
         vacuumFuelCost = MaxFuel / VacuumFuelTime * Time.fixedDeltaTime;
         currentHealth = MaxHealth;
+        AddFuel(MaxFuel);
         
         // _pausePanel.SetActive(false);
         
@@ -157,7 +167,10 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
                 // signifyOutOfFuel();
             } else {
                 AddFuel(-vacuumFuelCost);
-                rb.AddForce(charPivot.forward * (rb.velocity.magnitude <= VacuumForceNormalSpeed ? VacuumForceLowSpeed : VacuumForce), ForceMode.Acceleration);
+                rb.AddForce(
+                    charPivot.forward * (rb.velocity.magnitude <= VacuumForceNormalSpeed ? VacuumForceLowSpeed : VacuumForce) * currDebuffMultiplier,
+                    ForceMode.Acceleration
+                );
             }
         }
         
@@ -173,18 +186,32 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     public void AddFuel(float amount) {
         currentFuel = Mathf.Clamp(currentFuel + amount, 0, MaxFuel);
         A_FuelChanged?.Invoke(amount, currentFuel / MaxFuel);
+        if (HealWhenFuelIsAdded && amount > 0) {
+            HealHealth(20);
+        }
     }
     
     public void TakeDamage(float amount) {
-        // TODO
-        
-        A_PlayerTakenDamage?.Invoke(amount);
+        currentHealth = Mathf.Max(currentHealth - amount, 0);
+        A_PlayerTakenDamage?.Invoke(amount, currentHealth / MaxHealth);
+        updateDebuff();
+        if (currentHealth == 0) {
+            print("Player died!");
+        }
     }
     
     public void HealHealth(float amount) {
-        // TODO
-        
-        A_PlayerHealed?.Invoke(amount);
+        currentHealth = Mathf.Min(currentHealth + amount, MaxHealth);
+        A_PlayerHealed?.Invoke(amount, currentHealth / MaxHealth);
+        updateDebuff();
+    }
+    
+    void updateDebuff() {
+        currDebuffMultiplier = Mathf.Lerp(
+            HealthDebuffMaxDebuffPerc,
+            1,
+            Mathf.Clamp((currentHealth - HealthDebuffMaxedAtRaw) / (MaxHealth - HealthDebuffMaxedAtRaw), 0, 1)
+        );
     }
     
     void signifyOutOfFuel() {
@@ -302,13 +329,12 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
             }
         } else {
             weaponRelativeRot = prevDesiredRotation.normalized;
-            print(2);
         }
     }
     
     void fireCanon() {
         updateRayCastedAimPoint();
-        rb.AddForce((charModel.rotation * weaponRelativeRot).normalized * CanonForce * 100000);
+        rb.AddForce((charModel.rotation * weaponRelativeRot).normalized * CanonForce * 100000 * currDebuffMultiplier);
         ProjectileBase proj = Instantiate(projectilePrefab, canonTip.position, canonTip.rotation);
         proj.damage = CanonDamage;
         proj.GetComponent<Rigidbody>().AddForce((aimPoint - canonTip.position).normalized * CanonProjSpeed + rb.velocity, ForceMode.VelocityChange);

@@ -43,13 +43,12 @@ public class EnemyBase : MonoBehaviour {
     public void TakeDamage(float amnt) {
         if (health <= 0) return;
         health -= amnt;
-        GameManager.CurrentPlayer.AddFuel(amnt * 0.2f);
         if (health <= 0) {
             // print("'" + gameObject.name + "' died.");
             GameManager.Instance.OnEnemyDied();
             Destroy(gameObject);
         } else {
-            // print("'" + gameObject.name + "' health now " + health);
+            GameManager.CurrentPlayer.AddFuel(amnt * 0.2f);
         }
     }
     

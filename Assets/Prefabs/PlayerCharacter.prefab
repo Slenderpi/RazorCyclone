@@ -291,6 +291,12 @@ MonoBehaviour:
   MaxFuel: 100
   CanonFuelCost: 15
   VacuumFuelTime: 10
+  MaxHealth: 100
+  currentHealth: 0
+  HealthDebuffMaxedAtRaw: 30
+  HealthDebuffMaxDebuffPerc: 0.65
+  currDebuffMultiplier: 1
+  HealWhenFuelIsAdded: 1
   thirdPersonDist: 1.2
   rearMirrorModel: {fileID: 2843522477064941511}
 --- !u!54 &726438411730522680
