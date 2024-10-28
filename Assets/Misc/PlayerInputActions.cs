@@ -100,18 +100,27 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""_CycleCrosshair"",
+                    ""name"": ""_ToggleMirror"",
                     ""type"": ""Button"",
-                    ""id"": ""6707b499-9332-4655-9d7e-59a5dde129bf"",
+                    ""id"": ""622a0427-1d76-47cc-977f-e5a7b8b11e5f"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""_ToggleMirror"",
+                    ""name"": ""_TakeDamage"",
                     ""type"": ""Button"",
-                    ""id"": ""622a0427-1d76-47cc-977f-e5a7b8b11e5f"",
+                    ""id"": ""77e3a2cc-c913-4e44-9b56-9d60ff4e9df0"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""_HealHealth"",
+                    ""type"": ""Button"",
+                    ""id"": ""5b539fa7-d0b4-46c8-9e83-7a98ab60e7ff"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
@@ -483,39 +492,6 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 },
                 {
-                    ""name"": ""1D Axis"",
-                    ""id"": ""5bfb5ca2-5c93-433d-874f-b4ae8449e39c"",
-                    ""path"": ""1DAxis"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""_CycleCrosshair"",
-                    ""isComposite"": true,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": ""negative"",
-                    ""id"": ""cc4049de-7cb8-4504-ba5a-5e3cd52259ad"",
-                    ""path"": ""<Keyboard>/comma"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""_CycleCrosshair"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""positive"",
-                    ""id"": ""e07a042b-7587-48d1-9fa0-adea5a635598"",
-                    ""path"": ""<Keyboard>/period"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""_CycleCrosshair"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
                     ""name"": """",
                     ""id"": ""518834d8-f541-4e50-80e3-5e15690e526e"",
                     ""path"": ""<Keyboard>/m"",
@@ -534,6 +510,28 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""_ToggleTP"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""cf4274c0-d575-4d1c-9c4f-72a05b169e9c"",
+                    ""path"": ""<Keyboard>/g"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""_TakeDamage"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""7df5a030-d01c-465d-a18a-de58207c1726"",
+                    ""path"": ""<Keyboard>/h"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""_HealHealth"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -580,8 +578,9 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
         m_Player_SlowTime = m_Player.FindAction("SlowTime", throwIfNotFound: true);
         m_Player__ToggleTP = m_Player.FindAction("_ToggleTP", throwIfNotFound: true);
         m_Player__AddFuel = m_Player.FindAction("_AddFuel", throwIfNotFound: true);
-        m_Player__CycleCrosshair = m_Player.FindAction("_CycleCrosshair", throwIfNotFound: true);
         m_Player__ToggleMirror = m_Player.FindAction("_ToggleMirror", throwIfNotFound: true);
+        m_Player__TakeDamage = m_Player.FindAction("_TakeDamage", throwIfNotFound: true);
+        m_Player__HealHealth = m_Player.FindAction("_HealHealth", throwIfNotFound: true);
         // PauseMenu
         m_PauseMenu = asset.FindActionMap("PauseMenu", throwIfNotFound: true);
         m_PauseMenu_Escape = m_PauseMenu.FindAction("Escape", throwIfNotFound: true);
@@ -652,8 +651,9 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_SlowTime;
     private readonly InputAction m_Player__ToggleTP;
     private readonly InputAction m_Player__AddFuel;
-    private readonly InputAction m_Player__CycleCrosshair;
     private readonly InputAction m_Player__ToggleMirror;
+    private readonly InputAction m_Player__TakeDamage;
+    private readonly InputAction m_Player__HealHealth;
     public struct PlayerActions
     {
         private @PlayerInputActions m_Wrapper;
@@ -666,8 +666,9 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
         public InputAction @SlowTime => m_Wrapper.m_Player_SlowTime;
         public InputAction @_ToggleTP => m_Wrapper.m_Player__ToggleTP;
         public InputAction @_AddFuel => m_Wrapper.m_Player__AddFuel;
-        public InputAction @_CycleCrosshair => m_Wrapper.m_Player__CycleCrosshair;
         public InputAction @_ToggleMirror => m_Wrapper.m_Player__ToggleMirror;
+        public InputAction @_TakeDamage => m_Wrapper.m_Player__TakeDamage;
+        public InputAction @_HealHealth => m_Wrapper.m_Player__HealHealth;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -701,12 +702,15 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
                 @_AddFuel.started -= m_Wrapper.m_PlayerActionsCallbackInterface.On_AddFuel;
                 @_AddFuel.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.On_AddFuel;
                 @_AddFuel.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.On_AddFuel;
-                @_CycleCrosshair.started -= m_Wrapper.m_PlayerActionsCallbackInterface.On_CycleCrosshair;
-                @_CycleCrosshair.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.On_CycleCrosshair;
-                @_CycleCrosshair.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.On_CycleCrosshair;
                 @_ToggleMirror.started -= m_Wrapper.m_PlayerActionsCallbackInterface.On_ToggleMirror;
                 @_ToggleMirror.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.On_ToggleMirror;
                 @_ToggleMirror.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.On_ToggleMirror;
+                @_TakeDamage.started -= m_Wrapper.m_PlayerActionsCallbackInterface.On_TakeDamage;
+                @_TakeDamage.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.On_TakeDamage;
+                @_TakeDamage.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.On_TakeDamage;
+                @_HealHealth.started -= m_Wrapper.m_PlayerActionsCallbackInterface.On_HealHealth;
+                @_HealHealth.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.On_HealHealth;
+                @_HealHealth.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.On_HealHealth;
             }
             m_Wrapper.m_PlayerActionsCallbackInterface = instance;
             if (instance != null)
@@ -735,12 +739,15 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
                 @_AddFuel.started += instance.On_AddFuel;
                 @_AddFuel.performed += instance.On_AddFuel;
                 @_AddFuel.canceled += instance.On_AddFuel;
-                @_CycleCrosshair.started += instance.On_CycleCrosshair;
-                @_CycleCrosshair.performed += instance.On_CycleCrosshair;
-                @_CycleCrosshair.canceled += instance.On_CycleCrosshair;
                 @_ToggleMirror.started += instance.On_ToggleMirror;
                 @_ToggleMirror.performed += instance.On_ToggleMirror;
                 @_ToggleMirror.canceled += instance.On_ToggleMirror;
+                @_TakeDamage.started += instance.On_TakeDamage;
+                @_TakeDamage.performed += instance.On_TakeDamage;
+                @_TakeDamage.canceled += instance.On_TakeDamage;
+                @_HealHealth.started += instance.On_HealHealth;
+                @_HealHealth.performed += instance.On_HealHealth;
+                @_HealHealth.canceled += instance.On_HealHealth;
             }
         }
     }
@@ -788,8 +795,9 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
         void OnSlowTime(InputAction.CallbackContext context);
         void On_ToggleTP(InputAction.CallbackContext context);
         void On_AddFuel(InputAction.CallbackContext context);
-        void On_CycleCrosshair(InputAction.CallbackContext context);
         void On_ToggleMirror(InputAction.CallbackContext context);
+        void On_TakeDamage(InputAction.CallbackContext context);
+        void On_HealHealth(InputAction.CallbackContext context);
     }
     public interface IPauseMenuActions
     {

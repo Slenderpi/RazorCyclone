@@ -78,18 +78,27 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "_CycleCrosshair",
+                    "name": "_ToggleMirror",
                     "type": "Button",
-                    "id": "6707b499-9332-4655-9d7e-59a5dde129bf",
+                    "id": "622a0427-1d76-47cc-977f-e5a7b8b11e5f",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
                 },
                 {
-                    "name": "_ToggleMirror",
+                    "name": "_TakeDamage",
                     "type": "Button",
-                    "id": "622a0427-1d76-47cc-977f-e5a7b8b11e5f",
+                    "id": "77e3a2cc-c913-4e44-9b56-9d60ff4e9df0",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "_HealHealth",
+                    "type": "Button",
+                    "id": "5b539fa7-d0b4-46c8-9e83-7a98ab60e7ff",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -461,39 +470,6 @@
                     "isPartOfComposite": false
                 },
                 {
-                    "name": "1D Axis",
-                    "id": "5bfb5ca2-5c93-433d-874f-b4ae8449e39c",
-                    "path": "1DAxis",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "_CycleCrosshair",
-                    "isComposite": true,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "negative",
-                    "id": "cc4049de-7cb8-4504-ba5a-5e3cd52259ad",
-                    "path": "<Keyboard>/comma",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "_CycleCrosshair",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "positive",
-                    "id": "e07a042b-7587-48d1-9fa0-adea5a635598",
-                    "path": "<Keyboard>/period",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "_CycleCrosshair",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
                     "name": "",
                     "id": "518834d8-f541-4e50-80e3-5e15690e526e",
                     "path": "<Keyboard>/m",
@@ -512,6 +488,28 @@
                     "processors": "",
                     "groups": "",
                     "action": "_ToggleTP",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "cf4274c0-d575-4d1c-9c4f-72a05b169e9c",
+                    "path": "<Keyboard>/g",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "_TakeDamage",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "7df5a030-d01c-465d-a18a-de58207c1726",
+                    "path": "<Keyboard>/h",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "_HealHealth",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

@@ -15,25 +15,28 @@ public class GameManager : MonoBehaviour {
     public static event Action<PlayerCharacterCtrlr> A_PlayerDestroying;
     
     // Current scene runner
-    SceneRunner currentSceneRunner;
+    [HideInInspector]
+    public SceneRunner currentSceneRunner;
     
     // Pause menu input actions
     PlayerInputActions.PauseMenuActions PauseInputActions;
     
-    [Header("UI References")]
-    public UIGamePanel GamePanel;
-    public UIPausePanel PausePanel;
+    [Header("Core References")]
+    public UIMainCanvas MainCanvas;
+    [HideInInspector]
+    public UISettingsPanel SettingsPanel;
+    public AudioPlayer2D Audio2D;
     
-    [Header("Player Settings")]
     float _currentMouseSensitivity;
     public float CurrentMouseSensitivity {
         get { return _currentMouseSensitivity; }
         set {
             _currentMouseSensitivity = value;
             if (CurrentPlayer != null) CurrentPlayer.mouseSensitivity = _currentMouseSensitivity;
-            PausePanel.SetMouseSenseText(_currentMouseSensitivity);
+            SettingsPanel.SetMouseSenseText(_currentMouseSensitivity);
         }
     }
+    [Header("Player Settings")]
     public float DefaultMouseSensitivity = 0.7f;
     public float LowestSensitivity = 0.02f;
     public float HighestSensitivity = 1.2f;
@@ -58,21 +61,11 @@ public class GameManager : MonoBehaviour {
         Instance = this;
         SceneManager.sceneLoaded += OnSceneLoaded;
         
+        initializeUI();
+        
         PauseInputActions = new PlayerInputActions().PauseMenu;
         PauseInputActions.Escape.Enable();
         PauseInputActions.Escape.started += PauseInputPressed;
-        PausePanel.SetActive(false);
-        GamePanel.SetActive(false);
-        A_GamePaused += GamePanel.OnGamePaused;
-        A_GamePaused += PausePanel.OnGamePaused;
-        A_GameResumed += GamePanel.OnGameResumed;
-        A_GameResumed += PausePanel.OnGameResumed;
-        A_PlayerSpawned += GamePanel.OnPlayerSpawned;
-        A_PlayerSpawned += PausePanel.OnPlayerSpawned;
-        A_PlayerDestroying += GamePanel.OnPlayerDestroying;
-        A_PlayerDestroying += PausePanel.OnPlayerDestroying;
-        CurrentMouseSensitivity = DefaultMouseSensitivity;
-        PausePanel.MouseSenseSlider.value = (CurrentMouseSensitivity - LowestSensitivity) / (HighestSensitivity - LowestSensitivity);
         
         /******  PROGRAMMER SPECIFIC  ******/
         TextAsset programmerPreferenceJson = Resources.Load<TextAsset>("ProgrammerPreferences");
@@ -86,13 +79,26 @@ public class GameManager : MonoBehaviour {
             // Debug.Log("Note: no 'ProgrammerPreferences' file found in Resources folder, so no preferences were loaded.");
         }
     }
-    
+
+    void initializeUI() {
+        SettingsPanel = MainCanvas.SettingsPanel;
+        MainCanvas.GamePanel.Init();
+        MainCanvas.PausePanel.Init();
+        SettingsPanel.Init();
+        MainCanvas.MainMenuPanel.Init();
+        MainCanvas.Init();
+        
+        CurrentMouseSensitivity = DefaultMouseSensitivity;
+        SettingsPanel.MouseSenseSlider.value = (CurrentMouseSensitivity - LowestSensitivity) / (HighestSensitivity - LowestSensitivity);
+    }
+
     void Start() {
         
     }
     
     public void OnSceneStarted(SceneRunner sr) {
         currentSceneRunner = sr;
+        MainCanvas.SetCanvasState(UIMainCanvas.ECanvasState.None);
     }
     
     void Update() {
@@ -132,30 +138,27 @@ public class GameManager : MonoBehaviour {
     }
 
     public void PauseInputPressed(InputAction.CallbackContext context) {
-        if (gameIsPaused)
-            ResumeGame();
-        else
-            PauseGame();
+        if (SceneManager.GetActiveScene() == SceneManager.GetSceneByName("MainMenuScene")) {
+            if (MainCanvas.CurrentCanvasState == UIMainCanvas.ECanvasState.Settings)
+                MainCanvas.SetCanvasState(UIMainCanvas.ECanvasState.MainMenu);
+        } else {
+            if (gameIsPaused) {
+                if (MainCanvas.CurrentCanvasState == UIMainCanvas.ECanvasState.Settings)
+                    MainCanvas.SetCanvasState(UIMainCanvas.ECanvasState.Paused);
+                else
+                    ResumeGame();
+            } else {
+                PauseGame();
+            }
+        }
     }
     
     
     
-    /******  Pause menu  ******/
+    /******  Functions Involving UI or Scenes  ******/
     
     public void OnMouseSenseSliderChanged() {
-        CurrentMouseSensitivity = Mathf.Lerp(LowestSensitivity, HighestSensitivity, PausePanel.MouseSenseSlider.value);
-    }
-    
-    public void TestSceneChange() {
-        ResumeGame();
-        string sceneToToggleTo = "TestScene";
-        if (SceneManager.GetSceneByName(sceneToToggleTo).IsValid()) {
-            SceneManager.UnloadSceneAsync(sceneToToggleTo);
-            SceneManager.LoadSceneAsync("SampleScene", LoadSceneMode.Additive);
-        } else {
-            SceneManager.UnloadSceneAsync("SampleScene");
-            SceneManager.LoadScene(sceneToToggleTo, LoadSceneMode.Additive);
-        }
+        CurrentMouseSensitivity = Mathf.Lerp(LowestSensitivity, HighestSensitivity, SettingsPanel.MouseSenseSlider.value);
     }
     
     public void OnSceneLoaded(Scene scene, LoadSceneMode mode) {
@@ -180,6 +183,6 @@ class ProgrammerPreferences {
         GameManager.Instance.CurrentMouseSensitivity = MouseSensitivity;
         float highSens = GameManager.Instance.HighestSensitivity;
         float lowSens = GameManager.Instance.LowestSensitivity;
-        GameManager.Instance.PausePanel.MouseSenseSlider.value = (GameManager.Instance.CurrentMouseSensitivity - lowSens) / (highSens - lowSens);
+        GameManager.Instance.SettingsPanel.MouseSenseSlider.value = (GameManager.Instance.CurrentMouseSensitivity - lowSens) / (highSens - lowSens);
     }
 }

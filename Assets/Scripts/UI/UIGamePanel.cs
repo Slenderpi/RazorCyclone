@@ -5,10 +5,18 @@ using UnityEngine.UI;
 
 public class UIGamePanel : UIPanel {
     
+    [Header("Fuel Gauge")]
     public Slider FuelSlider;
+    public Animator FuelOutlineAnimator;
+    
+    [Header("Crosshairs")]
     public RectTransform MainVacuumCrosshair;
     public RectTransform MainCanonCrosshair;
+    
+    [Header("Misc.")]
     public TMP_Text Speedometer;
+    
+    [Header("Input Overlay")]
     public Image KeyImageW;
     public Image KeyImageA;
     public Image KeyImageS;
@@ -17,6 +25,8 @@ public class UIGamePanel : UIPanel {
     public Image KeyImageM2;
     public Image KeyImageSpace;
     public Image KeyImageShift;
+    
+    
     
     public void SetSpeedText(float speed) {
         Speedometer.text = string.Format("{0:0.0}", speed) + "";
@@ -30,7 +40,7 @@ public class UIGamePanel : UIPanel {
         KeyImageM1.color = started ? Color.white : Color.gray;
     }
 
-    internal void UpdateCrosshairPositions(Vector3 screenPointVacuum, Vector3 screenPointCanon) {
+    public void UpdateCrosshairPositions(Vector3 screenPointVacuum, Vector3 screenPointCanon) {
         if (screenPointVacuum.z > 0.01f) {
             if (!MainVacuumCrosshair.gameObject.activeSelf) MainVacuumCrosshair.gameObject.SetActive(true);
             MainVacuumCrosshair.position = screenPointVacuum;
@@ -83,25 +93,34 @@ public class UIGamePanel : UIPanel {
     
     public void OnFuelChanged(float changeAmnt, float perc) {
         FuelSlider.value = perc;
+        if (changeAmnt > 0) {
+            FuelOutlineAnimator.SetTrigger("RefillFuel");
+            // Temporary?
+            GameManager.Instance.Audio2D.PlayClipSFX(AudioPlayer2D.EClipSFX.Plr_PickupFuel);
+        }
+    }
+    
+    public void OnOutOfFuel() {
+        AnimatorStateInfo asi = FuelOutlineAnimator.GetCurrentAnimatorStateInfo(0);
+        if (!asi.IsName("OutOfFuelBlink") || asi.normalizedTime >= 0.8f)
+            FuelOutlineAnimator.SetTrigger("OutOfFuel");
     }
 
     public override void OnGameResumed() {
-        SetActive(true);
+        // SetActive(true);
     }
 
     public override void OnGamePaused() {
-        SetActive(false);
+        // SetActive(false);
     }
     
     public override void OnPlayerSpawned(PlayerCharacterCtrlr plr) {
         plr.A_FuelChanged += OnFuelChanged;
         ResetUIElements();
-        SetActive(true);
     }
 
     public override void OnPlayerDestroying(PlayerCharacterCtrlr plr) {
         plr.A_FuelChanged -= OnFuelChanged;
-        SetActive(false);
     }
     
     public void ResetUIElements() {
@@ -110,6 +129,7 @@ public class UIGamePanel : UIPanel {
         OnVertInputChanged(0);
         OnFireVacuum(false);
         OnFireCanon(false);
+        FuelOutlineAnimator.SetTrigger("Reset");
     }
 
 }
