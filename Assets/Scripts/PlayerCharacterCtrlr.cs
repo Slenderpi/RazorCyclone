@@ -38,6 +38,9 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     [SerializeField]
     ProjectileBase projectilePrefab;
     [SerializeField]
+    GameObject muzzleFlashEffect;
+    GameObject currentMuzzleFlashEffect;
+    [SerializeField]
     Transform rearCamPos;
     // RectTransform mirrorCrosshairRectTrans;
     
@@ -134,6 +137,9 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     void Start() {
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+        
+        currentMuzzleFlashEffect = Instantiate(muzzleFlashEffect, canonTip);
+        currentMuzzleFlashEffect.SetActive(false);
         
         updateCameraTransform();
     }
@@ -302,7 +308,6 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
             }
         } else {
             weaponRelativeRot = prevDesiredRotation.normalized;
-            print(2);
         }
     }
     
@@ -314,6 +319,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         proj.GetComponent<Rigidbody>().AddForce((aimPoint - canonTip.position).normalized * CanonProjSpeed + rb.velocity, ForceMode.VelocityChange);
         AddFuel(-CanonFuelCost);
         GameManager.Instance.Audio2D.PlayClipSFX(AudioPlayer2D.EClipSFX.Weapon_CanonShot);
+        playMuzzleFlashEffect();
     }
 
     void updateRayCastedAimPoint() {
@@ -361,6 +367,13 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         }
         
         _gamePanel.UpdateCrosshairPositions(screenPointVacuum, screenPointCanon);
+    }
+    
+    void playMuzzleFlashEffect() {
+        currentMuzzleFlashEffect.SetActive(true);
+        Destroy(currentMuzzleFlashEffect, 1);
+        currentMuzzleFlashEffect = Instantiate(muzzleFlashEffect, canonTip);
+        currentMuzzleFlashEffect.SetActive(false);
     }
     
     void OnEnable() {

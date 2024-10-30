@@ -129,7 +129,7 @@ public class UIGamePanel : UIPanel {
         OnVertInputChanged(0);
         OnFireVacuum(false);
         OnFireCanon(false);
-        FuelOutlineAnimator.SetTrigger("Reset");
+        if (gameObject.activeSelf) FuelOutlineAnimator.SetTrigger("Reset");
     }
 
 }
