@@ -19,13 +19,13 @@ public class ProjectileBase : MonoBehaviour {
         if (collision.gameObject.tag != "Player" && collision.gameObject.tag != "Projectile") {
             EnemyBase enemy = collision.gameObject.GetComponent<EnemyBase>();
             if (enemy != null) {
-                // enemy.TakeDamage(damage);
+                enemy.TakeDamage(damage);
                 // print("Hit enemy! New enemy health: " + enemy.health);
             } else {
                 // print("Hit other: " + collision.gameObject.name);
             }
             ExplosionBase exp = Instantiate(explosionEffect, transform.position, Quaternion.identity).GetComponent<ExplosionBase>();
-            exp.damage = damage;
+            // exp.damage = damage;
             Destroy(gameObject);
         }
     }
