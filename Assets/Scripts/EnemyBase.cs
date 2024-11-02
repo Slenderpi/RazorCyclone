@@ -28,7 +28,7 @@ public class EnemyBase : MonoBehaviour {
     }
     
     void Update() {
-        
+        player = GameManager.CurrentPlayer;
     }
     
     /*
