@@ -172,21 +172,15 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
 
     public void AddFuel(float amount) {
         currentFuel = Mathf.Clamp(currentFuel + amount, 0, MaxFuel);
-        _fuelSlider.value = currentFuel / MaxFuel;
-        Debug.Log("added fuel");
+        A_FuelChanged?.Invoke(amount, currentFuel / MaxFuel);
     }
-
-    public void DepleteHealth(float amount) {
+    
+    public void TakeDamage(float amount) {
         currentHealth -= amount;
         currentHealth = Mathf.Max(currentHealth, 0);
 
         if (currentHealth == 0)
             Debug.Log("player died womp womp");
-        A_FuelChanged?.Invoke(amount, currentFuel / MaxFuel);
-    }
-    
-    public void TakeDamage(float amount) {
-        // TODO
         
         A_PlayerTakenDamage?.Invoke(amount);
     }

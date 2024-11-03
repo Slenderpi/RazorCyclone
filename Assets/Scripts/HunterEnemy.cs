@@ -103,17 +103,5 @@ public class HunterEnemy : EnemyBase
         }
         */
     }
-
-    void DropFuel()
-    {
-        for (int i = 0; i < fuelAmount; i++)
-        {
-            GameObject fuel = Instantiate(fuelPrefab, transform.position, Quaternion.identity);
-            Rigidbody fuelRb = fuel.GetComponent<Rigidbody>();
-            if (fuelRb != null)
-            {
-                fuelRb.useGravity = true;
-            }
-        }
-    }
+    
 }

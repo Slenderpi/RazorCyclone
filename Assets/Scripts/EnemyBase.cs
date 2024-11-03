@@ -13,9 +13,9 @@ public class EnemyBase : MonoBehaviour {
     public Rigidbody rb;
     public PlayerCharacterCtrlr player = GameManager.CurrentPlayer;
     
-    [Header("Enemy movement force")]
-    [SerializeField]
-    float MovementForce = 425f; 
+    // [Header("Enemy movement force")]
+    // [SerializeField]
+    // float MovementForce = 425f; 
     
     void Awake() {
         if (MaxHealth <= 0) Debug.LogWarning("Enemy MaxHealth set to a value <= 0 (set to " + MaxHealth + ").");
@@ -51,7 +51,7 @@ public class EnemyBase : MonoBehaviour {
             PlayerCharacterCtrlr player = GameManager.CurrentPlayer;
             if (player != null)
             {
-                player.DepleteHealth(1);
+                player.TakeDamage(1);
                 Debug.Log("player health reduced");
             }
         }
