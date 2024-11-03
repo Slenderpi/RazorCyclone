@@ -1,6 +1,8 @@
 
+using System;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Analytics;
 using UnityEngine.UI;
 
 public class UIGamePanel : UIPanel {
@@ -91,13 +93,17 @@ public class UIGamePanel : UIPanel {
         }
     }
     
-    public void OnFuelChanged(float changeAmnt, float perc) {
+    public void OnFuelAdded(float changeAmnt, float perc) {
         FuelSlider.value = perc;
-        if (changeAmnt > 0) {
-            FuelOutlineAnimator.SetTrigger("RefillFuel");
-            // Temporary?
-            GameManager.Instance.Audio2D.PlayClipSFX(AudioPlayer2D.EClipSFX.Plr_PickupFuel);
-        }
+        if (!gameObject.activeSelf) return;
+        if (perc == 1f || true) FuelOutlineAnimator.SetTrigger("RefillFuel");
+        
+        // Temporary?
+        GameManager.Instance.Audio2D.PlayClipSFX(AudioPlayer2D.EClipSFX.Plr_PickupFuel);
+    }
+
+    public void OnFuelSpent(float obj, float perc) {
+        FuelSlider.value = perc;
     }
     
     public void OnOutOfFuel() {
@@ -115,21 +121,23 @@ public class UIGamePanel : UIPanel {
     }
     
     public override void OnPlayerSpawned(PlayerCharacterCtrlr plr) {
-        plr.A_FuelChanged += OnFuelChanged;
+        plr.A_FuelAdded += OnFuelAdded;
+        plr.A_FuelSpent += OnFuelSpent;
         ResetUIElements();
     }
 
     public override void OnPlayerDestroying(PlayerCharacterCtrlr plr) {
-        plr.A_FuelChanged -= OnFuelChanged;
+        plr.A_FuelAdded -= OnFuelAdded;
+        plr.A_FuelSpent -= OnFuelSpent;
     }
     
     public void ResetUIElements() {
-        OnFuelChanged(0, 1);
+        OnFuelAdded(0, 1);
         OnTurnInputChanged(Vector2.zero);
         OnVertInputChanged(0);
         OnFireVacuum(false);
         OnFireCanon(false);
-        FuelOutlineAnimator.SetTrigger("Reset");
+        if (gameObject.activeSelf) FuelOutlineAnimator.SetTrigger("Reset");
     }
 
 }

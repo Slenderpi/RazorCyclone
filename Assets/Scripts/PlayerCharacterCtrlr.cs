@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
@@ -13,7 +14,8 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     Vector3 weaponRelativeRot = Vector3.forward;
     
     // Events
-    public event Action<float, float> A_FuelChanged; // float changeAmnt, float fuelPerc
+    public event Action<float, float> A_FuelAdded; // float changeAmnt, float fuelPerc
+    public event Action<float, float> A_FuelSpent; // float changeAmnt, float fuelPerc
     public event Action<float> A_PlayerTakenDamage; // float amount
     public event Action<float> A_PlayerHealed; // float amount
     
@@ -22,23 +24,6 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     
     Camera mainCamera;
     Camera rearCamera;
-    
-    [Header("References")]
-    [SerializeField]
-    Transform camtrans;
-    [SerializeField]
-    Transform charModel;
-    [SerializeField]
-    Transform charPivot;
-    Rigidbody rb;
-    [SerializeField]
-    GameObject vacuumHitbox;
-    [SerializeField]
-    Transform canonTip;
-    [SerializeField]
-    ProjectileBase projectilePrefab;
-    [SerializeField]
-    Transform rearCamPos;
     // RectTransform mirrorCrosshairRectTrans;
     
     // UI variables
@@ -71,6 +56,8 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     [SerializeField]
     float MaxFuel = 100f;
     [SerializeField]
+    float FuelRefillDelay = 3;
+    [SerializeField]
     float CanonFuelCost = 6f;
     [SerializeField]
     [Tooltip("The amount of seconds to spend 100 fuel")]
@@ -80,6 +67,26 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     
     float MaxHealth = 100f;
     float currentHealth;
+    
+    [Header("References")]
+    [SerializeField]
+    Transform camtrans;
+    [SerializeField]
+    Transform charModel;
+    [SerializeField]
+    Transform charPivot;
+    Rigidbody rb;
+    [SerializeField]
+    GameObject vacuumHitbox;
+    [SerializeField]
+    Transform canonTip;
+    [SerializeField]
+    ProjectileBase projectilePrefab;
+    [SerializeField]
+    GameObject muzzleFlashEffect;
+    GameObject currentMuzzleFlashEffect;
+    [SerializeField]
+    Transform rearCamPos;
     
     float lookVertRot = 0;
     Vector3 aimPoint = Vector3.zero;
@@ -92,11 +99,12 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     float pivotRotLerpTime = 0.1f;
     
     
+    
     /** Variables for likely to be temporary features **/
-    bool isInThirdPerson = false;
+    [Header("Temporary/testing")]
     [SerializeField]
     float thirdPersonDist = 1.2f;
-    [Header("Temporary/testing")]
+    bool isInThirdPerson = false;
     [SerializeField]
     GameObject rearMirrorModel;
     bool mirrorModelEnabled = false;
@@ -135,6 +143,9 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
         
+        currentMuzzleFlashEffect = Instantiate(muzzleFlashEffect, canonTip);
+        currentMuzzleFlashEffect.SetActive(false);
+        
         updateCameraTransform();
     }
     
@@ -156,7 +167,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
                 // print("Not enough fuel (" + currentFuel + ") for vacuum (need " + vacuumFuelCost + ").");
                 // signifyOutOfFuel();
             } else {
-                AddFuel(-vacuumFuelCost);
+                SpendFuel(vacuumFuelCost);
                 rb.AddForce(charPivot.forward * (rb.velocity.magnitude <= VacuumForceNormalSpeed ? VacuumForceLowSpeed : VacuumForce), ForceMode.Acceleration);
             }
         }
@@ -171,8 +182,22 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     }
 
     public void AddFuel(float amount) {
-        currentFuel = Mathf.Clamp(currentFuel + amount, 0, MaxFuel);
-        A_FuelChanged?.Invoke(amount, currentFuel / MaxFuel);
+        currentFuel = Mathf.Min(currentFuel + amount, MaxFuel);
+        A_FuelAdded?.Invoke(amount, currentFuel / MaxFuel);
+    }
+    
+    public void SpendFuel(float amount) {
+        currentFuel -= amount;
+        if (currentFuel <= 0) {
+            currentFuel = 0;
+            StartCoroutine(StartRefillFuelTimer());
+        }
+        A_FuelSpent?.Invoke(amount, currentFuel / MaxFuel);
+    }
+    
+    IEnumerator StartRefillFuelTimer() {
+        yield return new WaitForSeconds(FuelRefillDelay);
+        AddFuel(MaxFuel);
     }
     
     public void TakeDamage(float amount) {
@@ -306,7 +331,6 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
             }
         } else {
             weaponRelativeRot = prevDesiredRotation.normalized;
-            print(2);
         }
     }
     
@@ -316,8 +340,9 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         ProjectileBase proj = Instantiate(projectilePrefab, canonTip.position, canonTip.rotation);
         proj.damage = CanonDamage;
         proj.GetComponent<Rigidbody>().AddForce((aimPoint - canonTip.position).normalized * CanonProjSpeed + rb.velocity, ForceMode.VelocityChange);
-        AddFuel(-CanonFuelCost);
+        SpendFuel(CanonFuelCost);
         GameManager.Instance.Audio2D.PlayClipSFX(AudioPlayer2D.EClipSFX.Weapon_CanonShot);
+        playMuzzleFlashEffect();
     }
 
     void updateRayCastedAimPoint() {
@@ -365,6 +390,13 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         }
         
         _gamePanel.UpdateCrosshairPositions(screenPointVacuum, screenPointCanon);
+    }
+    
+    void playMuzzleFlashEffect() {
+        currentMuzzleFlashEffect.SetActive(true);
+        Destroy(currentMuzzleFlashEffect, 1);
+        currentMuzzleFlashEffect = Instantiate(muzzleFlashEffect, canonTip);
+        currentMuzzleFlashEffect.SetActive(false);
     }
     
     void OnEnable() {
