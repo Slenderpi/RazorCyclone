@@ -34,7 +34,7 @@ public class ExplosionBase : MonoBehaviour {
                     rb.AddExplosionForce(ExplosionForce, transform.position, ExplosionRadius + 0.5f);
                     rb.AddForce(Vector3.up * AdditionalUpwardForce, ForceMode.Impulse);
                     if (co.TryGetComponent(out EnemyBase en)) {
-                        en.TakeDamage(damage);
+                        if (damage > 0) en.TakeDamage(damage, EDamageType.ProjectileExplosion);
                     }
                 }
             }

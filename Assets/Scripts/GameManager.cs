@@ -125,6 +125,10 @@ public class GameManager : MonoBehaviour {
         //Instantiate(enemyPrefab, enemySpawnPoint.position, enemySpawnPoint.rotation);
     }
     
+    public void OnEnemyTookDamage() {
+        
+    }
+    
     public void PauseGame() {
         gameIsPaused = true;
         A_GamePaused?.Invoke();
@@ -167,6 +171,17 @@ public class GameManager : MonoBehaviour {
         }
     }
     
+}
+
+
+
+/// <summary>
+/// The type of damage applied on an enemy.
+/// </summary>
+public enum EDamageType {
+    Projectile,
+    Vacuum,
+    ProjectileExplosion
 }
 
 

@@ -9,8 +9,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1992487050733126193}
-  - component: {fileID: 1745451246302694824}
   - component: {fileID: 5207972207715144811}
+  - component: {fileID: 1745451246302694824}
   - component: {fileID: -4154519724048462357}
   m_Layer: 0
   m_Name: LaserEnemy
@@ -35,6 +35,30 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5207972207715144811
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4272552222902198248}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b2b26ce1ea974453868e8d034839f78, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  MaxHealth: 50
+  lastVacuumHitTime: 0
+  fuelAmount: 50
+  rb: {fileID: 0}
+  player: {fileID: 2495797634905944669, guid: ebefb66ac461b4941a6d0863c3d1515d, type: 3}
+  fuelPickupPrefab: {fileID: 5163220815717078053, guid: bb72521b10fb34d7bbbed5f6f77687b4, type: 3}
+  attackCooldown: 5
+  windUpTime: 3
+  laserDuration: 3
+  pauseBeforeFiring: 0.3
+  rotationSpeed: 2
+  laserDamage: 10
 --- !u!54 &1745451246302694824
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -51,30 +75,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &5207972207715144811
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4272552222902198248}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b2b26ce1ea974453868e8d034839f78, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  MaxHealth: 50
-  lastVacuumHitTime: 0
-  fuelPrefab: {fileID: 8934087127753941361, guid: bb72521b10fb34d7bbbed5f6f77687b4, type: 3}
-  fuelAmount: 50
-  rb: {fileID: 0}
-  player: {fileID: 2495797634905944669, guid: ebefb66ac461b4941a6d0863c3d1515d, type: 3}
-  attackCooldown: 5
-  windUpTime: 3
-  laserDuration: 3
-  pauseBeforeFiring: 0.3
-  rotationSpeed: 2
-  laserDamage: 10
 --- !u!120 &-4154519724048462357
 LineRenderer:
   m_ObjectHideFlags: 0

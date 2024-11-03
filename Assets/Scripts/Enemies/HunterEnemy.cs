@@ -32,10 +32,23 @@ public class HunterEnemy : EnemyBase
 
     void ChasePlayer()
     {
-        if (player != null) {
+        if (GameManager.CurrentPlayer != null) {
             Debug.Log("chasing player");
-            Vector3 direction = (player.transform.position - transform.position).normalized;
+            Vector3 direction = (GameManager.CurrentPlayer.transform.position - transform.position).normalized;
             rb.velocity = direction * moveSpeed;
+        }
+    }
+
+    public override void TakeDamage(float amnt, EDamageType damageType) {
+        if (shieldActive) {
+            if (damageType == EDamageType.Projectile) {
+                GetStunned();
+            }
+        } else {
+            /* Take damage since the shield is down. The base TakeDamage() function
+             * already handles taking health damage.
+             */
+            base.TakeDamage(amnt, damageType);
         }
     }
 
@@ -80,11 +93,11 @@ public class HunterEnemy : EnemyBase
     }
 
     // testing purposes
-    void OnTriggerEnter(Collider other)
-    {
+    // void OnTriggerEnter(Collider other)
+    // {
         // if (other.CompareTag("Projectile"))
         // {
-            GetStunned();
+            // GetStunned();
         // }
 
         /*
@@ -102,6 +115,6 @@ public class HunterEnemy : EnemyBase
             Destroy(gameObject);
         }
         */
-    }
+    // }
     
 }

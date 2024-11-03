@@ -74,6 +74,7 @@ public class LaserEnemy : EnemyBase
 
     void RotateTowardsPlayer()
     {
+        PlayerCharacterCtrlr player = GameManager.CurrentPlayer;
         if (player != null) {
             Vector3 direction = (player.transform.position - transform.position).normalized;
             Quaternion lookRotation = Quaternion.LookRotation(direction);
@@ -83,6 +84,7 @@ public class LaserEnemy : EnemyBase
 
     void UpdateLaserLine()
     {
+        PlayerCharacterCtrlr player = GameManager.CurrentPlayer;
         if (player != null) {
             Debug.Log("player position: " + player.transform.position);
 
@@ -101,14 +103,14 @@ public class LaserEnemy : EnemyBase
     }
 
     // testing purposes
-    void OnTriggerEnter(Collider other)
-    {
-        // if (other.CompareTag("Vacuum") || other.CompareTag("Cannon"))
-        // {
-            Debug.Log("successfullly hit laser enemy");
-            DropFuel();
-            Destroy(gameObject);
-        // }
-    }
+    // void OnTriggerEnter(Collider other)
+    // {
+    //     // if (other.CompareTag("Vacuum") || other.CompareTag("Cannon"))
+    //     // {
+    //         Debug.Log("successfullly hit laser enemy");
+    //         DropFuel();
+    //         Destroy(gameObject);
+    //     // }
+    // }
 
 }

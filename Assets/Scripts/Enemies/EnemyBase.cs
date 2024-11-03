@@ -5,13 +5,17 @@ using UnityEngine;
 
 public class EnemyBase : MonoBehaviour {
     
+    
     public float MaxHealth = 50;
     public float health { private set; get; }
     public float lastVacuumHitTime = 0f;
-    public FuelPickup fuelPrefab;
-    public int fuelAmount = 50;
-    public Rigidbody rb;
-    public PlayerCharacterCtrlr player = GameManager.CurrentPlayer;
+    public int FuelAmount = 50; // The value of the fuel this enemy will drop
+    protected Rigidbody rb;
+    // public PlayerCharacterCtrlr player = GameManager.CurrentPlayer;
+    
+    [Header("References")]
+    [SerializeField]
+    private FuelPickup fuelPickupPrefab;
     
     // [Header("Enemy movement force")]
     // [SerializeField]
@@ -21,6 +25,9 @@ public class EnemyBase : MonoBehaviour {
         if (MaxHealth <= 0) Debug.LogWarning("Enemy MaxHealth set to a value <= 0 (set to " + MaxHealth + ").");
         health = MaxHealth;
         rb = GetComponent<Rigidbody>();
+        
+        if (fuelPickupPrefab == null)
+            Debug.LogWarning("This enemy's fuelPickupPrefab was not set!");
     }
     
     void Start() {
@@ -28,7 +35,7 @@ public class EnemyBase : MonoBehaviour {
     }
     
     void Update() {
-        player = GameManager.CurrentPlayer;
+        // player = GameManager.CurrentPlayer;
     }
     
     /*
@@ -57,7 +64,7 @@ public class EnemyBase : MonoBehaviour {
         }
     }
     
-    public void TakeDamage(float amnt) {
+    public virtual void TakeDamage(float amnt, EDamageType damageType) {
         if (health <= 0) return;
         health -= amnt;
         if (health <= 0) {
@@ -65,13 +72,13 @@ public class EnemyBase : MonoBehaviour {
             DropFuel();
             Destroy(gameObject);
         } else {
-            // GameManager.CurrentPlayer.AddFuel(amnt * 0.2f);
+            GameManager.Instance.OnEnemyTookDamage();
         }
     }
 
     public void DropFuel() {
-        FuelPickup fuel = Instantiate(fuelPrefab, transform.position, Quaternion.identity);
-        fuel.FuelValue = fuelAmount;
+        FuelPickup fuel = Instantiate(fuelPickupPrefab, transform.position, Quaternion.identity);
+        fuel.FuelValue = FuelAmount;
     }
     
     Vector3 removeY(Vector3 vector) {

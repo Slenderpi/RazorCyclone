@@ -19,7 +19,7 @@ public class ProjectileBase : MonoBehaviour {
         if (collision.gameObject.tag != "Player" && collision.gameObject.tag != "Projectile") {
             EnemyBase enemy = collision.gameObject.GetComponent<EnemyBase>();
             if (enemy != null) {
-                enemy.TakeDamage(damage);
+                enemy.TakeDamage(damage, EDamageType.Projectile);
                 // print("Hit enemy! New enemy health: " + enemy.health);
             } else {
                 // print("Hit other: " + collision.gameObject.name);
