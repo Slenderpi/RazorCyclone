@@ -9,7 +9,7 @@ public class EnemyBase : MonoBehaviour {
     public float health { private set; get; }
     public float lastVacuumHitTime = 0f;
     public GameObject fuelPrefab;
-    public int fuelAmount = 1;
+    public int fuelAmount = 50;
     public Rigidbody rb;
     public PlayerCharacterCtrlr player = GameManager.CurrentPlayer;
     
@@ -60,13 +60,14 @@ public class EnemyBase : MonoBehaviour {
     public void TakeDamage(float amnt) {
         if (health <= 0) return;
         health -= amnt;
-        GameManager.CurrentPlayer.AddFuel(amnt * 0.2f);
         if (health <= 0) {
             // print("'" + gameObject.name + "' died.");
             GameManager.Instance.OnEnemyDied();
+            DropFuel();
             Destroy(gameObject);
         } else {
             // print("'" + gameObject.name + "' health now " + health);
+            // GameManager.CurrentPlayer.AddFuel(amnt * 0.2f);
         }
     }
 
