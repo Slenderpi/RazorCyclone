@@ -8,7 +8,7 @@ public class EnemyBase : MonoBehaviour {
     public float MaxHealth = 50;
     public float health { private set; get; }
     public float lastVacuumHitTime = 0f;
-    public GameObject fuelPrefab;
+    public FuelPickup fuelPrefab;
     public int fuelAmount = 50;
     public Rigidbody rb;
     public PlayerCharacterCtrlr player = GameManager.CurrentPlayer;
@@ -61,27 +61,17 @@ public class EnemyBase : MonoBehaviour {
         if (health <= 0) return;
         health -= amnt;
         if (health <= 0) {
-            // print("'" + gameObject.name + "' died.");
             GameManager.Instance.OnEnemyDied();
             DropFuel();
             Destroy(gameObject);
         } else {
-            // print("'" + gameObject.name + "' health now " + health);
             // GameManager.CurrentPlayer.AddFuel(amnt * 0.2f);
         }
     }
 
-    public void DropFuel()
-    {
-        for (int i = 0; i < fuelAmount; i++)
-        {
-            GameObject fuel = Instantiate(fuelPrefab, transform.position, Quaternion.identity);
-            Rigidbody fuelRb = fuel.GetComponent<Rigidbody>();
-            if (fuelRb != null)
-            {
-                fuelRb.useGravity = true;
-            }
-        }
+    public void DropFuel() {
+        FuelPickup fuel = Instantiate(fuelPrefab, transform.position, Quaternion.identity);
+        fuel.FuelValue = fuelAmount;
     }
     
     Vector3 removeY(Vector3 vector) {
