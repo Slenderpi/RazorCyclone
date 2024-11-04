@@ -67,6 +67,7 @@ public class GameManager : MonoBehaviour {
         PauseInputActions.Escape.Enable();
         PauseInputActions.Escape.started += PauseInputPressed;
         
+#if UNITY_EDITOR
         /******  PROGRAMMER SPECIFIC  ******/
         TextAsset programmerPreferenceJson = Resources.Load<TextAsset>("ProgrammerPreferences");
         if (programmerPreferenceJson != null) {
@@ -78,6 +79,7 @@ public class GameManager : MonoBehaviour {
         } else {
             // Debug.Log("Note: no 'ProgrammerPreferences' file found in Resources folder, so no preferences were loaded.");
         }
+#endif
     }
 
     void initializeUI() {
@@ -186,6 +188,7 @@ public enum EDamageType {
 
 
 
+#if UNITY_EDITOR
 /******  PROGRAMMER SPECIFIC  ******/
 [Serializable]
 class ProgrammerPreferences {
@@ -201,3 +204,4 @@ class ProgrammerPreferences {
         GameManager.Instance.SettingsPanel.MouseSenseSlider.value = (GameManager.Instance.CurrentMouseSensitivity - lowSens) / (highSens - lowSens);
     }
 }
+#endif
