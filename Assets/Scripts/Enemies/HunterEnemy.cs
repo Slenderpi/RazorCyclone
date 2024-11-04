@@ -33,7 +33,7 @@ public class HunterEnemy : EnemyBase
     void ChasePlayer()
     {
         if (GameManager.CurrentPlayer != null) {
-            Debug.Log("chasing player");
+            // Debug.Log("chasing player");
             Vector3 direction = (GameManager.CurrentPlayer.transform.position - transform.position).normalized;
             rb.velocity = direction * moveSpeed;
         }
@@ -56,7 +56,7 @@ public class HunterEnemy : EnemyBase
     {
         if (!isStunned)
         {
-            Debug.Log("enemy stunned");
+            // Debug.Log("enemy stunned");
             isStunned = true;
             shieldActive = false;
             UpdateMaterial();
@@ -77,12 +77,12 @@ public class HunterEnemy : EnemyBase
     {
         if (shieldActive)
         {
-            Debug.Log("changing to white");
+            // Debug.Log("changing to white");
             enemyRenderer.material.color = Color.white;
         }
         else
         {            
-            Debug.Log("changing to red");
+            // Debug.Log("changing to red");
             enemyRenderer.material.color = Color.red;
         }
     }
