@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.12731749, g: 0.13414757, b: 0.1210787, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028378, g: 0.22571412, b: 0.30692285, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -97,7 +97,7 @@ LightmapSettings:
     m_ExportTrainingData: 0
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
-  m_LightingDataAsset: {fileID: 0}
+  m_LightingDataAsset: {fileID: 112000004, guid: 4105d3315edb9654cb170c1b1b5f3c2d, type: 2}
   m_LightingSettings: {fileID: 0}
 --- !u!196 &4
 NavMeshSettings:
@@ -5933,7 +5933,7 @@ MonoBehaviour:
   sfx_Plr_PickupFuel: {fileID: 8300000, guid: aaf9625f52008374cb46ed0b7ee11769, type: 3}
   sfx_Plr_RotateWoosh: {fileID: 8300000, guid: 9dd2054915a8ff142bea04773809a36c, type: 3}
   mus_Test: {fileID: 8300000, guid: b911a7ff974af9e479b08a0be309998e, type: 3}
-  enableRotationSound: 1
+  enableRotationSound: 0
 --- !u!1 &903107656
 GameObject:
   m_ObjectHideFlags: 0
