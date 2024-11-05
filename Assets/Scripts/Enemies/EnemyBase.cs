@@ -68,11 +68,11 @@ public class EnemyBase : MonoBehaviour {
         if (health <= 0) return;
         health -= amnt;
         if (health <= 0) {
-            GameManager.Instance.OnEnemyDied();
+            GameManager.Instance.OnEnemyDied(damageType);
             DropFuel();
             Destroy(gameObject);
         } else {
-            GameManager.Instance.OnEnemyTookDamage();
+            GameManager.Instance.OnEnemyTookDamage(damageType);
         }
     }
 

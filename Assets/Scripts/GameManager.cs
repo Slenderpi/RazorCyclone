@@ -122,12 +122,15 @@ public class GameManager : MonoBehaviour {
         CurrentPlayer = null;
     }
     
-    public void OnEnemyDied() {
-        // CurrentPlayer.AddFuel(100f);
-        //Instantiate(enemyPrefab, enemySpawnPoint.position, enemySpawnPoint.rotation);
+    public void OnEnemyDied(EDamageType damageType) {
+        switch (damageType) {
+        case EDamageType.Projectile:
+            Audio2D.PlayClipSFX(AudioPlayer2D.EClipSFX.Kill_DirectHit);
+            break;
+        }
     }
     
-    public void OnEnemyTookDamage() {
+    public void OnEnemyTookDamage(EDamageType damageType) {
         
     }
     
