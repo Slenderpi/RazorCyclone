@@ -29,26 +29,6 @@ public class EnemyBase : MonoBehaviour {
             Debug.LogWarning("This enemy's fuelPickupPrefab was not set!");
         Init();
     }
-    
-    void Start() {
-        
-    }
-    
-    void Update() {
-        // player = GameManager.CurrentPlayer;
-    }
-    
-    /*
-    void FixedUpdate() {
-        if (GameManager.CurrentPlayer) {
-            rb.AddForce(
-                // removeY(GameManager.CurrentPlayer.transform.position - transform.position).normalized * MovementForce,
-                (GameManager.CurrentPlayer.transform.position - transform.position).normalized * MovementForce,
-                ForceMode.Force
-            );
-        }
-    }
-    */
 
     // modify depending on enemy specifics / actual health system
     private void OnCollisionEnter(Collision collision)

@@ -201,11 +201,12 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     }
     
     public void TakeDamage(float amount) {
-        currentHealth -= amount;
-        currentHealth = Mathf.Max(currentHealth, 0);
-
-        if (currentHealth == 0)
+        currentHealth = Mathf.Max(currentHealth - amount, 0);
+        
+        print("Player took " + amount + " damage. Health: " + currentHealth);
+        if (currentHealth == 0) {
             Debug.Log("player died womp womp");
+        }
         
         A_PlayerTakenDamage?.Invoke(amount);
     }

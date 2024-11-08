@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 
@@ -9,6 +10,10 @@ public class ProjectileBase : MonoBehaviour {
     [Tooltip("Maximum lifetime in seconds of this projectile to prevent projectiles that go into the void from living too long.")]
     public float MaxLifetime = 10f;
     
+    bool hasHit = false;
+    
+    
+    
     void Start() {
         StartCoroutine(ProjectileLifetime());
     }
@@ -18,15 +23,25 @@ public class ProjectileBase : MonoBehaviour {
     }
     
     void OnCollisionEnter(Collision collision) {
-        if (collision.gameObject.tag != "Player" && collision.gameObject.tag != "Projectile") {
-            EnemyBase enemy = collision.gameObject.GetComponent<EnemyBase>();
+        // TODO: For some reason the collision version does not work with enemy weakpoints
+        onHitSomething(collision.gameObject);
+    }
+    
+    void OnTriggerEnter(Collider collider) {
+        onHitSomething(collider.gameObject);
+    }
+    
+    // This function allows for a projectile's hitbox to be either a collider or a trigger
+    void onHitSomething(GameObject hitObject) {
+        if (hasHit) return;
+        if (!hitObject.CompareTag("Player") && !hitObject.CompareTag("Projectile")) {
+            hasHit = true;
+            EnemyBase enemy = hitObject.GetComponent<EnemyBase>();
             if (enemy != null) {
                 OnHitEnemy(enemy);
             } else {
-                OnHitNonEnemy(collision.gameObject);
+                OnHitNonEnemy(hitObject);
             }
-            // ExplosionBase exp = Instantiate(explosionEffect, transform.position, Quaternion.identity).GetComponent<ExplosionBase>();
-            // exp.damage = damage;
             Destroy(gameObject);
         }
     }

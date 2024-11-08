@@ -58,16 +58,16 @@ public class VacuumScript : MonoBehaviour {
     }
     
     void OnEnable() {
-        SuckboxNotifier.TriggerEnterEvent += onSuckboxEnter;
-        SuckboxNotifier.TriggerExitEvent += onSuckboxExit;
-        KillboxNotifier.TriggerEnterEvent += onKillboxEnter;
+        SuckboxNotifier.A_TriggerEntered += onSuckboxEnter;
+        SuckboxNotifier.A_TriggerExited += onSuckboxExit;
+        KillboxNotifier.A_TriggerEntered += onKillboxEnter;
     }
     
     void OnDisable() {
         enemiesInRange.Clear();
-        SuckboxNotifier.TriggerEnterEvent -= onSuckboxEnter;
-        SuckboxNotifier.TriggerExitEvent -= onSuckboxExit;
-        KillboxNotifier.TriggerEnterEvent -= onKillboxEnter;
+        SuckboxNotifier.A_TriggerEntered -= onSuckboxEnter;
+        SuckboxNotifier.A_TriggerExited -= onSuckboxExit;
+        KillboxNotifier.A_TriggerEntered -= onKillboxEnter;
     }
     
 }

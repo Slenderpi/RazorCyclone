@@ -6,6 +6,9 @@ using UnityEngine.SceneManagement;
 public class SceneRunner : MonoBehaviour {
     
     public Transform playerSpawnPoint;
+    public Lava lava;
+    
+    
     
     void Awake() {
         if (SceneManager.GetSceneByName("CoreScene").IsValid()) {

@@ -74,7 +74,7 @@ public class GameManager : MonoBehaviour {
             ProgrammerPreferences _prefs = JsonUtility.FromJson<ProgrammerPreferences>(programmerPreferenceJson.text);
             if (_prefs != null) {
                 _prefs.SetPreferences();
-                Debug.Log("Note: a 'ProgrammerPreferences' file was found in the Resources folder and will be loaded in.");
+                // Debug.Log("Note: a 'ProgrammerPreferences' file was found in the Resources folder and will be loaded in.");
             } else Debug.LogWarning("Programmer preferences failed to load. Make sure your json file is written correctly.");
         } else {
             // Debug.Log("Note: no 'ProgrammerPreferences' file found in Resources folder, so no preferences were loaded.");
