@@ -28,7 +28,7 @@ public class ExplosiveProjectile : ProjectileBase {
     
     
     void Awake() {
-        ExplosionLayerMask = 1 << LayerMask.NameToLayer("Movable");
+        ExplosionLayerMask = 1 << LayerMask.NameToLayer("Enemy");
         hitColliders = new Collider[MaxHits];
         initExplosionEffect();
     }

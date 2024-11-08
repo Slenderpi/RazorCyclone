@@ -56,8 +56,7 @@ public class AudioPlayer2D : MonoBehaviour {
     public void PlayClipSFX(EClipSFX clip) {
         switch (clip) {
         case EClipSFX.Kill_DirectHit:
-            asSFX.clip = sfx_Kill_DirectHit;
-            asSFX.Play();
+            asSFX.PlayOneShot(sfx_Kill_DirectHit);
             break;
         case EClipSFX.Weapon_CanonShot:
             asSFX.clip = sfx_Weapon_CanonShot;

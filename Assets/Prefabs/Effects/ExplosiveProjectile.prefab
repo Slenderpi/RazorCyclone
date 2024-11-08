@@ -99,7 +99,7 @@ GameObject:
   - component: {fileID: 98281349670889601}
   m_Layer: 8
   m_Name: Trail (1)
-  m_TagString: Untagged
+  m_TagString: Projectile
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -230,7 +230,7 @@ GameObject:
   - component: {fileID: 5933157888239754978}
   m_Layer: 8
   m_Name: Trail
-  m_TagString: Untagged
+  m_TagString: Projectile
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -362,7 +362,7 @@ GameObject:
   - component: {fileID: 3784962779888332758}
   m_Layer: 8
   m_Name: ConstantRing
-  m_TagString: Untagged
+  m_TagString: Projectile
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -5174,7 +5174,7 @@ GameObject:
   - component: {fileID: 1688065825811753020}
   m_Layer: 8
   m_Name: ConstantOrb
-  m_TagString: Untagged
+  m_TagString: Projectile
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

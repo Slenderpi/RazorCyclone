@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 5207972207715144811}
   - component: {fileID: 1745451246302694824}
   - component: {fileID: -4154519724048462357}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: LaserEnemy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -48,10 +48,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MaxHealth: 50
+  health: 0
   lastVacuumHitTime: 0
-  fuelAmount: 50
-  rb: {fileID: 0}
-  player: {fileID: 2495797634905944669, guid: ebefb66ac461b4941a6d0863c3d1515d, type: 3}
+  FuelAmount: 50
+  rb: {fileID: 1745451246302694824}
   fuelPickupPrefab: {fileID: 5163220815717078053, guid: bb72521b10fb34d7bbbed5f6f77687b4, type: 3}
   attackCooldown: 5
   windUpTime: 3
@@ -186,7 +186,7 @@ GameObject:
   - component: {fileID: 1442235803941401083}
   - component: {fileID: 2240946987078304598}
   - component: {fileID: 8038726756254459463}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Sphere
   m_TagString: Untagged
   m_Icon: {fileID: 0}

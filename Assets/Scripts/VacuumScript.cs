@@ -33,8 +33,8 @@ public class VacuumScript : MonoBehaviour {
                     // en.TakeDamage(pchar.VacuumDamage);
                     if (en.health <= 0)
                         enemiesInRange.RemoveAt(i);
-                    
-                    en.GetComponent<Rigidbody>().AddForce((VacuumKillbox.position - en.transform.position).normalized * pchar.VacuumSuckForce);
+                    if (en.TryGetComponent(out Rigidbody enrb))
+                        enrb.AddForce((VacuumKillbox.position - en.transform.position).normalized * pchar.VacuumSuckForce);
                 }
             }
         }

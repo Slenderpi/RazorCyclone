@@ -51,9 +51,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MaxHealth: 50
   lastVacuumHitTime: 0
-  fuelAmount: 50
-  rb: {fileID: 0}
-  player: {fileID: 2495797634905944669, guid: ebefb66ac461b4941a6d0863c3d1515d, type: 3}
+  FuelAmount: 50
+  rb: {fileID: 9113617427949065013}
   fuelPickupPrefab: {fileID: 5163220815717078053, guid: bb72521b10fb34d7bbbed5f6f77687b4, type: 3}
   moveSpeed: 5
   isStunned: 0

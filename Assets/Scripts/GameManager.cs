@@ -122,7 +122,7 @@ public class GameManager : MonoBehaviour {
         CurrentPlayer = null;
     }
     
-    public void OnEnemyDied(EDamageType damageType) {
+    public void OnEnemyDied(EnemyBase enemy, EDamageType damageType) {
         switch (damageType) {
         case EDamageType.Projectile:
             Audio2D.PlayClipSFX(AudioPlayer2D.EClipSFX.Kill_DirectHit);
@@ -130,7 +130,7 @@ public class GameManager : MonoBehaviour {
         }
     }
     
-    public void OnEnemyTookDamage(EDamageType damageType) {
+    public void OnEnemyTookDamage(EnemyBase enemy, EDamageType damageType) {
         
     }
     
