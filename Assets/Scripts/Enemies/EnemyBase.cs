@@ -46,12 +46,12 @@ public class EnemyBase : MonoBehaviour {
     
     public virtual void TakeDamage(float amnt, EDamageType damageType) {
         if (health <= 0) return;
-        health -= amnt;
-        if (health <= 0) {
-            GameManager.Instance.OnEnemyDied(this, damageType);
+        health = Mathf.Max(health - amnt, 0);
+        if (health == 0) {
+            GameManager.Instance.OnEnemyTookDamage(this, damageType, true);
             OnDefeated();
         } else {
-            GameManager.Instance.OnEnemyTookDamage(this, damageType);
+            GameManager.Instance.OnEnemyTookDamage(this, damageType, false);
         }
     }
     

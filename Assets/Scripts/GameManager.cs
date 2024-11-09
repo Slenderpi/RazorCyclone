@@ -122,16 +122,24 @@ public class GameManager : MonoBehaviour {
         CurrentPlayer = null;
     }
     
-    public void OnEnemyDied(EnemyBase enemy, EDamageType damageType) {
-        switch (damageType) {
-        case EDamageType.Projectile:
-            Audio2D.PlayClipSFX(AudioPlayer2D.EClipSFX.Kill_DirectHit);
-            break;
-        }
-    }
+    // public void OnEnemyDied(EnemyBase enemy, EDamageType damageType) {
+    //     switch (damageType) {
+    //     case EDamageType.Projectile:
+    //         Audio2D.PlayClipSFX(AudioPlayer2D.EClipSFX.Kill_DirectHit);
+    //         break;
+    //     }
+    //     MainCanvas.GamePanel.OnPlayerDamagedEnemy(enemy);
+    // }
     
-    public void OnEnemyTookDamage(EnemyBase enemy, EDamageType damageType) {
-        
+    public void OnEnemyTookDamage(EnemyBase enemy, EDamageType damageType, bool wasKillingBlow) {
+        if (wasKillingBlow) {
+            switch (damageType) {
+            case EDamageType.Projectile:
+                Audio2D.PlayClipSFX(AudioPlayer2D.EClipSFX.Kill_DirectHit);
+                break;
+            }
+        }
+        MainCanvas.GamePanel.OnPlayerDamagedEnemy(enemy);
     }
     
     public void PauseGame() {

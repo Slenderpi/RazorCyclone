@@ -18,6 +18,7 @@ public class UIGamePanel : UIPanel {
     [Header("Crosshairs")]
     public RectTransform MainVacuumCrosshair;
     public RectTransform MainCanonCrosshair;
+    public Animator HitmarkerAnimator;
     
     [Header("Misc.")]
     public TMP_Text Speedometer;
@@ -126,6 +127,10 @@ public class UIGamePanel : UIPanel {
         AnimatorStateInfo asi = FuelOutlineAnimator.GetCurrentAnimatorStateInfo(0);
         if (!asi.IsName("OutOfFuelBlink") || asi.normalizedTime >= 0.8f)
             FuelOutlineAnimator.SetTrigger("OutOfFuel");
+    }
+    
+    public void OnPlayerDamagedEnemy(EnemyBase enemy) {
+        HitmarkerAnimator.SetTrigger("Show");
     }
 
     public override void OnGameResumed() {

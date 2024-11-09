@@ -28,7 +28,7 @@ public class WeakPointedEnemy : EnemyBase {
     protected virtual void TakeWeakpointDamage(EDamageType damageType) {
         health--;
         if (health <= 0) {
-            GameManager.Instance.OnEnemyDied(this, damageType);
+            GameManager.Instance.OnEnemyTookDamage(this, damageType, true);
             OnDefeated();
         }
     }

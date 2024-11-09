@@ -18,7 +18,7 @@ public class EnemyWeakpoint : EnemyBase {
             killingDType = damageType;
             OnDefeated();
         } else {
-            GameManager.Instance.OnEnemyTookDamage(this, damageType);
+            GameManager.Instance.OnEnemyTookDamage(this, damageType, false);
         }
     }
 
