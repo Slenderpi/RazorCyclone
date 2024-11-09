@@ -9,6 +9,7 @@ public class EnemyBase : MonoBehaviour {
     public float MaxHealth = 50;
     [HideInInspector]
     public float health;
+    public float Damage = 10;
     [HideInInspector]
     public float lastVacuumHitTime = 0f;
     public int FuelAmount = 50; // The value of the fuel this enemy will drop
@@ -38,7 +39,7 @@ public class EnemyBase : MonoBehaviour {
             PlayerCharacterCtrlr player = GameManager.CurrentPlayer;
             if (player != null)
             {
-                player.TakeDamage(1);
+                player.TakeDamage(Damage);
                 Debug.Log("player health reduced");
             }
         }

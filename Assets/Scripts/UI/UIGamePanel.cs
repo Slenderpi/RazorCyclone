@@ -1,6 +1,7 @@
 
 using System;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Analytics;
 using UnityEngine.UI;
@@ -132,6 +133,14 @@ public class UIGamePanel : UIPanel {
     public void OnPlayerDamagedEnemy(EnemyBase enemy) {
         HitmarkerAnimator.SetTrigger("Show");
     }
+    
+    // public void SetReadTimerOn(bool setReadOn) {
+    //     if (setReadOn) {
+            
+    //     } else {
+            
+    //     }
+    // }
 
     public override void OnGameResumed() {
         // SetActive(true);

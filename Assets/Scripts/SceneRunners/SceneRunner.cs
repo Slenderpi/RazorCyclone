@@ -19,11 +19,11 @@ public class SceneRunner : MonoBehaviour {
         }
     }
     
-    /**
-     * This method begins the logic and gameplay loop for the current scene. To change what
-     * happens at the beginning, create a new child class of SceneRunner and override this
-     * method.
-     */
+    /// <summary>
+    /// This method begins the logic and gameplay loop for the current scene. To change what
+    /// happens at the beginning, create a new child class of SceneRunner and override this method.
+    /// By default, this method spawns the player.
+    /// </summary>
     public virtual void BeginScene() {
         GameManager.Instance.SpawnPlayer();
     }

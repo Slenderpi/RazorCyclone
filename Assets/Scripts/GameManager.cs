@@ -13,6 +13,7 @@ public class GameManager : MonoBehaviour {
     public static event Action A_GameResumed;
     public static event Action<PlayerCharacterCtrlr> A_PlayerSpawned;
     public static event Action<PlayerCharacterCtrlr> A_PlayerDestroying;
+    public static event Action A_EnemyKilled;
     
     // Current scene runner
     [HideInInspector]
@@ -64,8 +65,7 @@ public class GameManager : MonoBehaviour {
         initializeUI();
         
         PauseInputActions = new PlayerInputActions().PauseMenu;
-        PauseInputActions.Escape.Enable();
-        PauseInputActions.Escape.started += PauseInputPressed;
+        SetPauseInputActionsEnabled(true);
         
 #if UNITY_EDITOR
         /******  PROGRAMMER SPECIFIC  ******/
@@ -113,6 +113,7 @@ public class GameManager : MonoBehaviour {
             currentSceneRunner.playerSpawnPoint != null ? currentSceneRunner.playerSpawnPoint.position : Vector3.zero,
             currentSceneRunner.playerSpawnPoint != null ? currentSceneRunner.playerSpawnPoint.rotation : Quaternion.identity
         ).GetComponent<PlayerCharacterCtrlr>();
+        CurrentPlayer.A_PlayerDied += onPlayerDied;
         A_PlayerSpawned?.Invoke(CurrentPlayer);
     }
     
@@ -133,6 +134,7 @@ public class GameManager : MonoBehaviour {
     
     public void OnEnemyTookDamage(EnemyBase enemy, EDamageType damageType, bool wasKillingBlow) {
         if (wasKillingBlow) {
+            A_EnemyKilled?.Invoke();
             switch (damageType) {
             case EDamageType.Projectile:
                 Audio2D.PlayClipSFX(AudioPlayer2D.EClipSFX.Kill_DirectHit);
@@ -144,12 +146,16 @@ public class GameManager : MonoBehaviour {
     
     public void PauseGame() {
         gameIsPaused = true;
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
         A_GamePaused?.Invoke();
         Time.timeScale = 0;
     }
     
     public void ResumeGame() {
         gameIsPaused = false;
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
         A_GameResumed?.Invoke();
         Time.timeScale = 1;
     }
@@ -182,6 +188,22 @@ public class GameManager : MonoBehaviour {
         if (scene.name != "CoreScene") {
             SceneManager.SetActiveScene(scene);
         }
+    }
+
+    public void SetPauseInputActionsEnabled(bool newEnabled) {
+        if (newEnabled) {
+            PauseInputActions.Escape.Enable();
+            PauseInputActions.Escape.started += PauseInputPressed;
+        } else {
+            PauseInputActions.Escape.Disable();
+            PauseInputActions.Escape.started -= PauseInputPressed;
+        }
+    }
+    
+    void onPlayerDied() {
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+        SetPauseInputActionsEnabled(false);
     }
     
 }

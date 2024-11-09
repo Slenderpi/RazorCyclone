@@ -10,17 +10,21 @@ public class UIMainCanvas : UIPanel {
         MainMenu,
         Gameplay,
         Paused,
-        Settings
+        Settings,
+        DiedEndless
     }
     
+    [HideInInspector]
     public ECanvasState CurrentCanvasState;
     
     public event Action<ECanvasState> CanvasStateChanged;
     
+    [Header("References")]
     public UIGamePanel GamePanel;
     public UIPausePanel PausePanel;
     public UISettingsPanel SettingsPanel;
     public UIMainMenuPanel MainMenuPanel;
+    public UIDeathPanel DeathPanel;
     
     
     
@@ -62,6 +66,9 @@ public class UIMainCanvas : UIPanel {
             case ECanvasState.Settings:
                 SettingsPanel.SetActive(true);
                 break;
+            case ECanvasState.DiedEndless:
+                DeathPanel.SetActive(true);
+                break;
         }
         CanvasStateChanged?.Invoke(CurrentCanvasState);
     }
@@ -92,6 +99,7 @@ public class UIMainCanvas : UIPanel {
         PausePanel.SetActive(false);
         SettingsPanel.SetActive(false);
         MainMenuPanel.SetActive(false);
+        DeathPanel.SetActive(false);
     }
     
 }

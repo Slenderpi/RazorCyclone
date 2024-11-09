@@ -18,6 +18,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     public event Action<float, float> A_FuelSpent; // float changeAmnt, float fuelPerc
     public event Action<float> A_PlayerTakenDamage; // float amount
     public event Action<float> A_PlayerHealed; // float amount
+    public event Action A_PlayerDied;
     
     [HideInInspector]
     public float mouseSensitivity;
@@ -209,6 +210,8 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         print("Player took " + amount + " damage. Health: " + currentHealth);
         if (currentHealth == 0) {
             Debug.Log("player died womp womp");
+            A_PlayerDied?.Invoke();
+            gameObject.SetActive(false);
         }
         
         A_PlayerTakenDamage?.Invoke(amount);
@@ -298,14 +301,10 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
 
     public void OnPauseGame() {
         SetPlayerControlsEnabled(false);
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
     }
     
     public void OnResumeGame() {
         SetPlayerControlsEnabled(true);
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
     }
 
     void updateCameraTransform() {
