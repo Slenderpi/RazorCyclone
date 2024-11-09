@@ -23,7 +23,7 @@ public class EnemyBase : MonoBehaviour {
     // [SerializeField]
     // float MovementForce = 425f; 
     
-    protected void Awake() {
+    void Awake() {
         if (MaxHealth <= 0) Debug.LogWarning("Enemy MaxHealth set to a value <= 0 (set to " + MaxHealth + ").");
         if (fuelPickupPrefab == null)
             Debug.LogWarning("This enemy's fuelPickupPrefab was not set!");

@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class ProjectileBase : MonoBehaviour {
     
-    [Tooltip("Damage of this projectile.")]
+    // [Tooltip("Damage of this projectile.")]
+    [HideInInspector]
     public float damage;
     // public GameObject explosionEffect;
     [Tooltip("Maximum lifetime in seconds of this projectile to prevent projectiles that go into the void from living too long.")]
@@ -34,10 +35,11 @@ public class ProjectileBase : MonoBehaviour {
     // This function allows for a projectile's hitbox to be either a collider or a trigger
     void onHitSomething(GameObject hitObject) {
         if (hasHit) return;
-        if (!hitObject.CompareTag("Player") && !hitObject.CompareTag("Projectile")) {
+        if (!hitObject.CompareTag("Player") &&
+            !hitObject.CompareTag("Projectile") &&
+            !hitObject.CompareTag("Pickup")) {
             hasHit = true;
-            EnemyBase enemy = hitObject.GetComponent<EnemyBase>();
-            if (enemy != null) {
+            if (hitObject.TryGetComponent(out EnemyBase enemy)) {
                 OnHitEnemy(enemy);
             } else {
                 OnHitNonEnemy(hitObject);

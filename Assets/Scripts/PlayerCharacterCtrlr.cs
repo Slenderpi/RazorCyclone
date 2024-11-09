@@ -65,8 +65,11 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     float vacuumFuelCost; // Calculated based on VacuumFuelTime
     float currentFuel;
     
-    float MaxHealth = 100f;
-    float currentHealth;
+    [Header("Health Settings")]
+    public float MaxHealth = 100f;
+    [HideInInspector]
+    public float currentHealth;
+    // public float HealthRegenPerSecond;
     
     [Header("References")]
     [SerializeField]
