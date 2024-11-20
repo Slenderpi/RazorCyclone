@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SREndlessMode : SceneRunner {
+public class SREndlessMode : SceneRunner, IDataPersistence {
     
     [HideInInspector]
     public float EndlessStartTime;
@@ -10,6 +10,8 @@ public class SREndlessMode : SceneRunner {
     public float TimeSurvived { get { return Time.unscaledTime - EndlessStartTime; }}
     [HideInInspector]
     public int EnemiesKilled;
+    [HideInInspector]
+    public float HighestTimeSurvived;
     
     UIMainCanvas mainCanvas;
     
@@ -26,8 +28,21 @@ public class SREndlessMode : SceneRunner {
     
     void OnPlayerDied() {
         GameManager.CurrentPlayer.A_PlayerDied -= OnPlayerDied;
-        mainCanvas.DeathPanel.SetEndscreenInfo(TimeSurvived, EnemiesKilled);
+        bool isNewTimeRecord = false;
+        if (TimeSurvived > HighestTimeSurvived) {
+            isNewTimeRecord = true;
+            HighestTimeSurvived = TimeSurvived;
+        }
+        mainCanvas.DeathPanel.SetEndscreenInfo(TimeSurvived, HighestTimeSurvived, isNewTimeRecord, EnemiesKilled);
         mainCanvas.SetCanvasState(UIMainCanvas.ECanvasState.DiedEndless);
+        DataPersistenceManager.Instance.SaveGame();
     }
 
+    public void LoadData(GameData data) {
+        HighestTimeSurvived = data.HighestTimeSurvived;
+    }
+
+    public void SaveData(GameData data) {
+        data.HighestTimeSurvived = HighestTimeSurvived;
+    }
 }

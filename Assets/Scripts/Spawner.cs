@@ -14,8 +14,7 @@ public class Spawner : MonoBehaviour
     
     public EnemyType[] enemyTypes;
     private bool canSpawn = true;
-
-    public Transform player;
+    
     public Transform[] enemies;
     public float playerDetectionRange = 15f;
     public float enemyDetectionRange = 5f;
@@ -32,7 +31,11 @@ public class Spawner : MonoBehaviour
 
     void CheckSpawnConditions()
     {
-        bool playerInRange = Vector3.Distance(transform.position, player.position) <= playerDetectionRange;
+        PlayerCharacterCtrlr plr = GameManager.CurrentPlayer;
+        if (!plr) return;
+        Transform plrTrans = plr.transform;
+        
+        bool playerInRange = Vector3.Distance(transform.position, plrTrans.position) <= playerDetectionRange;
         bool enemyInRange = false;
 
         foreach (Transform enemy in enemies)

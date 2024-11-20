@@ -10,6 +10,7 @@ public class EnemyBase : MonoBehaviour {
     [HideInInspector]
     public float health;
     public float Damage = 10;
+    public bool DealDamageOnTouch = true;
     [HideInInspector]
     public float lastVacuumHitTime = 0f;
     public int FuelAmount = 50; // The value of the fuel this enemy will drop
@@ -34,7 +35,7 @@ public class EnemyBase : MonoBehaviour {
     // modify depending on enemy specifics / actual health system
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.CompareTag("Player"))
+        if (collision.gameObject.CompareTag("Player") && DealDamageOnTouch)
         {
             PlayerCharacterCtrlr player = GameManager.CurrentPlayer;
             if (player != null)

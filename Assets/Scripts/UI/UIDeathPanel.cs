@@ -7,6 +7,7 @@ public class UIDeathPanel : UIPanel {
     
     [Header("References")]
     public TMP_Text TimeSurvivedValue;
+    public TMP_Text HighestTimeSurvivedValue;
     public TMP_Text EnemiesKilledValue;
     
     
@@ -21,12 +22,17 @@ public class UIDeathPanel : UIPanel {
         GameManager.Instance.currentSceneRunner.SwitchToScene("MainMenuScene");
     }
     
-    public void SetEndscreenInfo(float timeSurvived, int enemiesKilled) {
-        timeSurvived = Mathf.Round(timeSurvived);
-        int mins = (int)timeSurvived / 60;
-        int secs = (int)(timeSurvived - mins * 60f);
-        TimeSurvivedValue.text = mins.ToString("00") + ":" + secs.ToString("00");
+    public void SetEndscreenInfo(float timeSurvived, float highestTimeSurvived, bool isNewTimeRecord, int enemiesKilled) {
+        TimeSurvivedValue.text = textifyTime(timeSurvived);
+        HighestTimeSurvivedValue.text = (isNewTimeRecord ? "! " : "") + textifyTime(highestTimeSurvived);
         EnemiesKilledValue.text = enemiesKilled.ToString();
+    }
+    
+    string textifyTime(float time) {
+        float rounded = Mathf.Round(time);
+        int mins = (int)rounded / 60;
+        int secs = (int)(rounded - mins * 60f);
+        return mins.ToString("00") + ":" + secs.ToString("00");
     }
     
 }

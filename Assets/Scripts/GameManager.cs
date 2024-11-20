@@ -93,14 +93,11 @@ public class GameManager : MonoBehaviour {
         CurrentMouseSensitivity = DefaultMouseSensitivity;
         SettingsPanel.MouseSenseSlider.value = (CurrentMouseSensitivity - LowestSensitivity) / (HighestSensitivity - LowestSensitivity);
     }
-
-    void Start() {
-        
-    }
     
     public void OnSceneStarted(SceneRunner sr) {
         currentSceneRunner = sr;
         MainCanvas.SetCanvasState(UIMainCanvas.ECanvasState.None);
+        DataPersistenceManager.Instance.OnSceneLoaded();
     }
     
     void Update() {
