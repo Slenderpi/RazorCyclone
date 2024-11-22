@@ -5,6 +5,7 @@ using UnityEngine.SceneManagement;
 
 public class SceneRunner : MonoBehaviour {
     
+    [Header("Consistent References")] // References consistent for all SceneRunners
     public Transform playerSpawnPoint;
     public Lava lava;
     

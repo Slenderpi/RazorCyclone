@@ -21,6 +21,9 @@ public class GameManager : MonoBehaviour {
     
     // Pause menu input actions
     PlayerInputActions.PauseMenuActions PauseInputActions;
+#if UNITY_EDITOR
+    PlayerInputActions.DEBUGActions DebugActions;
+#endif
     
     [Header("Core References")]
     public UIMainCanvas MainCanvas;
@@ -68,6 +71,8 @@ public class GameManager : MonoBehaviour {
         SetPauseInputActionsEnabled(true);
         
 #if UNITY_EDITOR
+        setupDebugActions();
+        
         /******  PROGRAMMER SPECIFIC  ******/
         TextAsset programmerPreferenceJson = Resources.Load<TextAsset>("ProgrammerPreferences");
         if (programmerPreferenceJson != null) {
@@ -203,6 +208,26 @@ public class GameManager : MonoBehaviour {
         SetPauseInputActionsEnabled(false);
     }
     
+    
+    
+    /******  DEBUGGING  ******/
+    
+#if UNITY_EDITOR
+    void setupDebugActions() {
+        DebugActions = new PlayerInputActions().DEBUG;
+        DebugActions.ToggleMouseLock.Enable();
+        DebugActions.ToggleMouseLock.started += (InputAction.CallbackContext context) => {
+            if (Cursor.lockState == CursorLockMode.None) {
+                Cursor.lockState = CursorLockMode.Locked;
+                Cursor.visible = false;
+            } else {
+                Cursor.lockState = CursorLockMode.None;
+                Cursor.visible = true;
+            }
+        };
+    }
+#endif
+    
 }
 
 
@@ -214,6 +239,17 @@ public enum EDamageType {
     Projectile,
     Vacuum,
     ProjectileExplosion
+}
+
+/// <summary>
+/// Enum representing an enemy type.
+/// </summary>
+public enum EnemyType {
+    FlyingGrunt,
+    GroundGrunt,
+    Hunter,
+    FloorIsLava,
+    ShieldedTurret
 }
 
 

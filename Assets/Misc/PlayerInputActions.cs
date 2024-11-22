@@ -564,6 +564,34 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""DEBUG"",
+            ""id"": ""0f417bc6-43d5-45d1-8a06-5262de2484c1"",
+            ""actions"": [
+                {
+                    ""name"": ""UnlockMouse"",
+                    ""type"": ""Button"",
+                    ""id"": ""a4237d9e-17d9-4247-b6c4-74e9ff7be309"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""a7c8de8e-cf63-4d51-aacc-f1ea70963f0a"",
+                    ""path"": ""<Keyboard>/f1"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""UnlockMouse"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": []
@@ -584,6 +612,9 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
         // PauseMenu
         m_PauseMenu = asset.FindActionMap("PauseMenu", throwIfNotFound: true);
         m_PauseMenu_Escape = m_PauseMenu.FindAction("Escape", throwIfNotFound: true);
+        // DEBUG
+        m_DEBUG = asset.FindActionMap("DEBUG", throwIfNotFound: true);
+        m_DEBUG_UnlockMouse = m_DEBUG.FindAction("UnlockMouse", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -785,6 +816,39 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
         }
     }
     public PauseMenuActions @PauseMenu => new PauseMenuActions(this);
+
+    // DEBUG
+    private readonly InputActionMap m_DEBUG;
+    private IDEBUGActions m_DEBUGActionsCallbackInterface;
+    private readonly InputAction m_DEBUG_UnlockMouse;
+    public struct DEBUGActions
+    {
+        private @PlayerInputActions m_Wrapper;
+        public DEBUGActions(@PlayerInputActions wrapper) { m_Wrapper = wrapper; }
+        public InputAction ToggleMouseLock => m_Wrapper.m_DEBUG_UnlockMouse;
+        public InputActionMap Get() { return m_Wrapper.m_DEBUG; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(DEBUGActions set) { return set.Get(); }
+        public void SetCallbacks(IDEBUGActions instance)
+        {
+            if (m_Wrapper.m_DEBUGActionsCallbackInterface != null)
+            {
+                ToggleMouseLock.started -= m_Wrapper.m_DEBUGActionsCallbackInterface.OnUnlockMouse;
+                ToggleMouseLock.performed -= m_Wrapper.m_DEBUGActionsCallbackInterface.OnUnlockMouse;
+                ToggleMouseLock.canceled -= m_Wrapper.m_DEBUGActionsCallbackInterface.OnUnlockMouse;
+            }
+            m_Wrapper.m_DEBUGActionsCallbackInterface = instance;
+            if (instance != null)
+            {
+                ToggleMouseLock.started += instance.OnUnlockMouse;
+                ToggleMouseLock.performed += instance.OnUnlockMouse;
+                ToggleMouseLock.canceled += instance.OnUnlockMouse;
+            }
+        }
+    }
+    public DEBUGActions @DEBUG => new DEBUGActions(this);
     public interface IPlayerActions
     {
         void OnLook(InputAction.CallbackContext context);
@@ -802,5 +866,9 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
     public interface IPauseMenuActions
     {
         void OnEscape(InputAction.CallbackContext context);
+    }
+    public interface IDEBUGActions
+    {
+        void OnUnlockMouse(InputAction.CallbackContext context);
     }
 }

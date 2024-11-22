@@ -542,6 +542,34 @@
                     "isPartOfComposite": false
                 }
             ]
+        },
+        {
+            "name": "DEBUG",
+            "id": "0f417bc6-43d5-45d1-8a06-5262de2484c1",
+            "actions": [
+                {
+                    "name": "UnlockMouse",
+                    "type": "Button",
+                    "id": "a4237d9e-17d9-4247-b6c4-74e9ff7be309",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "a7c8de8e-cf63-4d51-aacc-f1ea70963f0a",
+                    "path": "<Keyboard>/f1",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "UnlockMouse",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
         }
     ],
     "controlSchemes": []

@@ -4,13 +4,6 @@ using UnityEngine;
 
 public class Spawner : MonoBehaviour
 {
-    public enum EnemyType {
-        FlyingGrunt,
-        GroundGrunt,
-        Hunter,
-        FloorIsLava,
-        ShieldedTurret
-    }
     
     public EnemyType[] enemyTypes;
     private bool canSpawn = true;

@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class SREndlessMode : SceneRunner, IDataPersistence {
     
+    [Header("References")]
+    public WaveSpawnerManager WaveSpawnManager;
+    
     [HideInInspector]
     public float EndlessStartTime;
     [HideInInspector]
@@ -18,9 +21,11 @@ public class SREndlessMode : SceneRunner, IDataPersistence {
     
     
     public override void BeginScene() {
-        base.BeginScene();
+        WaveSpawnManager.OwningEndlessMode = this;
+        WaveSpawnManager.InitWaveSpawner();
         EndlessStartTime = Time.unscaledTime;
         mainCanvas = GameManager.Instance.MainCanvas;
+        base.BeginScene();
         // mainCanvas.GamePanel.SetReadTimerOn(true);
         GameManager.A_EnemyKilled += () => { EnemiesKilled++; };
         GameManager.CurrentPlayer.A_PlayerDied += OnPlayerDied;
@@ -45,4 +50,5 @@ public class SREndlessMode : SceneRunner, IDataPersistence {
     public void SaveData(GameData data) {
         data.HighestTimeSurvived = HighestTimeSurvived;
     }
+    
 }

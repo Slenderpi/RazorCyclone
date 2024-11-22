@@ -30,7 +30,6 @@ public class DataPersistenceManager : MonoBehaviour {
             return;
         }
         Instance = this;
-        DontDestroyOnLoad(gameObject);
 
         if (disableDataPersistence) {
             Debug.LogWarning("Data Persistence is currently disabled. Loaded GameData will use default values.");
