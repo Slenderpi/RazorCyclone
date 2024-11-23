@@ -5,6 +5,17 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour {
     
+    /// <summary>
+    /// Strings representing enemies. In the future, using a different
+    /// method of identification may be better.
+    /// </summary>
+    public static readonly string[] EnemyStrs = { // ENSURE THE WAVE SPREADSHEET COLUMNS AND THIS ARRAY LINE UP
+        "EnemyBase",
+        "Hunter",
+        "Laser",
+        "Lava"
+    };
+    
     public static GameManager Instance;
     public static PlayerCharacterCtrlr CurrentPlayer;
     
@@ -245,9 +256,11 @@ public enum EDamageType {
 /// Enum representing an enemy type.
 /// </summary>
 public enum EnemyType {
+    EnemyBase,
     FlyingGrunt,
     GroundGrunt,
     Hunter,
+    Laser,
     FloorIsLava,
     ShieldedTurret
 }
