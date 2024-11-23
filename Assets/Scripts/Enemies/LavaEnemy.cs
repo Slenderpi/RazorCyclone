@@ -6,6 +6,7 @@ using UnityEngine;
 public class LavaEnemy : WeakPointedEnemy {
     
     [Header("Lava Enemy Configuration")]
+    public float MovementAccelerationAmnt = 7;
     [SerializeField]
     float directionChangeDelay = 3;
     
@@ -22,7 +23,7 @@ public class LavaEnemy : WeakPointedEnemy {
     }
     
     void FixedUpdate() {
-        rb.AddForce(movementDirection * 20, ForceMode.Acceleration);
+        rb.AddForce(movementDirection * MovementAccelerationAmnt, ForceMode.Acceleration);
         transform.position = new Vector3(
             transform.position.x,
             lava.transform.position.y,
