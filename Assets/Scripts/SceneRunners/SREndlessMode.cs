@@ -10,7 +10,7 @@ public class SREndlessMode : SceneRunner, IDataPersistence {
     [HideInInspector]
     public float EndlessStartTime;
     [HideInInspector]
-    public float TimeSurvived { get { return Time.unscaledTime - EndlessStartTime; }}
+    public float TimeSurvived { get { return Time.time - EndlessStartTime; }}
     [HideInInspector]
     public int EnemiesKilled;
     [HideInInspector]
@@ -23,7 +23,7 @@ public class SREndlessMode : SceneRunner, IDataPersistence {
     public override void BeginScene() {
         WaveSpawnManager.OwningEndlessMode = this;
         WaveSpawnManager.InitWaveSpawner();
-        EndlessStartTime = Time.unscaledTime;
+        EndlessStartTime = Time.time;
         mainCanvas = GameManager.Instance.MainCanvas;
         base.BeginScene();
         // mainCanvas.GamePanel.SetReadTimerOn(true);

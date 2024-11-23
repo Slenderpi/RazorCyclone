@@ -1,14 +1,19 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class UIDEBUGPanel : UIPanel {
     
     public TMP_Text ShowHideButtonText;
     public GameObject DebugPanelContainer;
+    public TMP_Text SurvivalTimerText;
     public bool ShowPanel = false;
+    
+    WaveSpawnerManager wsm = null;
     
     
     
@@ -18,7 +23,19 @@ public class UIDEBUGPanel : UIPanel {
 #else
         DebugPanelContainer.SetActive(ShowPanel);
         ShowHideButtonText.text = (ShowPanel ? "HIDE" : "SHOW") + "\nDebug Panel";
+        setWSM();
+        GameManager.A_PlayerSpawned += (PlayerCharacterCtrlr plr) => {
+            setWSM();
+        };
 #endif
+    }
+    
+    void LateUpdate() {
+        if (wsm) {
+            SurvivalTimerText.text = "Time Survived: " + wsm.OwningEndlessMode.TimeSurvived;
+        } else {
+            print("nope");
+        }
     }
     
     public void OnButton_ToggleDebugPanel() {
@@ -28,14 +45,22 @@ public class UIDEBUGPanel : UIPanel {
     }
     
     public void OnButton_SpawnNextWave() {
-        WaveSpawnerManager wsm = FindObjectOfType<WaveSpawnerManager>();
         if (!wsm) {
             Debug.LogWarning("WARN: There is no wave spawner in the current scene. Cannot spawn a 'next wave'.");
             return;
         }
-        Debug.Log("DEBUG: Clicked debug button for force spawning next wave.");
-        wsm.ActivateWave();
-        wsm.PreloadWave(wsm.CurrentPreloadedWaveNumber + 1);
+        if (wsm.CurrentPreloadedWaveNumber != -1) {
+            wsm.ActivateWave();
+            wsm.PreloadWave(wsm.CurrentPreloadedWaveNumber + 1);
+            Debug.Log($"DEBUG: Clicked debug button for force spawning next wave. Next wave ({wsm.CurrentPreloadedWaveNumber}) will spawn at time {wsm.currentWaveSpawnTime}.");
+        } else {
+            Debug.Log("DEBUG: Clicked debug button for force spawning next wave but there is no preloaded wave left.");
+        }
+    }
+    
+    void setWSM() {
+            SREndlessMode sre = GameManager.Instance.currentSceneRunner as SREndlessMode;
+            wsm = sre ? sre.WaveSpawnManager : null;
     }
     
 }
