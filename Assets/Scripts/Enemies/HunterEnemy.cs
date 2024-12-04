@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Animations;
 
 public class HunterEnemy : EnemyBase
 {
@@ -11,13 +12,13 @@ public class HunterEnemy : EnemyBase
 
     public Material shieldActiveMaterial;
     public Material shieldInactiveMaterial;
-    private MeshRenderer enemyRenderer;
+    [SerializeField] MeshRenderer enemyRenderer;
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
         Transform sphereTransform = transform.Find("Sphere");
-        enemyRenderer = sphereTransform.GetComponent<MeshRenderer>();
+        //enemyRenderer = sphereTransform.GetComponent<MeshRenderer>();
         shieldActive = true;
         UpdateMaterial();
     }
@@ -35,6 +36,7 @@ public class HunterEnemy : EnemyBase
         if (GameManager.CurrentPlayer != null) {
             Debug.Log("chasing player");
             Vector3 direction = (GameManager.CurrentPlayer.transform.position - transform.position).normalized;
+            transform.LookAt(GameManager.CurrentPlayer.transform.position);
             rb.velocity = direction * moveSpeed;
         }
     }
