@@ -4,30 +4,19 @@ using UnityEngine;
 
 public class HunterEnemy : EnemyBase
 {
-    public float moveSpeed = 5f;
-    public bool isStunned = false;
-    public float stunDuration = 5f;
-    public bool shieldActive = true;
-
-    public Material shieldActiveMaterial;
-    public Material shieldInactiveMaterial;
-    private MeshRenderer enemyRenderer;
+    public float movementForce = 5f;
+    public float attackDamage = 20f;
+    public int miniHunterAmount = 4;
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
-        Transform sphereTransform = transform.Find("Sphere");
-        enemyRenderer = sphereTransform.GetComponent<MeshRenderer>();
-        shieldActive = true;
-        UpdateMaterial();
     }
 
     void Update()
     {
-        if (!isStunned)
-        {
-            ChasePlayer();
-        }
+        player = GameManager.CurrentPlayer;
+        ChasePlayer();
     }
 
     void ChasePlayer()
@@ -35,85 +24,29 @@ public class HunterEnemy : EnemyBase
         if (player != null) {
             Debug.Log("chasing player");
             Vector3 direction = (player.transform.position - transform.position).normalized;
-            rb.velocity = direction * moveSpeed;
+            rb.velocity = direction * movementForce;
         }
     }
 
-    public void GetStunned()
-    {
-        if (!isStunned)
-        {
-            Debug.Log("enemy stunned");
-            isStunned = true;
-            shieldActive = false;
-            UpdateMaterial();
-            rb.velocity = Vector3.zero;
-            StartCoroutine(StunRecovery());
-        }
-    }
-
-    IEnumerator StunRecovery()
-    {
-        yield return new WaitForSeconds(stunDuration);
-        isStunned = false;
-        shieldActive = true;
-        UpdateMaterial();
-    }
-
-    void UpdateMaterial()
-    {
-        if (shieldActive)
-        {
-            Debug.Log("changing to white");
-            enemyRenderer.material.color = Color.white;
-        }
-        else
-        {            
-            Debug.Log("changing to red");
-            enemyRenderer.material.color = Color.red;
-        }
-    }
-
-    public bool IsVulnerable()
-    {
-        return !shieldActive;
-    }
-
-    // testing purposes
     void OnTriggerEnter(Collider other)
     {
-        // if (other.CompareTag("Projectile"))
-        // {
-            GetStunned();
-        // }
+        if (other.CompareTag("Player"))
+            player.TakeDamage(attackDamage);
 
-        /*
-        if (other.CompareTag("Vacuum") && IsVulnerable())
+        if (other.CompareTag("Cannon"))
         {
-            Debug.Log("hunter got vaccuuuuumed up");
-            DropFuel();
+            Debug.Log("hunter killed by cannon");
+            SpawnMiniHunters();
             Destroy(gameObject);
         }
-
-        if (other.CompareTag("Cannon") && IsVulnerable())
-        {
-            Debug.Log("hunter got hit by cannon boom boom");
-            DropFuel();
-            Destroy(gameObject);
-        }
-        */
     }
 
-    void DropFuel()
+    // TODO: write mini hunter enemy script
+    void SpawnMiniHunters()
     {
-        for (int i = 0; i < fuelAmount; i++)
+        for (int i = 0; i < miniHunterAmount; i++)
         {
-            GameObject fuel = Instantiate(fuelPrefab, transform.position, Quaternion.identity);
-            Rigidbody fuelRb = fuel.GetComponent<Rigidbody>();
-            if (fuelRb != null)
-            {
-                fuelRb.useGravity = true;
-            }
+            GameObject miniHunter = Instantiate(miniHunterPrefab, transform.position, Quaternion.identity);
         }
     }
 }
