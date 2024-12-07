@@ -5,6 +5,17 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour {
     
+    /// <summary>
+    /// Strings representing enemies. In the future, using a different
+    /// method of identification may be better.
+    /// </summary>
+    public static readonly string[] EnemyStrs = { // ENSURE THE WAVE SPREADSHEET COLUMNS AND THIS ARRAY LINE UP
+        "EnemyBase",
+        "Hunter",
+        "Laser",
+        "Lava"
+    };
+    
     public static GameManager Instance;
     public static PlayerCharacterCtrlr CurrentPlayer;
     
@@ -13,6 +24,7 @@ public class GameManager : MonoBehaviour {
     public static event Action A_GameResumed;
     public static event Action<PlayerCharacterCtrlr> A_PlayerSpawned;
     public static event Action<PlayerCharacterCtrlr> A_PlayerDestroying;
+    public static event Action A_EnemyKilled;
     
     // Current scene runner
     [HideInInspector]
@@ -20,6 +32,9 @@ public class GameManager : MonoBehaviour {
     
     // Pause menu input actions
     PlayerInputActions.PauseMenuActions PauseInputActions;
+#if UNITY_EDITOR
+    PlayerInputActions.DEBUGActions DebugActions;
+#endif
     
     [Header("Core References")]
     public UIMainCanvas MainCanvas;
@@ -64,8 +79,10 @@ public class GameManager : MonoBehaviour {
         initializeUI();
         
         PauseInputActions = new PlayerInputActions().PauseMenu;
-        PauseInputActions.Escape.Enable();
-        PauseInputActions.Escape.started += PauseInputPressed;
+        SetPauseInputActionsEnabled(true);
+        
+#if UNITY_EDITOR
+        setupDebugActions();
         
         /******  PROGRAMMER SPECIFIC  ******/
         TextAsset programmerPreferenceJson = Resources.Load<TextAsset>("ProgrammerPreferences");
@@ -73,11 +90,12 @@ public class GameManager : MonoBehaviour {
             ProgrammerPreferences _prefs = JsonUtility.FromJson<ProgrammerPreferences>(programmerPreferenceJson.text);
             if (_prefs != null) {
                 _prefs.SetPreferences();
-                Debug.Log("Note: a 'ProgrammerPreferences' file was found in the Resources folder and will be loaded in.");
+                // Debug.Log("Note: a 'ProgrammerPreferences' file was found in the Resources folder and will be loaded in.");
             } else Debug.LogWarning("Programmer preferences failed to load. Make sure your json file is written correctly.");
         } else {
             // Debug.Log("Note: no 'ProgrammerPreferences' file found in Resources folder, so no preferences were loaded.");
         }
+#endif
     }
 
     void initializeUI() {
@@ -91,14 +109,11 @@ public class GameManager : MonoBehaviour {
         CurrentMouseSensitivity = DefaultMouseSensitivity;
         SettingsPanel.MouseSenseSlider.value = (CurrentMouseSensitivity - LowestSensitivity) / (HighestSensitivity - LowestSensitivity);
     }
-
-    void Start() {
-        
-    }
     
     public void OnSceneStarted(SceneRunner sr) {
         currentSceneRunner = sr;
         MainCanvas.SetCanvasState(UIMainCanvas.ECanvasState.None);
+        DataPersistenceManager.Instance.OnSceneLoaded();
     }
     
     void Update() {
@@ -111,6 +126,7 @@ public class GameManager : MonoBehaviour {
             currentSceneRunner.playerSpawnPoint != null ? currentSceneRunner.playerSpawnPoint.position : Vector3.zero,
             currentSceneRunner.playerSpawnPoint != null ? currentSceneRunner.playerSpawnPoint.rotation : Quaternion.identity
         ).GetComponent<PlayerCharacterCtrlr>();
+        CurrentPlayer.A_PlayerDied += onPlayerDied;
         A_PlayerSpawned?.Invoke(CurrentPlayer);
     }
     
@@ -120,23 +136,39 @@ public class GameManager : MonoBehaviour {
         CurrentPlayer = null;
     }
     
-    public void OnEnemyDied() {
-        // CurrentPlayer.AddFuel(100f);
-        //Instantiate(enemyPrefab, enemySpawnPoint.position, enemySpawnPoint.rotation);
-    }
+    // public void OnEnemyDied(EnemyBase enemy, EDamageType damageType) {
+    //     switch (damageType) {
+    //     case EDamageType.Projectile:
+    //         Audio2D.PlayClipSFX(AudioPlayer2D.EClipSFX.Kill_DirectHit);
+    //         break;
+    //     }
+    //     MainCanvas.GamePanel.OnPlayerDamagedEnemy(enemy);
+    // }
     
-    public void OnEnemyTookDamage() {
-        
+    public void OnEnemyTookDamage(EnemyBase enemy, EDamageType damageType, bool wasKillingBlow) {
+        if (wasKillingBlow) {
+            A_EnemyKilled?.Invoke();
+            switch (damageType) {
+            case EDamageType.Projectile:
+                Audio2D.PlayClipSFX(AudioPlayer2D.EClipSFX.Kill_DirectHit);
+                break;
+            }
+        }
+        MainCanvas.GamePanel.OnPlayerDamagedEnemy(enemy);
     }
     
     public void PauseGame() {
         gameIsPaused = true;
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
         A_GamePaused?.Invoke();
         Time.timeScale = 0;
     }
     
     public void ResumeGame() {
         gameIsPaused = false;
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
         A_GameResumed?.Invoke();
         Time.timeScale = 1;
     }
@@ -170,6 +202,42 @@ public class GameManager : MonoBehaviour {
             SceneManager.SetActiveScene(scene);
         }
     }
+
+    public void SetPauseInputActionsEnabled(bool newEnabled) {
+        if (newEnabled) {
+            PauseInputActions.Escape.Enable();
+            PauseInputActions.Escape.started += PauseInputPressed;
+        } else {
+            PauseInputActions.Escape.Disable();
+            PauseInputActions.Escape.started -= PauseInputPressed;
+        }
+    }
+    
+    void onPlayerDied() {
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+        SetPauseInputActionsEnabled(false);
+    }
+    
+    
+    
+    /******  DEBUGGING  ******/
+    
+#if UNITY_EDITOR
+    void setupDebugActions() {
+        DebugActions = new PlayerInputActions().DEBUG;
+        DebugActions.ToggleMouseLock.Enable();
+        DebugActions.ToggleMouseLock.started += (InputAction.CallbackContext context) => {
+            if (Cursor.lockState == CursorLockMode.None) {
+                Cursor.lockState = CursorLockMode.Locked;
+                Cursor.visible = false;
+            } else {
+                Cursor.lockState = CursorLockMode.None;
+                Cursor.visible = true;
+            }
+        };
+    }
+#endif
     
 }
 
@@ -184,8 +252,22 @@ public enum EDamageType {
     ProjectileExplosion
 }
 
+/// <summary>
+/// Enum representing an enemy type.
+/// </summary>
+public enum EnemyType {
+    EnemyBase,
+    FlyingGrunt,
+    GroundGrunt,
+    Hunter,
+    Laser,
+    FloorIsLava,
+    ShieldedTurret
+}
 
 
+
+#if UNITY_EDITOR
 /******  PROGRAMMER SPECIFIC  ******/
 [Serializable]
 class ProgrammerPreferences {
@@ -201,3 +283,4 @@ class ProgrammerPreferences {
         GameManager.Instance.SettingsPanel.MouseSenseSlider.value = (GameManager.Instance.CurrentMouseSensitivity - lowSens) / (highSens - lowSens);
     }
 }
+#endif

@@ -29,7 +29,7 @@ public class LaserEnemy : EnemyBase
 
         if (!isAttacking && attackTimer <= 0f)
         {
-            Debug.Log("performing attack");
+            // Debug.Log("performing attack");
             StartCoroutine(PerformAttack());
             attackTimer = attackCooldown;
         }
@@ -86,7 +86,7 @@ public class LaserEnemy : EnemyBase
     {
         PlayerCharacterCtrlr player = GameManager.CurrentPlayer;
         if (player != null) {
-            Debug.Log("player position: " + player.transform.position);
+            // Debug.Log("player position: " + player.transform.position);
 
             laser.SetPosition(0, transform.position);
             laser.SetPosition(1, player.transform.position);
@@ -97,7 +97,7 @@ public class LaserEnemy : EnemyBase
     {
         while (isLaserActive)
         {
-            Debug.Log("pow pow");
+            // Debug.Log("pow pow");
             yield return null;
         }
     }

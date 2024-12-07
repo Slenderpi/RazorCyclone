@@ -4,30 +4,27 @@ using UnityEngine;
 
 public class SpawnManager : MonoBehaviour
 {
-    public float spawnRate = 3f;
+    public float SpawnDelay = 3f;
     public int enemiesPerSpawn = 3;
     public int maxEnemies = 10;
     public GameObject enemyPrefab;
-    public Transform player;
 
     private List<Spawner> spawners = new List<Spawner>();
     private int currentEnemyCount = 0;
-    private float spawnTimer;
-
-    void Start()
-    {
-        spawnTimer = spawnRate;
+    float lastSpawnTime = 0f;
+    
+    void Awake() {
         spawners.AddRange(FindObjectsOfType<Spawner>());
     }
 
-    void Update()
-    {
-        spawnTimer -= Time.deltaTime;
+    void Start() {
+        lastSpawnTime = Time.fixedTime;
+    }
 
-        if (spawnTimer <= 0f)
-        {
+    void FixedUpdate() {
+        if (Time.fixedTime - lastSpawnTime >= SpawnDelay) {
+            lastSpawnTime = Time.fixedTime;
             SpawnEnemies();
-            spawnTimer = spawnRate;
         }
     }
 
@@ -63,8 +60,11 @@ public class SpawnManager : MonoBehaviour
         }
     }
 
-    Spawner GetFurthestInvalidSpawner()
-    {
+    Spawner GetFurthestInvalidSpawner() {
+        PlayerCharacterCtrlr plr = GameManager.CurrentPlayer;
+        if (!plr) return null;
+        Transform plrTrans = plr.transform;
+        
         Spawner furthestSpawner = null;
         float maxDistance = -1f;
 
@@ -72,7 +72,7 @@ public class SpawnManager : MonoBehaviour
         {
             if (!spawner.CanSpawn())
             {
-                float distanceToPlayer = Vector3.Distance(spawner.transform.position, player.position);
+                float distanceToPlayer = Vector3.Distance(spawner.transform.position, plrTrans.position);
                 if (distanceToPlayer > maxDistance)
                 {
                     maxDistance = distanceToPlayer;

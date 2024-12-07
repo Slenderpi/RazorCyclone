@@ -18,6 +18,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     public event Action<float, float> A_FuelSpent; // float changeAmnt, float fuelPerc
     public event Action<float> A_PlayerTakenDamage; // float amount
     public event Action<float> A_PlayerHealed; // float amount
+    public event Action A_PlayerDied;
     
     [HideInInspector]
     public float mouseSensitivity;
@@ -65,8 +66,11 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     float vacuumFuelCost; // Calculated based on VacuumFuelTime
     float currentFuel;
     
-    float MaxHealth = 100f;
-    float currentHealth;
+    [Header("Health Settings")]
+    public float MaxHealth = 100f;
+    [HideInInspector]
+    public float currentHealth;
+    // public float HealthRegenPerSecond;
     
     [Header("References")]
     [SerializeField]
@@ -102,6 +106,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     
     /** Variables for likely to be temporary features **/
     [Header("Temporary/testing")]
+    bool CanTakeDamage = false;
     [SerializeField]
     float thirdPersonDist = 1.2f;
     bool isInThirdPerson = false;
@@ -201,11 +206,16 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     }
     
     public void TakeDamage(float amount) {
-        currentHealth -= amount;
-        currentHealth = Mathf.Max(currentHealth, 0);
-
-        if (currentHealth == 0)
+        if (!CanTakeDamage) return;
+        
+        currentHealth = Mathf.Max(currentHealth - amount, 0);
+        
+        print("Player took " + amount + " damage. Health: " + currentHealth);
+        if (currentHealth == 0) {
             Debug.Log("player died womp womp");
+            A_PlayerDied?.Invoke();
+            gameObject.SetActive(false);
+        }
         
         A_PlayerTakenDamage?.Invoke(amount);
     }
@@ -294,14 +304,10 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
 
     public void OnPauseGame() {
         SetPlayerControlsEnabled(false);
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
     }
     
     public void OnResumeGame() {
         SetPlayerControlsEnabled(true);
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
     }
 
     void updateCameraTransform() {

@@ -33,8 +33,8 @@ public class VacuumScript : MonoBehaviour {
                     // en.TakeDamage(pchar.VacuumDamage);
                     if (en.health <= 0)
                         enemiesInRange.RemoveAt(i);
-                    
-                    en.GetComponent<Rigidbody>().AddForce((VacuumKillbox.position - en.transform.position).normalized * pchar.VacuumSuckForce);
+                    if (en.TryGetComponent(out Rigidbody enrb))
+                        enrb.AddForce((VacuumKillbox.position - en.transform.position).normalized * pchar.VacuumSuckForce);
                 }
             }
         }
@@ -58,16 +58,16 @@ public class VacuumScript : MonoBehaviour {
     }
     
     void OnEnable() {
-        SuckboxNotifier.TriggerEnterEvent += onSuckboxEnter;
-        SuckboxNotifier.TriggerExitEvent += onSuckboxExit;
-        KillboxNotifier.TriggerEnterEvent += onKillboxEnter;
+        SuckboxNotifier.A_TriggerEntered += onSuckboxEnter;
+        SuckboxNotifier.A_TriggerExited += onSuckboxExit;
+        KillboxNotifier.A_TriggerEntered += onKillboxEnter;
     }
     
     void OnDisable() {
         enemiesInRange.Clear();
-        SuckboxNotifier.TriggerEnterEvent -= onSuckboxEnter;
-        SuckboxNotifier.TriggerExitEvent -= onSuckboxExit;
-        KillboxNotifier.TriggerEnterEvent -= onKillboxEnter;
+        SuckboxNotifier.A_TriggerEntered -= onSuckboxEnter;
+        SuckboxNotifier.A_TriggerExited -= onSuckboxExit;
+        KillboxNotifier.A_TriggerEntered -= onKillboxEnter;
     }
     
 }

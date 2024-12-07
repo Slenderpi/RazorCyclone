@@ -5,12 +5,16 @@ using UnityEngine;
 
 public class EnemyBase : MonoBehaviour {
     
-    
+    [Header("Enemy Configuration")]
     public float MaxHealth = 50;
-    public float health { private set; get; }
+    [HideInInspector]
+    public float health;
+    public float Damage = 10;
+    public bool DealDamageOnTouch = true;
+    [HideInInspector]
     public float lastVacuumHitTime = 0f;
     public int FuelAmount = 50; // The value of the fuel this enemy will drop
-    protected Rigidbody rb;
+    public Rigidbody rb;
     // public PlayerCharacterCtrlr player = GameManager.CurrentPlayer;
     
     [Header("References")]
@@ -23,42 +27,20 @@ public class EnemyBase : MonoBehaviour {
     
     void Awake() {
         if (MaxHealth <= 0) Debug.LogWarning("Enemy MaxHealth set to a value <= 0 (set to " + MaxHealth + ").");
-        health = MaxHealth;
-        rb = GetComponent<Rigidbody>();
-        
         if (fuelPickupPrefab == null)
             Debug.LogWarning("This enemy's fuelPickupPrefab was not set!");
+        Init();
     }
-    
-    void Start() {
-        
-    }
-    
-    void Update() {
-        // player = GameManager.CurrentPlayer;
-    }
-    
-    /*
-    void FixedUpdate() {
-        if (GameManager.CurrentPlayer) {
-            rb.AddForce(
-                // removeY(GameManager.CurrentPlayer.transform.position - transform.position).normalized * MovementForce,
-                (GameManager.CurrentPlayer.transform.position - transform.position).normalized * MovementForce,
-                ForceMode.Force
-            );
-        }
-    }
-    */
 
     // modify depending on enemy specifics / actual health system
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.CompareTag("Player"))
+        if (collision.gameObject.CompareTag("Player") && DealDamageOnTouch)
         {
             PlayerCharacterCtrlr player = GameManager.CurrentPlayer;
             if (player != null)
             {
-                player.TakeDamage(1);
+                player.TakeDamage(Damage);
                 Debug.Log("player health reduced");
             }
         }
@@ -66,14 +48,19 @@ public class EnemyBase : MonoBehaviour {
     
     public virtual void TakeDamage(float amnt, EDamageType damageType) {
         if (health <= 0) return;
-        health -= amnt;
-        if (health <= 0) {
-            GameManager.Instance.OnEnemyDied();
-            DropFuel();
-            Destroy(gameObject);
+        health = Mathf.Max(health - amnt, 0);
+        if (health == 0) {
+            GameManager.Instance.OnEnemyTookDamage(this, damageType, true);
+            OnDefeated();
         } else {
-            GameManager.Instance.OnEnemyTookDamage();
+            GameManager.Instance.OnEnemyTookDamage(this, damageType, false);
         }
+    }
+    
+    protected virtual void OnDefeated() {
+        DropFuel();
+        gameObject.SetActive(false);
+        Destroy(gameObject, 1);
     }
 
     public void DropFuel() {
@@ -84,6 +71,10 @@ public class EnemyBase : MonoBehaviour {
     Vector3 removeY(Vector3 vector) {
         vector.y = 0f;
         return vector;
+    }
+    
+    protected virtual void Init() {
+        health = MaxHealth;
     }
     
 }

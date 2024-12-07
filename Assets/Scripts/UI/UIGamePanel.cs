@@ -1,6 +1,7 @@
 
 using System;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Analytics;
 using UnityEngine.UI;
@@ -11,9 +12,14 @@ public class UIGamePanel : UIPanel {
     public Slider FuelSlider;
     public Animator FuelOutlineAnimator;
     
+    [Header("Healthbar")]
+    public Slider HealthSlider;
+    public TMP_Text HealthText;
+    
     [Header("Crosshairs")]
     public RectTransform MainVacuumCrosshair;
     public RectTransform MainCanonCrosshair;
+    public Animator HitmarkerAnimator;
     
     [Header("Misc.")]
     public TMP_Text Speedometer;
@@ -106,11 +112,35 @@ public class UIGamePanel : UIPanel {
         FuelSlider.value = perc;
     }
     
+    public void OnDamageTaken(float amnt) {
+        PlayerCharacterCtrlr plr = GameManager.CurrentPlayer;
+        HealthSlider.value = plr.currentHealth / plr.MaxHealth;
+        HealthText.text =((int)plr.currentHealth).ToString();
+    }
+    
+    public void OnPlayerHealed(float amnt) {
+        PlayerCharacterCtrlr plr = GameManager.CurrentPlayer;
+        HealthSlider.value = plr.currentHealth / plr.MaxHealth;
+        HealthText.text =((int)plr.currentHealth).ToString();
+    }
+    
     public void OnOutOfFuel() {
         AnimatorStateInfo asi = FuelOutlineAnimator.GetCurrentAnimatorStateInfo(0);
         if (!asi.IsName("OutOfFuelBlink") || asi.normalizedTime >= 0.8f)
             FuelOutlineAnimator.SetTrigger("OutOfFuel");
     }
+    
+    public void OnPlayerDamagedEnemy(EnemyBase enemy) {
+        HitmarkerAnimator.SetTrigger("Show");
+    }
+    
+    // public void SetReadTimerOn(bool setReadOn) {
+    //     if (setReadOn) {
+            
+    //     } else {
+            
+    //     }
+    // }
 
     public override void OnGameResumed() {
         // SetActive(true);
@@ -123,12 +153,16 @@ public class UIGamePanel : UIPanel {
     public override void OnPlayerSpawned(PlayerCharacterCtrlr plr) {
         plr.A_FuelAdded += OnFuelAdded;
         plr.A_FuelSpent += OnFuelSpent;
+        plr.A_PlayerTakenDamage += OnDamageTaken;
+        plr.A_PlayerHealed += OnPlayerHealed;
         ResetUIElements();
     }
 
     public override void OnPlayerDestroying(PlayerCharacterCtrlr plr) {
         plr.A_FuelAdded -= OnFuelAdded;
         plr.A_FuelSpent -= OnFuelSpent;
+        plr.A_PlayerTakenDamage -= OnDamageTaken;
+        plr.A_PlayerHealed -= OnPlayerHealed;
     }
     
     public void ResetUIElements() {
@@ -137,6 +171,8 @@ public class UIGamePanel : UIPanel {
         OnVertInputChanged(0);
         OnFireVacuum(false);
         OnFireCanon(false);
+        HealthSlider.value = 100;
+        HealthText.text = "100";
         if (gameObject.activeSelf) FuelOutlineAnimator.SetTrigger("Reset");
     }
 

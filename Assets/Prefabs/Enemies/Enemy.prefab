@@ -131,10 +131,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MaxHealth: 50
+  health: 0
+  Damage: 10
   lastVacuumHitTime: 0
-  fuelAmount: 50
-  rb: {fileID: 0}
-  player: {fileID: 0}
+  FuelAmount: 50
+  rb: {fileID: 9113617427949065013}
   fuelPickupPrefab: {fileID: 5163220815717078053, guid: bb72521b10fb34d7bbbed5f6f77687b4, type: 3}
 --- !u!136 &1988783225518556781
 CapsuleCollider:
