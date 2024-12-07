@@ -106,6 +106,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     
     /** Variables for likely to be temporary features **/
     [Header("Temporary/testing")]
+    bool CanTakeDamage = false;
     [SerializeField]
     float thirdPersonDist = 1.2f;
     bool isInThirdPerson = false;
@@ -205,6 +206,8 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     }
     
     public void TakeDamage(float amount) {
+        if (!CanTakeDamage) return;
+        
         currentHealth = Mathf.Max(currentHealth - amount, 0);
         
         print("Player took " + amount + " damage. Health: " + currentHealth);
