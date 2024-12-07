@@ -106,7 +106,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     
     /** Variables for likely to be temporary features **/
     [Header("Temporary/testing")]
-    bool CanTakeDamage = false;
+    bool CanTakeDamage = true;
     [SerializeField]
     float thirdPersonDist = 1.2f;
     bool isInThirdPerson = false;

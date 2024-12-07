@@ -570,9 +570,18 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
             ""id"": ""0f417bc6-43d5-45d1-8a06-5262de2484c1"",
             ""actions"": [
                 {
-                    ""name"": ""UnlockMouse"",
+                    ""name"": ""ToggleMouseLock"",
                     ""type"": ""Button"",
                     ""id"": ""a4237d9e-17d9-4247-b6c4-74e9ff7be309"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""KillPlayer"",
+                    ""type"": ""Button"",
+                    ""id"": ""992a7b27-2656-40cf-a69f-262b7a998dad"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
@@ -587,7 +596,18 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""UnlockMouse"",
+                    ""action"": ""ToggleMouseLock"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""bf57ee47-3413-4c45-9d7b-e5a85da5cca9"",
+                    ""path"": ""<Keyboard>/o"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""KillPlayer"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -614,7 +634,8 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
         m_PauseMenu_Escape = m_PauseMenu.FindAction("Escape", throwIfNotFound: true);
         // DEBUG
         m_DEBUG = asset.FindActionMap("DEBUG", throwIfNotFound: true);
-        m_DEBUG_UnlockMouse = m_DEBUG.FindAction("UnlockMouse", throwIfNotFound: true);
+        m_DEBUG_ToggleMouseLock = m_DEBUG.FindAction("ToggleMouseLock", throwIfNotFound: true);
+        m_DEBUG_KillPlayer = m_DEBUG.FindAction("KillPlayer", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -820,12 +841,14 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
     // DEBUG
     private readonly InputActionMap m_DEBUG;
     private IDEBUGActions m_DEBUGActionsCallbackInterface;
-    private readonly InputAction m_DEBUG_UnlockMouse;
+    private readonly InputAction m_DEBUG_ToggleMouseLock;
+    private readonly InputAction m_DEBUG_KillPlayer;
     public struct DEBUGActions
     {
         private @PlayerInputActions m_Wrapper;
         public DEBUGActions(@PlayerInputActions wrapper) { m_Wrapper = wrapper; }
-        public InputAction ToggleMouseLock => m_Wrapper.m_DEBUG_UnlockMouse;
+        public InputAction @ToggleMouseLock => m_Wrapper.m_DEBUG_ToggleMouseLock;
+        public InputAction @KillPlayer => m_Wrapper.m_DEBUG_KillPlayer;
         public InputActionMap Get() { return m_Wrapper.m_DEBUG; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -835,16 +858,22 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
         {
             if (m_Wrapper.m_DEBUGActionsCallbackInterface != null)
             {
-                ToggleMouseLock.started -= m_Wrapper.m_DEBUGActionsCallbackInterface.OnUnlockMouse;
-                ToggleMouseLock.performed -= m_Wrapper.m_DEBUGActionsCallbackInterface.OnUnlockMouse;
-                ToggleMouseLock.canceled -= m_Wrapper.m_DEBUGActionsCallbackInterface.OnUnlockMouse;
+                @ToggleMouseLock.started -= m_Wrapper.m_DEBUGActionsCallbackInterface.OnToggleMouseLock;
+                @ToggleMouseLock.performed -= m_Wrapper.m_DEBUGActionsCallbackInterface.OnToggleMouseLock;
+                @ToggleMouseLock.canceled -= m_Wrapper.m_DEBUGActionsCallbackInterface.OnToggleMouseLock;
+                @KillPlayer.started -= m_Wrapper.m_DEBUGActionsCallbackInterface.OnKillPlayer;
+                @KillPlayer.performed -= m_Wrapper.m_DEBUGActionsCallbackInterface.OnKillPlayer;
+                @KillPlayer.canceled -= m_Wrapper.m_DEBUGActionsCallbackInterface.OnKillPlayer;
             }
             m_Wrapper.m_DEBUGActionsCallbackInterface = instance;
             if (instance != null)
             {
-                ToggleMouseLock.started += instance.OnUnlockMouse;
-                ToggleMouseLock.performed += instance.OnUnlockMouse;
-                ToggleMouseLock.canceled += instance.OnUnlockMouse;
+                @ToggleMouseLock.started += instance.OnToggleMouseLock;
+                @ToggleMouseLock.performed += instance.OnToggleMouseLock;
+                @ToggleMouseLock.canceled += instance.OnToggleMouseLock;
+                @KillPlayer.started += instance.OnKillPlayer;
+                @KillPlayer.performed += instance.OnKillPlayer;
+                @KillPlayer.canceled += instance.OnKillPlayer;
             }
         }
     }
@@ -869,6 +898,7 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
     }
     public interface IDEBUGActions
     {
-        void OnUnlockMouse(InputAction.CallbackContext context);
+        void OnToggleMouseLock(InputAction.CallbackContext context);
+        void OnKillPlayer(InputAction.CallbackContext context);
     }
 }

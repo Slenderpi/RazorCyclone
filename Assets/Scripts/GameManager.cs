@@ -236,6 +236,13 @@ public class GameManager : MonoBehaviour {
                 Cursor.visible = true;
             }
         };
+        DebugActions.KillPlayer.Enable();
+        DebugActions.KillPlayer.started += (InputAction.CallbackContext context) => {
+            if (CurrentPlayer != null && CurrentPlayer.currentHealth > 0) {
+                print("Killing player");
+                CurrentPlayer.TakeDamage(CurrentPlayer.MaxHealth);
+            }
+        };
     }
 #endif
     

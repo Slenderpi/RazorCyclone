@@ -548,9 +548,18 @@
             "id": "0f417bc6-43d5-45d1-8a06-5262de2484c1",
             "actions": [
                 {
-                    "name": "UnlockMouse",
+                    "name": "ToggleMouseLock",
                     "type": "Button",
                     "id": "a4237d9e-17d9-4247-b6c4-74e9ff7be309",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "KillPlayer",
+                    "type": "Button",
+                    "id": "992a7b27-2656-40cf-a69f-262b7a998dad",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -565,7 +574,18 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "UnlockMouse",
+                    "action": "ToggleMouseLock",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "bf57ee47-3413-4c45-9d7b-e5a85da5cca9",
+                    "path": "<Keyboard>/o",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "KillPlayer",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
