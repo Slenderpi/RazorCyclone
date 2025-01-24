@@ -21,6 +21,9 @@ public class EnemyBase : MonoBehaviour {
     [SerializeField]
     private FuelPickup fuelPickupPrefab;
     
+    [Header("For testing")]
+    [SerializeField]
+    bool invincible = false;
     // [Header("Enemy movement force")]
     // [SerializeField]
     // float MovementForce = 425f; 
@@ -47,6 +50,7 @@ public class EnemyBase : MonoBehaviour {
     }
     
     public virtual void TakeDamage(float amnt, EDamageType damageType) {
+        if (invincible) return;
         if (health <= 0) return;
         health = Mathf.Max(health - amnt, 0);
         if (health == 0) {
