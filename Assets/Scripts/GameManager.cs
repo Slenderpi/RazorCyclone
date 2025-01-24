@@ -83,7 +83,11 @@ public class GameManager : MonoBehaviour {
         
 #if UNITY_EDITOR
         setupDebugActions();
-        
+#endif
+    }
+    
+    void Start() {
+#if UNITY_EDITOR
         /******  PROGRAMMER SPECIFIC  ******/
         TextAsset programmerPreferenceJson = Resources.Load<TextAsset>("ProgrammerPreferences");
         if (programmerPreferenceJson != null) {
@@ -281,6 +285,7 @@ class ProgrammerPreferences {
     
     public bool UsePreferences;
     public float MouseSensitivity;
+    public float MasterVolume = 1;
 
     internal void SetPreferences() {
         if (!UsePreferences) return;
@@ -288,6 +293,7 @@ class ProgrammerPreferences {
         float highSens = GameManager.Instance.HighestSensitivity;
         float lowSens = GameManager.Instance.LowestSensitivity;
         GameManager.Instance.SettingsPanel.MouseSenseSlider.value = (GameManager.Instance.CurrentMouseSensitivity - lowSens) / (highSens - lowSens);
+        GameManager.Instance.Audio2D.SetMasterVolume(MasterVolume);
     }
 }
 #endif

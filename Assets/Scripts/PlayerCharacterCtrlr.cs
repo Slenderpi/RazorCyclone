@@ -79,7 +79,6 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     Transform charModel;
     [SerializeField]
     Transform charPivot;
-    Rigidbody rb;
     [SerializeField]
     GameObject vacuumHitbox;
     [SerializeField]
@@ -92,6 +91,8 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     [SerializeField]
     Transform rearCamPos;
     
+    [HideInInspector]
+    public Rigidbody rb;
     float lookVertRot = 0;
     Vector3 aimPoint = Vector3.zero;
     float AimRayMaxDist = 1000f;
@@ -104,8 +105,9 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     
     
     
-    /** Variables for likely to be temporary features **/
+    /** Variables for likely to be temporary features or for testing **/
     [Header("Temporary/testing")]
+    [SerializeField]
     bool CanTakeDamage = true;
     [SerializeField]
     float thirdPersonDist = 1.2f;

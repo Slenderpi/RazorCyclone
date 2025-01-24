@@ -41,7 +41,7 @@ public class EnemyBase : MonoBehaviour {
             if (player != null)
             {
                 player.TakeDamage(Damage);
-                Debug.Log("player health reduced");
+                // Debug.Log("player health reduced");
             }
         }
     }
