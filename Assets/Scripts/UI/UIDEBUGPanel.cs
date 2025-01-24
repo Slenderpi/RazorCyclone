@@ -33,8 +33,6 @@ public class UIDEBUGPanel : UIPanel {
     void LateUpdate() {
         if (wsm) {
             SurvivalTimerText.text = "Time Survived: " + wsm.OwningEndlessMode.TimeSurvived;
-        } else {
-            print("nope");
         }
     }
     
