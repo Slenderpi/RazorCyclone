@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7161423610750410142}
   - component: {fileID: -1261992107006566908}
+  - component: {fileID: 6380320055604250668}
   - component: {fileID: 9113617427949065013}
   - component: {fileID: 8161223251265051182}
   - component: {fileID: -831972436789096369}
@@ -50,9 +51,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MaxHealth: 50
+  health: 0
+  Damage: 10
+  DealDamageOnTouch: 1
   lastVacuumHitTime: 0
   FuelAmount: 100
+  rb: {fileID: 0}
   fuelPickupPrefab: {fileID: 5163220815717078053, guid: bb72521b10fb34d7bbbed5f6f77687b4, type: 3}
+  invincible: 0
   moveSpeed: 7
   isStunned: 0
   stunDuration: 5
@@ -60,6 +66,26 @@ MonoBehaviour:
   shieldActiveMaterial: {fileID: 2100000, guid: cee3d8248f025d749b7e7a60ce493a68, type: 2}
   shieldInactiveMaterial: {fileID: -3033667219593020291, guid: 230247940b321402e8556c3505fc5edc, type: 3}
   enemyRenderer: {fileID: 4667816667457809461}
+--- !u!114 &6380320055604250668
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3890492832594851018}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82698c5ac9666eb4faa37aaea56939d0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  BehaviourForTarget: 0
+  EnableFlight: 1
+  SpecialTarget: {fileID: 0}
+  MaxSteeringVelocity: 15
+  MaxSteeringForce: 10
+  ApproachingFowardThrust: 0
+  LeavingFowardThrust: 0
+  ModelToRotate: {fileID: 0}
 --- !u!54 &9113617427949065013
 Rigidbody:
   m_ObjectHideFlags: 0

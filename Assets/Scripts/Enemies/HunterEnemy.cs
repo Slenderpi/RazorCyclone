@@ -27,7 +27,7 @@ public class HunterEnemy : EnemyBase
     {
         if (!isStunned)
         {
-            ChasePlayer();
+            // ChasePlayer();
         }
     }
 
