@@ -1694,7 +1694,7 @@ MonoBehaviour:
   CanonProjSpeed: 100
   CanonDamage: 50
   MaxFuel: 100
-  FuelRefillDelay: 3
+  FuelRefillDelay: 1
   CanonFuelCost: 15
   VacuumFuelTime: 10
   MaxHealth: 100
