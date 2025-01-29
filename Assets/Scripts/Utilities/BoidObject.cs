@@ -56,7 +56,7 @@ public class BoidObject : MonoBehaviour {
         if (forward.x == 0 && forward.y == 0)
             forward = transform.forward;
         forward.y = 0;
-        if (forward.sqrMagnitude == 0) return; // If vel/forward is 0, maintain prev rot
+        if (forward.sqrMagnitude <= 0.0001f) return; // If vel/forward is 0, maintain prev rot
         modelTransform.rotation = Quaternion.LookRotation(forward, Vector3.up);
     }
 

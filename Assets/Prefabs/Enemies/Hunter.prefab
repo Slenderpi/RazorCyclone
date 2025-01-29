@@ -57,6 +57,7 @@ MonoBehaviour:
   lastVacuumHitTime: 0
   FuelAmount: 100
   rb: {fileID: 0}
+  boid: {fileID: 0}
   fuelPickupPrefab: {fileID: 5163220815717078053, guid: bb72521b10fb34d7bbbed5f6f77687b4, type: 3}
   invincible: 0
   moveSpeed: 7
@@ -78,11 +79,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 82698c5ac9666eb4faa37aaea56939d0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  BehaviourForTarget: 0
-  EnableFlight: 1
-  SpecialTarget: {fileID: 0}
+  AllowFlight: 1
+  AddWander: 0
   MaxSteeringVelocity: 15
   MaxSteeringForce: 10
+  BoidTargetList:
+  - BehaviourType: 0
+    Target: {fileID: 0}
+    TriggerDistance: 0
+    CheckAsGreater: 0
+    trans: {fileID: 0}
+    rb: {fileID: 0}
   ApproachingFowardThrust: 0
   LeavingFowardThrust: 0
   ModelToRotate: {fileID: 0}
