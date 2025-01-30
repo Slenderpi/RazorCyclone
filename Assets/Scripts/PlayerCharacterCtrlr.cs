@@ -122,6 +122,8 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     //Health Vars
     [SerializeField] float regenDelay;
     float regenDelayTime = -1000;
+
+    [SerializeField ]float fuelHealthMult;
     
     void Awake() {
         // inputActions = GameManager.PInputActions.Player;
@@ -172,7 +174,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
 
     void FixedUpdate() {
         if (isVacuumOn) {
-            if (currentFuel <= 0) {
+            if (currentHealth <= 0) {
                 isVacuumOn = false;
                 vacuumHitbox.SetActive(false);
                 // print("Not enough fuel (" + currentFuel + ") for vacuum (need " + vacuumFuelCost + ").");
@@ -204,7 +206,8 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         currentFuel -= amount;
         if (currentFuel <= 0) {
             currentFuel = 0;
-            StartCoroutine(StartRefillFuelTimer());
+            //StartCoroutine(StartRefillFuelTimer());
+            TakeDamage(amount * fuelHealthMult);
         }
         A_FuelSpent?.Invoke(amount, currentFuel / MaxFuel);
     }
@@ -265,7 +268,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     private void FireVacuumStarted(InputAction.CallbackContext context) {
         _gamePanel.OnFireVacuum(true);
         
-        if (currentFuel <= 0) {
+        if (currentHealth <= 0) {
             // print("Not enough fuel (" + currentFuel + ") for vacuum (need " + vacuumFuelCost + ").");
             signifyOutOfFuel();
             return;
@@ -284,7 +287,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     private void FireCanonStarted(InputAction.CallbackContext context) {
         _gamePanel.OnFireCanon(true);
         
-        if (currentFuel <= 0) {
+        if (currentHealth <= 0) {
             // print("Not enough fuel (" + currentFuel + ") for canon (need " + CanonFuelCost + ").");
             signifyOutOfFuel();
             return;
