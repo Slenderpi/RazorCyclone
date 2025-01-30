@@ -15,24 +15,15 @@ public class BoidObject : MonoBehaviour {
     public float MaxSteeringVelocity = 15;
     [Tooltip("Determines the steering capability for this Boid. A higher maximum steering force allows sharper turns. If changing this value doesn't quite get the movement you want, consider adjusting the maximum velocity as well.")]
     public float MaxSteeringForce = 10;
-    /*
-     public:
-       wander circle dist
-       wander circle radius
-       wander change intensity
-       
-     private:
-       lastWanderPoint
-     */
     [Tooltip("Radius of wander's circle (or sphere with AllowFlight).")]
-    public float WanderLimitRadius = 5;
+    public float WanderLimitRadius = 0.5f;
     [Tooltip("The distance wander's circle (or sphere) is from the front of the Boid.")]
-    public float WanderLimitDist = 1.5f;
+    public float WanderLimitDist = 0.5f;
     [Tooltip("Maximum distance in an axis to step the wander point.")]
-    public float WanderChangeDist = 0.5f;
+    public float WanderChangeDist = 0.15f;
     [Tooltip("For testing/debugging. Draws a ray from the Boid to the wander point to show where the Boid is trying to move towards.")]
     public bool VisualizeWanderPoint = false;
-    Vector3 wanderPoint;
+    Vector3 wanderPoint; // Point on wander circle/sphere to seek towards. Does not include an offset from WanderLimitDist
     delegate void WanderStepFunction();
     WanderStepFunction stepWanderPoint;
     [Tooltip("List of targets to track and specific behaviours for each. If left empty, this Boid will enter Wander behaviour.")]
@@ -68,7 +59,7 @@ public class BoidObject : MonoBehaviour {
         }
         if (BoidTargetList == null || BoidTargetList.Length == 0 || AddWander) {
             includeWander = true;
-            wanderPoint = Vector3.back * WanderLimitRadius;
+            wanderPoint = transform.forward * WanderLimitRadius;
             stepWanderPoint = AllowFlight ? stepWanderPoint3D : stepWanderPoint2D;
         }
     }
@@ -150,16 +141,29 @@ public class BoidObject : MonoBehaviour {
     
     public Vector3 Wander() {
         stepWanderPoint();
-        if (VisualizeWanderPoint) {
-            Vector3 result = WanderLimitDist * rb.velocity.normalized + wanderPoint;
-            Debug.DrawRay(transform.position, result, Color.cyan, Time.fixedDeltaTime);
+        if (VisualizeWanderPoint) { // DEBUGGING
+            bool fromWanderCenter = false;
+            Vector3 forward = rb.velocity.normalized;
+            // forward = Vector3.forward;
+            
+            float time = Time.fixedDeltaTime;
+            Vector3 start = transform.position;
+            Vector3 dir = WanderLimitDist * forward + wanderPoint;
+            if (fromWanderCenter) {
+                // time = 10f;
+                start = transform.position + forward * WanderLimitDist;
+                dir = wanderPoint;
+            }
+            Debug.DrawRay(start, dir, Color.cyan, time);
+            // return Vector3.zero;
         }
         return Seek(transform.position + WanderLimitDist * rb.velocity.normalized + wanderPoint);
     }
     
     void stepWanderPoint2D() {
-        // TODO
-        stepWanderPoint3D(); // temp until implemented
+        wanderPoint.x += (UnityEngine.Random.Range(0, 2) * 2 - 1) * WanderChangeDist;
+        wanderPoint.z += (UnityEngine.Random.Range(0, 2) * 2 - 1) * WanderChangeDist;
+        wanderPoint *= WanderLimitRadius / wanderPoint.magnitude;
     }
     
     void stepWanderPoint3D() {
@@ -167,10 +171,10 @@ public class BoidObject : MonoBehaviour {
         // Scale to WanderChangeDist
         // Add to lastWanderPoint
         // Limit lastWanderPoint to WanderLimitRadius
-        wanderPoint.y += (UnityEngine.Random.Range(0, 2) * 2 - 1) * WanderChangeDist;
         wanderPoint.x += (UnityEngine.Random.Range(0, 2) * 2 - 1) * WanderChangeDist;
         wanderPoint.z += (UnityEngine.Random.Range(0, 2) * 2 - 1) * WanderChangeDist;
-        wanderPoint *= WanderLimitRadius / wanderPoint.sqrMagnitude;
+        wanderPoint.y += (UnityEngine.Random.Range(0, 2) * 2 - 1) * WanderChangeDist;
+        wanderPoint *= WanderLimitRadius / wanderPoint.magnitude;
     }
     
     void initBoidListReferences(PlayerCharacterCtrlr plr) {

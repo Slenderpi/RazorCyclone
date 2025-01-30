@@ -241,9 +241,9 @@ MonoBehaviour:
   AddWander: 0
   MaxSteeringVelocity: 15
   MaxSteeringForce: 10
-  WanderLimitDist: 1.5
-  WanderLimitRadius: 5
-  WanderChangeDist: 0.5
+  WanderLimitRadius: 0.5
+  WanderLimitDist: 0.5
+  WanderChangeDist: 0.15
   VisualizeWanderPoint: 0
   BoidTargetList: []
   ApproachingFowardThrust: 0
