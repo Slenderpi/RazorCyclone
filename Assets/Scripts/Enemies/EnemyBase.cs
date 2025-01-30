@@ -14,7 +14,10 @@ public class EnemyBase : MonoBehaviour {
     [HideInInspector]
     public float lastVacuumHitTime = 0f;
     public int FuelAmount = 50; // The value of the fuel this enemy will drop
+    [HideInInspector]
     public Rigidbody rb;
+    [HideInInspector]
+    public BoidObject boid;
     // public PlayerCharacterCtrlr player = GameManager.CurrentPlayer;
     
     [Header("References")]
@@ -28,10 +31,15 @@ public class EnemyBase : MonoBehaviour {
     // [SerializeField]
     // float MovementForce = 425f; 
     
+    
+    
+    
     void Awake() {
         if (MaxHealth <= 0) Debug.LogWarning("Enemy MaxHealth set to a value <= 0 (set to " + MaxHealth + ").");
         if (fuelPickupPrefab == null)
             Debug.LogWarning("This enemy's fuelPickupPrefab was not set!");
+        rb = GetComponent<Rigidbody>();
+        boid = GetComponent<BoidObject>();
         Init();
     }
 

@@ -1,24 +1,25 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using UnityEngine;
 
 public class BoidObject : MonoBehaviour {
     
     [Header("Boid Parameters")]
-    [Tooltip("Choose the steering behaviour for this Boid:\n - Seek: steer towards the target's position\n - Flee: exact opposite of Seek\n - Pursuit: steer towards a predicted future position of the target\n - Evade: exact opposite of Pursuit\n - Wander: randomly moves around. The Boid will not track any target")]
-    public BoidBehaviour BehaviourForTarget = BoidBehaviour.Seek;
-    [Tooltip("Not implemented yet")] // TODO
-    public bool EnableFlight = false;
-    [Tooltip("If left empty, this Boid's target is the player")]
-    public GameObject SpecialTarget;
+    [Tooltip("If false, steering forces will have their Y value set to 0.")]
+    public bool AllowFlight = false;
+    [Tooltip("NOT YET IMPLEMENTED.\nIf enabled, this Boid will also add Wander steering. This is useful for adding extra noise to the Boid's movement.\nNote: if AddWander is enabled and the BoidTargetList is empty, the Boid will not Wander extra.")]
+    public bool AddWander = false;
     [Tooltip("A sort of maximum speed for this Boid. Increasing this allows the Boid to reach higher speeds and sometimes accelerate faster.")]
     public float MaxSteeringVelocity = 15;
     [Tooltip("Determines the steering capability for this Boid. A higher maximum steering force allows sharper turns. If changing this value doesn't quite get the movement you want, consider adjusting the maximum velocity as well.")]
     public float MaxSteeringForce = 10;
-    [Tooltip("This might not be kept. Provides an additional front-facing force that scales with how lined up the Boid's velocity is towards the target. If directly facing towards the target, the thrust is ApproachingForwardThrust. If directly facing away from target, the thrust is exactly LeavingForwardThrust")]
+    [Tooltip("List of targets to track and specific behaviours for each. If left empty, this Boid will enter Wander behaviour.")]
+    public BehaviourItem[] BoidTargetList = null;
+    [Tooltip("THIS MIGHT NOT BE KEPT.\nProvides an additional front-facing force that scales with how lined up the Boid's velocity is towards the target. If directly facing towards the target, the thrust is ApproachingForwardThrust. If directly facing away from target, the thrust is exactly LeavingForwardThrust")]
     public float ApproachingFowardThrust = 0;
-    [Tooltip("This might not be kept. Provides an additional front-facing force that scales with how lined up the Boid's velocity is towards the target. If directly facing away from target, the thrust is exactly LeavingForwardThrust. If directly facing target, the thrust is exactly ApproachingForwardThrust.")]
+    [Tooltip("THIS MIGHT NOT BE KEPT.\nProvides an additional front-facing force that scales with how lined up the Boid's velocity is towards the target. If directly facing away from target, the thrust is exactly LeavingForwardThrust. If directly facing target, the thrust is exactly ApproachingForwardThrust.")]
     public float LeavingFowardThrust = 0;
     
     [Header("References")]
@@ -26,10 +27,9 @@ public class BoidObject : MonoBehaviour {
     [Tooltip("The transform of the model to be rotated by this Boid script. If left null, BoidObject will use the transform it is placed on.")]
     Transform ModelToRotate;
     
+    bool includeWander = false;
     Transform modelTransform;
     Rigidbody rb;
-    Transform targetTransform;
-    Rigidbody targetRigidbody;
     
     
     
@@ -39,15 +39,15 @@ public class BoidObject : MonoBehaviour {
     }
     
     void Start() {
-        if (SpecialTarget) {
-            targetTransform = SpecialTarget.transform;
-            targetRigidbody = SpecialTarget.GetComponent<Rigidbody>();
+        if (BoidTargetList == null || BoidTargetList.Length == 0) {
+            // print("No targets in listing for this Boid.");
         } else if (GameManager.CurrentPlayer) {
-            setTargetToPlayer(GameManager.CurrentPlayer);
+            initBoidListReferences(GameManager.CurrentPlayer);
         } else {
-            GameManager.A_PlayerSpawned += setTargetToPlayerOnSpawn;
+            GameManager.A_PlayerSpawned += setTargetsOnPlayerSpawn;
         }
-        // GameManager.A_PlayerDestroying += onPlayerDestroying;
+        if (BoidTargetList == null || BoidTargetList.Length == 0 || AddWander)
+            includeWander = true;
     }
     
     void Update() {
@@ -56,40 +56,19 @@ public class BoidObject : MonoBehaviour {
         if (forward.x == 0 && forward.y == 0)
             forward = transform.forward;
         forward.y = 0;
+        if (forward.sqrMagnitude <= 0.0001f) return; // If vel/forward is 0, maintain prev rot
         modelTransform.rotation = Quaternion.LookRotation(forward, Vector3.up);
     }
 
     void FixedUpdate() {
-        Vector3 steer = Vector3.zero;
-        Vector3 forwardThrust = rb.velocity.normalized;
-        if (targetTransform) {
-            switch (BehaviourForTarget) {
-            case BoidBehaviour.Seek:
-                steer = Seek(targetTransform.position);
-                break;
-            case BoidBehaviour.Flee:
-                steer = Flee(targetTransform.position);
-                break;
-            case BoidBehaviour.Pursuit:
-                steer = Pursuit(targetTransform.position, targetRigidbody.velocity);
-                break;
-            case BoidBehaviour.Evade:
-                steer = Evade(targetTransform.position, targetRigidbody.velocity);
-                break;
-            case BoidBehaviour.Wander:
-                steer = Wander();
-                break;
-            }
-            forwardThrust *= Mathf.Lerp(
-                LeavingFowardThrust,
-                ApproachingFowardThrust,
-                (Vector3.Dot(rb.velocity, targetTransform.position - transform.position) + 1) / 2f
-            );
-        } else {
-            steer = Wander();
-            forwardThrust *= ApproachingFowardThrust;
-        }
+        if (!GameManager.CurrentPlayer) return;
         
+        Vector3 totalSteer = includeWander ? Wander() : Vector3.zero;
+        if (BoidTargetList != null && BoidTargetList.Length > 0) {
+            foreach (BehaviourItem item in BoidTargetList) {
+                totalSteer += calcSteerForTargetItem(item);
+            }
+        }
         // // If within fleeDist and negative dot, set passTime to now
         // // If time - passTime < fleeDuration, flee, else seek
         // float fleeDist = 6f;
@@ -106,7 +85,9 @@ public class BoidObject : MonoBehaviour {
         //     steer = Evade(targetTransform.position, targetRigidbody.velocity);
         // }
         // rb.AddForce(steer, ForceMode.Acceleration);
-        rb.AddForce(steer + forwardThrust, ForceMode.Acceleration);
+        // rb.AddForce(totalSteer + forwardThrust, ForceMode.Acceleration);
+        if (!AllowFlight) totalSteer.y = 0;
+        rb.AddForce(totalSteer, ForceMode.Acceleration);
     }
     
     // float passTime = -500;
@@ -118,12 +99,24 @@ public class BoidObject : MonoBehaviour {
     }
     
     public Vector3 Flee(Vector3 targetPos) {
-        // NOTE: Verify that flee is actually -seek()
         return -Seek(targetPos);
     }
     
+    /// <summary>
+    /// Exact opposite of Seek(). Internally just returns -Seek().
+    /// </summary>
+    /// <param name="targetPos">Position to flee from.</param>
+    /// <param name="fleeTriggerDist">A special value of 0 means this steering is forcefully enabled.</param>
+    /// <returns></returns>
+    public Vector3 Flee(Vector3 targetPos, float fleeTriggerDist) {
+        if (fleeTriggerDist == 0 || (targetPos - transform.position).sqrMagnitude <= fleeTriggerDist * fleeTriggerDist)
+            return Flee(targetPos);
+        else
+            return Vector3.zero;
+    }
+    
     public Vector3 Pursuit(Vector3 targetPos, Vector3 targetVel) {
-        float predictTime = (targetPos - transform.position).magnitude / rb.velocity.magnitude;
+        float predictTime = Mathf.Sqrt((targetPos - transform.position).sqrMagnitude / (rb.velocity - targetVel).sqrMagnitude);
         return Seek(targetPos + targetVel * predictTime);
     }
     
@@ -137,19 +130,41 @@ public class BoidObject : MonoBehaviour {
         return Vector3.forward;
     }
     
-    void setTargetToPlayer(PlayerCharacterCtrlr plr) {
-        targetTransform = plr.transform;
-        targetRigidbody = plr.rb ? plr.rb : plr.GetComponent<Rigidbody>();
+    void initBoidListReferences(PlayerCharacterCtrlr plr) {
+        foreach (BehaviourItem item in BoidTargetList) {
+            item.init(plr);
+        }
     }
     
-    void setTargetToPlayerOnSpawn(PlayerCharacterCtrlr plr) {
-        GameManager.A_PlayerSpawned -= setTargetToPlayer;
-        setTargetToPlayer(plr);
+    Vector3 calcSteerForTargetItem(BehaviourItem item) {
+        Vector3 steer = Vector3.zero;
+        if (item.BehaviourType == BoidBehaviour.Wander)
+            steer = Wander();
+        else if (item.TestTriggerDistance(transform.position)) {
+            switch (item.BehaviourType) {
+            case BoidBehaviour.Seek:
+                steer = Seek(item.trans.position);
+                break;
+            case BoidBehaviour.Flee:
+                steer = Flee(item.trans.position);
+                break;
+            case BoidBehaviour.Pursuit:
+                steer = Pursuit(item.trans.position, item.rb.velocity);
+                break;
+            case BoidBehaviour.Evade:
+                steer = Evade(item.trans.position, item.rb.velocity);
+                break;
+            case BoidBehaviour.Wander:
+                break;
+            }
+        }
+        return steer;
     }
-
-    // void onPlayerDestroying(PlayerCharacterCtrlr plr) {
-    //     BehaviourForTarget = BoidBehaviour.Wander;
-    // }
+    
+    void setTargetsOnPlayerSpawn(PlayerCharacterCtrlr plr) {
+        GameManager.A_PlayerSpawned -= setTargetsOnPlayerSpawn;
+        initBoidListReferences(plr);
+    }
     
 }
 
@@ -159,4 +174,55 @@ public enum BoidBehaviour {
     Pursuit,
     Evade,
     Wander
+}
+
+[Serializable]
+public class BehaviourItem {
+    [Tooltip("Choose the steering behaviour for this Boid:\n - Seek: steer towards the target's position\n - Flee: exact opposite of Seek\n - Pursuit: steer towards a predicted future position of the target\n - Evade: exact opposite of Pursuit\n - Wander: randomly moves around. The Boid will not track any target")]
+    public BoidBehaviour BehaviourType;
+    [Tooltip("The target to apply this behaviour towards. If left empty, this Target will be set as the Player.")]
+    public GameObject Target;
+    [Tooltip("Distance at which this behaviour is enabled (if 0, the behaviour is always enabled regardless of distance).\nFor example, a BehaviourType of Flee and TriggerDistance of 10 means this Boid will only Flee when within 10 units of the Target.\nNote: if the BehaviourType is Wander, this value doesn't matter.")]
+    public float TriggerDistance;
+    [Tooltip("If false, this Behaviour is used when the distance to the Target is <= TriggerDistance.\nIf true, this Behaviour is used when the distance to the Target is > TriggerDistance.\nNotice that true means >, while false means <=")]
+    public bool CheckAsGreater = false;
+    
+    [HideInInspector]
+    public Transform trans;
+    [HideInInspector]
+    public Rigidbody rb;
+    
+    public delegate bool TriggerDistanceTester(Vector3 boidPosition);
+    public TriggerDistanceTester TestTriggerDistance;
+    
+    
+    
+    public void init(PlayerCharacterCtrlr plr) {
+        if (Target) {
+            trans = Target.transform;
+            rb = Target.GetComponent<Rigidbody>();
+        } else {
+            trans = plr.transform;
+            rb = plr.rb;
+        }
+        if (TriggerDistance == 0)
+            TestTriggerDistance = triggerDistAnywhere;
+        else if (CheckAsGreater)
+            TestTriggerDistance = triggerDistGreater;
+        else
+            TestTriggerDistance = triggerDistLEQ;
+    }
+    
+    bool triggerDistAnywhere(Vector3 boidPosition) {
+        return true;
+    }
+    
+    bool triggerDistGreater(Vector3 boidPosition) {
+        return (trans.position - boidPosition).sqrMagnitude > TriggerDistance * TriggerDistance;
+    }
+    
+    bool triggerDistLEQ(Vector3 boidPosition) {
+        return (trans.position - boidPosition).sqrMagnitude <= TriggerDistance * TriggerDistance;
+    }
+    
 }

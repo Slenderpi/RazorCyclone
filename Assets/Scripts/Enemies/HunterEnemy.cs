@@ -13,26 +13,23 @@ public class HunterEnemy : EnemyBase
     public Material shieldActiveMaterial;
     public Material shieldInactiveMaterial;
     [SerializeField] MeshRenderer enemyRenderer;
-
-    void Start()
-    {
-        rb = GetComponent<Rigidbody>();
+    
+    
+    
+    void Start() {
         Transform sphereTransform = transform.Find("Sphere");
         //enemyRenderer = sphereTransform.GetComponent<MeshRenderer>();
         shieldActive = true;
         UpdateMaterial();
     }
 
-    void Update()
-    {
-        if (!isStunned)
-        {
+    void Update() {
+        if (!isStunned) {
             // ChasePlayer();
         }
     }
 
-    void ChasePlayer()
-    {
+    void ChasePlayer() {
         if (GameManager.CurrentPlayer != null) {
             // Debug.Log("chasing player");
             Vector3 direction = (GameManager.CurrentPlayer.transform.position - transform.position).normalized;
@@ -54,43 +51,39 @@ public class HunterEnemy : EnemyBase
         }
     }
 
-    public void GetStunned()
-    {
-        if (!isStunned)
-        {
+    public void GetStunned() {
+        if (!isStunned) {
             // Debug.Log("enemy stunned");
             isStunned = true;
+            boid.enabled = false;
             shieldActive = false;
             UpdateMaterial();
-            rb.velocity = Vector3.zero;
+            // rb.velocity = Vector3.down * 0.5f;
+            rb.useGravity = true;
             StartCoroutine(StunRecovery());
         }
     }
 
-    IEnumerator StunRecovery()
-    {
+    IEnumerator StunRecovery() {
         yield return new WaitForSeconds(stunDuration);
         isStunned = false;
+        boid.enabled = true;
+        rb.useGravity = false;
         shieldActive = true;
         UpdateMaterial();
     }
 
-    void UpdateMaterial()
-    {
-        if (shieldActive)
-        {
+    void UpdateMaterial() {
+        if (shieldActive) {
             // Debug.Log("changing to white");
             enemyRenderer.material.color = Color.white;
-        }
-        else
-        {            
+        } else {            
             // Debug.Log("changing to red");
             enemyRenderer.material.color = Color.red;
         }
     }
 
-    public bool IsVulnerable()
-    {
+    public bool IsVulnerable() {
         return !shieldActive;
     }
 
