@@ -24,9 +24,13 @@ public class BoidObject : MonoBehaviour {
      private:
        lastWanderPoint
      */
-    public float WanderLimitDist = 1.5f;
+    [Tooltip("Radius of wander's circle (or sphere with AllowFlight).")]
     public float WanderLimitRadius = 5;
+    [Tooltip("The distance wander's circle (or sphere) is from the front of the Boid.")]
+    public float WanderLimitDist = 1.5f;
+    [Tooltip("Maximum distance in an axis to step the wander point.")]
     public float WanderChangeDist = 0.5f;
+    [Tooltip("For testing/debugging. Draws a ray from the Boid to the wander point to show where the Boid is trying to move towards.")]
     public bool VisualizeWanderPoint = false;
     Vector3 wanderPoint;
     delegate void WanderStepFunction();
