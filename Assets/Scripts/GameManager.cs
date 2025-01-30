@@ -235,9 +235,11 @@ public class GameManager : MonoBehaviour {
             if (Cursor.lockState == CursorLockMode.None) {
                 Cursor.lockState = CursorLockMode.Locked;
                 Cursor.visible = false;
+                UIDEBUGPanel.inst.F1Hint.SetActive(true);
             } else {
                 Cursor.lockState = CursorLockMode.None;
                 Cursor.visible = true;
+                UIDEBUGPanel.inst.F1Hint.SetActive(false);
             }
         };
         DebugActions.KillPlayer.Enable();

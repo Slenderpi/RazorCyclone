@@ -108,8 +108,8 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     
     /** Variables for likely to be temporary features or for testing **/
     [Header("Temporary/testing")]
-    [SerializeField]
-    bool CanTakeDamage = true;
+    public bool IsInvincible = false;
+    public bool NoFuelCost = false;
     [SerializeField]
     float thirdPersonDist = 1.2f;
     bool isInThirdPerson = false;
@@ -196,6 +196,9 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     }
     
     public void SpendFuel(float amount) {
+#if UNITY_EDITOR
+        if (NoFuelCost) return;
+#endif
         currentFuel -= amount;
         if (currentFuel <= 0) {
             currentFuel = 0;
@@ -210,7 +213,9 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     }
     
     public void TakeDamage(float amount) {
-        if (!CanTakeDamage) return;
+#if UNITY_EDITOR
+        if (IsInvincible) return;
+#endif
         
         currentHealth = Mathf.Max(currentHealth - amount, 0);
         

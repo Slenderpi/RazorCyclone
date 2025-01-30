@@ -1709,7 +1709,8 @@ MonoBehaviour:
   muzzleFlashEffect: {fileID: 1468955641749855403, guid: 52ed0e933e8fd8f44a05f09d3a08c76a, type: 3}
   rearCamPos: {fileID: 4826576570863280527}
   rb: {fileID: 0}
-  CanTakeDamage: 1
+  IsInvincible: 0
+  NoFuelCost: 0
   thirdPersonDist: 1.2
   rearMirrorModel: {fileID: 2843522477064941511}
 --- !u!54 &726438411730522680

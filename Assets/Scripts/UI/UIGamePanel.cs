@@ -25,6 +25,7 @@ public class UIGamePanel : UIPanel {
     public TMP_Text Speedometer;
     
     [Header("Input Overlay")]
+    public GameObject InputOverlay;
     public Image KeyImageW;
     public Image KeyImageA;
     public Image KeyImageS;
