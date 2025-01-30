@@ -757,6 +757,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 2325735789790659419, guid: ad7f63c0ddb1cf74480708a894707169, type: 3}
+      propertyPath: AllowFlight
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2325735789790659419, guid: ad7f63c0ddb1cf74480708a894707169, type: 3}
       propertyPath: VisualizeWanderPoint
       value: 1
       objectReference: {fileID: 0}
@@ -778,7 +782,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7161423610750410142, guid: ad7f63c0ddb1cf74480708a894707169, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.5000019
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 7161423610750410142, guid: ad7f63c0ddb1cf74480708a894707169, type: 3}
       propertyPath: m_LocalPosition.z
