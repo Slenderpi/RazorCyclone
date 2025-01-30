@@ -80,9 +80,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   AllowFlight: 1
-  AddWander: 0
+  AddWander: 1
   MaxSteeringVelocity: 15
   MaxSteeringForce: 10
+  WanderLimitRadius: 0.5
+  WanderLimitDist: 0.5
+  WanderChangeDist: 0.15
+  VisualizeWanderPoint: 0
   BoidTargetList:
   - BehaviourType: 0
     Target: {fileID: 0}

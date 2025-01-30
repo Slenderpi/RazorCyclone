@@ -119,7 +119,9 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     // Sprite[] crosshairSprites = new Sprite[200];
     // int crosshairIndex = 0;
     
-    
+    //Health Vars
+    [SerializeField] float regenDelay;
+    float regenDelayTime = -1000;
     
     void Awake() {
         // inputActions = GameManager.PInputActions.Player;
@@ -227,11 +229,12 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         }
         
         A_PlayerTakenDamage?.Invoke(amount);
+
+        regenDelayTime = Time.time;
     }
     
     public void HealHealth(float amount) {
-        // TODO
-        
+        currentHealth = Mathf.Min(currentHealth + amount, MaxHealth);
         A_PlayerHealed?.Invoke(amount);
     }
     
@@ -538,10 +541,8 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     }
 
     void healthRegen(){
-        if (currentHealth > MaxHealth){
+        if ((Time.time - regenDelayTime > regenDelay) && (currentHealth < MaxHealth)){
             HealHealth(HealthRegenPerSecond * Time.deltaTime);
-            print("need healing");
-        }
+        } 
     }
-    
 }
