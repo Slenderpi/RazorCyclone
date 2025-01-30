@@ -8,13 +8,29 @@ public class BoidObject : MonoBehaviour {
     
     [Header("Boid Parameters")]
     [Tooltip("If false, steering forces will have their Y value set to 0.")]
-    public bool AllowFlight = false;
+    public bool AllowFlight = false; // If false, Wander() will automatically clamp to a circle instead of a sphere
     [Tooltip("NOT YET IMPLEMENTED.\nIf enabled, this Boid will also add Wander steering. This is useful for adding extra noise to the Boid's movement.\nNote: if AddWander is enabled and the BoidTargetList is empty, the Boid will not Wander extra.")]
     public bool AddWander = false;
     [Tooltip("A sort of maximum speed for this Boid. Increasing this allows the Boid to reach higher speeds and sometimes accelerate faster.")]
     public float MaxSteeringVelocity = 15;
     [Tooltip("Determines the steering capability for this Boid. A higher maximum steering force allows sharper turns. If changing this value doesn't quite get the movement you want, consider adjusting the maximum velocity as well.")]
     public float MaxSteeringForce = 10;
+    /*
+     public:
+       wander circle dist
+       wander circle radius
+       wander change intensity
+       
+     private:
+       lastWanderPoint
+     */
+    public float WanderLimitDist = 1.5f;
+    public float WanderLimitRadius = 5;
+    public float WanderChangeDist = 0.5f;
+    public bool VisualizeWanderPoint = false;
+    Vector3 wanderPoint;
+    delegate void WanderStepFunction();
+    WanderStepFunction stepWanderPoint;
     [Tooltip("List of targets to track and specific behaviours for each. If left empty, this Boid will enter Wander behaviour.")]
     public BehaviourItem[] BoidTargetList = null;
     [Tooltip("THIS MIGHT NOT BE KEPT.\nProvides an additional front-facing force that scales with how lined up the Boid's velocity is towards the target. If directly facing towards the target, the thrust is ApproachingForwardThrust. If directly facing away from target, the thrust is exactly LeavingForwardThrust")]
@@ -27,9 +43,9 @@ public class BoidObject : MonoBehaviour {
     [Tooltip("The transform of the model to be rotated by this Boid script. If left null, BoidObject will use the transform it is placed on.")]
     Transform ModelToRotate;
     
-    bool includeWander = false;
     Transform modelTransform;
     Rigidbody rb;
+    bool includeWander = false;
     
     
     
@@ -46,8 +62,11 @@ public class BoidObject : MonoBehaviour {
         } else {
             GameManager.A_PlayerSpawned += setTargetsOnPlayerSpawn;
         }
-        if (BoidTargetList == null || BoidTargetList.Length == 0 || AddWander)
+        if (BoidTargetList == null || BoidTargetList.Length == 0 || AddWander) {
             includeWander = true;
+            wanderPoint = Vector3.back * WanderLimitRadius;
+            stepWanderPoint = AllowFlight ? stepWanderPoint3D : stepWanderPoint2D;
+        }
     }
     
     void Update() {
@@ -126,8 +145,28 @@ public class BoidObject : MonoBehaviour {
     }
     
     public Vector3 Wander() {
+        stepWanderPoint();
+        if (VisualizeWanderPoint) {
+            Vector3 result = WanderLimitDist * rb.velocity.normalized + wanderPoint;
+            Debug.DrawRay(transform.position, result, Color.cyan, Time.fixedDeltaTime);
+        }
+        return Seek(transform.position + WanderLimitDist * rb.velocity.normalized + wanderPoint);
+    }
+    
+    void stepWanderPoint2D() {
         // TODO
-        return Vector3.forward;
+        stepWanderPoint3D(); // temp until implemented
+    }
+    
+    void stepWanderPoint3D() {
+        // Choose random 1 or -1 for x, y, and z separately
+        // Scale to WanderChangeDist
+        // Add to lastWanderPoint
+        // Limit lastWanderPoint to WanderLimitRadius
+        wanderPoint.y += (UnityEngine.Random.Range(0, 2) * 2 - 1) * WanderChangeDist;
+        wanderPoint.x += (UnityEngine.Random.Range(0, 2) * 2 - 1) * WanderChangeDist;
+        wanderPoint.z += (UnityEngine.Random.Range(0, 2) * 2 - 1) * WanderChangeDist;
+        wanderPoint *= WanderLimitRadius / wanderPoint.sqrMagnitude;
     }
     
     void initBoidListReferences(PlayerCharacterCtrlr plr) {
