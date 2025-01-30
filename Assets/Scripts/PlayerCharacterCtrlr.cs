@@ -70,7 +70,8 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     public float MaxHealth = 100f;
     [HideInInspector]
     public float currentHealth;
-    // public float HealthRegenPerSecond;
+    [SerializeField]
+    float HealthRegenPerSecond;
     
     [Header("References")]
     [SerializeField]
@@ -164,6 +165,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         charModel.localEulerAngles = new Vector3(0, camtrans.localEulerAngles.y, 0);
         
         interpRotPivot();
+        healthRegen();
     }
 
     void FixedUpdate() {
@@ -528,6 +530,13 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         float HealAmount = 10;
         print("Healing player for " + HealAmount + " health.");
         HealHealth(HealAmount);
+    }
+
+    void healthRegen(){
+        if (currentHealth > MaxHealth){
+            HealHealth(HealthRegenPerSecond * Time.deltaTime);
+            print("need healing");
+        }
     }
     
 }

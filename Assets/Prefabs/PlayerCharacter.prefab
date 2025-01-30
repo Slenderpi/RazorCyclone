@@ -1699,6 +1699,7 @@ MonoBehaviour:
   VacuumFuelTime: 10
   MaxHealth: 100
   currentHealth: 0
+  HealthRegenPerSecond: 15
   camtrans: {fileID: 6546781092907837047}
   charModel: {fileID: 8629852985814836286}
   charPivot: {fileID: 647242247470878322}
