@@ -1694,11 +1694,12 @@ MonoBehaviour:
   CanonProjSpeed: 100
   CanonDamage: 50
   MaxFuel: 100
-  FuelRefillDelay: 3
+  FuelRefillDelay: 1
   CanonFuelCost: 15
   VacuumFuelTime: 10
   MaxHealth: 100
   currentHealth: 0
+  HealthRegenPerSecond: 15
   camtrans: {fileID: 6546781092907837047}
   charModel: {fileID: 8629852985814836286}
   charPivot: {fileID: 647242247470878322}
@@ -1712,6 +1713,8 @@ MonoBehaviour:
   NoFuelCost: 0
   thirdPersonDist: 1.2
   rearMirrorModel: {fileID: 2843522477064941511}
+  regenDelay: 2
+  fuelHealthMult: 2
 --- !u!54 &726438411730522680
 Rigidbody:
   m_ObjectHideFlags: 0
