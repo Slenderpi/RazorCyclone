@@ -5013,7 +5013,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ba70b0274924b44687d1e944d678fb8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ShowPanel: 0
+  ShowPanel: 1
   ShowHideButtonText: {fileID: 1484811140}
   DebugPanelContainer: {fileID: 686301539}
   SurvivalTimerText: {fileID: 1197682644}
