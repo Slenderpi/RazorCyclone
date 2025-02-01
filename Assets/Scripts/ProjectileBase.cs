@@ -25,12 +25,10 @@ public class ProjectileBase : MonoBehaviour {
     
     void OnCollisionEnter(Collision collision) {
         // TODO: For some reason the collision version does not work with enemy weakpoints
-        print("Hit");
         onHitSomething(collision.gameObject);
     }
     
     void OnTriggerEnter(Collider collider) {
-        print("Trigger");
         onHitSomething(collider.gameObject);
     }
     

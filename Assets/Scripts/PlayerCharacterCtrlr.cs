@@ -366,11 +366,9 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     void fireCanon() {
         updateRayCastedAimPoint();
         rb.AddForce((charModel.rotation * weaponRelativeRot).normalized * CanonForce * 100000);
-        // ProjectileBase proj = Instantiate(projectilePrefab, canonTip.position, canonTip.rotation);
-        ProjectileBase proj = Instantiate(projectilePrefab, camtrans.position, canonTip.rotation);
+        ProjectileBase proj = Instantiate(projectilePrefab, canonTip.position, canonTip.rotation);
         proj.damage = CanonDamage;
-        // proj.GetComponent<Rigidbody>().AddForce((aimPoint - canonTip.position).normalized * CanonProjSpeed + rb.velocity, ForceMode.VelocityChange);
-        proj.GetComponent<Rigidbody>().AddForce(-charPivot.forward.normalized * CanonProjSpeed + rb.velocity, ForceMode.VelocityChange);
+        proj.GetComponent<Rigidbody>().AddForce((aimPoint - canonTip.position).normalized * CanonProjSpeed + rb.velocity, ForceMode.VelocityChange);
         SpendFuel(CanonFuelCost);
         GameManager.Instance.Audio2D.PlayClipSFX(AudioPlayer2D.EClipSFX.Weapon_CanonShot);
         playMuzzleFlashEffect();

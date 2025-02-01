@@ -1712,7 +1712,7 @@ MonoBehaviour:
   rearCamPos: {fileID: 4826576570863280527}
   rb: {fileID: 0}
   IsInvincible: 0
-  NoFuelCost: 1
+  NoFuelCost: 0
   thirdPersonDist: 1.2
   rearMirrorModel: {fileID: 2843522477064941511}
 --- !u!54 &726438411730522680
