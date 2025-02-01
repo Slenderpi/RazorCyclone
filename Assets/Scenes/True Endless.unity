@@ -1905,10 +1905,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0442acdc3b074c4db82e78425535f9d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyTypes: 
-  UseTypesAsExclude: 0
+  EnemyTypes: 
+  UseTypesAsInclude: 0
   canSpawn: 1
-  enemies: []
   playerDetectionRange: 15
   enemyDetectionRange: 5
 --- !u!4 &997104226
@@ -2591,10 +2590,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0442acdc3b074c4db82e78425535f9d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyTypes: 
-  UseTypesAsExclude: 0
+  EnemyTypes: 
+  UseTypesAsInclude: 0
   canSpawn: 1
-  enemies: []
   playerDetectionRange: 15
   enemyDetectionRange: 5
 --- !u!4 &1536181861
@@ -3097,10 +3095,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0442acdc3b074c4db82e78425535f9d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyTypes: 
-  UseTypesAsExclude: 0
+  EnemyTypes: 
+  UseTypesAsInclude: 0
   canSpawn: 1
-  enemies: []
   playerDetectionRange: 15
   enemyDetectionRange: 5
 --- !u!4 &1952233748

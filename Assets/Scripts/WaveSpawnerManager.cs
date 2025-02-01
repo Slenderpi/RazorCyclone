@@ -1,5 +1,5 @@
 // UNCOMMENT THE LINE BELOW TO PRINT WAVES AS STRINGS
-#define DEBUG_WAVE_STRS
+// #define DEBUG_WAVE_STRS
 
 using System;
 using System.Collections;
