@@ -2476,6 +2476,7 @@ MonoBehaviour:
   FuelOutlineAnimator: {fileID: 701307696}
   HealthSlider: {fileID: 102897746}
   HealthText: {fileID: 1268275324}
+  HealthFillAnimator: {fileID: 1636576748}
   MainVacuumCrosshair: {fileID: 816770531}
   MainCanonCrosshair: {fileID: 1745153568}
   HitmarkerAnimator: {fileID: 1945086432}
