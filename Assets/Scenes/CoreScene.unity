@@ -4024,6 +4024,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CurrentCanvasState: 0
+  DebugPanel: {fileID: 509403910}
   GamePanel: {fileID: 270301660}
   PausePanel: {fileID: 1437502731}
   SettingsPanel: {fileID: 1783824500}
@@ -4977,7 +4978,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &509403909
 RectTransform:
   m_ObjectHideFlags: 0
@@ -15742,6 +15743,7 @@ GameObject:
   - component: {fileID: 1636576745}
   - component: {fileID: 1636576747}
   - component: {fileID: 1636576746}
+  - component: {fileID: 1636576748}
   m_Layer: 6
   m_Name: Fill
   m_TagString: Untagged
@@ -15807,6 +15809,26 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1636576744}
   m_CullTransparentMesh: 1
+--- !u!95 &1636576748
+Animator:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1636576744}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 26e9f676c1f8ac4419035dfa79b8fde8, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &1641279509
 GameObject:
   m_ObjectHideFlags: 0

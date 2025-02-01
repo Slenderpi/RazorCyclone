@@ -235,7 +235,7 @@ public class GameManager : MonoBehaviour {
             if (Cursor.lockState == CursorLockMode.None) {
                 Cursor.lockState = CursorLockMode.Locked;
                 Cursor.visible = false;
-                UIDEBUGPanel.inst.F1Hint.SetActive(true);
+                // UIDEBUGPanel.inst.F1Hint.SetActive(true);
             } else {
                 Cursor.lockState = CursorLockMode.None;
                 Cursor.visible = true;
@@ -244,7 +244,7 @@ public class GameManager : MonoBehaviour {
         };
         DebugActions.KillPlayer.Enable();
         DebugActions.KillPlayer.started += (InputAction.CallbackContext context) => {
-            if (CurrentPlayer != null && CurrentPlayer.currentHealth > 0) {
+            if (CurrentPlayer != null && CurrentPlayer.CurrentHealth > 0) {
                 print("Killing player");
                 CurrentPlayer.TakeDamage(CurrentPlayer.MaxHealth);
             }

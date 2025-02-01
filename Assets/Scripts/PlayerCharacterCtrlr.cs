@@ -15,7 +15,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     
     // Events
     public event Action<float, float> A_FuelAdded; // float changeAmnt, float fuelPerc
-    public event Action<float, float> A_FuelSpent; // float changeAmnt, float fuelPerc
+    public event Action<float, float, bool> A_FuelSpent; // float changeAmnt, float fuelPerc, bool spentAsHealth
     public event Action<float> A_PlayerTakenDamage; // float amount
     public event Action<float> A_PlayerHealed; // float amount
     public event Action A_PlayerDied;
@@ -69,9 +69,15 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     [Header("Health Settings")]
     public float MaxHealth = 100f;
     [HideInInspector]
-    public float currentHealth;
+    public float CurrentHealth;
     [SerializeField]
     float HealthRegenPerSecond;
+    [SerializeField]
+    float HealthRegenDelay = 1;
+    float lastDmgTimeForRegen = -1000;
+    [SerializeField]
+    [Tooltip("Multiplier for the cost of fuel when the player uses health as fuel")]
+    float FuelHelathCostMultiplier = 1;
     
     [Header("References")]
     [SerializeField]
@@ -119,12 +125,6 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     // Sprite[] crosshairSprites = new Sprite[200];
     // int crosshairIndex = 0;
     
-    //Health Vars
-    [SerializeField] float regenDelay;
-    float regenDelayTime = -1000;
-
-    [SerializeField ]float fuelHealthMult;
-    
     void Awake() {
         // inputActions = GameManager.PInputActions.Player;
         inputActions = new PlayerInputActions().Player;
@@ -142,7 +142,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         
         AddFuel(MaxFuel);
         vacuumFuelCost = MaxFuel / VacuumFuelTime * Time.fixedDeltaTime;
-        currentHealth = MaxHealth;
+        CurrentHealth = MaxHealth;
         
         // _pausePanel.SetActive(false);
         
@@ -174,7 +174,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
 
     void FixedUpdate() {
         if (isVacuumOn) {
-            if (currentHealth <= 0) {
+            if (CurrentHealth <= 0) {
                 isVacuumOn = false;
                 vacuumHitbox.SetActive(false);
                 // print("Not enough fuel (" + currentFuel + ") for vacuum (need " + vacuumFuelCost + ").");
@@ -203,13 +203,21 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
 #if UNITY_EDITOR
         if (NoFuelCost) return;
 #endif
-        currentFuel -= amount;
-        if (currentFuel <= 0) {
-            currentFuel = 0;
+        
+        bool spentAsHealth = false;
+        if (currentFuel > 0) {
+            currentFuel -= amount;
+            if (currentFuel < 0) {
+                spentAsHealth = true;
+                TakeDamage(-currentFuel * FuelHelathCostMultiplier);
+                currentFuel = 0;
+            }
+        } else {
+            spentAsHealth = true;
             //StartCoroutine(StartRefillFuelTimer());
-            TakeDamage(amount * fuelHealthMult);
+            TakeDamage(amount * FuelHelathCostMultiplier);
         }
-        A_FuelSpent?.Invoke(amount, currentFuel / MaxFuel);
+        A_FuelSpent?.Invoke(amount, currentFuel / MaxFuel, spentAsHealth);
     }
     
     IEnumerator StartRefillFuelTimer() {
@@ -222,22 +230,22 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         if (IsInvincible) return;
 #endif
         
-        currentHealth = Mathf.Max(currentHealth - amount, 0);
+        CurrentHealth = Mathf.Max(CurrentHealth - amount, 0);
         
-        print("Player took " + amount + " damage. Health: " + currentHealth);
-        if (currentHealth == 0) {
-            Debug.Log("player died womp womp");
+        // print("Player took " + amount + " damage. Health: " + currentHealth);
+        if (CurrentHealth == 0) {
+            // Debug.Log("player died womp womp");
             A_PlayerDied?.Invoke();
             gameObject.SetActive(false);
         }
         
         A_PlayerTakenDamage?.Invoke(amount);
 
-        regenDelayTime = Time.time;
+        lastDmgTimeForRegen = Time.time;
     }
     
     public void HealHealth(float amount) {
-        currentHealth = Mathf.Min(currentHealth + amount, MaxHealth);
+        CurrentHealth = Mathf.Min(CurrentHealth + amount, MaxHealth);
         A_PlayerHealed?.Invoke(amount);
     }
     
@@ -268,9 +276,9 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     private void FireVacuumStarted(InputAction.CallbackContext context) {
         _gamePanel.OnFireVacuum(true);
         
-        if (currentHealth <= 0) {
+        if (CurrentHealth <= 0) {
             // print("Not enough fuel (" + currentFuel + ") for vacuum (need " + vacuumFuelCost + ").");
-            signifyOutOfFuel();
+            // signifyOutOfFuel();
             return;
         }
         isVacuumOn = true;
@@ -287,9 +295,9 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     private void FireCanonStarted(InputAction.CallbackContext context) {
         _gamePanel.OnFireCanon(true);
         
-        if (currentHealth <= 0) {
+        if (CurrentHealth <= 0) {
             // print("Not enough fuel (" + currentFuel + ") for canon (need " + CanonFuelCost + ").");
-            signifyOutOfFuel();
+            // signifyOutOfFuel();
             return;
         }
         // Time.timeScale = 0.15f;
@@ -544,7 +552,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     }
 
     void healthRegen(){
-        if ((Time.time - regenDelayTime > regenDelay) && (currentHealth < MaxHealth)){
+        if ((Time.time - lastDmgTimeForRegen > HealthRegenDelay) && (CurrentHealth < MaxHealth)){
             HealHealth(HealthRegenPerSecond * Time.deltaTime);
         } 
     }
