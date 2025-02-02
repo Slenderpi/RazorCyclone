@@ -319,7 +319,7 @@ public class BehaviourItem {
     public BoidBehaviour BehaviourType;
     [Tooltip("The target to apply this behaviour towards. If left empty, this Target will be set as the Player.")]
     public GameObject Target;
-    [Tooltip("Distance at which this behaviour is enabled (if 0, the behaviour is always enabled regardless of distance).\nFor example, a BehaviourType of Flee and TriggerDistance of 10 means this Boid will only Flee when within 10 units of the Target.\nNote: if the BehaviourType is Wander, this value doesn't matter.")]
+    [Tooltip("Distance at which this behaviour is enabled.\nIf 0, the behaviour is always enabled regardless of distance.\n\nExample: a BehaviourType of Flee and TriggerDistance of 10 means this Boid will only Flee when within 10 units of the Target.")]
     public float TriggerDistance;
     [Tooltip("If false, this Behaviour is used when the distance to the Target is <= TriggerDistance.\nIf true, this Behaviour is used when the distance to the Target is > TriggerDistance.\nNotice that true means >, while false means <=")]
     public bool CheckAsGreater = false;
