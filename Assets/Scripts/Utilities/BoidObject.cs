@@ -9,7 +9,7 @@ public class BoidObject : MonoBehaviour {
     [Header("Boid Parameters")]
     [Tooltip("If false, steering forces will have their Y value set to 0.")]
     public bool AllowFlight = false; // If false, Wander() will automatically clamp to a circle instead of a sphere
-    [Tooltip("NOT YET IMPLEMENTED.\nIf enabled, this Boid will also add Wander steering. This is useful for adding extra noise to the Boid's movement.\nNote: if AddWander is enabled and the BoidTargetList is empty, the Boid will not Wander extra.")]
+    [Tooltip("If enabled, this Boid will also add Wander steering. This is useful for adding extra noise to the Boid's movement.\n\nNote: if AddWander is disabled and the BoidTargetList is empty, the Boid will not move.")]
     public bool AddWander = false;
     [Tooltip("A sort of maximum speed for this Boid. Increasing this allows the Boid to reach higher speeds and sometimes accelerate faster.")]
     public float MaxSteeringVelocity = 15;
@@ -21,12 +21,10 @@ public class BoidObject : MonoBehaviour {
     public float WanderLimitDist = 0.5f;
     [Tooltip("Maximum distance in an axis to step the wander point.")]
     public float WanderChangeDist = 0.15f;
-    [Tooltip("For testing/debugging. Draws a ray from the Boid to the wander point to show where the Boid is trying to move towards.")]
-    public bool VisualizeWanderPoint = false;
     Vector3 wanderPoint; // Point on wander circle/sphere to seek towards. Does not include an offset from WanderLimitDist
     delegate void WanderStepFunction();
     WanderStepFunction stepWanderPoint;
-    [Tooltip("List of targets to track and specific behaviours for each. If left empty, this Boid will enter Wander behaviour.")]
+    [Tooltip("List of targets to track and specific behaviours for each.\nIf left empty and AddWander is false, this Boid will not move.")]
     public BehaviourItem[] BoidTargetList = null;
     [Tooltip("THIS MIGHT NOT BE KEPT.\nProvides an additional front-facing force that scales with how lined up the Boid's velocity is towards the target. If directly facing towards the target, the thrust is ApproachingForwardThrust. If directly facing away from target, the thrust is exactly LeavingForwardThrust")]
     public float ApproachingFowardThrust = 0;
@@ -38,9 +36,12 @@ public class BoidObject : MonoBehaviour {
     [Tooltip("The transform of the model to be rotated by this Boid script. If left null, BoidObject will use the transform it is placed on.")]
     Transform ModelToRotate;
     
+    [Header("Testing/Debugging")]
+    [Tooltip("For testing/debugging. Draws a ray from the Boid to the wander point to show where the Boid is trying to move towards.")]
+    public bool VisualizeWanderPoint = false;
+    
     Transform modelTransform;
     Rigidbody rb;
-    bool includeWander = false;
     
     
     
@@ -57,10 +58,19 @@ public class BoidObject : MonoBehaviour {
         } else {
             GameManager.A_PlayerSpawned += setTargetsOnPlayerSpawn;
         }
-        if (BoidTargetList == null || BoidTargetList.Length == 0 || AddWander) {
-            includeWander = true;
-            wanderPoint = transform.forward * WanderLimitRadius;
-            stepWanderPoint = AllowFlight ? stepWanderPoint3D : stepWanderPoint2D;
+        wanderPoint = transform.forward * WanderLimitRadius;
+        stepWanderPoint = AllowFlight ? stepWanderPoint3D : stepWanderPoint2D;
+        if (BoidTargetList == null || BoidTargetList.Length == 0) {
+            enabled = AddWander;
+        } else if (AddWander) {
+            // Check that there isn't already a Wander item. If there is, disable AddWander
+            foreach (BehaviourItem item in BoidTargetList) {
+                if (item.BehaviourType == BoidBehaviour.Wander) {
+                    Debug.LogWarning(">> BoidObject \"" + gameObject.name + "\" has AddWander enabled but also has a BoidTargetList item with behavior type Wander. Disabling AddWander on this Boid.");
+                    AddWander = false;
+                    break;
+                }
+            }
         }
     }
     
@@ -77,7 +87,7 @@ public class BoidObject : MonoBehaviour {
     void FixedUpdate() {
         if (!GameManager.CurrentPlayer) return;
         
-        Vector3 totalSteer = includeWander ? Wander() : Vector3.zero;
+        Vector3 totalSteer = AddWander ? Wander() : Vector3.zero;
         if (BoidTargetList != null && BoidTargetList.Length > 0) {
             foreach (BehaviourItem item in BoidTargetList) {
                 totalSteer += calcSteerForTargetItem(item);
@@ -100,7 +110,18 @@ public class BoidObject : MonoBehaviour {
         // }
         // rb.AddForce(steer, ForceMode.Acceleration);
         // rb.AddForce(totalSteer + forwardThrust, ForceMode.Acceleration);
+        
         if (!AllowFlight) totalSteer.y = 0;
+        // if (!AllowFlight) {
+        //     // float maxStrengthAt = 7;
+        //     // totalSteer *= Mathf.Clamp(Mathf.Abs(totalSteer.y),;
+        //     totalSteer.y = Mathf.Abs(totalSteer.y);
+        //     float recoveryFactor = 1.5f;
+        //     float recovery = (1 - Vector3.Dot(totalSteer, Vector3.up)) * recoveryFactor;
+        //     totalSteer.x *= recovery;
+        //     totalSteer.z *= recovery;
+        //     totalSteer.y = 0;
+        // }
         rb.AddForce(totalSteer, ForceMode.Acceleration);
     }
     
@@ -185,9 +206,7 @@ public class BoidObject : MonoBehaviour {
     
     Vector3 calcSteerForTargetItem(BehaviourItem item) {
         Vector3 steer = Vector3.zero;
-        if (item.BehaviourType == BoidBehaviour.Wander)
-            steer = Wander();
-        else if (item.TestTriggerDistance(transform.position)) {
+        if (item.TestTriggerDistance(transform.position)) {
             switch (item.BehaviourType) {
             case BoidBehaviour.Seek:
                 steer = Seek(item.trans.position);
@@ -202,6 +221,7 @@ public class BoidObject : MonoBehaviour {
                 steer = Evade(item.trans.position, item.rb.velocity);
                 break;
             case BoidBehaviour.Wander:
+                steer = Wander();
                 break;
             }
         }
