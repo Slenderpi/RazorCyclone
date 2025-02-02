@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
 
 public class BoidObject : MonoBehaviour {
@@ -21,11 +22,16 @@ public class BoidObject : MonoBehaviour {
     public float WanderLimitDist = 0.5f;
     [Tooltip("Maximum distance in an axis to step the wander point.")]
     public float WanderChangeDist = 0.15f;
+    [Tooltip("Minimum time required to pass until a new wander point is calculated. Very low values could lead to jittery movement, depending on the other wander parameters.")]
+    public float WanderMinimumDelay = 0;
+    float lastWanderStepTime = -1000;
     Vector3 wanderPoint; // Point on wander circle/sphere to seek towards. Does not include an offset from WanderLimitDist
     delegate void WanderStepFunction();
     WanderStepFunction stepWanderPoint;
     [Tooltip("List of targets to track and specific behaviours for each.\nIf left empty and AddWander is false, this Boid will not move.")]
     public BehaviourItem[] BoidTargetList = null;
+    [Tooltip("Determines the type of rotation this Boid will perform. Rotations are based off the Boid's velocity and the steering vector.\n - None: maintain the rotation it started with\n - YawOnly: only rotate on the yaw axis (left/right)\n - YawAndBank: allow yawing and rolling\n - Airplane: allow yawing, rolling, and pitching, like an airplane")]
+    public BoidRotationType RotationType = BoidRotationType.YawOnly;
     [Tooltip("THIS MIGHT NOT BE KEPT.\nProvides an additional front-facing force that scales with how lined up the Boid's velocity is towards the target. If directly facing towards the target, the thrust is ApproachingForwardThrust. If directly facing away from target, the thrust is exactly LeavingForwardThrust")]
     public float ApproachingFowardThrust = 0;
     [Tooltip("THIS MIGHT NOT BE KEPT.\nProvides an additional front-facing force that scales with how lined up the Boid's velocity is towards the target. If directly facing away from target, the thrust is exactly LeavingForwardThrust. If directly facing target, the thrust is exactly ApproachingForwardThrust.")]
@@ -42,6 +48,9 @@ public class BoidObject : MonoBehaviour {
     
     Transform modelTransform;
     Rigidbody rb;
+    Quaternion calculatedRot = Quaternion.identity;
+    delegate Quaternion RotCalculationFunction(Vector3 forward, Vector3 steer);
+    RotCalculationFunction rotCalcFunc;
     
     
     
@@ -72,16 +81,11 @@ public class BoidObject : MonoBehaviour {
                 }
             }
         }
+        setRotCalcFunc();
     }
     
     void Update() {
-        // TODO: Create more parameters to allow easier control over how rotation acts
-        Vector3 forward = rb.velocity;
-        if (forward.x == 0 && forward.y == 0)
-            forward = transform.forward;
-        forward.y = 0;
-        if (forward.sqrMagnitude <= 0.0001f) return; // If vel/forward is 0, maintain prev rot
-        modelTransform.rotation = Quaternion.LookRotation(forward, Vector3.up);
+        modelTransform.rotation = Quaternion.Lerp(modelTransform.rotation, calculatedRot, 0.1f);
     }
 
     void FixedUpdate() {
@@ -123,6 +127,8 @@ public class BoidObject : MonoBehaviour {
         //     totalSteer.y = 0;
         // }
         rb.AddForce(totalSteer, ForceMode.Acceleration);
+        
+        calculatedRot = CalculateModelRotation(rb.velocity, totalSteer);
     }
     
     // float passTime = -500;
@@ -161,7 +167,10 @@ public class BoidObject : MonoBehaviour {
     }
     
     public Vector3 Wander() {
-        stepWanderPoint();
+        if (Time.time - lastWanderStepTime >= WanderMinimumDelay) {
+            lastWanderStepTime = Time.time;
+            stepWanderPoint();
+        }
         if (VisualizeWanderPoint) { // DEBUGGING
             bool fromWanderCenter = false;
             Vector3 forward = rb.velocity.normalized;
@@ -179,6 +188,60 @@ public class BoidObject : MonoBehaviour {
             // return Vector3.zero;
         }
         return Seek(transform.position + WanderLimitDist * rb.velocity.normalized + wanderPoint);
+    }
+    
+    public Quaternion CalculateModelRotation(Vector3 forward, Vector3 steer) {
+        if (forward.sqrMagnitude <= 0.0001f) forward = modelTransform.forward; // If vel is 0, use model's current forward
+        if (forward.sqrMagnitude <= 0.0001f) return modelTransform.rotation; // If forward is 0, maintain prev rot
+        return rotCalcFunc(forward, steer);
+    }
+    
+    void setRotCalcFunc() {
+        switch (RotationType) {
+        case BoidRotationType.None:
+            rotCalcFunc = rotCalcNone;
+            break;
+        case BoidRotationType.YawOnly:
+            rotCalcFunc = rotCalcYawOnly;
+            break;
+        case BoidRotationType.YawAndBank:
+            rotCalcFunc = rotCalcYawAndBank;
+            break;
+        case BoidRotationType.Airplane:
+            rotCalcFunc = rotCalcAirplane;
+            break;
+        }
+    }
+    
+    Quaternion rotCalcNone(Vector3 forward, Vector3 steer) {
+        return modelTransform.rotation;
+    }
+    
+    Quaternion rotCalcYawOnly(Vector3 forward, Vector3 steer) {
+        return Quaternion.LookRotation(forward, Vector3.up);
+    }
+    
+    Quaternion rotCalcYawAndBank(Vector3 forward, Vector3 steer) {
+        forward.y = 0;
+        return rotCalcAirplane(forward, steer);
+    }
+    
+    Quaternion rotCalcAirplane(Vector3 forward, Vector3 steer) {
+        // Find cos(theta) where theta is the angle between forward and steer strictly in the x-z plane
+        // cos(th) = f . s / (|f||s|) == f . s / sqrt(f.sqrMag * s.sqrMag)
+        float c = 1 - (forward.x * steer.x + forward.z * steer.z) / Mathf.Sqrt(
+            (forward.x * forward.x + forward.z * forward.z) *
+            (steer.x * steer.x + steer.z * steer.z)
+        );
+        Vector3 right = Vector3.Cross(forward, Vector3.up);
+        // To check leftness/rightness, use dot product of steer and right
+        Vector3 up;
+        if (Vector3.Dot(steer, right) > 0) {
+            up = Vector3.Slerp(Vector3.up, right, c);
+        } else {
+            up = Vector3.Slerp(Vector3.up, -right, c);
+        }
+        return Quaternion.LookRotation(forward, up);
     }
     
     void stepWanderPoint2D() {
@@ -241,6 +304,13 @@ public enum BoidBehaviour {
     Pursuit,
     Evade,
     Wander
+}
+
+public enum BoidRotationType {
+    None,
+    YawOnly,
+    YawAndBank,
+    Airplane
 }
 
 [Serializable]

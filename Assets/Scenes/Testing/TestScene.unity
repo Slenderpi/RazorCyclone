@@ -407,21 +407,33 @@ PrefabInstance:
       propertyPath: m_Name
       value: Hunter_8
       objectReference: {fileID: 0}
+    - target: {fileID: 3890492832594851018, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: AddWander
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
+      propertyPath: RotationType
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: WanderLimitDist
-      value: 0.2
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: WanderChangeDist
-      value: 0.03
+      value: 0.05
       objectReference: {fileID: 0}
     - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: WanderLimitRadius
-      value: 0.2
+      value: 0.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
+      propertyPath: WanderMinimumDelay
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: BoidTargetList.Array.size
@@ -433,11 +445,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: BoidTargetList.Array.data[1].CheckAsGreater
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: BoidTargetList.Array.data[1].TriggerDistance
-      value: 8
+      value: 7.5
       objectReference: {fileID: 0}
     - target: {fileID: 7161423610750410142, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: m_RootOrder
@@ -500,21 +512,33 @@ PrefabInstance:
       propertyPath: m_Name
       value: Hunter_1
       objectReference: {fileID: 0}
+    - target: {fileID: 3890492832594851018, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: AddWander
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
+      propertyPath: RotationType
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: WanderLimitDist
-      value: 0.2
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: WanderChangeDist
-      value: 0.03
+      value: 0.05
       objectReference: {fileID: 0}
     - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: WanderLimitRadius
-      value: 0.2
+      value: 0.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
+      propertyPath: WanderMinimumDelay
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: BoidTargetList.Array.size
@@ -526,11 +550,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: BoidTargetList.Array.data[1].CheckAsGreater
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: BoidTargetList.Array.data[1].TriggerDistance
-      value: 8
+      value: 7.5
       objectReference: {fileID: 0}
     - target: {fileID: 7161423610750410142, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: m_RootOrder
@@ -593,21 +617,33 @@ PrefabInstance:
       propertyPath: m_Name
       value: Hunter_3
       objectReference: {fileID: 0}
+    - target: {fileID: 3890492832594851018, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: AddWander
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
+      propertyPath: RotationType
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: WanderLimitDist
-      value: 0.2
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: WanderChangeDist
-      value: 0.03
+      value: 0.05
       objectReference: {fileID: 0}
     - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: WanderLimitRadius
-      value: 0.2
+      value: 0.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
+      propertyPath: WanderMinimumDelay
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: BoidTargetList.Array.size
@@ -619,11 +655,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: BoidTargetList.Array.data[1].CheckAsGreater
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: BoidTargetList.Array.data[1].TriggerDistance
-      value: 8
+      value: 7.5
       objectReference: {fileID: 0}
     - target: {fileID: 7161423610750410142, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: m_RootOrder
@@ -733,16 +769,24 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
+      propertyPath: RotationType
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: WanderLimitDist
-      value: 0.2
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: WanderChangeDist
-      value: 0.03
+      value: 0.05
       objectReference: {fileID: 0}
     - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: WanderLimitRadius
-      value: 0.2
+      value: 0.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
+      propertyPath: WanderMinimumDelay
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: BoidTargetList.Array.size
@@ -753,12 +797,24 @@ PrefabInstance:
       value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
+      propertyPath: BoidTargetList.Array.data[2].BehaviourType
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: BoidTargetList.Array.data[1].CheckAsGreater
-      value: 0
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
+      propertyPath: BoidTargetList.Array.data[2].CheckAsGreater
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: BoidTargetList.Array.data[1].TriggerDistance
-      value: 8
+      value: 7.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
+      propertyPath: BoidTargetList.Array.data[2].TriggerDistance
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 7161423610750410142, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: m_RootOrder
@@ -774,7 +830,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7161423610750410142, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 46.42
+      value: 118.39
       objectReference: {fileID: 0}
     - target: {fileID: 7161423610750410142, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: m_LocalRotation.w
@@ -821,21 +877,33 @@ PrefabInstance:
       propertyPath: m_Name
       value: Hunter_6
       objectReference: {fileID: 0}
+    - target: {fileID: 3890492832594851018, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: AddWander
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
+      propertyPath: RotationType
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: WanderLimitDist
-      value: 0.2
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: WanderChangeDist
-      value: 0.03
+      value: 0.05
       objectReference: {fileID: 0}
     - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: WanderLimitRadius
-      value: 0.2
+      value: 0.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
+      propertyPath: WanderMinimumDelay
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: BoidTargetList.Array.size
@@ -847,11 +915,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: BoidTargetList.Array.data[1].CheckAsGreater
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: BoidTargetList.Array.data[1].TriggerDistance
-      value: 8
+      value: 7.5
       objectReference: {fileID: 0}
     - target: {fileID: 7161423610750410142, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: m_RootOrder
@@ -1253,21 +1321,33 @@ PrefabInstance:
       propertyPath: m_Name
       value: Hunter_5
       objectReference: {fileID: 0}
+    - target: {fileID: 3890492832594851018, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: AddWander
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
+      propertyPath: RotationType
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: WanderLimitDist
-      value: 0.2
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: WanderChangeDist
-      value: 0.03
+      value: 0.05
       objectReference: {fileID: 0}
     - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: WanderLimitRadius
-      value: 0.2
+      value: 0.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
+      propertyPath: WanderMinimumDelay
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: BoidTargetList.Array.size
@@ -1279,11 +1359,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: BoidTargetList.Array.data[1].CheckAsGreater
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: BoidTargetList.Array.data[1].TriggerDistance
-      value: 8
+      value: 7.5
       objectReference: {fileID: 0}
     - target: {fileID: 7161423610750410142, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: m_RootOrder
@@ -1439,21 +1519,33 @@ PrefabInstance:
       propertyPath: m_Name
       value: Hunter_2
       objectReference: {fileID: 0}
+    - target: {fileID: 3890492832594851018, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: AddWander
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
+      propertyPath: RotationType
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: WanderLimitDist
-      value: 0.2
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: WanderChangeDist
-      value: 0.03
+      value: 0.05
       objectReference: {fileID: 0}
     - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: WanderLimitRadius
-      value: 0.2
+      value: 0.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
+      propertyPath: WanderMinimumDelay
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: BoidTargetList.Array.size
@@ -1465,11 +1557,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: BoidTargetList.Array.data[1].CheckAsGreater
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: BoidTargetList.Array.data[1].TriggerDistance
-      value: 8
+      value: 7.5
       objectReference: {fileID: 0}
     - target: {fileID: 7161423610750410142, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: m_RootOrder
@@ -1630,21 +1722,33 @@ PrefabInstance:
       propertyPath: m_Name
       value: Hunter_7
       objectReference: {fileID: 0}
+    - target: {fileID: 3890492832594851018, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: AddWander
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
+      propertyPath: RotationType
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: WanderLimitDist
-      value: 0.2
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: WanderChangeDist
-      value: 0.03
+      value: 0.05
       objectReference: {fileID: 0}
     - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: WanderLimitRadius
-      value: 0.2
+      value: 0.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
+      propertyPath: WanderMinimumDelay
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: BoidTargetList.Array.size
@@ -1656,11 +1760,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: BoidTargetList.Array.data[1].CheckAsGreater
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: BoidTargetList.Array.data[1].TriggerDistance
-      value: 8
+      value: 7.5
       objectReference: {fileID: 0}
     - target: {fileID: 7161423610750410142, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: m_RootOrder
@@ -1723,21 +1827,33 @@ PrefabInstance:
       propertyPath: m_Name
       value: Hunter_10
       objectReference: {fileID: 0}
+    - target: {fileID: 3890492832594851018, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: AddWander
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
+      propertyPath: RotationType
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: WanderLimitDist
-      value: 0.2
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: WanderChangeDist
-      value: 0.03
+      value: 0.05
       objectReference: {fileID: 0}
     - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: WanderLimitRadius
-      value: 0.2
+      value: 0.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
+      propertyPath: WanderMinimumDelay
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: BoidTargetList.Array.size
@@ -1749,11 +1865,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: BoidTargetList.Array.data[1].CheckAsGreater
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: BoidTargetList.Array.data[1].TriggerDistance
-      value: 8
+      value: 7.5
       objectReference: {fileID: 0}
     - target: {fileID: 7161423610750410142, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: m_RootOrder
@@ -2018,7 +2134,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1568273019}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.5, z: 0}
+  m_LocalPosition: {x: 0, y: 0.5, z: 101.08}
   m_LocalScale: {x: 1, y: 0.1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2292,21 +2408,33 @@ PrefabInstance:
       propertyPath: m_Name
       value: Hunter_9
       objectReference: {fileID: 0}
+    - target: {fileID: 3890492832594851018, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: AddWander
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
+      propertyPath: RotationType
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: WanderLimitDist
-      value: 0.2
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: WanderChangeDist
-      value: 0.03
+      value: 0.05
       objectReference: {fileID: 0}
     - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: WanderLimitRadius
-      value: 0.2
+      value: 0.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
+      propertyPath: WanderMinimumDelay
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: BoidTargetList.Array.size
@@ -2318,11 +2446,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: BoidTargetList.Array.data[1].CheckAsGreater
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: BoidTargetList.Array.data[1].TriggerDistance
-      value: 8
+      value: 7.5
       objectReference: {fileID: 0}
     - target: {fileID: 7161423610750410142, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: m_RootOrder
@@ -2616,21 +2744,33 @@ PrefabInstance:
       propertyPath: m_Name
       value: Hunter_4
       objectReference: {fileID: 0}
+    - target: {fileID: 3890492832594851018, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: AddWander
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
+      propertyPath: RotationType
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: WanderLimitDist
-      value: 0.2
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: WanderChangeDist
-      value: 0.03
+      value: 0.05
       objectReference: {fileID: 0}
     - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: WanderLimitRadius
-      value: 0.2
+      value: 0.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
+      propertyPath: WanderMinimumDelay
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: BoidTargetList.Array.size
@@ -2642,11 +2782,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: BoidTargetList.Array.data[1].CheckAsGreater
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: BoidTargetList.Array.data[1].TriggerDistance
-      value: 8
+      value: 7.5
       objectReference: {fileID: 0}
     - target: {fileID: 7161423610750410142, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: m_RootOrder
