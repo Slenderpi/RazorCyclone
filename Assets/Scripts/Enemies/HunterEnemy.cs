@@ -76,7 +76,7 @@ public class HunterEnemy : EnemyBase
     void UpdateMaterial() {
         if (shieldActive) {
             // Debug.Log("changing to white");
-            enemyRenderer.material.color = Color.white;
+            enemyRenderer.material.color = Color.magenta;
         } else {            
             // Debug.Log("changing to red");
             enemyRenderer.material.color = Color.red;
