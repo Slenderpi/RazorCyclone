@@ -233,7 +233,7 @@ public class BoidObject : MonoBehaviour {
             (forward.x * forward.x + forward.z * forward.z) *
             (steer.x * steer.x + steer.z * steer.z)
         );
-        Vector3 right = Vector3.Cross(forward, Vector3.up);
+        Vector3 right = Vector3.Cross(forward, Vector3.up).normalized;
         // To check leftness/rightness, use dot product of steer and right
         Vector3 up;
         if (Vector3.Dot(steer, right) > 0) {

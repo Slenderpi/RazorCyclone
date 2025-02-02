@@ -164,7 +164,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3890492832594851018, guid: ad7f63c0ddb1cf74480708a894707169, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7161423610750410142, guid: ad7f63c0ddb1cf74480708a894707169, type: 3}
       propertyPath: m_RootOrder
@@ -257,7 +257,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3890492832594851018, guid: ad7f63c0ddb1cf74480708a894707169, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7161423610750410142, guid: ad7f63c0ddb1cf74480708a894707169, type: 3}
       propertyPath: m_RootOrder
@@ -769,10 +769,6 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
-      propertyPath: RotationType
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: WanderLimitDist
       value: 2
       objectReference: {fileID: 0}
@@ -786,7 +782,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: WanderMinimumDelay
-      value: 0.5
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
+      propertyPath: VisualizeWanderPoint
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: BoidTargetList.Array.size
@@ -810,7 +810,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: BoidTargetList.Array.data[1].TriggerDistance
-      value: 7.5
+      value: 6.5
       objectReference: {fileID: 0}
     - target: {fileID: 6380320055604250668, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: BoidTargetList.Array.data[2].TriggerDistance
@@ -1090,7 +1090,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3890492832594851018, guid: ad7f63c0ddb1cf74480708a894707169, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7161423610750410142, guid: ad7f63c0ddb1cf74480708a894707169, type: 3}
       propertyPath: m_RootOrder
@@ -1418,6 +1418,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2325735789790659419, guid: ad7f63c0ddb1cf74480708a894707169, type: 3}
+      propertyPath: AddWander
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2325735789790659419, guid: ad7f63c0ddb1cf74480708a894707169, type: 3}
       propertyPath: AllowFlight
       value: 0
@@ -2199,6 +2203,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 2325735789790659419, guid: ad7f63c0ddb1cf74480708a894707169, type: 3}
+      propertyPath: AddWander
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2325735789790659419, guid: ad7f63c0ddb1cf74480708a894707169, type: 3}
       propertyPath: BehaviourForTarget
       value: 3
       objectReference: {fileID: 0}
@@ -2325,7 +2333,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3890492832594851018, guid: ad7f63c0ddb1cf74480708a894707169, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7161423610750410142, guid: ad7f63c0ddb1cf74480708a894707169, type: 3}
       propertyPath: m_RootOrder
@@ -2606,6 +2614,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: CanonFodder
       objectReference: {fileID: 0}
+    - target: {fileID: 7045301231793578167, guid: 5b34ab184a92c73468f3bb15ecb48d83, type: 3}
+      propertyPath: RotationType
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7045301231793578167, guid: 5b34ab184a92c73468f3bb15ecb48d83, type: 3}
+      propertyPath: VisualizeWanderPoint
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7161423610750410142, guid: 5b34ab184a92c73468f3bb15ecb48d83, type: 3}
       propertyPath: m_RootOrder
       value: 12
@@ -2681,7 +2697,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3890492832594851018, guid: ad7f63c0ddb1cf74480708a894707169, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7161423610750410142, guid: ad7f63c0ddb1cf74480708a894707169, type: 3}
       propertyPath: m_RootOrder
@@ -2942,7 +2958,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3890492832594851018, guid: ad7f63c0ddb1cf74480708a894707169, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7161423610750410142, guid: ad7f63c0ddb1cf74480708a894707169, type: 3}
       propertyPath: m_RootOrder
