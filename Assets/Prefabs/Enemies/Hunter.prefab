@@ -114,9 +114,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   AllowFlight: 1
-  AddWander: 0
+  AddWander: 1
   MaxSteeringVelocity: 15
-  MaxSteeringForce: 10
+  MaxSteeringForce: 50
   WanderLimitRadius: 0.8
   WanderLimitDist: 2
   WanderChangeDist: 0.05
@@ -126,12 +126,6 @@ MonoBehaviour:
     Target: {fileID: 0}
     TriggerDistance: 0
     CheckAsGreater: 0
-    trans: {fileID: 0}
-    rb: {fileID: 0}
-  - BehaviourType: 4
-    Target: {fileID: 0}
-    TriggerDistance: 7
-    CheckAsGreater: 1
     trans: {fileID: 0}
     rb: {fileID: 0}
   RotationType: 3

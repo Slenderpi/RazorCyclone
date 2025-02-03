@@ -1701,7 +1701,7 @@ MonoBehaviour:
   CurrentHealth: 0
   HealthRegenPerSecond: 15
   HealthRegenDelay: 1
-  FuelHelathCostMultiplier: 1
+  FuelHelathCostMultiplier: 2
   camtrans: {fileID: 6546781092907837047}
   charModel: {fileID: 8629852985814836286}
   charPivot: {fileID: 647242247470878322}
