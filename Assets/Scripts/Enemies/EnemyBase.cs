@@ -16,6 +16,8 @@ public class EnemyBase : MonoBehaviour {
     public bool DealDamageOnTouch = true;
     [HideInInspector]
     public float lastVacuumHitTime = 0f;
+    [HideInInspector]
+    public bool CanGetVacuumSucked = true;
     public int FuelAmount = 50; // The value of the fuel this enemy will drop
     [HideInInspector]
     public Rigidbody rb;

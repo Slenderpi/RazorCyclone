@@ -21,6 +21,7 @@ public class HunterEnemy : EnemyBase
         Transform sphereTransform = transform.Find("Sphere");
         //enemyRenderer = sphereTransform.GetComponent<MeshRenderer>();
         shieldActive = true;
+        CanGetVacuumSucked = false;
         UpdateMaterial();
     }
 
@@ -56,6 +57,8 @@ public class HunterEnemy : EnemyBase
         if (!isStunned) {
             // Debug.Log("enemy stunned");
             isStunned = true;
+            DealDamageOnTouch = false;
+            CanGetVacuumSucked = true;
             boid.enabled = false;
             shieldActive = false;
             UpdateMaterial();
@@ -68,6 +71,8 @@ public class HunterEnemy : EnemyBase
     IEnumerator StunRecovery() {
         yield return new WaitForSeconds(stunDuration);
         isStunned = false;
+        DealDamageOnTouch = true;
+        CanGetVacuumSucked = false;
         boid.enabled = true;
         rb.useGravity = false;
         shieldActive = true;
