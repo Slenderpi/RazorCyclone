@@ -127,6 +127,12 @@ MonoBehaviour:
     CheckAsGreater: 0
     trans: {fileID: 0}
     rb: {fileID: 0}
+  - BehaviourType: 2
+    Target: {fileID: 0}
+    TriggerDistance: 10
+    CheckAsGreater: 1
+    trans: {fileID: 0}
+    rb: {fileID: 0}
   RotationType: 3
   ApproachingFowardThrust: 0
   LeavingFowardThrust: 0
