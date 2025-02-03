@@ -97,9 +97,8 @@ MonoBehaviour:
   isStunned: 0
   stunDuration: 5
   shieldActive: 1
-  shieldActiveMaterial: {fileID: 2100000, guid: cee3d8248f025d749b7e7a60ce493a68, type: 2}
-  shieldInactiveMaterial: {fileID: -3033667219593020291, guid: 230247940b321402e8556c3505fc5edc, type: 3}
-  shieldColor: {r: 1, g: 0, b: 1, a: 1}
+  shieldActiveMaterial: {fileID: 2100000, guid: e44c416f2549d5f49900b23db68552e2, type: 2}
+  shieldInactiveMaterial: {fileID: 2100000, guid: 9dbb91c22b3258f4f82cab15a344d533, type: 2}
   enemyRenderer: {fileID: 4667816667457809461}
 --- !u!114 &6380320055604250668
 MonoBehaviour:
@@ -115,7 +114,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   AllowFlight: 1
   AddWander: 1
-  MaxSteeringVelocity: 15
+  MaxSteeringVelocity: 20
   MaxSteeringForce: 50
   WanderLimitRadius: 0.8
   WanderLimitDist: 2
@@ -265,7 +264,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 4cde6ee6e09aa084ea0d3801cd4d516e, type: 2}
+  - {fileID: 2100000, guid: e44c416f2549d5f49900b23db68552e2, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

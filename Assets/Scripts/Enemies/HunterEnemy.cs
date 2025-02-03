@@ -12,7 +12,6 @@ public class HunterEnemy : EnemyBase
 
     public Material shieldActiveMaterial;
     public Material shieldInactiveMaterial;
-    public Color shieldColor = Color.magenta;
     [SerializeField] MeshRenderer enemyRenderer;
     
     
@@ -76,11 +75,9 @@ public class HunterEnemy : EnemyBase
 
     void UpdateMaterial() {
         if (shieldActive) {
-            // Debug.Log("changing to white");
-            enemyRenderer.material.color = shieldColor;
-        } else {            
-            // Debug.Log("changing to red");
-            enemyRenderer.material.color = Color.red;
+            enemyRenderer.material = shieldActiveMaterial;
+        } else {
+            enemyRenderer.material = shieldInactiveMaterial;
         }
     }
 
