@@ -11,7 +11,7 @@ public class SRMainMenu : SceneRunner {
     }
     
     public void LoadLevel_EndlessMode() {
-        SwitchToScene("EndlessLevel");
+        SwitchToScene("True Endless");
     }
     
     public void LoadLevel_Tutorial() {
