@@ -47,7 +47,7 @@ GameObject:
   - component: {fileID: 8161223251265051182}
   - component: {fileID: -831972436789096369}
   m_Layer: 7
-  m_Name: Hunter
+  m_Name: HunterPursuit
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -99,7 +99,7 @@ MonoBehaviour:
   shieldActive: 1
   shieldActiveMaterial: {fileID: 2100000, guid: cee3d8248f025d749b7e7a60ce493a68, type: 2}
   shieldInactiveMaterial: {fileID: -3033667219593020291, guid: 230247940b321402e8556c3505fc5edc, type: 3}
-  shieldColor: {r: 1, g: 0, b: 1, a: 1}
+  shieldColor: {r: 0, g: 0.29177165, b: 1, a: 1}
   enemyRenderer: {fileID: 4667816667457809461}
 --- !u!114 &6380320055604250668
 MonoBehaviour:
@@ -122,7 +122,7 @@ MonoBehaviour:
   WanderChangeDist: 0.05
   WanderMinimumDelay: 0.2
   BoidTargetList:
-  - BehaviourType: 0
+  - BehaviourType: 2
     Target: {fileID: 0}
     TriggerDistance: 0
     CheckAsGreater: 0

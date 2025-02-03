@@ -10,6 +10,9 @@ public class EnemyBase : MonoBehaviour {
     [HideInInspector]
     public float health;
     public float Damage = 10;
+    [Tooltip("A cooldown for attacking the player")]
+    public float AttackDelay = 1;
+    float lastAttackTime = -1000;
     public bool DealDamageOnTouch = true;
     [HideInInspector]
     public float lastVacuumHitTime = 0f;
@@ -44,17 +47,19 @@ public class EnemyBase : MonoBehaviour {
     }
 
     // modify depending on enemy specifics / actual health system
-    private void OnCollisionEnter(Collision collision)
-    {
-        if (collision.gameObject.CompareTag("Player") && DealDamageOnTouch)
-        {
-            PlayerCharacterCtrlr player = GameManager.CurrentPlayer;
-            if (player != null)
-            {
-                player.TakeDamage(Damage);
-                // Debug.Log("player health reduced");
-            }
+    private void OnCollisionEnter(Collision collision) {
+        if (DealDamageOnTouch && collision.gameObject.CompareTag("Player")) {
+            Attack();
         }
+    }
+    
+    public virtual void Attack() {
+        if (Damage <= 0) return;
+        PlayerCharacterCtrlr plr = GameManager.CurrentPlayer;
+        if (!plr) return;
+        if (Time.time - lastAttackTime <= AttackDelay) return;
+        AttackDelay = Time.time;
+        plr.TakeDamage(Damage);
     }
     
     public virtual void TakeDamage(float amnt, EDamageType damageType) {
@@ -78,11 +83,6 @@ public class EnemyBase : MonoBehaviour {
     public void DropFuel() {
         FuelPickup fuel = Instantiate(fuelPickupPrefab, transform.position, Quaternion.identity);
         fuel.FuelValue = FuelAmount;
-    }
-    
-    Vector3 removeY(Vector3 vector) {
-        vector.y = 0f;
-        return vector;
     }
     
     protected virtual void Init() {

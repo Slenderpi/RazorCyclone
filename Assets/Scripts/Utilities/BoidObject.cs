@@ -2,14 +2,16 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class BoidObject : MonoBehaviour {
     
     [Header("Boid Parameters")]
     [Tooltip("If false, steering forces will have their Y value set to 0.")]
     public bool AllowFlight = false; // If false, Wander() will automatically clamp to a circle instead of a sphere
-    [Tooltip("NOT YET IMPLEMENTED.\nIf enabled, this Boid will also add Wander steering. This is useful for adding extra noise to the Boid's movement.\nNote: if AddWander is enabled and the BoidTargetList is empty, the Boid will not Wander extra.")]
+    [Tooltip("If enabled, this Boid will also add Wander steering. This is useful for adding extra noise to the Boid's movement.\n\nNote: if AddWander is disabled and the BoidTargetList is empty, the Boid will not move.")]
     public bool AddWander = false;
     [Tooltip("A sort of maximum speed for this Boid. Increasing this allows the Boid to reach higher speeds and sometimes accelerate faster.")]
     public float MaxSteeringVelocity = 15;
@@ -21,13 +23,16 @@ public class BoidObject : MonoBehaviour {
     public float WanderLimitDist = 0.5f;
     [Tooltip("Maximum distance in an axis to step the wander point.")]
     public float WanderChangeDist = 0.15f;
-    [Tooltip("For testing/debugging. Draws a ray from the Boid to the wander point to show where the Boid is trying to move towards.")]
-    public bool VisualizeWanderPoint = false;
+    [Tooltip("Minimum time required to pass until a new wander point is calculated. Very low values could lead to jittery movement, depending on the other wander parameters.")]
+    public float WanderMinimumDelay = 0;
+    float lastWanderStepTime = -1000;
     Vector3 wanderPoint; // Point on wander circle/sphere to seek towards. Does not include an offset from WanderLimitDist
     delegate void WanderStepFunction();
     WanderStepFunction stepWanderPoint;
-    [Tooltip("List of targets to track and specific behaviours for each. If left empty, this Boid will enter Wander behaviour.")]
+    [Tooltip("List of targets to track and specific behaviours for each.\nIf left empty and AddWander is false, this Boid will not move.")]
     public BehaviourItem[] BoidTargetList = null;
+    [Tooltip("Determines the type of rotation this Boid will perform. Rotations are based off the Boid's velocity and the steering vector.\n - None: maintain the rotation it started with\n - YawOnly: only rotate on the yaw axis (left/right)\n - YawAndPitch: allow yawing and pitching\n - YawAndBank: allow yawing and rolling\n - Airplane: allow yawing, rolling, and pitching, like an airplane")]
+    public BoidRotationType RotationType = BoidRotationType.YawOnly;
     [Tooltip("THIS MIGHT NOT BE KEPT.\nProvides an additional front-facing force that scales with how lined up the Boid's velocity is towards the target. If directly facing towards the target, the thrust is ApproachingForwardThrust. If directly facing away from target, the thrust is exactly LeavingForwardThrust")]
     public float ApproachingFowardThrust = 0;
     [Tooltip("THIS MIGHT NOT BE KEPT.\nProvides an additional front-facing force that scales with how lined up the Boid's velocity is towards the target. If directly facing away from target, the thrust is exactly LeavingForwardThrust. If directly facing target, the thrust is exactly ApproachingForwardThrust.")]
@@ -38,9 +43,15 @@ public class BoidObject : MonoBehaviour {
     [Tooltip("The transform of the model to be rotated by this Boid script. If left null, BoidObject will use the transform it is placed on.")]
     Transform ModelToRotate;
     
+    [Header("Testing/Debugging")]
+    [Tooltip("For testing/debugging. Draws a ray from the Boid to the wander point to show where the Boid is trying to move towards.")]
+    public bool VisualizeWanderPoint = false;
+    
     Transform modelTransform;
     Rigidbody rb;
-    bool includeWander = false;
+    Quaternion calculatedRot = Quaternion.identity;
+    delegate Quaternion RotCalculationFunction(Vector3 forward, Vector3 steer);
+    RotCalculationFunction rotCalcFunc;
     
     
     
@@ -57,27 +68,31 @@ public class BoidObject : MonoBehaviour {
         } else {
             GameManager.A_PlayerSpawned += setTargetsOnPlayerSpawn;
         }
-        if (BoidTargetList == null || BoidTargetList.Length == 0 || AddWander) {
-            includeWander = true;
-            wanderPoint = transform.forward * WanderLimitRadius;
-            stepWanderPoint = AllowFlight ? stepWanderPoint3D : stepWanderPoint2D;
+        wanderPoint = transform.forward * WanderLimitRadius;
+        stepWanderPoint = AllowFlight ? stepWanderPoint3D : stepWanderPoint2D;
+        if (BoidTargetList == null || BoidTargetList.Length == 0) {
+            enabled = AddWander;
+        } else if (AddWander) {
+            // Check that there isn't already a Wander item. If there is, disable AddWander
+            foreach (BehaviourItem item in BoidTargetList) {
+                if (item.BehaviourType == BoidBehaviour.Wander) {
+                    Debug.LogWarning(">> BoidObject \"" + gameObject.name + "\" has AddWander enabled but also has a BoidTargetList item with behavior type Wander. Disabling AddWander on this Boid.");
+                    AddWander = false;
+                    break;
+                }
+            }
         }
+        setRotCalcFunc();
     }
     
     void Update() {
-        // TODO: Create more parameters to allow easier control over how rotation acts
-        Vector3 forward = rb.velocity;
-        if (forward.x == 0 && forward.y == 0)
-            forward = transform.forward;
-        forward.y = 0;
-        if (forward.sqrMagnitude <= 0.0001f) return; // If vel/forward is 0, maintain prev rot
-        modelTransform.rotation = Quaternion.LookRotation(forward, Vector3.up);
+        modelTransform.rotation = Quaternion.Lerp(modelTransform.rotation, calculatedRot, 0.1f);
     }
 
     void FixedUpdate() {
         if (!GameManager.CurrentPlayer) return;
         
-        Vector3 totalSteer = includeWander ? Wander() : Vector3.zero;
+        Vector3 totalSteer = AddWander ? Wander() : Vector3.zero;
         if (BoidTargetList != null && BoidTargetList.Length > 0) {
             foreach (BehaviourItem item in BoidTargetList) {
                 totalSteer += calcSteerForTargetItem(item);
@@ -100,8 +115,21 @@ public class BoidObject : MonoBehaviour {
         // }
         // rb.AddForce(steer, ForceMode.Acceleration);
         // rb.AddForce(totalSteer + forwardThrust, ForceMode.Acceleration);
+        
         if (!AllowFlight) totalSteer.y = 0;
+        // if (!AllowFlight) {
+        //     // float maxStrengthAt = 7;
+        //     // totalSteer *= Mathf.Clamp(Mathf.Abs(totalSteer.y),;
+        //     totalSteer.y = Mathf.Abs(totalSteer.y);
+        //     float recoveryFactor = 1.5f;
+        //     float recovery = (1 - Vector3.Dot(totalSteer, Vector3.up)) * recoveryFactor;
+        //     totalSteer.x *= recovery;
+        //     totalSteer.z *= recovery;
+        //     totalSteer.y = 0;
+        // }
         rb.AddForce(totalSteer, ForceMode.Acceleration);
+        
+        calculatedRot = CalculateModelRotation(rb.velocity, totalSteer);
     }
     
     // float passTime = -500;
@@ -140,7 +168,10 @@ public class BoidObject : MonoBehaviour {
     }
     
     public Vector3 Wander() {
-        stepWanderPoint();
+        if (Time.time - lastWanderStepTime >= WanderMinimumDelay) {
+            lastWanderStepTime = Time.time;
+            stepWanderPoint();
+        }
         if (VisualizeWanderPoint) { // DEBUGGING
             bool fromWanderCenter = false;
             Vector3 forward = rb.velocity.normalized;
@@ -158,6 +189,69 @@ public class BoidObject : MonoBehaviour {
             // return Vector3.zero;
         }
         return Seek(transform.position + WanderLimitDist * rb.velocity.normalized + wanderPoint);
+    }
+    
+    public Quaternion CalculateModelRotation(Vector3 forward, Vector3 steer) {
+        if (forward.sqrMagnitude <= 0.0001f) forward = modelTransform.forward; // If vel is 0, use model's current forward
+        if (forward.sqrMagnitude <= 0.0001f) return modelTransform.rotation; // If forward is 0, maintain prev rot
+        if (steer.sqrMagnitude <= 0.0001f) return modelTransform.rotation; // If steer is 0, maintain prev rot
+        return rotCalcFunc(forward, steer);
+    }
+    
+    void setRotCalcFunc() {
+        switch (RotationType) {
+        case BoidRotationType.None:
+            rotCalcFunc = rotCalcNone;
+            break;
+        case BoidRotationType.YawOnly:
+            rotCalcFunc = rotCalcYawOnly;
+            break;
+        case BoidRotationType.YawAndPitch:
+            rotCalcFunc = rotCalcYawAndPitch;
+            break;
+        case BoidRotationType.YawAndBank:
+            rotCalcFunc = rotCalcYawAndBank;
+            break;
+        case BoidRotationType.Airplane:
+            rotCalcFunc = rotCalcAirplane;
+            break;
+        }
+    }
+    
+    Quaternion rotCalcNone(Vector3 forward, Vector3 steer) {
+        return modelTransform.rotation;
+    }
+    
+    Quaternion rotCalcYawOnly(Vector3 forward, Vector3 steer) {
+        forward.y = 0;
+        return Quaternion.LookRotation(forward, Vector3.up);
+    }
+    
+    Quaternion rotCalcYawAndPitch(Vector3 forward, Vector3 steer) {
+        return Quaternion.LookRotation(forward, Vector3.up);
+    }
+    
+    Quaternion rotCalcYawAndBank(Vector3 forward, Vector3 steer) {
+        forward.y = 0;
+        return rotCalcAirplane(forward, steer);
+    }
+    
+    Quaternion rotCalcAirplane(Vector3 forward, Vector3 steer) {
+        // Find cos(theta) where theta is the angle between forward and steer strictly in the x-z plane
+        // cos(th) = f . s / (|f||s|) == f . s / sqrt(f.sqrMag * s.sqrMag)
+        float c = 1 - (forward.x * steer.x + forward.z * steer.z) / Mathf.Sqrt(
+            (forward.x * forward.x + forward.z * forward.z) *
+            (steer.x * steer.x + steer.z * steer.z)
+        );
+        Vector3 right = Vector3.Cross(forward, Vector3.up).normalized;
+        // To check leftness/rightness, use dot product of steer and right
+        Vector3 up;
+        if (Vector3.Dot(steer, right) > 0) {
+            up = Vector3.Slerp(Vector3.up, right, c);
+        } else {
+            up = Vector3.Slerp(Vector3.up, -right, c);
+        }
+        return Quaternion.LookRotation(forward, up);
     }
     
     void stepWanderPoint2D() {
@@ -185,9 +279,7 @@ public class BoidObject : MonoBehaviour {
     
     Vector3 calcSteerForTargetItem(BehaviourItem item) {
         Vector3 steer = Vector3.zero;
-        if (item.BehaviourType == BoidBehaviour.Wander)
-            steer = Wander();
-        else if (item.TestTriggerDistance(transform.position)) {
+        if (item.TestTriggerDistance(transform.position)) {
             switch (item.BehaviourType) {
             case BoidBehaviour.Seek:
                 steer = Seek(item.trans.position);
@@ -202,6 +294,7 @@ public class BoidObject : MonoBehaviour {
                 steer = Evade(item.trans.position, item.rb.velocity);
                 break;
             case BoidBehaviour.Wander:
+                steer = Wander();
                 break;
             }
         }
@@ -223,13 +316,21 @@ public enum BoidBehaviour {
     Wander
 }
 
+public enum BoidRotationType {
+    None,
+    YawOnly,
+    YawAndPitch,
+    YawAndBank,
+    Airplane
+}
+
 [Serializable]
 public class BehaviourItem {
     [Tooltip("Choose the steering behaviour for this Boid:\n - Seek: steer towards the target's position\n - Flee: exact opposite of Seek\n - Pursuit: steer towards a predicted future position of the target\n - Evade: exact opposite of Pursuit\n - Wander: randomly moves around. The Boid will not track any target")]
     public BoidBehaviour BehaviourType;
     [Tooltip("The target to apply this behaviour towards. If left empty, this Target will be set as the Player.")]
     public GameObject Target;
-    [Tooltip("Distance at which this behaviour is enabled (if 0, the behaviour is always enabled regardless of distance).\nFor example, a BehaviourType of Flee and TriggerDistance of 10 means this Boid will only Flee when within 10 units of the Target.\nNote: if the BehaviourType is Wander, this value doesn't matter.")]
+    [Tooltip("Distance at which this behaviour is enabled.\nIf 0, the behaviour is always enabled regardless of distance.\n\nExample: a BehaviourType of Flee and TriggerDistance of 10 means this Boid will only Flee when within 10 units of the Target.")]
     public float TriggerDistance;
     [Tooltip("If false, this Behaviour is used when the distance to the Target is <= TriggerDistance.\nIf true, this Behaviour is used when the distance to the Target is > TriggerDistance.\nNotice that true means >, while false means <=")]
     public bool CheckAsGreater = false;

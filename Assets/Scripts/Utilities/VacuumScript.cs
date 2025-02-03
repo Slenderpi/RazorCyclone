@@ -33,26 +33,26 @@ public class VacuumScript : MonoBehaviour {
                     // en.TakeDamage(pchar.VacuumDamage);
                     if (en.health <= 0)
                         enemiesInRange.RemoveAt(i);
-                    if (en.TryGetComponent(out Rigidbody enrb))
-                        enrb.AddForce((VacuumKillbox.position - en.transform.position).normalized * pchar.VacuumSuckForce);
+                    else
+                        en.rb.AddForce((VacuumKillbox.position - en.transform.position).normalized * pchar.VacuumSuckForce);
                 }
             }
         }
     }
     
     void onSuckboxEnter(Collider collider) {
-        if (!collider.TryGetComponent(out EnemyBase enemyComp)) return;
-        enemiesInRange.Add(enemyComp);
+        EnemyBase en = collider.GetComponentInParent<EnemyBase>();
+        if (en) enemiesInRange.Add(en);
     }
     
     void onSuckboxExit(Collider collider) {
-        if (!collider.TryGetComponent(out EnemyBase enemyComp)) return;
-        enemiesInRange.Remove(enemyComp);
+        EnemyBase en = collider.GetComponentInParent<EnemyBase>();
+        if (en) enemiesInRange.Remove(en);
     }
     
     void onKillboxEnter(Collider collider) {
-        if (collider.tag == "Enemy") {
-            EnemyBase en = collider.GetComponent<EnemyBase>();
+        if (collider.CompareTag("Enemy")) {
+            EnemyBase en = collider.GetComponentInParent<EnemyBase>();
             en.TakeDamage(en.MaxHealth, EDamageType.Vacuum);
         }
     }
