@@ -72,6 +72,8 @@ public class Spawner : MonoBehaviour
         else if (estr == "Hunter") etype = EnemyType.Hunter;
         else if (estr == "Laser") etype = EnemyType.Laser;
         else if (estr == "Lava") etype = EnemyType.FloorIsLava;
+        else if (estr == "CanonFodder") etype = EnemyType.CanonFodder;
+        else if (estr == "HunterPursuit") etype = EnemyType.HunterPursuit;
         else return false;
         
         // If etype is in enemyTypes, then return !UseAsExc

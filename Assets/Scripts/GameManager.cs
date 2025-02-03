@@ -13,7 +13,9 @@ public class GameManager : MonoBehaviour {
         "EnemyBase",
         "Hunter",
         "Laser",
-        "Lava"
+        "Lava",
+        "CanonFodder",
+        "HunterPursuit"
     };
     
     public static GameManager Instance;
@@ -275,7 +277,9 @@ public enum EnemyType {
     Hunter,
     Laser,
     FloorIsLava,
-    ShieldedTurret
+    ShieldedTurret,
+    CanonFodder,
+    HunterPursuit
 }
 
 
