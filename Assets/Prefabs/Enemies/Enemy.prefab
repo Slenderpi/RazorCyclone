@@ -133,10 +133,12 @@ MonoBehaviour:
   MaxHealth: 50
   health: 0
   Damage: 10
-  DealDamageOnTouch: 1
+  AttackDelay: 1
+  DealDamageOnTouch: 0
   lastVacuumHitTime: 0
   FuelAmount: 100
   rb: {fileID: 9113617427949065013}
+  boid: {fileID: 0}
   fuelPickupPrefab: {fileID: 5163220815717078053, guid: bb72521b10fb34d7bbbed5f6f77687b4, type: 3}
   invincible: 0
 --- !u!136 &1988783225518556781

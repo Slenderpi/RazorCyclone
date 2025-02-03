@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class BoidObject : MonoBehaviour {
     
@@ -193,6 +194,7 @@ public class BoidObject : MonoBehaviour {
     public Quaternion CalculateModelRotation(Vector3 forward, Vector3 steer) {
         if (forward.sqrMagnitude <= 0.0001f) forward = modelTransform.forward; // If vel is 0, use model's current forward
         if (forward.sqrMagnitude <= 0.0001f) return modelTransform.rotation; // If forward is 0, maintain prev rot
+        if (steer.sqrMagnitude <= 0.0001f) return modelTransform.rotation; // If steer is 0, maintain prev rot
         return rotCalcFunc(forward, steer);
     }
     

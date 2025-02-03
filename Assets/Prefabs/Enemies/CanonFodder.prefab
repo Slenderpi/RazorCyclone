@@ -266,9 +266,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MaxHealth: 50
   health: 0
-  Damage: 10
+  Damage: 0
   AttackDelay: 1
-  DealDamageOnTouch: 1
+  DealDamageOnTouch: 0
   lastVacuumHitTime: 0
   FuelAmount: 100
   rb: {fileID: 9113617427949065013}
