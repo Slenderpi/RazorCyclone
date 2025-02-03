@@ -30,7 +30,7 @@ public class BoidObject : MonoBehaviour {
     WanderStepFunction stepWanderPoint;
     [Tooltip("List of targets to track and specific behaviours for each.\nIf left empty and AddWander is false, this Boid will not move.")]
     public BehaviourItem[] BoidTargetList = null;
-    [Tooltip("Determines the type of rotation this Boid will perform. Rotations are based off the Boid's velocity and the steering vector.\n - None: maintain the rotation it started with\n - YawOnly: only rotate on the yaw axis (left/right)\n - YawAndBank: allow yawing and rolling\n - Airplane: allow yawing, rolling, and pitching, like an airplane")]
+    [Tooltip("Determines the type of rotation this Boid will perform. Rotations are based off the Boid's velocity and the steering vector.\n - None: maintain the rotation it started with\n - YawOnly: only rotate on the yaw axis (left/right)\n - YawAndPitch: allow yawing and pitching\n - YawAndBank: allow yawing and rolling\n - Airplane: allow yawing, rolling, and pitching, like an airplane")]
     public BoidRotationType RotationType = BoidRotationType.YawOnly;
     [Tooltip("THIS MIGHT NOT BE KEPT.\nProvides an additional front-facing force that scales with how lined up the Boid's velocity is towards the target. If directly facing towards the target, the thrust is ApproachingForwardThrust. If directly facing away from target, the thrust is exactly LeavingForwardThrust")]
     public float ApproachingFowardThrust = 0;
@@ -204,6 +204,9 @@ public class BoidObject : MonoBehaviour {
         case BoidRotationType.YawOnly:
             rotCalcFunc = rotCalcYawOnly;
             break;
+        case BoidRotationType.YawAndPitch:
+            rotCalcFunc = rotCalcYawAndPitch;
+            break;
         case BoidRotationType.YawAndBank:
             rotCalcFunc = rotCalcYawAndBank;
             break;
@@ -218,6 +221,11 @@ public class BoidObject : MonoBehaviour {
     }
     
     Quaternion rotCalcYawOnly(Vector3 forward, Vector3 steer) {
+        forward.y = 0;
+        return Quaternion.LookRotation(forward, Vector3.up);
+    }
+    
+    Quaternion rotCalcYawAndPitch(Vector3 forward, Vector3 steer) {
         return Quaternion.LookRotation(forward, Vector3.up);
     }
     
@@ -309,6 +317,7 @@ public enum BoidBehaviour {
 public enum BoidRotationType {
     None,
     YawOnly,
+    YawAndPitch,
     YawAndBank,
     Airplane
 }
