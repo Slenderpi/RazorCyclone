@@ -56,7 +56,7 @@ public class DataPersistenceManager : MonoBehaviour {
         foreach (IDataPersistence dataPersistenceObj in dataPersistenceObjects) {
             dataPersistenceObj.LoadData(gameData);
         }
-        print("Game loaded!");
+        // print("Game loaded!");
     }
 
     public void SaveGame() {

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -95,6 +96,7 @@ public class UIDEBUGPanel : UIPanel {
     
     void initToggles() {
         PlayerCharacterCtrlr plr = GameManager.CurrentPlayer;
+        if (!plr) return;
         TogIndInputOverlay.SetActive(GameManager.Instance.MainCanvas.GamePanel.InputOverlay.activeSelf);
         TogIndInvincibility.SetActive(plr.IsInvincible);
         TogIndInfFuel.SetActive(plr.NoFuelCost);
