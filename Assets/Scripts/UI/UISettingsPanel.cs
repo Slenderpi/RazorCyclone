@@ -1,13 +1,8 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using TMPro;
-using Unity.PlasticSCM.Editor.WebApi;
-using Unity.VisualScripting;
-using UnityEditor.Compilation;
 using UnityEngine;
 using UnityEngine.Audio;
-using UnityEngine.InputSystem.Controls;
 using UnityEngine.UI;
 
 public class UISettingsPanel : UIPanel {
