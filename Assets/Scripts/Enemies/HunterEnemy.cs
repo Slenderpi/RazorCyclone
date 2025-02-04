@@ -25,21 +25,6 @@ public class HunterEnemy : EnemyBase
         UpdateMaterial();
     }
 
-    void Update() {
-        if (!isStunned) {
-            // ChasePlayer();
-        }
-    }
-
-    void ChasePlayer() {
-        if (GameManager.CurrentPlayer != null) {
-            // Debug.Log("chasing player");
-            Vector3 direction = (GameManager.CurrentPlayer.transform.position - transform.position).normalized;
-            transform.LookAt(GameManager.CurrentPlayer.transform.position);
-            rb.velocity = direction * moveSpeed;
-        }
-    }
-
     public override void TakeDamage(float amnt, EDamageType damageType) {
         if (shieldActive) {
             if (damageType == EDamageType.Projectile) {

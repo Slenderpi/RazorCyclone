@@ -16,7 +16,7 @@ public class EnemyBase : MonoBehaviour {
     public bool DealDamageOnTouch = true;
     [HideInInspector]
     public float lastVacuumHitTime = 0f;
-    [HideInInspector]
+    [Tooltip("Determines if this enemy allows vacuum forces to be applied on it.\n\nNote: certain enemies (e.g. Hunter) will set this value on their own, and do not need this to be touched.")]
     public bool CanGetVacuumSucked = true;
     public int FuelAmount = 50; // The value of the fuel this enemy will drop
     [HideInInspector]
@@ -45,6 +45,7 @@ public class EnemyBase : MonoBehaviour {
             Debug.LogWarning("This enemy's fuelPickupPrefab was not set!");
         rb = GetComponent<Rigidbody>();
         boid = GetComponent<BoidObject>();
+        health = MaxHealth;
         Init();
     }
 
@@ -88,7 +89,7 @@ public class EnemyBase : MonoBehaviour {
     }
     
     protected virtual void Init() {
-        health = MaxHealth;
+        
     }
     
 }

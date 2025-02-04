@@ -11,9 +11,9 @@ GameObject:
   - component: {fileID: 6853082057059098469}
   - component: {fileID: 6751338509698299910}
   - component: {fileID: 4299147441681704117}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Sphere
-  m_TagString: Untagged
+  m_TagString: Pickup
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -95,7 +95,7 @@ GameObject:
   - component: {fileID: 5163220815717078053}
   - component: {fileID: 8202605987043710167}
   - component: {fileID: 8390901187994722333}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Fuel
   m_TagString: Pickup
   m_Icon: {fileID: 0}
