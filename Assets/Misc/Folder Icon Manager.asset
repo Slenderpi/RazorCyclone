@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0be0684bc0644274383ab176323f4709, type: 3}
+  m_Name: Folder Icon Manager
+  m_EditorClassIdentifier: 
+  showOverlay: 1
+  showCustomFolder: 1
+  icons:
+  - folder: {fileID: 102900000, guid: aae07eb6eda230348a9d262e55dab078, type: 3}
+    folderIcon: {fileID: 2800000, guid: 213ad79400cb042b78dcfa1726e1a1f5, type: 3}
+    overlayIcon: {fileID: 0}
+  - folder: {fileID: 102900000, guid: 3328307ce5c90024c817d42de7ff5f87, type: 3}
+    folderIcon: {fileID: 2800000, guid: 8830aa70960c741a99891d11a9462e65, type: 3}
+    overlayIcon: {fileID: 0}
+  - folder: {fileID: 102900000, guid: ac2b4c86f4963f14db41dc6592d8678d, type: 3}
+    folderIcon: {fileID: 2800000, guid: 91f0a4222a361478d8a5bb384a46c0fb, type: 3}
+    overlayIcon: {fileID: 0}
+  - folder: {fileID: 102900000, guid: 184798d97ad9e9b43bc1c16457554278, type: 3}
+    folderIcon: {fileID: 2800000, guid: dd0f85d35d3d74cac9dbde549891543f, type: 3}
+    overlayIcon: {fileID: 0}
+  - folder: {fileID: 102900000, guid: 2b88b0381fca8624589999a4b8b2c996, type: 3}
+    folderIcon: {fileID: 2800000, guid: de4fb34029c0e4a559908e40d059c65f, type: 3}
+    overlayIcon: {fileID: 0}
+  - folder: {fileID: 102900000, guid: 6ea315d0fd7389c41b19996891e99ae3, type: 3}
+    folderIcon: {fileID: 2800000, guid: 9120aa781dd904522821be34d7349938, type: 3}
+    overlayIcon: {fileID: 0}
+  - folder: {fileID: 102900000, guid: 01e351bf794d0ed4fa392fd03880d229, type: 3}
+    folderIcon: {fileID: 2800000, guid: 47d67a1095f044b0db4804e873211471, type: 3}
+    overlayIcon: {fileID: 0}
+  - folder: {fileID: 102900000, guid: 3aeb2e1c9b957b543872d7e152c9816a, type: 3}
+    folderIcon: {fileID: 2800000, guid: 91f0a4222a361478d8a5bb384a46c0fb, type: 3}
+    overlayIcon: {fileID: 0}
