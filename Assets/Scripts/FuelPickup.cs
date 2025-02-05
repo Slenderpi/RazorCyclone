@@ -16,11 +16,14 @@ public class FuelPickup : MonoBehaviour {
     [Header("References")]
     [SerializeField]
     Transform ModelPivot;
+    bool hasBeenCollected = false;
     
     
     
     void OnTriggerEnter(Collider other) {
+        if (hasBeenCollected) return;
         if (other.CompareTag("Player"))  {
+            hasBeenCollected = true;
             PlayerCharacterCtrlr player = GameManager.CurrentPlayer;
             if (player != null)  {
                 player.AddFuel(FuelValue);

@@ -122,10 +122,6 @@ public class GameManager : MonoBehaviour {
         DataPersistenceManager.Instance.OnSceneLoaded();
     }
     
-    void Update() {
-        
-    }
-    
     public void SpawnPlayer() {
         CurrentPlayer = Instantiate(
             playerPrefab,
@@ -247,7 +243,7 @@ public class GameManager : MonoBehaviour {
         DebugActions.KillPlayer.Enable();
         DebugActions.KillPlayer.started += (InputAction.CallbackContext context) => {
             if (CurrentPlayer != null && CurrentPlayer.CurrentHealth > 0) {
-                print("Killing player");
+                print("Killing player from hotkey.");
                 CurrentPlayer.TakeDamage(CurrentPlayer.MaxHealth);
             }
         };
