@@ -33,7 +33,7 @@ public class VacuumScript : MonoBehaviour {
                     // en.TakeDamage(pchar.VacuumDamage);
                     if (en.health <= 0)
                         enemiesInRange.RemoveAt(i);
-                    else
+                    else if (en.CanGetVacuumSucked)
                         en.rb.AddForce((VacuumKillbox.position - en.transform.position).normalized * pchar.VacuumSuckForce);
                 }
             }

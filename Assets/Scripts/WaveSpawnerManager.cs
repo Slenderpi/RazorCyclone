@@ -2,10 +2,8 @@
 // #define DEBUG_WAVE_STRS
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using UnityEditor.EditorTools;
 using UnityEngine;
 using Random = System.Random;
 
