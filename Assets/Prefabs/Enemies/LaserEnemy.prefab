@@ -9813,7 +9813,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MaxHealth: 50
   health: 0
-  Damage: 50
+  Damage: 80
   AttackDelay: 1
   DealDamageOnTouch: 1
   lastVacuumHitTime: 0
