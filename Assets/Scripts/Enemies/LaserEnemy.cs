@@ -48,7 +48,7 @@ public class LaserEnemy : EnemyBase {
     // bool isAttacking = false;
     // bool isLaserActive = false;
     // float attackTimer; //
-    LayerMask LaserRayMask;
+    LayerMask laserRayMask; // 1 = layer to be included in raycast
     float laserRaycastDist;
     ParticleSystem[] laserPointParticles;
     
@@ -61,8 +61,10 @@ public class LaserEnemy : EnemyBase {
         // attackTimer = Time.time - AttackDuration; //
         DealDamageOnTouch = false;
         laserPointParticles = LaserEndpoint.GetComponentsInChildren<ParticleSystem>();
-        setLaserVFXEnabled(false);
-        LaserRayMask = ~(
+        // setLaserVFXEnabled(false);
+        setLaserRenderEnabled(false);
+        setLaserPointVFXEnabled(false);
+        laserRayMask = ~(
             (1 << LayerMask.NameToLayer("Enemy")) |
             (1 << LayerMask.NameToLayer("Projectile")) |
             (1 << LayerMask.NameToLayer("Weapon")) |
@@ -119,10 +121,12 @@ public class LaserEnemy : EnemyBase {
     }
     
     void enterStateCooldown() {
-        print("Entered Cooldown");
+        // print("Entered Cooldown");
         lastStateEnterTime = Time.time;
         currStateFunc = stateCooldown;
-        setLaserVFXEnabled(false);
+        // setLaserVFXEnabled(false);
+        setLaserRenderEnabled(false);
+        setLaserPointVFXEnabled(false);
     }
     
     /*
@@ -147,12 +151,13 @@ public class LaserEnemy : EnemyBase {
     }
     
     void enterStateWindup() {
-        print("Entered Windup");
+        // print("Entered Windup");
         lastStateEnterTime = Time.time;
         currStateFunc = stateWindup;
-        // Setup for Windup
         LaserLineRenderer.colorGradient = LaserColorWindup;
-        setLaserVFXEnabled(true);
+        // setLaserVFXEnabled(true);
+        // Turn laser line on. Assume laser point already off
+        setLaserRenderEnabled(true);
     }
     
     /*
@@ -175,11 +180,12 @@ public class LaserEnemy : EnemyBase {
     }
     
     void enterStateAttack() {
-        print("Entered Attack");
+        // print("Entered Attack");
         lastStateEnterTime = Time.time;
         currStateFunc = stateAttack;
-        // Assume laser VFX already enabled so don't turn it on again
         LaserLineRenderer.colorGradient = LaserColorAttack;
+        // Assume laser VFX already enabled so only turn on laser point VFX
+        setLaserPointVFXEnabled(true);
     }
     
     bool stateDistCheck(Vector3 plrPos, float maxDist) {
@@ -229,7 +235,7 @@ public class LaserEnemy : EnemyBase {
         Debug.DrawRay(ray.origin, ray.direction);
         LaserEndpoint.position = ray.origin + ray.direction * MaxDistWindupAndAttack;
         // Raycast() returns a bool
-        if (Physics.Raycast(ray: ray, maxDistance: MaxDistWindupAndAttack, layerMask: LaserRayMask, hitInfo: out RaycastHit hit)) {
+        if (Physics.Raycast(ray: ray, maxDistance: MaxDistWindupAndAttack, layerMask: laserRayMask, hitInfo: out RaycastHit hit)) {
             laserRaycastDist = hit.distance;
         } else {
             laserRaycastDist = MaxDistWindupAndAttack;
@@ -259,6 +265,13 @@ public class LaserEnemy : EnemyBase {
     
     void setLaserVFXEnabled(bool newEnabled) {
         LaserLineRenderer.enabled = newEnabled;
+    }
+    
+    void setLaserRenderEnabled(bool newEnabled) {
+        LaserLineRenderer.enabled = newEnabled;
+    }
+    
+    void setLaserPointVFXEnabled(bool newEnabled) {
         foreach (ParticleSystem p in laserPointParticles)
             p.gameObject.SetActive(newEnabled);
     }
