@@ -3,39 +3,23 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Animations;
 
-public class HunterEnemy : EnemyBase
-{
-    public float moveSpeed = 5f;
+public class HunterEnemy : EnemyBase {
+    
+    [Header("Hunter Config")]
+    public float StunDuration = 5f;
+    [HideInInspector]
     public bool isStunned = false;
-    public float stunDuration = 5f;
     public bool shieldActive = true;
-
     public Material shieldActiveMaterial;
     public Material shieldInactiveMaterial;
-    [SerializeField] MeshRenderer enemyRenderer;
+    [SerializeField] MeshRenderer ModelMeshRenderer;
     
     
     
     void Start() {
-        Transform sphereTransform = transform.Find("Sphere");
-        //enemyRenderer = sphereTransform.GetComponent<MeshRenderer>();
         shieldActive = true;
+        CanGetVacuumSucked = false;
         UpdateMaterial();
-    }
-
-    void Update() {
-        if (!isStunned) {
-            // ChasePlayer();
-        }
-    }
-
-    void ChasePlayer() {
-        if (GameManager.CurrentPlayer != null) {
-            // Debug.Log("chasing player");
-            Vector3 direction = (GameManager.CurrentPlayer.transform.position - transform.position).normalized;
-            transform.LookAt(GameManager.CurrentPlayer.transform.position);
-            rb.velocity = direction * moveSpeed;
-        }
     }
 
     public override void TakeDamage(float amnt, EDamageType damageType) {
@@ -55,6 +39,8 @@ public class HunterEnemy : EnemyBase
         if (!isStunned) {
             // Debug.Log("enemy stunned");
             isStunned = true;
+            DealDamageOnTouch = false;
+            CanGetVacuumSucked = true;
             boid.enabled = false;
             shieldActive = false;
             UpdateMaterial();
@@ -65,8 +51,10 @@ public class HunterEnemy : EnemyBase
     }
 
     IEnumerator StunRecovery() {
-        yield return new WaitForSeconds(stunDuration);
+        yield return new WaitForSeconds(StunDuration);
         isStunned = false;
+        DealDamageOnTouch = true;
+        CanGetVacuumSucked = false;
         boid.enabled = true;
         rb.useGravity = false;
         shieldActive = true;
@@ -75,9 +63,9 @@ public class HunterEnemy : EnemyBase
 
     void UpdateMaterial() {
         if (shieldActive) {
-            enemyRenderer.material = shieldActiveMaterial;
+            ModelMeshRenderer.material = shieldActiveMaterial;
         } else {
-            enemyRenderer.material = shieldInactiveMaterial;
+            ModelMeshRenderer.material = shieldInactiveMaterial;
         }
     }
 
