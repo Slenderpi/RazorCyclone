@@ -9813,7 +9813,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MaxHealth: 50
   health: 0
-  Damage: 10
+  Damage: 50
   AttackDelay: 1
   DealDamageOnTouch: 1
   lastVacuumHitTime: 0
@@ -9824,7 +9824,6 @@ MonoBehaviour:
   fuelPickupPrefab: {fileID: 5163220815717078053, guid: bb72521b10fb34d7bbbed5f6f77687b4, type: 3}
   invincible: 0
   rotationSpeed: 2
-  LaserDamagePerSecond: 10
   MaxDistCooldown: 50
   MaxDistWindupAndAttack: 50
   CooldownDuration: 2
@@ -9967,7 +9966,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: d402f20341eac8342a329631d23d84bb, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

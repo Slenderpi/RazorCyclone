@@ -13,8 +13,8 @@ public class LaserEnemy : EnemyBase {
     // public float pauseBeforeFiring = 0.3f;
     [Tooltip("TEMPORARY")]
     public float rotationSpeed = 2f;
-    [Tooltip("NOT YET IMPLEMENTED")] // TODO
-    public float LaserDamagePerSecond = 10f;
+    // [Tooltip("NOT YET IMPLEMENTED")] // TODO
+    // public float LaserDamagePerSecond = 10f;
     [SerializeField]
     [Tooltip("Maximum distance (inclusive) from the Player in Cooldown phase. Outside of this distance, the Laser enemy will be AFK.")]
     float MaxDistCooldown = 50;
@@ -49,6 +49,7 @@ public class LaserEnemy : EnemyBase {
     // bool isLaserActive = false;
     // float attackTimer; //
     LayerMask laserRayMask; // 1 = layer to be included in raycast
+    LayerMask laserRayMaskWithoutPlr;
     float laserRaycastDist;
     ParticleSystem[] laserPointParticles;
     
@@ -70,6 +71,7 @@ public class LaserEnemy : EnemyBase {
             (1 << LayerMask.NameToLayer("Weapon")) |
             (1 << LayerMask.NameToLayer("Pickup"))
         );
+        laserRayMaskWithoutPlr = laserRayMask & ~(1 << LayerMask.NameToLayer("Player"));
         enterStateCooldown();
     }
     
@@ -140,7 +142,7 @@ public class LaserEnemy : EnemyBase {
         PlayerCharacterCtrlr plr = GameManager.CurrentPlayer;
         // RotateToPlayer(stateRotSpeed)
         rotateTowardsPlayer();
-        updateLaserLine();
+        updateLaserLine(false);
         if (stateDistCheck(plr.transform.position, MaxDistWindupAndAttack)) {
             if (Time.time - lastStateEnterTime > WindupDuration) {
                 enterStateAttack();
@@ -171,12 +173,12 @@ public class LaserEnemy : EnemyBase {
         PlayerCharacterCtrlr plr = GameManager.CurrentPlayer;
         // RotateToPlayer(stateRotSpeed)
         rotateTowardsPlayer();
-        updateLaserLine();
+        if (updateLaserLine(true))
+            GameManager.CurrentPlayer.TakeDamage(Damage * Time.fixedDeltaTime); // ASSUMES DAMAGE IS DAMAGE PER SEC
         if (!stateDistCheck(plr.transform.position, MaxDistWindupAndAttack) || Time.time - lastStateEnterTime > AttackDuration) {
             enterStateCooldown();
             return;
         }
-        // Attempt to damage player
     }
     
     void enterStateAttack() {
@@ -191,35 +193,6 @@ public class LaserEnemy : EnemyBase {
     bool stateDistCheck(Vector3 plrPos, float maxDist) {
         return (plrPos - transform.position).sqrMagnitude <= maxDist * maxDist;
     }
-
-    // IEnumerator performAttack() {
-    //     isAttacking = true;
-        
-    //     setLaserVFXEnabled(true);
-    //     StartCoroutine(chargeLaser());
-    //     yield return new WaitForSeconds(WindupDuration);
-        
-    //     setLaserVFXEnabled(false);
-    //     yield return new WaitForSeconds(pauseBeforeFiring);
-        
-    //     isLaserActive = true;
-    //     setLaserVFXEnabled(true);
-    //     StartCoroutine(fireLaser());
-    //     yield return new WaitForSeconds(laserDuration);
-        
-    //     isLaserActive = false;
-    //     setLaserVFXEnabled(false);
-    //     isAttacking = false;
-    //     attackTimer = AttackDuration;
-    // }
-    
-    // IEnumerator chargeLaser() {
-    //     while (isAttacking && !isLaserActive) {
-    //         rotateTowardsPlayer();
-    //         updateLaserLine();
-    //         yield return null;
-    //     }
-    // }
     
     void rotateTowardsPlayer() {
         PlayerCharacterCtrlr player = GameManager.CurrentPlayer;
@@ -230,41 +203,28 @@ public class LaserEnemy : EnemyBase {
         }
     }
     
-    void raycastLaser() {
+    bool updateLaserLine(bool includePlr) {
         Ray ray = new(LaserLineRenderer.transform.position, LaserLineRenderer.transform.forward * MaxDistWindupAndAttack);
-        Debug.DrawRay(ray.origin, ray.direction);
-        LaserEndpoint.position = ray.origin + ray.direction * MaxDistWindupAndAttack;
-        // Raycast() returns a bool
-        if (Physics.Raycast(ray: ray, maxDistance: MaxDistWindupAndAttack, layerMask: laserRayMask, hitInfo: out RaycastHit hit)) {
+        // LaserEndpoint.position = ray.origin + ray.direction * MaxDistWindupAndAttack;
+        bool hitPlayer = false;
+        if (Physics.Raycast(
+            ray: ray,
+            maxDistance: MaxDistWindupAndAttack,
+            layerMask: includePlr ? laserRayMask : laserRayMaskWithoutPlr,
+            hitInfo: out RaycastHit hit)) {
             laserRaycastDist = hit.distance;
+            if (includePlr)
+                hitPlayer = hit.collider.CompareTag("Player");
         } else {
             laserRaycastDist = MaxDistWindupAndAttack;
         }
         LaserEndpoint.localPosition = new(0, 0, laserRaycastDist);
+        LaserLineRenderer.SetPosition(1, new(0, 0, laserRaycastDist));
+        return hitPlayer;
     }
-    
-    void updateLaserLine() {
-        PlayerCharacterCtrlr plr = GameManager.CurrentPlayer;
-        if (plr) {
-            raycastLaser();
-            LaserLineRenderer.SetPosition(1, new(0, 0, laserRaycastDist));
-        }
-    }
-    
-    // IEnumerator fireLaser() {
-    //     while (isLaserActive) {
-    //         // Debug.Log("pow pow");
-    //         yield return null;
-    //     }
-    // }
     
     void onStunned() {
-        // TODO
         enterStateCooldown();
-    }
-    
-    void setLaserVFXEnabled(bool newEnabled) {
-        LaserLineRenderer.enabled = newEnabled;
     }
     
     void setLaserRenderEnabled(bool newEnabled) {
