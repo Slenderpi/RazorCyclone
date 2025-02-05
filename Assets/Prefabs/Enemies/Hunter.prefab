@@ -85,7 +85,7 @@ MonoBehaviour:
   MaxHealth: 50
   health: 0
   Damage: 10
-  AttackDelay: 1
+  AttackDelay: 3
   DealDamageOnTouch: 1
   lastVacuumHitTime: 0
   FuelAmount: 100
