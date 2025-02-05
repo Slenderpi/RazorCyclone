@@ -3,23 +3,22 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Animations;
 
-public class HunterEnemy : EnemyBase
-{
-    public float moveSpeed = 5f;
+public class HunterEnemy : EnemyBase  {
+    
+    [Header("Hunter Config")]
+    public float StunDuration = 5f;
+    [HideInInspector]
     public bool isStunned = false;
-    public float stunDuration = 5f;
+    [HideInInspector]
     public bool shieldActive = true;
-
     public Material shieldActiveMaterial;
     public Material shieldInactiveMaterial;
     public Color shieldColor = Color.magenta;
-    [SerializeField] MeshRenderer enemyRenderer;
+    [SerializeField] MeshRenderer ModelMeshRenderer;
     
     
     
     void Start() {
-        Transform sphereTransform = transform.Find("Sphere");
-        //enemyRenderer = sphereTransform.GetComponent<MeshRenderer>();
         shieldActive = true;
         CanGetVacuumSucked = false;
         UpdateMaterial();
@@ -54,7 +53,7 @@ public class HunterEnemy : EnemyBase
     }
 
     IEnumerator StunRecovery() {
-        yield return new WaitForSeconds(stunDuration);
+        yield return new WaitForSeconds(StunDuration);
         isStunned = false;
         DealDamageOnTouch = true;
         CanGetVacuumSucked = false;
@@ -67,10 +66,10 @@ public class HunterEnemy : EnemyBase
     void UpdateMaterial() {
         if (shieldActive) {
             // Debug.Log("changing to white");
-            enemyRenderer.material.color = shieldColor;
+            ModelMeshRenderer.material.color = shieldColor;
         } else {            
             // Debug.Log("changing to red");
-            enemyRenderer.material.color = Color.red;
+            ModelMeshRenderer.material.color = Color.red;
         }
     }
 
