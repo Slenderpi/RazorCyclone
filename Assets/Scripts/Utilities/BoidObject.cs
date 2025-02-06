@@ -172,6 +172,7 @@ public class BoidObject : MonoBehaviour {
             lastWanderStepTime = Time.time;
             stepWanderPoint();
         }
+#if UNITY_EDITOR
         if (VisualizeWanderPoint) { // DEBUGGING
             bool fromWanderCenter = false;
             Vector3 forward = rb.velocity.normalized;
@@ -188,6 +189,7 @@ public class BoidObject : MonoBehaviour {
             Debug.DrawRay(start, dir, Color.cyan, time);
             // return Vector3.zero;
         }
+#endif
         return Seek(transform.position + WanderLimitDist * rb.velocity.normalized + wanderPoint);
     }
     

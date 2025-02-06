@@ -96,8 +96,6 @@ MonoBehaviour:
   fuelPickupPrefab: {fileID: 5163220815717078053, guid: bb72521b10fb34d7bbbed5f6f77687b4, type: 3}
   invincible: 0
   StunDuration: 5
-  isStunned: 0
-  shieldActive: 1
   shieldActiveMaterial: {fileID: 2100000, guid: ccf05311b2a0b0948adaf93a7a252a7b, type: 2}
   shieldInactiveMaterial: {fileID: 2100000, guid: 4ff15476d7f6fd54798d5a02b6e723d0, type: 2}
   ModelMeshRenderer: {fileID: 8411783404293788885}

@@ -42,9 +42,9 @@ public class LavaEnemy : WeakPointedEnemy {
         StartCoroutine(changeMovementDirection());
     }
 
-    protected override void OnDefeated() {
+    protected override void OnDefeated(EDamageType damageType) {
         lava.OnLavaEnemyDefeated();
-        base.OnDefeated();
+        base.OnDefeated(damageType);
     }
 
     protected override void Init() {
