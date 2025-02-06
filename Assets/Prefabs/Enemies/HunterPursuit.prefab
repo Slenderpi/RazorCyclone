@@ -9871,14 +9871,10 @@ MonoBehaviour:
   boid: {fileID: 0}
   fuelPickupPrefab: {fileID: 5163220815717078053, guid: bb72521b10fb34d7bbbed5f6f77687b4, type: 3}
   invincible: 0
-  moveSpeed: 7
-  isStunned: 0
-  stunDuration: 5
-  shieldActive: 1
+  StunDuration: 5
   shieldActiveMaterial: {fileID: 2100000, guid: cee3d8248f025d749b7e7a60ce493a68, type: 2}
   shieldInactiveMaterial: {fileID: -3033667219593020291, guid: 230247940b321402e8556c3505fc5edc, type: 3}
-  shieldColor: {r: 0, g: 0.29177165, b: 1, a: 1}
-  enemyRenderer: {fileID: 4667816667457809461}
+  ModelMeshRenderer: {fileID: 0}
 --- !u!114 &6380320055604250668
 MonoBehaviour:
   m_ObjectHideFlags: 0
