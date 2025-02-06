@@ -59,9 +59,9 @@ public class HunterEnemy : EnemyBase {
 
     void SetEffectState() {
         if (isStunned) {
-            ModelMeshRenderer.material = shieldActiveMaterial;
-        } else {
             ModelMeshRenderer.material = shieldInactiveMaterial;
+        } else {
+            ModelMeshRenderer.material = shieldActiveMaterial;
         }
     }
     
