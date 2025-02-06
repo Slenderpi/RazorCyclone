@@ -16,13 +16,13 @@ public class EnemyWeakpoint : EnemyBase {
         health -= amnt;
         if (health <= 0) {
             killingDType = damageType;
-            OnDefeated();
+            OnDefeated(damageType);
         } else {
             GameManager.Instance.OnEnemyTookDamage(this, damageType, false);
         }
     }
 
-    protected override void OnDefeated() {
+    protected override void OnDefeated(EDamageType damageType) {
         DropFuel();
         gameObject.SetActive(false);
         A_WeakpointDefeated.Invoke(killingDType);

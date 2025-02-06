@@ -71,14 +71,19 @@ public class EnemyBase : MonoBehaviour {
         health = Mathf.Max(health - amnt, 0);
         if (health == 0) {
             GameManager.Instance.OnEnemyTookDamage(this, damageType, true);
-            OnDefeated();
+            OnDefeated(damageType);
         } else {
             GameManager.Instance.OnEnemyTookDamage(this, damageType, false);
         }
     }
     
-    protected virtual void OnDefeated() {
-        DropFuel();
+    protected virtual void OnDefeated(EDamageType damageType) {
+        if (damageType == EDamageType.Vacuum) {
+            // Give player fuel immediately if killed by vacuum
+            GameManager.CurrentPlayer.AddFuel(FuelAmount);
+        } else {
+            DropFuel();
+        }
         gameObject.SetActive(false);
         Destroy(gameObject, 1);
     }

@@ -29,7 +29,7 @@ public class WeakPointedEnemy : EnemyBase {
         health--;
         if (health <= 0) {
             GameManager.Instance.OnEnemyTookDamage(this, damageType, true);
-            OnDefeated();
+            OnDefeated(damageType);
         }
     }
 
