@@ -85,7 +85,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MaxHealth: 50
   health: 0
-  Damage: 10
+  Damage: 40
   AttackDelay: 3
   DealDamageOnTouch: 1
   lastVacuumHitTime: 0
@@ -97,7 +97,7 @@ MonoBehaviour:
   invincible: 0
   StunDuration: 5
   shieldDrag: 0.2
-  stunDrag: 1
+  stunDrag: 1.8
   shieldActiveMaterial: {fileID: 2100000, guid: ccf05311b2a0b0948adaf93a7a252a7b, type: 2}
   shieldInactiveMaterial: {fileID: 2100000, guid: 4ff15476d7f6fd54798d5a02b6e723d0, type: 2}
   ModelMeshRenderer: {fileID: 8411783404293788885}
@@ -114,9 +114,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   AllowFlight: 1
-  AddWander: 1
-  MaxSteeringVelocity: 20
-  MaxSteeringForce: 50
+  AddWander: 0
+  MaxSteeringVelocity: 25
+  MaxSteeringForce: 100
   WanderLimitRadius: 0.8
   WanderLimitDist: 2
   WanderChangeDist: 0.05

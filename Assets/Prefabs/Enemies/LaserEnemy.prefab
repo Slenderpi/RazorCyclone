@@ -9813,7 +9813,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MaxHealth: 50
   health: 0
-  Damage: 25
+  Damage: 100
   AttackDelay: 1
   DealDamageOnTouch: 1
   lastVacuumHitTime: 0
@@ -9823,19 +9823,19 @@ MonoBehaviour:
   boid: {fileID: 0}
   fuelPickupPrefab: {fileID: 5163220815717078053, guid: bb72521b10fb34d7bbbed5f6f77687b4, type: 3}
   invincible: 0
-  CooldownRotSpeed: 100
-  WindupRotSpeed: 100
-  AttackRotSpeed: 100
+  CooldownRotSpeed: 999
+  WindupRotSpeed: 999
+  AttackRotSpeed: 999
   CooldownMaxDist: 200
   WindupAndAttackMaxDist: 200
-  CooldownDuration: 2
-  WindupDuration: 3
-  AttackDuration: 3
+  CooldownDuration: 3
+  WindupDuration: 4
+  AttackDuration: 0.5
   LaserColorWindup:
     serializedVersion: 2
-    key0: {r: 1, g: 1, b: 1, a: 0.80784315}
-    key1: {r: 1, g: 1, b: 1, a: 0.80784315}
-    key2: {r: 0, g: 0, b: 0, a: 0}
+    key0: {r: 1, g: 0, b: 0, a: 0.39215687}
+    key1: {r: 1, g: 0, b: 0, a: 0.19607843}
+    key2: {r: 0, g: 0, b: 0, a: 0.19607843}
     key3: {r: 0, g: 0, b: 0, a: 0}
     key4: {r: 0, g: 0, b: 0, a: 0}
     key5: {r: 0, g: 0, b: 0, a: 0}
@@ -9851,7 +9851,7 @@ MonoBehaviour:
     ctime7: 0
     atime0: 0
     atime1: 65535
-    atime2: 0
+    atime2: 65535
     atime3: 0
     atime4: 0
     atime5: 0
@@ -9900,7 +9900,7 @@ Rigidbody:
   m_GameObject: {fileID: 4272552222902198248}
   serializedVersion: 2
   m_Mass: 100
-  m_Drag: 5
+  m_Drag: 0.2
   m_AngularDrag: 1
   m_UseGravity: 1
   m_IsKinematic: 0
@@ -15073,7 +15073,7 @@ SphereCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.5
+  m_Radius: 0.66
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!1001 &7996742685090790678
 PrefabInstance:
@@ -15108,15 +15108,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: c1dc46f77b1c64c3b802f8bc08de1cb6, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: -0.011
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: c1dc46f77b1c64c3b802f8bc08de1cb6, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.184
+      value: -0.188
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: c1dc46f77b1c64c3b802f8bc08de1cb6, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: -0.141
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: c1dc46f77b1c64c3b802f8bc08de1cb6, type: 3}
       propertyPath: m_LocalRotation.w
