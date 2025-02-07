@@ -9813,7 +9813,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MaxHealth: 50
   health: 0
-  Damage: 10
+  Damage: 25
   AttackDelay: 1
   DealDamageOnTouch: 1
   lastVacuumHitTime: 0
@@ -9823,7 +9823,7 @@ MonoBehaviour:
   boid: {fileID: 0}
   fuelPickupPrefab: {fileID: 5163220815717078053, guid: bb72521b10fb34d7bbbed5f6f77687b4, type: 3}
   invincible: 0
-  CooldownRotSpeed: 25
+  CooldownRotSpeed: 100
   WindupRotSpeed: 100
   AttackRotSpeed: 100
   CooldownMaxDist: 200
