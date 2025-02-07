@@ -97,7 +97,7 @@ MonoBehaviour:
   invincible: 0
   StunDuration: 5
   shieldDrag: 0.2
-  stunDrag: 1.8
+  stunDrag: 0.8
   shieldActiveMaterial: {fileID: 2100000, guid: ccf05311b2a0b0948adaf93a7a252a7b, type: 2}
   shieldInactiveMaterial: {fileID: 2100000, guid: 4ff15476d7f6fd54798d5a02b6e723d0, type: 2}
   ModelMeshRenderer: {fileID: 8411783404293788885}

@@ -9814,7 +9814,7 @@ MonoBehaviour:
   MaxHealth: 50
   health: 0
   Damage: 100
-  AttackDelay: 1
+  AttackDelay: 1.5
   DealDamageOnTouch: 1
   lastVacuumHitTime: 0
   CanGetVacuumSucked: 1
