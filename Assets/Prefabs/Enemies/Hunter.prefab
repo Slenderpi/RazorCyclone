@@ -85,7 +85,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MaxHealth: 50
   health: 0
-  Damage: 40
+  Damage: 30
   AttackDelay: 3
   DealDamageOnTouch: 1
   lastVacuumHitTime: 0
