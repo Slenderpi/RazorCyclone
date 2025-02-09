@@ -48,10 +48,9 @@ public class EnemyBase : MonoBehaviour {
         health = MaxHealth;
         Init();
     }
-
-    // modify depending on enemy specifics / actual health system
-    private void OnCollisionEnter(Collision collision) {
-        if (DealDamageOnTouch && collision.gameObject.CompareTag("Player")) {
+    
+    void OnTriggerEnter(Collider collider) {
+        if (DealDamageOnTouch && collider.CompareTag("Player")) {
             Attack();
         }
     }
@@ -61,7 +60,7 @@ public class EnemyBase : MonoBehaviour {
         PlayerCharacterCtrlr plr = GameManager.CurrentPlayer;
         if (!plr) return;
         if (Time.time - lastAttackTime <= AttackDelay) return;
-        AttackDelay = Time.time;
+        lastAttackTime = Time.time;
         plr.TakeDamage(Damage);
     }
     
