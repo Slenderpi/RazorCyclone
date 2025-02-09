@@ -193,11 +193,11 @@ public class UISettingsPanel : UIPanel {
     }
     
     void setFrameLimit(int val) {
-        val = Math.Clamp(val, 20, 241);
-        if (val == 241) {
+        val = Math.Clamp(val, 20, 200);
+        if (val == 200) {
             Application.targetFrameRate = -1;
             fpsLimitInputField.SetTextWithoutNotify("Unlimited");
-            fpsLimitSlider.SetValueWithoutNotify(241);
+            fpsLimitSlider.SetValueWithoutNotify(200);
         } else {
             Application.targetFrameRate = val;
             fpsLimitInputField.SetTextWithoutNotify(val.ToString());
@@ -238,7 +238,7 @@ public class UISettingsPanel : UIPanel {
         }
         if (!found) print("RESOLUTION NOT FOUND.");
         resolutionDropdown.SetValueWithoutNotify(resopi);
-        setFrameLimit(Application.targetFrameRate <= 0 ? 241 : Application.targetFrameRate);
+        setFrameLimit(Application.targetFrameRate <= 0 ? 200 : Application.targetFrameRate);
         vsyncToggle.SetIsOnWithoutNotify(QualitySettings.vSyncCount > 0);
         int shadresopi = 0;
         switch (QualitySettings.shadowResolution) {
@@ -262,11 +262,15 @@ public class UISettingsPanel : UIPanel {
         AudioMixer mam = AudioPlayer2D.Instance.MainAudioMixer;
         float val;
         mam.GetFloat("volMaster", out val);
-        setVolumeMaster(Mathf.RoundToInt((1 - val / -80f) * 100f));
+        setVolumeMaster(calcPowerVolume(val));
         mam.GetFloat("volSFX", out val);
-        setVolumeSFX(Mathf.RoundToInt((1 - val / -80f) * 100f));
+        setVolumeSFX(calcPowerVolume(val));
         mam.GetFloat("volMusic", out val);
-        setVolumeMusic(Mathf.RoundToInt((1 - val / -80f) * 100f));
+        setVolumeMusic(calcPowerVolume(val));
+    }
+    
+    int calcPowerVolume(float volAsLog) {
+        return Mathf.RoundToInt(100 * Mathf.Pow(10, volAsLog / 20f));
     }
     
 }

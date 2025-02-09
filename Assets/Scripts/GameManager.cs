@@ -287,7 +287,7 @@ class ProgrammerPreferences {
     
     public bool UsePreferences;
     public float MouseSensitivity;
-    public float MasterVolume = 1;
+    public float MasterVolume = 100;
 
     internal void SetPreferences() {
         if (!UsePreferences) return;
@@ -295,6 +295,7 @@ class ProgrammerPreferences {
         float highSens = GameManager.Instance.HighestSensitivity;
         float lowSens = GameManager.Instance.LowestSensitivity;
         GameManager.Instance.SettingsPanel.MouseSenseSlider.value = (GameManager.Instance.CurrentMouseSensitivity - lowSens) / (highSens - lowSens);
+        if (MasterVolume == 1f) Debug.LogWarning(">> Programmer preferences file has MasterVolume set to 1. Did you mean 100? Currently, volume is on a scale from 0 to 100 rather than 0 to 1.");
         GameManager.Instance.Audio2D.SetMasterVolume(MasterVolume);
     }
 }
