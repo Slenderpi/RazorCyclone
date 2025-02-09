@@ -53,6 +53,14 @@ public class GameManager : MonoBehaviour {
             SettingsPanel.SetMouseSenseText(_currentMouseSensitivity);
         }
     }
+    int _currentFOV = 90;
+    public int CurrentFOV {
+        get => _currentFOV;
+        set {
+            _currentFOV = value;
+            onFOVChanged(value);
+        }
+    }
     [Header("Player Settings")]
     public float DefaultMouseSensitivity = 0.7f;
     public float LowestSensitivity = 0.02f;
@@ -199,9 +207,14 @@ public class GameManager : MonoBehaviour {
         CurrentMouseSensitivity = Mathf.Lerp(LowestSensitivity, HighestSensitivity, SettingsPanel.MouseSenseSlider.value);
     }
     
+    // public void OnFOVChanged(int newfov) {
+    //     Camera.main.fieldOfView = newfov;
+    // }
+    
     public void OnSceneLoaded(Scene scene, LoadSceneMode mode) {
         if (scene.name != "CoreScene") {
             SceneManager.SetActiveScene(scene);
+            // Camera.main.fieldOfView = _currentFOV;
         }
     }
 
@@ -219,6 +232,10 @@ public class GameManager : MonoBehaviour {
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
         SetPauseInputActionsEnabled(false);
+    }
+    
+    void onFOVChanged(int value) {
+        Camera.main.fieldOfView = value;
     }
     
     

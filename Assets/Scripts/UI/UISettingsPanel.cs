@@ -30,9 +30,11 @@ public class UISettingsPanel : UIPanel {
     [Header("Video References")]
     public Toggle fullscreenToggle;
     public TMP_Dropdown resolutionDropdown;
+    public Toggle vsyncToggle;
     public Slider fpsLimitSlider;
     public TMP_InputField fpsLimitInputField;
-    public Toggle vsyncToggle;
+    public Slider fovSlider;
+    public TMP_InputField fovInputField;
     public TMP_Dropdown shadowResolutionDropdown;
     
     [Header("Audio References")]
@@ -60,6 +62,10 @@ public class UISettingsPanel : UIPanel {
         Screen.SetResolution(resop.width, resop.height, Screen.fullScreen, resop.refreshRate);
     }
     
+    public void OnToggle_VSync(bool isOn) {
+        QualitySettings.vSyncCount = isOn ? 1 : 0;
+    }
+    
     public void OnSlider_FPSLimit(float val) {
         setFrameLimit((int)val);
     }
@@ -70,8 +76,14 @@ public class UISettingsPanel : UIPanel {
         }
     }
     
-    public void OnToggle_VSync(bool isOn) {
-        QualitySettings.vSyncCount = isOn ? 1 : 0;
+    public void OnSlider_FOV(float val) {
+        setFOV(Mathf.RoundToInt(val));
+    }
+    
+    public void OnField_FOV(string str) {
+        if (int.TryParse(str, out int fps)) {
+            setFOV(fps);
+        }
     }
     
     public void OnDropdown_ShadowResolution(int option) {
@@ -205,6 +217,13 @@ public class UISettingsPanel : UIPanel {
         }
     }
     
+    void setFOV(int val) {
+        val = Math.Clamp(val, 40, 130);
+        GameManager.Instance.CurrentFOV = val;
+        fovInputField.SetTextWithoutNotify(val.ToString());
+        fovSlider.SetValueWithoutNotify(val);
+    }
+    
     void setVolumeMaster(int val) {
         masterVolSlider.SetValueWithoutNotify(val);
         masterVolInputField.SetTextWithoutNotify(val.ToString());
@@ -238,8 +257,11 @@ public class UISettingsPanel : UIPanel {
         }
         if (!found) print("RESOLUTION NOT FOUND.");
         resolutionDropdown.SetValueWithoutNotify(resopi);
-        setFrameLimit(Application.targetFrameRate <= 0 ? 200 : Application.targetFrameRate);
         vsyncToggle.SetIsOnWithoutNotify(QualitySettings.vSyncCount > 0);
+        setFrameLimit(Application.targetFrameRate <= 0 ? 200 : Application.targetFrameRate);
+        float fov = Camera.main.fieldOfView;
+        fovInputField.SetTextWithoutNotify(Mathf.RoundToInt(fov).ToString());
+        fovSlider.SetValueWithoutNotify(fov);
         int shadresopi = 0;
         switch (QualitySettings.shadowResolution) {
         case ShadowResolution.Low:
