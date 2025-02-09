@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.ShaderGraph;
 using UnityEngine;
 using UnityEngine.Animations;
 
@@ -7,6 +8,8 @@ public class HunterEnemy : EnemyBase {
     
     [Header("Hunter Config")]
     public float StunDuration = 5f;
+    [SerializeField] float shieldDrag = 0.2f;
+    [SerializeField] float stunDrag = 1f;
     bool isStunned = false;
     public Material shieldActiveMaterial;
     public Material shieldInactiveMaterial;
@@ -16,6 +19,7 @@ public class HunterEnemy : EnemyBase {
     
     void Start() {
         CanGetVacuumSucked = false;
+        rb.drag = shieldDrag;
         SetEffectState();
     }
 
@@ -38,6 +42,7 @@ public class HunterEnemy : EnemyBase {
             boid.enabled = false;
             SetEffectState();
             rb.useGravity = true;
+            rb.drag = stunDrag;
             StartCoroutine(StunRecovery());
         }
     }
@@ -48,6 +53,7 @@ public class HunterEnemy : EnemyBase {
         CanGetVacuumSucked = false;
         boid.enabled = true;
         rb.useGravity = false;
+        rb.drag = shieldDrag;
         isStunned = false;
         SetEffectState();
     }
