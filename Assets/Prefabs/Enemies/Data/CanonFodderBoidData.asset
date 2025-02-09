@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: CanonFodderBoidData
   m_EditorClassIdentifier: 
   MaxSteeringVelocity: 10
-  MaxSteeringForce: 8
+  MaxSteeringForce: 10
   WanderLimitRadius: 1
   WanderLimitDist: 1
   WanderChangeDist: 0.1

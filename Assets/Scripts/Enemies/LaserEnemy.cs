@@ -55,13 +55,8 @@ public class LaserEnemy : EnemyBase {
         laserPointParticles = LaserEndpoint.GetComponentsInChildren<ParticleSystem>();
         setLaserRenderEnabled(false);
         setLaserPointVFXEnabled(false);
-        laserRayMaskWindup = ~(
-            (1 << LayerMask.NameToLayer("Enemy")) |
-            (1 << LayerMask.NameToLayer("Projectile")) |
-            (1 << LayerMask.NameToLayer("Weapon")) |
-            (1 << LayerMask.NameToLayer("Pickup"))
-        );
-        laserRayMaskAttack = laserRayMaskWindup & ~(1 << LayerMask.NameToLayer("Player"));
+        laserRayMaskWindup = 1 << LayerMask.NameToLayer("Default");
+        laserRayMaskAttack = laserRayMaskWindup | (1 << LayerMask.NameToLayer("Player"));
         enterStateCooldown();
     }
     
@@ -123,7 +118,7 @@ public class LaserEnemy : EnemyBase {
         - if windupDuration seconds passes, enter Attack
     */
     void stateWindup() {
-        updateLaserLine(false);
+        updateLaserLine(true);
         if (stateDistCheck(GameManager.CurrentPlayer.transform.position, WindupAndAttackMaxDist)) {
             if (Time.time - lastStateEnterTime > WindupDuration) {
                 enterStateAttack();
@@ -152,12 +147,12 @@ public class LaserEnemy : EnemyBase {
     */
     void stateAttack() {
         PlayerCharacterCtrlr plr = GameManager.CurrentPlayer;
-        if (updateLaserLine(true))
-            plr.TakeDamage(Damage * Time.deltaTime); // ASSUMES DAMAGE IS DAMAGE PER SEC
         if (!stateDistCheck(plr.transform.position, WindupAndAttackMaxDist) || Time.time - lastStateEnterTime > AttackDuration) {
             enterStateCooldown();
             return;
         }
+        if (updateLaserLine(false))
+            plr.TakeDamage(Damage * Time.deltaTime); // ASSUMES DAMAGE IS DAMAGE PER SEC
     }
     
     void enterStateAttack() {
@@ -177,7 +172,7 @@ public class LaserEnemy : EnemyBase {
     void rotateTowardsPlayer(Vector3 plrPos, float rotationSpeed) {
         transform.rotation = Quaternion.RotateTowards(
             LaserLineRenderer.transform.rotation,
-            Quaternion.LookRotation(plrPos - transform.position, Vector3.up),
+            Quaternion.LookRotation(plrPos - LaserLineRenderer.transform.position, Vector3.up),
             rotationSpeed * Time.deltaTime
         );
     }
@@ -185,7 +180,7 @@ public class LaserEnemy : EnemyBase {
     bool updateLaserLine(bool useWindupMask) {
         // NOTE: Consider using mask with player no matter what, and that in windup mode if player is hit just render laser at max dist anyway
         // NOTE cont.: Could be useful if making a system to warn the player they're in LOS of laser
-        Ray ray = new(LaserLineRenderer.transform.position, LaserLineRenderer.transform.forward * WindupAndAttackMaxDist);
+        Ray ray = new(LaserLineRenderer.transform.position, LaserLineRenderer.transform.forward);
         bool laserHitPlayer = false;
         if (Physics.Raycast(
             ray: ray,
@@ -193,7 +188,7 @@ public class LaserEnemy : EnemyBase {
             layerMask: useWindupMask ? laserRayMaskWindup : laserRayMaskAttack,
             hitInfo: out RaycastHit hit)) {
             laserRaycastDist = hit.distance;
-            if (useWindupMask)
+            if (!useWindupMask)
                 laserHitPlayer = hit.collider.CompareTag("Player");
         } else {
             laserRaycastDist = WindupAndAttackMaxDist;
