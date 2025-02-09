@@ -5,7 +5,7 @@ using UnityEngine;
 /// <summary>
 /// Class for Boid steering functions.
 /// </summary>
-public class BoidSteer {
+public class BoidSteerer {
     
     public static Vector3 Seek(Vector3 pos, Vector3 targetPos, Vector3 velocity, float maxSteeringVelocity, float maxSteeringForce) {
         // Find desired velocity via |targ - pos| * maxSteerVel
@@ -27,8 +27,8 @@ public class BoidSteer {
     
     public static Vector3 Pursuit(Vector3 pos, Vector3 targetPos, Vector3 velocity, Vector3 targetVel, float maxSteeringVelocity, float maxSteeringForce) {
         float predictTime = calculatePredictTime(pos, targetPos, velocity, targetVel);
-        return Seek(pos + velocity * predictTime, targetPos + targetVel * predictTime, velocity, maxSteeringVelocity, maxSteeringForce)
-        + Seek(pos, targetPos, velocity, maxSteeringVelocity, maxSteeringForce);
+        return Seek(pos + velocity * predictTime, targetPos + targetVel * predictTime, velocity, maxSteeringVelocity, maxSteeringForce) +
+               Seek(pos, targetPos, velocity, maxSteeringVelocity, maxSteeringForce);
         // float predictTime = Mathf.Sqrt((targetPos - transform.position).sqrMagnitude / (rb.velocity - targetVel).sqrMagnitude);
         // return Seek(targetPos + targetVel * predictTime);
     }
@@ -38,11 +38,9 @@ public class BoidSteer {
     }
     
     public static Vector3 Evade(Vector3 pos, Vector3 targetPos, Vector3 velocity, Vector3 targetVel, float maxSteeringVelocity, float maxSteeringForce) {
-        // TODO
-        // Debug.LogWarning("Evade not yet implemented.");
         float predictTime = calculatePredictTime(pos, targetPos, velocity, targetVel);
-        return Flee(pos + velocity * predictTime, targetPos + targetVel * predictTime, velocity, maxSteeringVelocity, maxSteeringForce)
-        + Flee(pos, targetPos, velocity, maxSteeringVelocity, maxSteeringForce);
+        return Flee(pos + velocity * predictTime, targetPos + targetVel * predictTime, velocity, maxSteeringVelocity, maxSteeringForce) +
+               Flee(pos, targetPos, velocity, maxSteeringVelocity, maxSteeringForce);
     }
     
     public static Vector3 Evade(Vector3 pos, Vector3 targetPos, Vector3 velocity, Vector3 targetVel, GeneralBoidSO boidData) {

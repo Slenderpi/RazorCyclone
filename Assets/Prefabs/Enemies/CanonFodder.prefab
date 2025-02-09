@@ -261,7 +261,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7161423610750410142}
   - component: {fileID: 4682280902325755084}
-  - component: {fileID: 7045301231793578167}
+  - component: {fileID: 8082838698744000531}
   - component: {fileID: 9113617427949065013}
   m_Layer: 7
   m_Name: CanonFodder
@@ -310,7 +310,7 @@ MonoBehaviour:
   boid: {fileID: 0}
   fuelPickupPrefab: {fileID: 5163220815717078053, guid: bb72521b10fb34d7bbbed5f6f77687b4, type: 3}
   invincible: 0
---- !u!114 &7045301231793578167
+--- !u!114 &8082838698744000531
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -319,29 +319,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 3890492832594851018}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 82698c5ac9666eb4faa37aaea56939d0, type: 3}
+  m_Script: {fileID: 11500000, guid: a248a30f09556eb44af5078f2b3550bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  AllowFlight: 0
-  AddWander: 1
-  MaxSteeringVelocity: 10
-  MaxSteeringForce: 8
-  WanderLimitRadius: 1
-  WanderLimitDist: 1
-  WanderChangeDist: 0.1
-  WanderMinimumDelay: 0
-  BoidTargetList:
-  - BehaviourType: 0
-    Target: {fileID: 2495797634905944669, guid: ebefb66ac461b4941a6d0863c3d1515d, type: 3}
-    TriggerDistance: 10
-    CheckAsGreater: 1
-    trans: {fileID: 0}
-    rb: {fileID: 0}
-  RotationType: 1
-  ApproachingFowardThrust: 0
-  LeavingFowardThrust: 0
   ModelToRotate: {fileID: 2039270182480673860}
-  VisualizeWanderPoint: 0
+  rotationPerFrameLerpAlpha: 0.1
+  CanonFodderData: {fileID: 11400000, guid: ecc3839188a02c94d9336aaa5c36ab9b, type: 2}
 --- !u!54 &9113617427949065013
 Rigidbody:
   m_ObjectHideFlags: 0

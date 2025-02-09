@@ -9,12 +9,16 @@ public class BM_CanonFodder : BoidMover {
     public override Vector3 CalculateSteering() {
         Vector3 plrPos = GameManager.CurrentPlayer.transform.position;
         if ((plrPos - transform.position).sqrMagnitude <= CanonFodderData.FleeTriggerDistance * CanonFodderData.FleeTriggerDistance) {
-            Vector3 steer = BoidSteer.Flee(transform.position, plrPos, rb.velocity, CanonFodderData);
+            Vector3 steer = BoidSteerer.Flee(transform.position, plrPos, rb.velocity, CanonFodderData);
             steer.y = 0;
+            ResetWanderPoint(CanonFodderData.WanderLimitRadius);
             return steer;
         } else {
-            StepWanderPoint();
-            return BoidSteer.Wander(transform.position, rb.velocity, wanderPoint, CanonFodderData);
+            StepWanderPoint2D(CanonFodderData);
+            return BoidSteerer.Wander(
+                transform.position, rb.velocity, wanderPoint,
+                CanonFodderData
+            );
         }
     }
     
@@ -22,11 +26,4 @@ public class BM_CanonFodder : BoidMover {
         return BoidRotator.YawOnly(forward);
     }
 
-    public override void StepWanderPoint() {
-        if (Time.fixedTime - lastWanderStepTime <= CanonFodderData.WanderMinimumDelay)
-            return;
-        lastWanderStepTime = Time.fixedTime;
-        wanderPoint = BoidSteer.StepWanderPoint2D(wanderPoint, CanonFodderData);
-    }
-    
 }

@@ -40,9 +40,9 @@ public class HunterEnemy : EnemyBase {
             DealDamageOnTouch = false;
             CanGetVacuumSucked = true;
             boid.enabled = false;
-            SetEffectState();
             rb.useGravity = true;
             rb.drag = stunDrag;
+            SetEffectState();
             StartCoroutine(StunRecovery());
         }
     }

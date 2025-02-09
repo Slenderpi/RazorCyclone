@@ -22,7 +22,7 @@ public class EnemyBase : MonoBehaviour {
     [HideInInspector]
     public Rigidbody rb;
     [HideInInspector]
-    public BoidObject boid;
+    public BoidMover boid;
     // public PlayerCharacterCtrlr player = GameManager.CurrentPlayer;
     
     [Header("References")]
@@ -44,7 +44,7 @@ public class EnemyBase : MonoBehaviour {
         if (fuelPickupPrefab == null)
             Debug.LogWarning("This enemy's fuelPickupPrefab was not set!");
         rb = GetComponent<Rigidbody>();
-        boid = GetComponent<BoidObject>();
+        boid = GetComponent<BoidMover>();
         health = MaxHealth;
         Init();
     }

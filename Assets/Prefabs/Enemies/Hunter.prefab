@@ -43,7 +43,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7161423610750410142}
   - component: {fileID: -1261992107006566908}
-  - component: {fileID: 6380320055604250668}
+  - component: {fileID: 7510554508798159381}
   - component: {fileID: 9113617427949065013}
   - component: {fileID: 8161223251265051182}
   - component: {fileID: -831972436789096369}
@@ -101,7 +101,7 @@ MonoBehaviour:
   shieldActiveMaterial: {fileID: 2100000, guid: ccf05311b2a0b0948adaf93a7a252a7b, type: 2}
   shieldInactiveMaterial: {fileID: 2100000, guid: 4ff15476d7f6fd54798d5a02b6e723d0, type: 2}
   ModelMeshRenderer: {fileID: 8411783404293788885}
---- !u!114 &6380320055604250668
+--- !u!114 &7510554508798159381
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -110,41 +110,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 3890492832594851018}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 82698c5ac9666eb4faa37aaea56939d0, type: 3}
+  m_Script: {fileID: 11500000, guid: 1d31415e6bc34b341b01f43f62e0e874, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  AllowFlight: 1
-  AddWander: 0
-  MaxSteeringVelocity: 25
-  MaxSteeringForce: 100
-  WanderLimitRadius: 0.8
-  WanderLimitDist: 2
-  WanderChangeDist: 0.05
-  WanderMinimumDelay: 0.2
-  BoidTargetList:
-  - BehaviourType: 0
-    Target: {fileID: 0}
-    TriggerDistance: 0
-    CheckAsGreater: 0
-    trans: {fileID: 0}
-    rb: {fileID: 0}
-  - BehaviourType: 2
-    Target: {fileID: 0}
-    TriggerDistance: 10
-    CheckAsGreater: 1
-    trans: {fileID: 0}
-    rb: {fileID: 0}
-  - BehaviourType: 1
-    Target: {fileID: 3890492832594851018}
-    TriggerDistance: 5
-    CheckAsGreater: 0
-    trans: {fileID: 0}
-    rb: {fileID: 0}
-  RotationType: 4
-  ApproachingFowardThrust: 0
-  LeavingFowardThrust: 0
   ModelToRotate: {fileID: 1737118453480132617}
-  VisualizeWanderPoint: 0
+  rotationPerFrameLerpAlpha: 0.1
+  HunterData: {fileID: 11400000, guid: eb940b3ce6e212f4289f1868724c692c, type: 2}
 --- !u!54 &9113617427949065013
 Rigidbody:
   m_ObjectHideFlags: 0

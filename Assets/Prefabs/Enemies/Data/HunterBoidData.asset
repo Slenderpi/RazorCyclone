@@ -18,8 +18,10 @@ MonoBehaviour:
   WanderLimitDist: 2
   WanderChangeDist: 0.05
   WanderMinimumDelay: 0.2
+  RunAwayMaxSteerVelocity: 10
+  RunAwayMaxSteerForce: 10
+  RunAwayDuration: 0.5
+  RunAwayRequiredSpeed: 1
+  RunAwayRequiredDist: 3
   IncludeWander: 0
   WanderTriggerDist: 7
-  RunawayDuration: 0.5
-  RunawayRequiredSpeed: 1
-  RunawayRequiredDist: 3

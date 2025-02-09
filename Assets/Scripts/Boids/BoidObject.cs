@@ -136,7 +136,7 @@ public class BoidObject : MonoBehaviour {
     // float passTime = -500;
     
     public Vector3 Seek(Vector3 targetPos) {
-        return BoidSteer.Seek(
+        return BoidSteerer.Seek(
             transform.position,
             targetPos,
             rb.velocity,
@@ -150,7 +150,7 @@ public class BoidObject : MonoBehaviour {
     
     public Vector3 Flee(Vector3 targetPos) {
         // return -Seek(targetPos);
-        return BoidSteer.Flee(
+        return BoidSteerer.Flee(
             transform.position,
             targetPos,
             rb.velocity,
@@ -173,7 +173,7 @@ public class BoidObject : MonoBehaviour {
     }
     
     public Vector3 Pursuit(Vector3 targetPos, Vector3 targetVel) {
-        return BoidSteer.Pursuit(
+        return BoidSteerer.Pursuit(
             transform.position,
             targetPos,
             rb.velocity,
@@ -186,7 +186,7 @@ public class BoidObject : MonoBehaviour {
     }
     
     public Vector3 Evade(Vector3 targetPos, Vector3 targetVel) {
-        return BoidSteer.Evade(
+        return BoidSteerer.Evade(
             transform.position,
             targetPos,
             rb.velocity,
@@ -291,7 +291,7 @@ public class BoidObject : MonoBehaviour {
         // wanderPoint.x += (UnityEngine.Random.Range(0, 2) * 2 - 1) * WanderChangeDist;
         // wanderPoint.z += (UnityEngine.Random.Range(0, 2) * 2 - 1) * WanderChangeDist;
         // wanderPoint *= WanderLimitRadius / wanderPoint.magnitude;
-        wanderPoint = BoidSteer.StepWanderPoint2D(wanderPoint, WanderLimitRadius, WanderChangeDist);
+        wanderPoint = BoidSteerer.StepWanderPoint2D(wanderPoint, WanderLimitRadius, WanderChangeDist);
     }
     
     void stepWanderPoint3D() {
@@ -303,7 +303,7 @@ public class BoidObject : MonoBehaviour {
         // wanderPoint.z += (UnityEngine.Random.Range(0, 2) * 2 - 1) * WanderChangeDist;
         // wanderPoint.y += (UnityEngine.Random.Range(0, 2) * 2 - 1) * WanderChangeDist;
         // wanderPoint *= WanderLimitRadius / wanderPoint.magnitude;
-        wanderPoint = BoidSteer.StepWanderPoint3D(wanderPoint, WanderLimitRadius, WanderChangeDist);
+        wanderPoint = BoidSteerer.StepWanderPoint3D(wanderPoint, WanderLimitRadius, WanderChangeDist);
     }
     
     void initBoidListReferences(PlayerCharacterCtrlr plr) {

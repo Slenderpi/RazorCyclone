@@ -9819,7 +9819,6 @@ GameObject:
   m_Component:
   - component: {fileID: 7161423610750410142}
   - component: {fileID: -1261992107006566908}
-  - component: {fileID: 6380320055604250668}
   - component: {fileID: 9113617427949065013}
   - component: {fileID: 8161223251265051182}
   - component: {fileID: -831972436789096369}
@@ -9872,41 +9871,11 @@ MonoBehaviour:
   fuelPickupPrefab: {fileID: 5163220815717078053, guid: bb72521b10fb34d7bbbed5f6f77687b4, type: 3}
   invincible: 0
   StunDuration: 5
+  shieldDrag: 0.2
+  stunDrag: 1
   shieldActiveMaterial: {fileID: 2100000, guid: d402f20341eac8342a329631d23d84bb, type: 2}
   shieldInactiveMaterial: {fileID: 2100000, guid: 9dbb91c22b3258f4f82cab15a344d533, type: 2}
   ModelMeshRenderer: {fileID: 4667816667457809461}
---- !u!114 &6380320055604250668
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3890492832594851018}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 82698c5ac9666eb4faa37aaea56939d0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  AllowFlight: 1
-  AddWander: 0
-  MaxSteeringVelocity: 15
-  MaxSteeringForce: 10
-  WanderLimitRadius: 0.8
-  WanderLimitDist: 2
-  WanderChangeDist: 0.05
-  WanderMinimumDelay: 0.2
-  BoidTargetList:
-  - BehaviourType: 2
-    Target: {fileID: 0}
-    TriggerDistance: 0
-    CheckAsGreater: 0
-    trans: {fileID: 0}
-    rb: {fileID: 0}
-  RotationType: 4
-  ApproachingFowardThrust: 0
-  LeavingFowardThrust: 0
-  ModelToRotate: {fileID: 1737118453480132617}
-  VisualizeWanderPoint: 0
 --- !u!54 &9113617427949065013
 Rigidbody:
   m_ObjectHideFlags: 0

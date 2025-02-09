@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.PlayerLoop;
 
 /// <summary>
 /// This class handles the framework for the movement and rotation of a Boid. Indpendent boid objects should
@@ -22,6 +23,7 @@ public abstract class BoidMover : MonoBehaviour {
     
     void Awake() {
         rb = GetComponent<Rigidbody>();
+        Init();
     }
     
     void Update() {
@@ -45,10 +47,44 @@ public abstract class BoidMover : MonoBehaviour {
         return CalculateRotation(forward, steer);
     }
     
+    /// <summary>
+    /// Called in Awake()
+    /// </summary>
+    protected virtual void Init() {
+        if (ModelToRotate)
+            ResetWanderPoint(1);
+        else
+            wanderPoint = transform.forward;
+    }
+    
     public abstract Vector3 CalculateSteering();
     
     public abstract Quaternion CalculateRotation(Vector3 forward, Vector3 steer);
     
-    public abstract void StepWanderPoint();
+    public void ResetWanderPoint(float wanderLimitRadius) {
+        wanderPoint = ModelToRotate.forward * wanderLimitRadius;
+    }
+    
+    protected void StepWanderPoint2D(float wanderMinimumDelay, float wanderLimitRadius, float wanderChangeDist) {
+        if (Time.fixedTime - lastWanderStepTime <= wanderMinimumDelay)
+            return;
+        lastWanderStepTime = Time.fixedTime;
+        wanderPoint = BoidSteerer.StepWanderPoint2D(wanderPoint, wanderLimitRadius, wanderChangeDist);
+    }
+    
+    protected void StepWanderPoint2D(GeneralBoidSO boidData) {
+        StepWanderPoint2D(boidData.WanderMinimumDelay, boidData.WanderLimitRadius, boidData.WanderChangeDist);
+    }
+    
+    protected void StepWanderPoint3D(float wanderMinimumDelay, float wanderLimitRadius, float wanderChangeDist) {
+        if (Time.fixedTime - lastWanderStepTime <= wanderMinimumDelay)
+            return;
+        lastWanderStepTime = Time.fixedTime;
+        wanderPoint = BoidSteerer.StepWanderPoint3D(wanderPoint, wanderLimitRadius, wanderChangeDist);
+    }
+    
+    protected void StepWanderPoint3D(GeneralBoidSO boidData) {
+        StepWanderPoint3D(boidData.WanderMinimumDelay, boidData.WanderLimitRadius, boidData.WanderChangeDist);
+    }
     
 }
