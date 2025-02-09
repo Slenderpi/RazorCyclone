@@ -58,6 +58,7 @@ public class BoidObject : MonoBehaviour {
     void Awake() {
         rb = GetComponent<Rigidbody>();
         modelTransform = ModelToRotate ? ModelToRotate : transform;
+        Debug.LogWarning(">> The game object '" + gameObject.name + "' is using a BoidObject. Please switch it to use a BoidMover instead.");
     }
     
     void Start() {
@@ -135,13 +136,27 @@ public class BoidObject : MonoBehaviour {
     // float passTime = -500;
     
     public Vector3 Seek(Vector3 targetPos) {
-        // Find desired velocity via |targ - pos| * maxSteerVel
-        // Steer force is then desired - currVel, clamped by maxSteerForce
-        return Vector3.ClampMagnitude((targetPos - transform.position).normalized * MaxSteeringVelocity - rb.velocity, MaxSteeringForce);
+        return BoidSteer.Seek(
+            transform.position,
+            targetPos,
+            rb.velocity,
+            MaxSteeringVelocity,
+            MaxSteeringForce
+        );
+        // // Find desired velocity via |targ - pos| * maxSteerVel
+        // // Steer force is then desired - currVel, clamped by maxSteerForce
+        // return Vector3.ClampMagnitude((targetPos - transform.position).normalized * MaxSteeringVelocity - rb.velocity, MaxSteeringForce);
     }
     
     public Vector3 Flee(Vector3 targetPos) {
-        return -Seek(targetPos);
+        // return -Seek(targetPos);
+        return BoidSteer.Flee(
+            transform.position,
+            targetPos,
+            rb.velocity,
+            MaxSteeringVelocity,
+            MaxSteeringForce
+        );
     }
     
     /// <summary>
@@ -158,13 +173,27 @@ public class BoidObject : MonoBehaviour {
     }
     
     public Vector3 Pursuit(Vector3 targetPos, Vector3 targetVel) {
-        float predictTime = Mathf.Sqrt((targetPos - transform.position).sqrMagnitude / (rb.velocity - targetVel).sqrMagnitude);
-        return Seek(targetPos + targetVel * predictTime);
+        return BoidSteer.Pursuit(
+            transform.position,
+            targetPos,
+            rb.velocity,
+            targetVel,
+            MaxSteeringVelocity,
+            MaxSteeringForce
+        );
+        // float predictTime = Mathf.Sqrt((targetPos - transform.position).sqrMagnitude / (rb.velocity - targetVel).sqrMagnitude);
+        // return Seek(targetPos + targetVel * predictTime);
     }
     
     public Vector3 Evade(Vector3 targetPos, Vector3 targetVel) {
-        // NOTE: Verify that evade is actually -pursuit()
-        return -Pursuit(targetPos, targetVel);
+        return BoidSteer.Evade(
+            transform.position,
+            targetPos,
+            rb.velocity,
+            targetVel,
+            MaxSteeringVelocity,
+            MaxSteeringForce
+        );
     }
     
     public Vector3 Wander() {
@@ -225,8 +254,9 @@ public class BoidObject : MonoBehaviour {
     }
     
     Quaternion rotCalcYawOnly(Vector3 forward, Vector3 steer) {
-        forward.y = 0;
-        return Quaternion.LookRotation(forward, Vector3.up);
+        // forward.y = 0;
+        // return Quaternion.LookRotation(forward, Vector3.up);
+        return BoidRotator.YawOnly(forward);
     }
     
     Quaternion rotCalcYawAndPitch(Vector3 forward, Vector3 steer) {
@@ -239,38 +269,41 @@ public class BoidObject : MonoBehaviour {
     }
     
     Quaternion rotCalcAirplane(Vector3 forward, Vector3 steer) {
-        // Find cos(theta) where theta is the angle between forward and steer strictly in the x-z plane
-        // cos(th) = f . s / (|f||s|) == f . s / sqrt(f.sqrMag * s.sqrMag)
-        float c = 1 - (forward.x * steer.x + forward.z * steer.z) / Mathf.Sqrt(
-            (forward.x * forward.x + forward.z * forward.z) *
-            (steer.x * steer.x + steer.z * steer.z)
-        );
-        Vector3 right = Vector3.Cross(forward, Vector3.up).normalized;
-        // To check leftness/rightness, use dot product of steer and right
-        Vector3 up;
-        if (Vector3.Dot(steer, right) > 0) {
-            up = Vector3.Slerp(Vector3.up, right, c);
-        } else {
-            up = Vector3.Slerp(Vector3.up, -right, c);
-        }
-        return Quaternion.LookRotation(forward, up);
+        // // Find cos(theta) where theta is the angle between forward and steer strictly in the x-z plane
+        // // cos(th) = f . s / (|f||s|) == f . s / sqrt(f.sqrMag * s.sqrMag)
+        // float c = 1 - (forward.x * steer.x + forward.z * steer.z) / Mathf.Sqrt(
+        //     (forward.x * forward.x + forward.z * forward.z) *
+        //     (steer.x * steer.x + steer.z * steer.z)
+        // );
+        // Vector3 right = Vector3.Cross(forward, Vector3.up).normalized;
+        // // To check leftness/rightness, use dot product of steer and right
+        // Vector3 up;
+        // if (Vector3.Dot(steer, right) > 0) {
+        //     up = Vector3.Slerp(Vector3.up, right, c);
+        // } else {
+        //     up = Vector3.Slerp(Vector3.up, -right, c);
+        // }
+        // return Quaternion.LookRotation(forward, up);
+        return BoidRotator.Airplane(forward, steer);
     }
     
     void stepWanderPoint2D() {
-        wanderPoint.x += (UnityEngine.Random.Range(0, 2) * 2 - 1) * WanderChangeDist;
-        wanderPoint.z += (UnityEngine.Random.Range(0, 2) * 2 - 1) * WanderChangeDist;
-        wanderPoint *= WanderLimitRadius / wanderPoint.magnitude;
+        // wanderPoint.x += (UnityEngine.Random.Range(0, 2) * 2 - 1) * WanderChangeDist;
+        // wanderPoint.z += (UnityEngine.Random.Range(0, 2) * 2 - 1) * WanderChangeDist;
+        // wanderPoint *= WanderLimitRadius / wanderPoint.magnitude;
+        wanderPoint = BoidSteer.StepWanderPoint2D(wanderPoint, WanderLimitRadius, WanderChangeDist);
     }
     
     void stepWanderPoint3D() {
-        // Choose random 1 or -1 for x, y, and z separately
-        // Scale to WanderChangeDist
-        // Add to lastWanderPoint
-        // Limit lastWanderPoint to WanderLimitRadius
-        wanderPoint.x += (UnityEngine.Random.Range(0, 2) * 2 - 1) * WanderChangeDist;
-        wanderPoint.z += (UnityEngine.Random.Range(0, 2) * 2 - 1) * WanderChangeDist;
-        wanderPoint.y += (UnityEngine.Random.Range(0, 2) * 2 - 1) * WanderChangeDist;
-        wanderPoint *= WanderLimitRadius / wanderPoint.magnitude;
+        // // Choose random 1 or -1 for x, y, and z separately
+        // // Scale to WanderChangeDist
+        // // Add to lastWanderPoint
+        // // Limit lastWanderPoint to WanderLimitRadius
+        // wanderPoint.x += (UnityEngine.Random.Range(0, 2) * 2 - 1) * WanderChangeDist;
+        // wanderPoint.z += (UnityEngine.Random.Range(0, 2) * 2 - 1) * WanderChangeDist;
+        // wanderPoint.y += (UnityEngine.Random.Range(0, 2) * 2 - 1) * WanderChangeDist;
+        // wanderPoint *= WanderLimitRadius / wanderPoint.magnitude;
+        wanderPoint = BoidSteer.StepWanderPoint3D(wanderPoint, WanderLimitRadius, WanderChangeDist);
     }
     
     void initBoidListReferences(PlayerCharacterCtrlr plr) {

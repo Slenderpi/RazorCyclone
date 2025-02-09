@@ -61,7 +61,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 7431313479880f7448199e5239679410, type: 2}
+  - {fileID: 2100000, guid: 4478ca93bf3094e4d854b376b25fd605, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -175,12 +175,12 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7161423610750410142}
-  - component: {fileID: 4682280902325755084}
-  - component: {fileID: 5321480378842491107}
+  - component: {fileID: -6836326729075350002}
+  - component: {fileID: 8926279697414472668}
   - component: {fileID: 9113617427949065013}
   - component: {fileID: 8774425169463090239}
   m_Layer: 7
-  m_Name: BoidTest
+  m_Name: BoidTest2
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -202,7 +202,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4682280902325755084
+--- !u!114 &-6836326729075350002
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -222,11 +222,11 @@ MonoBehaviour:
   lastVacuumHitTime: 0
   CanGetVacuumSucked: 0
   FuelAmount: 50
-  rb: {fileID: 9113617427949065013}
+  rb: {fileID: 9113617427949065013, guid: ad7f63c0ddb1cf74480708a894707169, type: 3}
   boid: {fileID: 0}
   fuelPickupPrefab: {fileID: 5163220815717078053, guid: bb72521b10fb34d7bbbed5f6f77687b4, type: 3}
   invincible: 1
---- !u!114 &5321480378842491107
+--- !u!114 &8926279697414472668
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -235,22 +235,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 3890492832594851018}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3802bb941590e5a44a3c7759e1c451cb, type: 3}
+  m_Script: {fileID: 11500000, guid: a248a30f09556eb44af5078f2b3550bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   ModelToRotate: {fileID: 7802558663474256315}
   rotationPerFrameLerpAlpha: 0.1
-  BoidData: {fileID: 11400000, guid: 28d0b1e829ce9cb459cd89b426e20e48, type: 2}
-  USE_OVERRIDES: 0
-  BehaviourType: 1
-  RotationType: 2
-  CanFly: 0
-  MaxSteeringVelocity: 15
-  MaxSteeringForce: 10
-  WanderLimitRadius: 0.5
-  WanderLimitDist: 0.5
-  WanderChangeDist: 0.15
-  WanderMinimumDelay: 0
+  CanonFodderData: {fileID: 11400000, guid: ecc3839188a02c94d9336aaa5c36ab9b, type: 2}
 --- !u!54 &9113617427949065013
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -375,7 +365,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7802558663474256315}
-  - component: {fileID: 2038539446585711194}
+  - component: {fileID: 8987002876730901116}
   m_Layer: 7
   m_Name: Pivot
   m_TagString: Untagged
@@ -400,7 +390,7 @@ Transform:
   m_Father: {fileID: 7161423610750410142}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!136 &2038539446585711194
+--- !u!136 &8987002876730901116
 CapsuleCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

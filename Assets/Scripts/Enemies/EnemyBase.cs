@@ -31,7 +31,7 @@ public class EnemyBase : MonoBehaviour {
     
     [Header("For testing")]
     [SerializeField]
-    bool invincible = false;
+    protected bool invincible = false;
     // [Header("Enemy movement force")]
     // [SerializeField]
     // float MovementForce = 425f; 

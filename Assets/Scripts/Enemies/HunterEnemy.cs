@@ -20,6 +20,7 @@ public class HunterEnemy : EnemyBase {
     }
 
     public override void TakeDamage(float amnt, EDamageType damageType) {
+        if (invincible) return;
         if (!isStunned) {
             if (damageType == EDamageType.Projectile) {
                 GetStunned();
@@ -53,9 +54,9 @@ public class HunterEnemy : EnemyBase {
 
     void SetEffectState() {
         if (isStunned) {
-            ModelMeshRenderer.material = shieldActiveMaterial;
-        } else {
             ModelMeshRenderer.material = shieldInactiveMaterial;
+        } else {
+            ModelMeshRenderer.material = shieldActiveMaterial;
         }
     }
     
