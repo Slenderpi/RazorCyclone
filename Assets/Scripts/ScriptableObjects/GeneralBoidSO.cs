@@ -22,9 +22,11 @@ public class GeneralBoidSO : ScriptableObject {
     public float AvoidanceMaxLookDist = 4;
     [Tooltip("For Boids that use multi-point avoidance checking. Determines the angle of extra 'whiskers' from the forward whisker.\n\nIf using single-point avoidance checking, this value does not matter.")]
     public float AvoidanceWhiskerAngle = 30f;
-    [Tooltip("This value main matters when the Boid is close to a wall. The higher this value, the stronger the Boid will try to avoid the wall.\n\nAvoidance steering strength is still limited by AvoidanceMaxSteeringForce.")]
-    public float AvoidanceIntensity = 10;
-    [Tooltip("Maximum steering force for avoidance. Similar to MaxSteeringForce.")]
+    [Tooltip("The intensity of the Boid avoiding a wall when far away from a wall (intensity increases as they get closer).")]
+    public float AvoidanceMinIntensity = 1;
+    [Tooltip("The intensity of the Boid avoiding a wall when very close to a wall (intensity increases as they get closer).")]
+    public float AvoidanceMaxIntensity = 10;
+    [Tooltip("Limits the avoidance forces applied.\nWhen using single-point avoidance, you should set this to be at least AvoidanceMaxIntensity.\n\nWhen using multi-point avoidance, this value limits the sum of the calculated avoidance forces, so might want to set it higher (e.g. for 3-point, it may be better to set this to AvoidanceMaxIntensity * 3).\nYou can still set it lower if you want.")]
     public float AvoidanceMaxSteeringForce = 10;
     
 }

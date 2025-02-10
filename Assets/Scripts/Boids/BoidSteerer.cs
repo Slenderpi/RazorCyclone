@@ -1,6 +1,7 @@
 // UNCOMMENT THE BELOW LINE TO DRAW DEBUG RAYS
-// #define DEBUG_RAYS
+#define DEBUG_RAYS
 
+using Unity.VisualScripting;
 using UnityEngine;
 
 /// <summary>
@@ -112,8 +113,8 @@ public class BoidSteerer {
     /// <param name="maxAvoidIntensity"></param>
     /// <param name="maxSteeringForce"></param>
     /// <returns></returns>
-    public static Vector3 Avoidance1P(Vector3 pos, Vector3 velocity, float lookDist, float maxAvoidIntensity, float maxSteeringForce) {
-        return Vector3.ClampMagnitude(calcAvoid(pos, velocity, lookDist, maxAvoidIntensity), maxSteeringForce);
+    public static Vector3 Avoidance1P(Vector3 pos, Vector3 velocity, float lookDist, float minAvoidIntensity, float maxAvoidIntensity, float maxSteeringForce) {
+        return Vector3.ClampMagnitude(calcAvoid(pos, velocity, lookDist, minAvoidIntensity, maxAvoidIntensity), maxSteeringForce);
     }
     
     /// <summary>
@@ -128,32 +129,32 @@ public class BoidSteerer {
     public static Vector3 Avoidance1P(Vector3 pos, Vector3 velocity, GeneralBoidSO boidData) {
         return Avoidance1P(
             pos, velocity,
-            boidData.AvoidanceMaxLookDist, boidData.AvoidanceIntensity, boidData.AvoidanceMaxSteeringForce
+            boidData.AvoidanceMaxLookDist, boidData.AvoidanceMinIntensity, boidData.AvoidanceMaxIntensity, boidData.AvoidanceMaxSteeringForce
         );
     }
     
-    public static Vector3 Avoidance3P(Vector3 pos, Vector3 velocity, float angleDeg, float lookDist, float maxAvoidIntensity, float maxSteeringForce) {
+    public static Vector3 Avoidance3P(Vector3 pos, Vector3 velocity, float angleDeg, float lookDist, float minAvoidIntensity, float maxAvoidIntensity, float maxSteeringForce) {
         float speed = velocity.magnitude;
         Vector3 forward = velocity / speed;
         Vector3 right = -Vector3.Cross(forward, Vector3.up); // ??? Why tf is this backward
         Vector3 velFactor = forward * Mathf.Cos(angleDeg * Mathf.Deg2Rad);
         Vector3 rightFactor = right * Mathf.Sin(angleDeg * Mathf.Deg2Rad);
         return Vector3.ClampMagnitude(
-            calcAvoid(pos, velocity, lookDist, maxAvoidIntensity) + // Center whisker
-            calcAvoid(pos, (velFactor + rightFactor) * speed, lookDist, maxAvoidIntensity) + // Right whisker
-            calcAvoid(pos, (velFactor - rightFactor) * speed, lookDist, maxAvoidIntensity), // Left whisker
+            calcAvoid(pos, velocity, lookDist, minAvoidIntensity, maxAvoidIntensity) + // Center whisker
+            calcAvoid(pos, (velFactor + rightFactor) * speed, lookDist, minAvoidIntensity, maxAvoidIntensity) + // Right whisker
+            calcAvoid(pos, (velFactor - rightFactor) * speed, lookDist, minAvoidIntensity, maxAvoidIntensity), // Left whisker
             maxSteeringForce
         );
     }
     
     public static Vector3 Avoidance3P(Vector3 pos, Vector3 velocity, GeneralBoidSO boidData) {
         return Avoidance3P(
-            pos, velocity,
-            boidData.AvoidanceWhiskerAngle, boidData.AvoidanceMaxLookDist, boidData.AvoidanceIntensity, boidData.AvoidanceMaxSteeringForce
+            pos, velocity, boidData.AvoidanceWhiskerAngle,
+            boidData.AvoidanceMaxLookDist, boidData.AvoidanceMinIntensity, boidData.AvoidanceMaxIntensity, boidData.AvoidanceMaxSteeringForce
         );
     }
     
-    static Vector3 calcAvoid(Vector3 pos, Vector3 velocity, float lookDist, float maxAvoidIntensity) {
+    static Vector3 calcAvoid(Vector3 pos, Vector3 velocity, float lookDist, float minAvoidIntensity, float maxAvoidIntensity) {
         Ray ray = new(pos, velocity);
         if (Physics.Raycast(ray: ray, maxDistance: lookDist, layerMask: AVOIDANCE_LAYER_MASK, hitInfo: out RaycastHit hit)) {
             Vector3 reflect = Vector3.Reflect(velocity, hit.normal);
@@ -161,11 +162,11 @@ public class BoidSteerer {
             Debug.DrawRay(ray.origin, ray.direction * hit.distance, Color.black, Time.fixedDeltaTime, false); // raycast
             Debug.DrawRay(hit.point, hit.normal, Color.red, Time.fixedDeltaTime, false); // normal
             Debug.DrawRay(hit.point, reflect, Color.cyan, Time.fixedDeltaTime, false); // reflect
-            Vector3 s = hit.normal * distIntensifier(hit.distance, maxAvoidIntensity, lookDist) + reflect;
+            Vector3 s = hit.normal * distIntensifier(hit.distance, lookDist, minAvoidIntensity, maxAvoidIntensity) + reflect;
             drawPoint(s, Color.green); // targ
             Debug.DrawRay(pos, s, Color.green, Time.fixedDeltaTime, false); // seek steering
 #endif
-            return hit.normal * distIntensifier(hit.distance, maxAvoidIntensity, lookDist) + reflect;
+            return hit.normal * distIntensifier(hit.distance, lookDist, minAvoidIntensity, maxAvoidIntensity) + reflect;
         }
 #if UNITY_EDITOR && DEBUG_RAYS
          else {
@@ -175,8 +176,10 @@ public class BoidSteerer {
         return Vector3.zero;
     }
     
-    static float distIntensifier(float inDist, float maxIntensity, float lookDist) {
-        return (inDist - maxIntensity * inDist + maxIntensity * lookDist) / lookDist;
+    static float distIntensifier(float inDist, float lookDist, float minIntensity, float maxIntensity) {
+        return maxIntensity + (minIntensity - maxIntensity) * inDist / lookDist; // linear, min minIntensity
+        // return (1 - inDist / lookDist) * maxIntensity; // linear, min 0
+        // return (inDist - maxIntensity * inDist + maxIntensity * lookDist) / lookDist; // linear, min 1
         // float xd = inDist / lookDist;
         // float a1 = maxIntensity - 1;
         // return a1 * xd * xd + 2 * -a1 * xd + maxIntensity;
