@@ -265,6 +265,14 @@ public class GameManager : MonoBehaviour {
             }
         };
     }
+    
+    public static void D_DrawPoint(Vector3 position, Color c) {
+        float t = Time.fixedDeltaTime;
+        bool b = false;
+        float rad = 0.15f;
+        Debug.DrawRay(position + Vector3.forward * rad, 2 * rad * Vector3.back, c, t, b);
+        Debug.DrawRay(position + Vector3.right * rad, 2 * rad * Vector3.left, c, t, b);
+    }
 #endif
     
 }

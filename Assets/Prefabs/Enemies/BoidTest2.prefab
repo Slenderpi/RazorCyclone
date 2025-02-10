@@ -240,7 +240,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ModelToRotate: {fileID: 7802558663474256315}
   rotationPerFrameLerpAlpha: 0.1
-  BoidData: {fileID: 11400000, guid: 28d0b1e829ce9cb459cd89b426e20e48, type: 2}
+  BoidData: {fileID: 11400000, guid: 158342979006d2e448939869dd296af2, type: 2}
   USE_OVERRIDES: 0
   BehaviourType: 0
   RotationType: 0
@@ -253,7 +253,8 @@ MonoBehaviour:
   WanderMinimumDelay: 0
   AvoidanceMaxLookDist: 4
   AvoidanceWhiskerAngle: 30
-  AvoidanceIntensity: 7
+  AvoidanceMinIntensity: 1
+  AvoidanceMaxIntensity: 7
   AvoidanceMaxSteeringForce: 10
 --- !u!54 &9113617427949065013
 Rigidbody:

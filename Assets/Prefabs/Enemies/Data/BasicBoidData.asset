@@ -13,16 +13,17 @@ MonoBehaviour:
   m_Name: BasicBoidData
   m_EditorClassIdentifier: 
   MaxSteeringVelocity: 15
-  MaxSteeringForce: 10
+  MaxSteeringForce: 8
   WanderLimitRadius: 0.5
   WanderLimitDist: 0.5
   WanderChangeDist: 0.15
   WanderMinimumDelay: 0
-  AvoidanceTestType: 2
+  AvoidanceTestType: 3
   AvoidanceMaxLookDist: 4
   AvoidanceWhiskerAngle: 30
-  AvoidanceIntensity: 6
-  AvoidanceMaxSteeringForce: 10
-  BehaviourType: 0
+  AvoidanceMinIntensity: 0.5
+  AvoidanceMaxIntensity: 10
+  AvoidanceMaxSteeringForce: 30
+  BehaviourType: 5
   RotationType: 1
   CanFly: 0

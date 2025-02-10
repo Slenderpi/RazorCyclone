@@ -94,7 +94,7 @@ public class BM_Basic : BoidMover {
         if (forward.sqrMagnitude <= 0.0001f)
             forward = transform.forward;
         // Vector3 avoid = BoidSteerer.Avoidance3P(transform.position, forward, awa, amld, ai, amsf);
-        Vector3 straight = BoidSteerer.Seek(transform.position, transform.position + forward.normalized * 1, rb.velocity, msv, msf);
+        Vector3 straight = BoidSteerer.Seek(transform.position, transform.position + forward.normalized * BoidData.MaxSteeringForce / 10f, rb.velocity, msv, msf);
         return straight;
         // return avoid + straight;
         // return doWander() + avoid;

@@ -20,8 +20,8 @@ public abstract class BoidMover : MonoBehaviour {
     protected float lastWanderStepTime = -1000;
     
     protected bool enableAvoidanceTest = true;
-    protected delegate Vector3 AvoidanceTester(Vector3 pos, Vector3 velocity, GeneralBoidSO boidData);
-    protected AvoidanceTester AvoidanceTestFunction;
+    // protected delegate Vector3 AvoidanceTester(Vector3 pos, Vector3 velocity, GeneralBoidSO boidData);
+    // protected AvoidanceTester AvoidanceTestFunction;
     
     
     
@@ -32,37 +32,24 @@ public abstract class BoidMover : MonoBehaviour {
         else
             wanderPoint = transform.forward;
         Init();
-        if (generalBoidData)
-            switch(generalBoidData.AvoidanceTestType) {
-            case AvoidanceTestMode.None:
-                AvoidanceTestFunction = (pos, velocity, boidData) => Vector3.zero;
-                break;
-            case AvoidanceTestMode.Single:
-                AvoidanceTestFunction = BoidSteerer.Avoidance1P;
-                break;
-            case AvoidanceTestMode.TripleFlat:
-                AvoidanceTestFunction = BoidSteerer.Avoidance3P;
-                break;
-            case AvoidanceTestMode.FivePoints:
-                AvoidanceTestFunction = BoidSteerer.Avoidance3P; // TODO
-                break;
-            }
     }
     
     void Update() {
         if (ModelToRotate)
             ModelToRotate.rotation = Quaternion.Lerp(ModelToRotate.rotation, calculatedRotation, rotationPerFrameLerpAlpha);
+        else
+            calculatedRotation = transform.rotation;
     }
     
     void FixedUpdate() {
         PlayerCharacterCtrlr plr = GameManager.CurrentPlayer;
         if (!plr) return;
         Vector3 steer = CalculateSteering();
-        if (enableAvoidanceTest)
-            steer += AvoidanceTestFunction(transform.position, rb.velocity, generalBoidData);
-        rb.AddForce(steer, ForceMode.Acceleration);
         if (ModelToRotate)
             calculatedRotation = _calcSteering(rb.velocity, steer);
+        if (enableAvoidanceTest)
+            steer += testAvoidance();
+        rb.AddForce(steer, ForceMode.Acceleration);
     }
     
     Quaternion _calcSteering(Vector3 forward, Vector3 steer) {
@@ -73,7 +60,7 @@ public abstract class BoidMover : MonoBehaviour {
     }
     
     /// <summary>
-    /// Called in Awake(). Use to set the avoidanceTestFunction.
+    /// Called in Awake().
     /// </summary>
     protected abstract void Init();
     
@@ -105,6 +92,17 @@ public abstract class BoidMover : MonoBehaviour {
     
     protected void StepWanderPoint3D(GeneralBoidSO boidData) {
         StepWanderPoint3D(boidData.WanderMinimumDelay, boidData.WanderLimitRadius, boidData.WanderChangeDist);
+    }
+    
+    protected Vector3 testAvoidance() {
+        return generalBoidData.AvoidanceTestType switch {
+            AvoidanceTestMode.SingleFlat => BoidSteerer.Avoidance1PFlat(transform.position, rb.velocity, generalBoidData),
+            AvoidanceTestMode.Single3D => BoidSteerer.Avoidance1P(transform.position, rb.velocity, generalBoidData),
+            AvoidanceTestMode.TripleFlat => BoidSteerer.Avoidance3PFlat(transform.position, rb.velocity, generalBoidData),
+            AvoidanceTestMode.Triple3D => BoidSteerer.Avoidance3P3D(transform.position, rb.velocity, calculatedRotation, generalBoidData),
+            AvoidanceTestMode.FivePoints => BoidSteerer.Avoidance5P(transform.position, rb.velocity, calculatedRotation, generalBoidData),
+            _ => Vector3.zero,
+        };
     }
     
 }
