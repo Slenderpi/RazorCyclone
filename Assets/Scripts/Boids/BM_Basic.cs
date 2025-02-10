@@ -1,4 +1,3 @@
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class BM_Basic : BoidMover {
@@ -26,6 +25,14 @@ public class BM_Basic : BoidMover {
     float WanderChangeDist = 0.15f;
     [SerializeField]
     float WanderMinimumDelay = 0;
+    [SerializeField]
+    float AvoidanceMaxLookDist = 4;
+    [SerializeField]
+    float AvoidanceWhiskerAngle = 30f;
+    [SerializeField]
+    float AvoidanceIntensity = 7;
+    [SerializeField]
+    float AvoidanceMaxSteeringForce = 10;
     
     BoidBehaviour bt;
     BoidRotationType rt;
@@ -36,11 +43,19 @@ public class BM_Basic : BoidMover {
     float wld;
     float wcd;
     float wmd;
+    float amld;
+    float awa;
+    float ai;
+    float amsf;
     
     
     
     void Start() {
         checkAndSetForOverride();
+    }
+    
+    protected override void Init() {
+        generalBoidData = BoidData;
     }
     
     public override Vector3 CalculateSteering() {
@@ -51,10 +66,11 @@ public class BM_Basic : BoidMover {
             BoidBehaviour.Pursuit => BoidSteerer.Pursuit(transform.position, GameManager.CurrentPlayer.transform.position, rb.velocity, GameManager.CurrentPlayer.rb.velocity, msv, msf),
             BoidBehaviour.Evade => BoidSteerer.Evade(transform.position, GameManager.CurrentPlayer.transform.position, rb.velocity, GameManager.CurrentPlayer.rb.velocity, msv, msf),
             BoidBehaviour.Wander => doWander(),
+            BoidBehaviour.ObstacleAvoidanceTest => testObstAvoid(),
             _ => Vector3.zero,
         };
     }
-    
+
     public override Quaternion CalculateRotation(Vector3 forward, Vector3 steer) {
         return rt switch {
             BoidRotationType.YawOnly => BoidRotator.YawOnly(forward),
@@ -66,10 +82,29 @@ public class BM_Basic : BoidMover {
     }
     
     Vector3 doWander() {
-        StepWanderPoint3D(wmd, wlr, wcd);
+        StepWanderPoint2D(wmd, wlr, wcd);
         return BoidSteerer.Wander(transform.position, rb.velocity, wanderPoint, wld, msv, msf);
     }
-    
+
+    Vector3 testObstAvoid() {
+        Vector3 forward = rb.velocity;
+        if (forward.sqrMagnitude <= 0.001f)
+            forward = transform.forward;
+        // Vector3 avoid = BoidSteerer.Avoidance3P(transform.position, forward, awa, amld, ai, amsf);
+        Vector3 straight = BoidSteerer.Seek(transform.position, transform.position + forward.normalized * 1, rb.velocity, msv, msf);
+        return straight;
+        // return avoid + straight;
+        // return doWander() + avoid;
+        // return doWander();
+    }
+
+    // public override Vector3 AddObstacleAvoidance() {
+    //     Vector3 forward = rb.velocity;
+    //     if (forward.sqrMagnitude <= 0.001f)
+    //         forward = transform.forward;
+    //     return BoidSteerer.Avoidance3P(transform.position, forward, awa, amld, ai, amsf);
+    // }
+
     void checkAndSetForOverride() {
         if (USE_OVERRIDES) {
             bt = BehaviourType;
@@ -81,6 +116,10 @@ public class BM_Basic : BoidMover {
             wld = WanderLimitDist;
             wcd = WanderChangeDist;
             wmd = WanderMinimumDelay;
+            amld = AvoidanceMaxLookDist;
+            awa = AvoidanceWhiskerAngle;
+            ai = AvoidanceIntensity;
+            amsf = AvoidanceMaxSteeringForce;
         } else {
             bt = BoidData.BehaviourType;
             rt = BoidData.RotationType;
@@ -91,6 +130,10 @@ public class BM_Basic : BoidMover {
             wld = BoidData.WanderLimitDist;
             wcd = BoidData.WanderChangeDist;
             wmd = BoidData.WanderMinimumDelay;
+            amld = BoidData.AvoidanceMaxLookDist;
+            awa = BoidData.AvoidanceWhiskerAngle;
+            ai = BoidData.AvoidanceIntensity;
+            amsf = BoidData.AvoidanceMaxSteeringForce;
         }
     }
     

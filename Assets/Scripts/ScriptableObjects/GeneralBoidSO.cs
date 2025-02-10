@@ -16,5 +16,23 @@ public class GeneralBoidSO : ScriptableObject {
     public float WanderChangeDist = 0.15f;
     [Tooltip("Minimum time required to pass until a new wander point is calculated. Very low values could lead to jittery movement, depending on the other wander parameters.")]
     public float WanderMinimumDelay = 0;
+    [Tooltip("Determines the number of raycasts to perform:\n - None: No avoidance checking at all.\n - Single: One cast in the direction of the Boid's velocity.\n - TripleFlat: one cast from the center, one on the right, and one on the left.\n - FivePoints: NOT YET IMPLEMENTED")]
+    public AvoidanceTestMode AvoidanceTestType;
+    [Tooltip("Maximum look-ahead distance to check if this Boid is heading for a wall.")]
+    public float AvoidanceMaxLookDist = 4;
+    [Tooltip("For Boids that use multi-point avoidance checking. Determines the angle of extra 'whiskers' from the forward whisker.\n\nIf using single-point avoidance checking, this value does not matter.")]
+    public float AvoidanceWhiskerAngle = 30f;
+    [Tooltip("This value main matters when the Boid is close to a wall. The higher this value, the stronger the Boid will try to avoid the wall.\n\nAvoidance steering strength is still limited by AvoidanceMaxSteeringForce.")]
+    public float AvoidanceIntensity = 10;
+    [Tooltip("Maximum steering force for avoidance. Similar to MaxSteeringForce.")]
+    public float AvoidanceMaxSteeringForce = 10;
     
+}
+
+[System.Serializable]
+public enum AvoidanceTestMode {
+    None,
+    Single,
+    TripleFlat,
+    FivePoints
 }

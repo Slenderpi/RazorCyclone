@@ -4,8 +4,6 @@ using UnityEngine.PlayerLoop;
 /// <summary>
 /// This class handles the framework for the movement and rotation of a Boid. Indpendent boid objects should
 /// create a child class from the BoidMover to implement movement logic specific to that Boid.
-/// 
-/// T
 /// </summary>
 public abstract class BoidMover : MonoBehaviour {
     
@@ -14,16 +12,41 @@ public abstract class BoidMover : MonoBehaviour {
     public Transform ModelToRotate;
     public float rotationPerFrameLerpAlpha = 0.1f;
     
+    // Should be set by child classes in Init()
+    protected GeneralBoidSO generalBoidData;
     protected Rigidbody rb;
     protected Quaternion calculatedRotation;
     protected Vector3 wanderPoint;
     protected float lastWanderStepTime = -1000;
     
+    protected bool enableAvoidanceTest = true;
+    protected delegate Vector3 AvoidanceTester(Vector3 pos, Vector3 velocity, GeneralBoidSO boidData);
+    protected AvoidanceTester AvoidanceTestFunction;
+    
     
     
     void Awake() {
         rb = GetComponent<Rigidbody>();
+        if (ModelToRotate)
+            ResetWanderPoint(1);
+        else
+            wanderPoint = transform.forward;
         Init();
+        if (generalBoidData)
+            switch(generalBoidData.AvoidanceTestType) {
+            case AvoidanceTestMode.None:
+                AvoidanceTestFunction = (pos, velocity, boidData) => Vector3.zero;
+                break;
+            case AvoidanceTestMode.Single:
+                AvoidanceTestFunction = BoidSteerer.Avoidance1P;
+                break;
+            case AvoidanceTestMode.TripleFlat:
+                AvoidanceTestFunction = BoidSteerer.Avoidance3P;
+                break;
+            case AvoidanceTestMode.FivePoints:
+                AvoidanceTestFunction = BoidSteerer.Avoidance3P; // TODO
+                break;
+            }
     }
     
     void Update() {
@@ -35,6 +58,8 @@ public abstract class BoidMover : MonoBehaviour {
         PlayerCharacterCtrlr plr = GameManager.CurrentPlayer;
         if (!plr) return;
         Vector3 steer = CalculateSteering();
+        if (enableAvoidanceTest)
+            steer += AvoidanceTestFunction(transform.position, rb.velocity, generalBoidData);
         rb.AddForce(steer, ForceMode.Acceleration);
         if (ModelToRotate)
             calculatedRotation = _calcSteering(rb.velocity, steer);
@@ -48,14 +73,9 @@ public abstract class BoidMover : MonoBehaviour {
     }
     
     /// <summary>
-    /// Called in Awake()
+    /// Called in Awake(). Use to set the avoidanceTestFunction.
     /// </summary>
-    protected virtual void Init() {
-        if (ModelToRotate)
-            ResetWanderPoint(1);
-        else
-            wanderPoint = transform.forward;
-    }
+    protected abstract void Init();
     
     public abstract Vector3 CalculateSteering();
     

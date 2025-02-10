@@ -6,6 +6,10 @@ public class BM_CanonFodder : BoidMover {
     
     
     
+    protected override void Init() {
+        generalBoidData = CanonFodderData;
+    }
+    
     public override Vector3 CalculateSteering() {
         Vector3 plrPos = GameManager.CurrentPlayer.transform.position;
         if ((plrPos - transform.position).sqrMagnitude <= CanonFodderData.FleeTriggerDistance * CanonFodderData.FleeTriggerDistance) {

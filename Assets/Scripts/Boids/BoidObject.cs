@@ -348,7 +348,8 @@ public enum BoidBehaviour {
     Flee,
     Pursuit,
     Evade,
-    Wander
+    Wander,
+    ObstacleAvoidanceTest
 }
 
 public enum BoidRotationType {
