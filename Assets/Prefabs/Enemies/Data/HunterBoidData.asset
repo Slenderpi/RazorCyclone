@@ -20,9 +20,9 @@ MonoBehaviour:
   WanderMinimumDelay: 0.2
   AvoidanceTestType: 2
   AvoidanceMaxLookDist: 8
-  AvoidanceWhiskerAngle: 18
-  AvoidanceIntensity: 8
-  AvoidanceMaxSteeringForce: 10
+  AvoidanceWhiskerAngle: 15
+  AvoidanceIntensity: 11
+  AvoidanceMaxSteeringForce: 15
   RunAwayMaxSteerVelocity: 10
   RunAwayMaxSteerForce: 10
   RunAwayDuration: 0.5
@@ -30,4 +30,4 @@ MonoBehaviour:
   RunAwayRequiredDist: 3
   IncludeWander: 0
   WanderTriggerDist: 7
-  AvoidanceDisableDist: 5
+  AvoidanceDisableDist: 8
