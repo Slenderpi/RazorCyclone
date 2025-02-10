@@ -12,7 +12,7 @@ public class WeakPointedEnemy : EnemyBase {
     
     protected override void Init() {
         MaxHealth = weakpoints.Length;
-        base.Init();
+        health = MaxHealth;
         foreach (EnemyWeakpoint wkp in weakpoints) {
             wkp.A_WeakpointDefeated += (EDamageType damageType) => {
                 TakeWeakpointDamage(damageType);
@@ -29,7 +29,7 @@ public class WeakPointedEnemy : EnemyBase {
         health--;
         if (health <= 0) {
             GameManager.Instance.OnEnemyTookDamage(this, damageType, true);
-            OnDefeated();
+            OnDefeated(damageType);
         }
     }
 

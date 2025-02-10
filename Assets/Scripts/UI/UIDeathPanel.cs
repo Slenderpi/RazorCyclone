@@ -14,7 +14,7 @@ public class UIDeathPanel : UIPanel {
     
     public void OnButton_Retry() {
         GameManager.Instance.SetPauseInputActionsEnabled(true);
-        GameManager.Instance.currentSceneRunner.SwitchToScene("EndlessLevel");
+        GameManager.Instance.currentSceneRunner.ReloadCurrentScene();
     }
     
     public void OnButton_ReturnMain() {

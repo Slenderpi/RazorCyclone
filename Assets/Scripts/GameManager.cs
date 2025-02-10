@@ -13,7 +13,9 @@ public class GameManager : MonoBehaviour {
         "EnemyBase",
         "Hunter",
         "Laser",
-        "Lava"
+        "Lava",
+        "CanonFodder",
+        "HunterPursuit"
     };
     
     public static GameManager Instance;
@@ -51,6 +53,14 @@ public class GameManager : MonoBehaviour {
             SettingsPanel.SetMouseSenseText(_currentMouseSensitivity);
         }
     }
+    int _currentFOV = 90;
+    public int CurrentFOV {
+        get => _currentFOV;
+        set {
+            _currentFOV = value;
+            onFOVChanged(value);
+        }
+    }
     [Header("Player Settings")]
     public float DefaultMouseSensitivity = 0.7f;
     public float LowestSensitivity = 0.02f;
@@ -83,7 +93,11 @@ public class GameManager : MonoBehaviour {
         
 #if UNITY_EDITOR
         setupDebugActions();
-        
+#endif
+    }
+    
+    void Start() {
+#if UNITY_EDITOR
         /******  PROGRAMMER SPECIFIC  ******/
         TextAsset programmerPreferenceJson = Resources.Load<TextAsset>("ProgrammerPreferences");
         if (programmerPreferenceJson != null) {
@@ -114,10 +128,6 @@ public class GameManager : MonoBehaviour {
         currentSceneRunner = sr;
         MainCanvas.SetCanvasState(UIMainCanvas.ECanvasState.None);
         DataPersistenceManager.Instance.OnSceneLoaded();
-    }
-    
-    void Update() {
-        
     }
     
     public void SpawnPlayer() {
@@ -197,9 +207,14 @@ public class GameManager : MonoBehaviour {
         CurrentMouseSensitivity = Mathf.Lerp(LowestSensitivity, HighestSensitivity, SettingsPanel.MouseSenseSlider.value);
     }
     
+    // public void OnFOVChanged(int newfov) {
+    //     Camera.main.fieldOfView = newfov;
+    // }
+    
     public void OnSceneLoaded(Scene scene, LoadSceneMode mode) {
         if (scene.name != "CoreScene") {
             SceneManager.SetActiveScene(scene);
+            // Camera.main.fieldOfView = _currentFOV;
         }
     }
 
@@ -219,6 +234,10 @@ public class GameManager : MonoBehaviour {
         SetPauseInputActionsEnabled(false);
     }
     
+    void onFOVChanged(int value) {
+        Camera.main.fieldOfView = value;
+    }
+    
     
     
     /******  DEBUGGING  ******/
@@ -231,15 +250,17 @@ public class GameManager : MonoBehaviour {
             if (Cursor.lockState == CursorLockMode.None) {
                 Cursor.lockState = CursorLockMode.Locked;
                 Cursor.visible = false;
+                // UIDEBUGPanel.inst.F1Hint.SetActive(true);
             } else {
                 Cursor.lockState = CursorLockMode.None;
                 Cursor.visible = true;
+                UIDEBUGPanel.inst.F1Hint.SetActive(false);
             }
         };
         DebugActions.KillPlayer.Enable();
         DebugActions.KillPlayer.started += (InputAction.CallbackContext context) => {
-            if (CurrentPlayer != null && CurrentPlayer.currentHealth > 0) {
-                print("Killing player");
+            if (CurrentPlayer != null && CurrentPlayer.CurrentHealth > 0) {
+                print("Killing player from hotkey.");
                 CurrentPlayer.TakeDamage(CurrentPlayer.MaxHealth);
             }
         };
@@ -269,7 +290,9 @@ public enum EnemyType {
     Hunter,
     Laser,
     FloorIsLava,
-    ShieldedTurret
+    ShieldedTurret,
+    CanonFodder,
+    HunterPursuit
 }
 
 
@@ -281,6 +304,7 @@ class ProgrammerPreferences {
     
     public bool UsePreferences;
     public float MouseSensitivity;
+    public float MasterVolume = 100;
 
     internal void SetPreferences() {
         if (!UsePreferences) return;
@@ -288,6 +312,8 @@ class ProgrammerPreferences {
         float highSens = GameManager.Instance.HighestSensitivity;
         float lowSens = GameManager.Instance.LowestSensitivity;
         GameManager.Instance.SettingsPanel.MouseSenseSlider.value = (GameManager.Instance.CurrentMouseSensitivity - lowSens) / (highSens - lowSens);
+        if (MasterVolume == 1f) Debug.LogWarning(">> Programmer preferences file has MasterVolume set to 1. Did you mean 100? Currently, volume is on a scale from 0 to 100 rather than 0 to 1.");
+        GameManager.Instance.Audio2D.SetMasterVolume(MasterVolume);
     }
 }
 #endif

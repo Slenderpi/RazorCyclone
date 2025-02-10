@@ -1,122 +1,66 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Animations;
 
-public class HunterEnemy : EnemyBase
-{
-    public float moveSpeed = 5f;
-    public bool isStunned = false;
-    public float stunDuration = 5f;
-    public bool shieldActive = true;
-
+public class HunterEnemy : EnemyBase {
+    
+    [Header("Hunter Config")]
+    public float StunDuration = 5f;
+    [SerializeField] float shieldDrag = 0.2f;
+    [SerializeField] float stunDrag = 1f;
+    bool isStunned = false;
     public Material shieldActiveMaterial;
     public Material shieldInactiveMaterial;
-    [SerializeField] MeshRenderer enemyRenderer;
-
-    void Start()
-    {
-        rb = GetComponent<Rigidbody>();
-        Transform sphereTransform = transform.Find("Sphere");
-        //enemyRenderer = sphereTransform.GetComponent<MeshRenderer>();
-        shieldActive = true;
-        UpdateMaterial();
-    }
-
-    void Update()
-    {
-        if (!isStunned)
-        {
-            ChasePlayer();
-        }
-    }
-
-    void ChasePlayer()
-    {
-        if (GameManager.CurrentPlayer != null) {
-            // Debug.Log("chasing player");
-            Vector3 direction = (GameManager.CurrentPlayer.transform.position - transform.position).normalized;
-            transform.LookAt(GameManager.CurrentPlayer.transform.position);
-            rb.velocity = direction * moveSpeed;
-        }
+    [SerializeField] MeshRenderer ModelMeshRenderer;
+    
+    
+    
+    void Start() {
+        CanGetVacuumSucked = false;
+        rb.drag = shieldDrag;
+        SetEffectState();
     }
 
     public override void TakeDamage(float amnt, EDamageType damageType) {
-        if (shieldActive) {
+        if (invincible) return;
+        if (!isStunned) {
             if (damageType == EDamageType.Projectile) {
                 GetStunned();
             }
         } else {
-            /* Take damage since the shield is down. The base TakeDamage() function
-             * already handles taking health damage.
-             */
             base.TakeDamage(amnt, damageType);
         }
     }
 
-    public void GetStunned()
-    {
-        if (!isStunned)
-        {
-            // Debug.Log("enemy stunned");
+    public void GetStunned() {
+        if (!isStunned) {
             isStunned = true;
-            shieldActive = false;
-            UpdateMaterial();
-            rb.velocity = Vector3.zero;
+            DealDamageOnTouch = false;
+            CanGetVacuumSucked = true;
+            boid.enabled = false;
+            rb.useGravity = true;
+            rb.drag = stunDrag;
+            SetEffectState();
             StartCoroutine(StunRecovery());
         }
     }
 
-    IEnumerator StunRecovery()
-    {
-        yield return new WaitForSeconds(stunDuration);
+    IEnumerator StunRecovery() {
+        yield return new WaitForSeconds(StunDuration);
+        DealDamageOnTouch = true;
+        CanGetVacuumSucked = false;
+        boid.enabled = true;
+        rb.useGravity = false;
+        rb.drag = shieldDrag;
         isStunned = false;
-        shieldActive = true;
-        UpdateMaterial();
+        SetEffectState();
     }
 
-    void UpdateMaterial()
-    {
-        if (shieldActive)
-        {
-            // Debug.Log("changing to white");
-            enemyRenderer.material.color = Color.white;
-        }
-        else
-        {            
-            // Debug.Log("changing to red");
-            enemyRenderer.material.color = Color.red;
+    void SetEffectState() {
+        if (isStunned) {
+            ModelMeshRenderer.material = shieldInactiveMaterial;
+        } else {
+            ModelMeshRenderer.material = shieldActiveMaterial;
         }
     }
-
-    public bool IsVulnerable()
-    {
-        return !shieldActive;
-    }
-
-    // testing purposes
-    // void OnTriggerEnter(Collider other)
-    // {
-        // if (other.CompareTag("Projectile"))
-        // {
-            // GetStunned();
-        // }
-
-        /*
-        if (other.CompareTag("Vacuum") && IsVulnerable())
-        {
-            Debug.Log("hunter got vaccuuuuumed up");
-            DropFuel();
-            Destroy(gameObject);
-        }
-
-        if (other.CompareTag("Cannon") && IsVulnerable())
-        {
-            Debug.Log("hunter got hit by cannon boom boom");
-            DropFuel();
-            Destroy(gameObject);
-        }
-        */
-    // }
     
 }

@@ -1,13 +1,20 @@
 // UNCOMMENT THE LINE BELOW TO PRINT WAVES AS STRINGS
-#define DEBUG_WAVE_STRS
+// #define DEBUG_WAVE_STRS
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using UnityEditor.EditorTools;
 using UnityEngine;
 using Random = System.Random;
+
+/*
+ * ADDING AN ENEMY
+ * Add column to wave csv file
+ * Drag/drop reference to respective prefab into WaveSpawnerManager.EnemyPrefabs
+ * Add enemy type to GameManager.EnemyType enum
+ * Add enemy name to GameManager.EnemyStrs array
+ * Add string check to else-ifs in Spawner.AcceptsEnemyStr()
+ */
 
 public struct WaveEntry {
     public int num;

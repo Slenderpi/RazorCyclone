@@ -35,6 +35,10 @@ public class SceneRunner : MonoBehaviour {
         SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
     }
     
+    public void ReloadCurrentScene() {
+        SwitchToScene(SceneManager.GetActiveScene().name);
+    }
+    
     void startScene() {
         if (GameManager.Instance == null) {
             Debug.LogError("!! SceneRunner awoke before GameManager !!  --  " + 

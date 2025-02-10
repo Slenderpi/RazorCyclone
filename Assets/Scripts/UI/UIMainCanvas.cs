@@ -20,6 +20,7 @@ public class UIMainCanvas : UIPanel {
     public event Action<ECanvasState> CanvasStateChanged;
     
     [Header("References")]
+    public UIDEBUGPanel DebugPanel;
     public UIGamePanel GamePanel;
     public UIPausePanel PausePanel;
     public UISettingsPanel SettingsPanel;
@@ -91,6 +92,9 @@ public class UIMainCanvas : UIPanel {
     
     public override void Init() {
         base.Init();
+#if UNITY_EDITOR
+        DebugPanel.SetActive(true);
+#endif
         SetCanvasState(ECanvasState.None);
     }
     

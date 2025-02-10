@@ -10,6 +10,11 @@ public class UIPausePanel : UIPanel {
         GameManager.Instance.currentSceneRunner.SwitchToScene("MainMenuScene");
     }
     
+    public void OnButton_ReloadLevel() {
+        GameManager.Instance.SetPauseInputActionsEnabled(true);
+        GameManager.Instance.currentSceneRunner.ReloadCurrentScene();
+    }
+    
     public void OnButton_ResetPlayer() {
         GameManager.Instance.DestroyPlayer();
         GameManager.Instance.SpawnPlayer();

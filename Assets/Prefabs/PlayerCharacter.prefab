@@ -1694,20 +1694,26 @@ MonoBehaviour:
   CanonProjSpeed: 100
   CanonDamage: 50
   MaxFuel: 100
-  FuelRefillDelay: 3
-  FuelRefillDelay: 3
+  FuelRefillDelay: 1
   CanonFuelCost: 15
   VacuumFuelTime: 10
+  MaxHealth: 100
+  CurrentHealth: 0
+  HealthRegenPerSecond: 15
+  HealthRegenDelay: 1
+  FuelHelathCostMultiplier: 2
   camtrans: {fileID: 6546781092907837047}
   charModel: {fileID: 8629852985814836286}
   charPivot: {fileID: 647242247470878322}
   vacuumHitbox: {fileID: 7635587825747637255}
   canonTip: {fileID: 1158141871152860794}
-  projectilePrefab: {fileID: 926027913916158325, guid: b847a6b45c135a4409f379593532cfce, type: 3}
+  projectilePrefab: {fileID: 5929468832651977126, guid: 0a63bf8aed6b031488c4a663d6f4bdd7, type: 3}
   muzzleFlashEffect: {fileID: 1468955641749855403, guid: 52ed0e933e8fd8f44a05f09d3a08c76a, type: 3}
   rearCamPos: {fileID: 4826576570863280527}
-  thirdPersonDist: 1.2
-  thirdPersonDist: 1.2
+  rb: {fileID: 0}
+  IsInvincible: 0
+  NoFuelCost: 0
+  thirdPersonDist: 4
   rearMirrorModel: {fileID: 2843522477064941511}
 --- !u!54 &726438411730522680
 Rigidbody:
@@ -1736,8 +1742,8 @@ SphereCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.5
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Radius: 0.49607167
+  m_Center: {x: 0, y: -0.23607168, z: 0}
 --- !u!1 &2647897741985096955
 GameObject:
   m_ObjectHideFlags: 0

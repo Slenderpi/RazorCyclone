@@ -2,16 +2,27 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class UIDEBUGPanel : UIPanel {
     
+    public static UIDEBUGPanel inst;
+    
+    public bool ShowPanel = false;
+    
+    [Header("General References")]
     public TMP_Text ShowHideButtonText;
     public GameObject DebugPanelContainer;
     public TMP_Text SurvivalTimerText;
-    public bool ShowPanel = false;
+    public GameObject F1Hint;
+    
+    [Header("References for Buttons")]
+    public GameObject TogIndInputOverlay;
+    public GameObject TogIndInvincibility;
+    public GameObject TogIndInfFuel;
     
     WaveSpawnerManager wsm = null;
     
@@ -27,14 +38,13 @@ public class UIDEBUGPanel : UIPanel {
         GameManager.A_PlayerSpawned += (PlayerCharacterCtrlr plr) => {
             setWSM();
         };
+        inst = this;
 #endif
     }
     
     void LateUpdate() {
         if (wsm) {
             SurvivalTimerText.text = "Time Survived: " + wsm.OwningEndlessMode.TimeSurvived;
-        } else {
-            print("nope");
         }
     }
     
@@ -42,6 +52,26 @@ public class UIDEBUGPanel : UIPanel {
         ShowPanel = !ShowPanel;
         DebugPanelContainer.SetActive(ShowPanel);
         ShowHideButtonText.text = (ShowPanel ? "HIDE" : "SHOW") + "\nDebug Panel";
+    }
+    
+    public void OnButton_ToggleInputOverlay() {
+        UIGamePanel gp = GameManager.Instance.MainCanvas.GamePanel;
+        gp.InputOverlay.SetActive(!gp.InputOverlay.activeSelf);
+        TogIndInputOverlay.SetActive(gp.InputOverlay.activeSelf);
+    }
+    
+    public void OnButton_ToggleInvincible() {
+        PlayerCharacterCtrlr plr = GameManager.CurrentPlayer;
+        if (!plr) return;
+        plr.IsInvincible = !plr.IsInvincible;
+        TogIndInvincibility.SetActive(plr.IsInvincible);
+    }
+    
+    public void OnButton_ToggleInfFuel() {
+        PlayerCharacterCtrlr plr = GameManager.CurrentPlayer;
+        if (!plr) return;
+        plr.NoFuelCost = !plr.NoFuelCost;
+        TogIndInfFuel.SetActive(plr.NoFuelCost);
     }
     
     public void OnButton_SpawnNextWave() {
@@ -59,8 +89,17 @@ public class UIDEBUGPanel : UIPanel {
     }
     
     void setWSM() {
-            SREndlessMode sre = GameManager.Instance.currentSceneRunner as SREndlessMode;
-            wsm = sre ? sre.WaveSpawnManager : null;
+        SREndlessMode sre = GameManager.Instance.currentSceneRunner as SREndlessMode;
+        wsm = sre ? sre.WaveSpawnManager : null;
+        initToggles();
+    }
+    
+    void initToggles() {
+        PlayerCharacterCtrlr plr = GameManager.CurrentPlayer;
+        if (!plr) return;
+        TogIndInputOverlay.SetActive(GameManager.Instance.MainCanvas.GamePanel.InputOverlay.activeSelf);
+        TogIndInvincibility.SetActive(plr.IsInvincible);
+        TogIndInfFuel.SetActive(plr.NoFuelCost);
     }
     
 }

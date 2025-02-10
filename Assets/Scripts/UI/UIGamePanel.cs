@@ -15,6 +15,7 @@ public class UIGamePanel : UIPanel {
     [Header("Healthbar")]
     public Slider HealthSlider;
     public TMP_Text HealthText;
+    public Animator HealthFillAnimator;
     
     [Header("Crosshairs")]
     public RectTransform MainVacuumCrosshair;
@@ -25,6 +26,7 @@ public class UIGamePanel : UIPanel {
     public TMP_Text Speedometer;
     
     [Header("Input Overlay")]
+    public GameObject InputOverlay;
     public Image KeyImageW;
     public Image KeyImageA;
     public Image KeyImageS;
@@ -108,20 +110,25 @@ public class UIGamePanel : UIPanel {
         GameManager.Instance.Audio2D.PlayClipSFX(AudioPlayer2D.EClipSFX.Plr_PickupFuel);
     }
 
-    public void OnFuelSpent(float obj, float perc) {
+    public void OnFuelSpent(float amnt, float perc, bool spentAsHealth) {
         FuelSlider.value = perc;
+        if (spentAsHealth)
+            HealthFillAnimator.SetTrigger("HealthAsFuel");
     }
     
     public void OnDamageTaken(float amnt) {
         PlayerCharacterCtrlr plr = GameManager.CurrentPlayer;
-        HealthSlider.value = plr.currentHealth / plr.MaxHealth;
-        HealthText.text =((int)plr.currentHealth).ToString();
+        updateHealthUI(plr.CurrentHealth, plr.MaxHealth);
     }
     
     public void OnPlayerHealed(float amnt) {
         PlayerCharacterCtrlr plr = GameManager.CurrentPlayer;
-        HealthSlider.value = plr.currentHealth / plr.MaxHealth;
-        HealthText.text =((int)plr.currentHealth).ToString();
+        updateHealthUI(plr.CurrentHealth, plr.MaxHealth);
+    }
+    
+    void updateHealthUI(float currH, float maxH) {
+        HealthSlider.value = currH / maxH;
+        HealthText.text = Mathf.CeilToInt(currH).ToString();
     }
     
     public void OnOutOfFuel() {
