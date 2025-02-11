@@ -34,7 +34,7 @@ public class GameManager : MonoBehaviour {
     
     // Pause menu input actions
     PlayerInputActions.PauseMenuActions PauseInputActions;
-#if UNITY_EDITOR
+#if UNITY_EDITOR || KEEP_DEBUG
     PlayerInputActions.DEBUGActions DebugActions;
 #endif
     
@@ -91,7 +91,7 @@ public class GameManager : MonoBehaviour {
         PauseInputActions = new PlayerInputActions().PauseMenu;
         SetPauseInputActionsEnabled(true);
         
-#if UNITY_EDITOR
+#if UNITY_EDITOR || KEEP_DEBUG
         setupDebugActions();
 #endif
     }
@@ -242,7 +242,7 @@ public class GameManager : MonoBehaviour {
     
     /******  DEBUGGING  ******/
     
-#if UNITY_EDITOR
+#if UNITY_EDITOR || KEEP_DEBUG
     void setupDebugActions() {
         DebugActions = new PlayerInputActions().DEBUG;
         DebugActions.ToggleMouseLock.Enable();

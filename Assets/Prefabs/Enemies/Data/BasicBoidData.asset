@@ -24,6 +24,7 @@ MonoBehaviour:
   AvoidanceMinIntensity: 0.5
   AvoidanceMaxIntensity: 10
   AvoidanceMaxSteeringForce: 30
+  AvoidInvisBoidWalls: 0
   BehaviourType: 5
   RotationType: 1
   CanFly: 0

@@ -29,7 +29,8 @@ public class UIDEBUGPanel : UIPanel {
     
     
     void Start() {
-#if !UNITY_EDITOR // Automatically destroy debug panel if in build version
+// #if !UNITY_EDITOR || !KEEP_DEBUG
+#if !UNITY_EDITOR && !KEEP_DEBUG
         Destroy(gameObject);
 #else
         DebugPanelContainer.SetActive(ShowPanel);
