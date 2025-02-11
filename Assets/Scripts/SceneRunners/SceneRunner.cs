@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -19,17 +18,25 @@ public class SceneRunner : MonoBehaviour {
             SceneManager.LoadScene("CoreScene", LoadSceneMode.Additive);
         }
     }
-    
+
     /// <summary>
     /// This method begins the logic and gameplay loop for the current scene. To change what
     /// happens at the beginning, create a new child class of SceneRunner and override this method.
     /// By default, this method spawns the player.
     /// </summary>
     public virtual void BeginScene() {
+        GameManager.A_PlayerSpawned += _onPlayerSpawned;
         GameManager.Instance.SpawnPlayer();
     }
     
+    protected virtual void OnPlayerDied() {
+        // GameManager.Instance.SpawnPlayer();
+        GameManager.Instance.DestroyPlayer();
+        StartCoroutine(delayedRespawn());
+    }
+    
     public void SwitchToScene(string sceneName) {
+        onSceneAboutToUnload();
         Scene curr = SceneManager.GetActiveScene();
         SceneManager.UnloadSceneAsync(curr);
         SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
@@ -57,6 +64,25 @@ public class SceneRunner : MonoBehaviour {
             SceneManager.sceneLoaded -= OnSceneLoaded;
             startScene();
         }
+    }
+    
+    protected virtual void onSceneAboutToUnload() {
+        GameManager.A_PlayerSpawned -= _onPlayerSpawned;
+    }
+    
+    void _onPlayerSpawned(PlayerCharacterCtrlr plr) {
+        plr.A_PlayerDied += _onPlayerDied;
+    }
+    
+    void _onPlayerDied() {
+        GameManager.CurrentPlayer.A_PlayerDied -= _onPlayerDied;
+        OnPlayerDied();
+    }
+    
+    IEnumerator delayedRespawn() {
+        yield return new WaitForSecondsRealtime(2);
+        GameManager.Instance.SetPauseInputActionsEnabled(true);
+        GameManager.Instance.SpawnPlayer();
     }
     
 }

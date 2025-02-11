@@ -235,9 +235,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     }
     
     public void TakeDamage(float amount) {
-#if UNITY_EDITOR
         if (IsInvincible) return;
-#endif
         
         CurrentHealth = Mathf.Max(CurrentHealth - amount, 0);
         

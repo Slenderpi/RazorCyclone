@@ -176,7 +176,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7161423610750410142}
   - component: {fileID: -6836326729075350002}
-  - component: {fileID: 8926279697414472668}
+  - component: {fileID: 168670878749841666}
   - component: {fileID: 9113617427949065013}
   - component: {fileID: 8774425169463090239}
   m_Layer: 7
@@ -226,7 +226,7 @@ MonoBehaviour:
   boid: {fileID: 0}
   fuelPickupPrefab: {fileID: 5163220815717078053, guid: bb72521b10fb34d7bbbed5f6f77687b4, type: 3}
   invincible: 1
---- !u!114 &8926279697414472668
+--- !u!114 &168670878749841666
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -235,12 +235,27 @@ MonoBehaviour:
   m_GameObject: {fileID: 3890492832594851018}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a248a30f09556eb44af5078f2b3550bb, type: 3}
+  m_Script: {fileID: 11500000, guid: 3802bb941590e5a44a3c7759e1c451cb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   ModelToRotate: {fileID: 7802558663474256315}
   rotationPerFrameLerpAlpha: 0.1
-  CanonFodderData: {fileID: 11400000, guid: ecc3839188a02c94d9336aaa5c36ab9b, type: 2}
+  BoidData: {fileID: 11400000, guid: 158342979006d2e448939869dd296af2, type: 2}
+  USE_OVERRIDES: 0
+  BehaviourType: 0
+  RotationType: 0
+  CanFly: 0
+  MaxSteeringVelocity: 15
+  MaxSteeringForce: 10
+  WanderLimitRadius: 0.5
+  WanderLimitDist: 0.5
+  WanderChangeDist: 0.15
+  WanderMinimumDelay: 0
+  AvoidanceMaxLookDist: 4
+  AvoidanceWhiskerAngle: 30
+  AvoidanceMinIntensity: 1
+  AvoidanceMaxIntensity: 7
+  AvoidanceMaxSteeringForce: 10
 --- !u!54 &9113617427949065013
 Rigidbody:
   m_ObjectHideFlags: 0

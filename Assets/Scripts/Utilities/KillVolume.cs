@@ -1,0 +1,15 @@
+using System.Collections;
+using System.Collections.Generic;
+using Unity.VisualScripting;
+using UnityEngine;
+
+public class KillVolume : MonoBehaviour {
+    
+    void OnTriggerEnter(Collider collider) {
+        if (collider.CompareTag("Player"))
+            GameManager.CurrentPlayer.TakeDamage(9999999);
+        else
+            Debug.LogWarning("KillVolume triggered with a non-player object somehow. Object name: '" + collider.gameObject.name + "'");
+    }
+    
+}

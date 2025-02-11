@@ -1713,7 +1713,7 @@ MonoBehaviour:
   rb: {fileID: 0}
   IsInvincible: 0
   NoFuelCost: 0
-  thirdPersonDist: 1.2
+  thirdPersonDist: 4
   rearMirrorModel: {fileID: 2843522477064941511}
 --- !u!54 &726438411730522680
 Rigidbody:
