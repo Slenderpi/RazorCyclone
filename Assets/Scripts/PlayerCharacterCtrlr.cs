@@ -125,6 +125,11 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     // Sprite[] crosshairSprites = new Sprite[200];
     // int crosshairIndex = 0;
     
+    // NOTE: Adams stuff
+    [HideInInspector]public bool spaceInput = true;
+    [HideInInspector]public bool vacEnableddd = true;
+    [HideInInspector]public bool cannonEnabled = true;
+
     void Awake() {
         // inputActions = GameManager.PInputActions.Player;
         inputActions = new PlayerInputActions().Player;
@@ -179,7 +184,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     }
 
     void FixedUpdate() {
-        if (isVacuumOn) {
+        if (isVacuumOn && vacEnableddd) {
             if (CurrentHealth <= 0) {
                 isVacuumOn = false;
                 vacuumHitbox.SetActive(false);
@@ -272,14 +277,18 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     }
 
     private void VertInputChanged(InputAction.CallbackContext context) {
-        setDesiredRotation(desiredRotation.x, context.ReadValue<float>(), desiredRotation.z);
-        
-        /** Input overlay stuff **/
-        // A_VertInputChanged?.Invoke(context.ReadValue<float>());
-        _gamePanel.OnVertInputChanged(context.ReadValue<float>());
+        if(spaceInput){
+            setDesiredRotation(desiredRotation.x, context.ReadValue<float>(), desiredRotation.z);
+            
+            /** Input overlay stuff **/
+            // A_VertInputChanged?.Invoke(context.ReadValue<float>());
+            _gamePanel.OnVertInputChanged(context.ReadValue<float>());
+        }
     }
 
     private void FireVacuumStarted(InputAction.CallbackContext context) {
+        if (!vacEnableddd) return;
+        
         _gamePanel.OnFireVacuum(true);
         
         if (CurrentHealth <= 0) {
@@ -289,6 +298,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         }
         isVacuumOn = true;
         vacuumHitbox.SetActive(true);
+        
     }
 
     private void FireVacuumCanceled(InputAction.CallbackContext context) {
@@ -307,7 +317,10 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
             return;
         }
         // Time.timeScale = 0.15f;
-        fireCanon();
+        if(cannonEnabled){
+            fireCanon();
+        }
+        
     }
 
     private void FireCanonCanceled(InputAction.CallbackContext context) {
