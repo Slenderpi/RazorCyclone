@@ -25,14 +25,13 @@ public class SREndlessMode : SceneRunner, IDataPersistence {
         WaveSpawnManager.InitWaveSpawner();
         EndlessStartTime = Time.time;
         mainCanvas = GameManager.Instance.MainCanvas;
+        GameManager.A_EnemyKilled += () => { EnemiesKilled++; };
         base.BeginScene();
         // mainCanvas.GamePanel.SetReadTimerOn(true);
-        GameManager.A_EnemyKilled += () => { EnemiesKilled++; };
-        GameManager.CurrentPlayer.A_PlayerDied += OnPlayerDied;
     }
     
-    void OnPlayerDied() {
-        GameManager.CurrentPlayer.A_PlayerDied -= OnPlayerDied;
+    protected override void OnPlayerDied() {
+        GameManager.Instance.SetPauseInputActionsEnabled(false);
         bool isNewTimeRecord = false;
         if (TimeSurvived > HighestTimeSurvived) {
             isNewTimeRecord = true;

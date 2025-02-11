@@ -231,7 +231,7 @@ public class GameManager : MonoBehaviour {
     void onPlayerDied() {
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
-        SetPauseInputActionsEnabled(false);
+        // SetPauseInputActionsEnabled(false);
     }
     
     void onFOVChanged(int value) {
