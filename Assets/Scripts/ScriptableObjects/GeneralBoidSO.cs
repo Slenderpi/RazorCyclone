@@ -51,6 +51,8 @@ public class GeneralBoidSO : ScriptableObject {
              "When using multi-point avoidance, this value limits the sum of the calculated avoidance forces, so might want to set it higher (e.g. for 3-point, it may be better to set this to AvoidanceMaxIntensity * 3)." +
              "You can still set it lower if you want.")]
     public float AvoidanceMaxSteeringForce = 10;
+    [Tooltip("If true, the Boid will also avoid colliding into objects that are on the InvisBoidWall layer.")]
+    public bool AvoidInvisBoidWalls = false;
     
 }
 

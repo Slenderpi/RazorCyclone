@@ -1,5 +1,5 @@
 // UNCOMMENT THE BELOW LINE TO DRAW DEBUG RAYS
-#define DEBUG_RAYS
+// #define DEBUG_RAYS
 
 using System.Runtime.CompilerServices;
 using Unity.VisualScripting;
@@ -11,6 +11,7 @@ using UnityEngine;
 public class BoidSteerer {
     
     static LayerMask AVOIDANCE_LAYER_MASK = (1 << LayerMask.NameToLayer("Default")); // | (1 << LayerMask.NameToLayer("Enemy")));
+    static LayerMask AVOID_MASK_WITH_INVIS = AVOIDANCE_LAYER_MASK | (1 << LayerMask.NameToLayer("InvisBoidWall"));
     
     public static Vector3 Seek(Vector3 pos, Vector3 targetPos, Vector3 velocity, float maxSteeringVelocity, float maxSteeringForce) {
         // Find desired velocity via |targ - pos| * maxSteerVel
@@ -108,8 +109,8 @@ public class BoidSteerer {
     /// <br/><br/>
     /// Uses one central raycast.
     /// </summary>
-    public static Vector3 Avoidance1P(Vector3 pos, Vector3 velocity, float lookDist, float minAvoidIntensity, float maxAvoidIntensity, float maxSteeringForce) {
-        return Vector3.ClampMagnitude(calcAvoid(pos, velocity, lookDist, minAvoidIntensity, maxAvoidIntensity), maxSteeringForce);
+    public static Vector3 Avoidance1P(Vector3 pos, Vector3 velocity, float lookDist, float minAvoidIntensity, float maxAvoidIntensity, float maxSteeringForce, bool avoidInvisBoidWalls) {
+        return Vector3.ClampMagnitude(calcAvoid(pos, velocity, lookDist, minAvoidIntensity, maxAvoidIntensity, avoidInvisBoidWalls), maxSteeringForce);
     }
     
     /// <summary>
@@ -119,8 +120,9 @@ public class BoidSteerer {
     /// </summary>
     public static Vector3 Avoidance1P(Vector3 pos, Vector3 velocity, GeneralBoidSO boidData) {
         return Avoidance1P(
-            pos, velocity,
-            boidData.AvoidanceMaxLookDist, boidData.AvoidanceMinIntensity, boidData.AvoidanceMaxIntensity, boidData.AvoidanceMaxSteeringForce
+            pos, velocity, boidData.AvoidanceMaxLookDist,
+            boidData.AvoidanceMinIntensity, boidData.AvoidanceMaxIntensity,
+            boidData.AvoidanceMaxSteeringForce, boidData.AvoidInvisBoidWalls
         );
     }
     
@@ -130,11 +132,10 @@ public class BoidSteerer {
     /// <br/><br/>
     /// Uses one central raycast.
     /// </summary>
-    public static Vector3 Avoidance1PFlat(Vector3 pos, Vector3 velocity, float lookDist, float minAvoidIntensity, float maxAvoidIntensity, float maxSteeringForce) {
+    public static Vector3 Avoidance1PFlat(Vector3 pos, Vector3 velocity, float lookDist, float minAvoidIntensity, float maxAvoidIntensity, float maxSteeringForce, bool avoidInvisBoidWalls) {
         velocity.y = 0;
         return Avoidance1P(
-            pos, velocity,
-            lookDist, minAvoidIntensity, maxAvoidIntensity, maxSteeringForce
+            pos, velocity, lookDist, minAvoidIntensity, maxAvoidIntensity, maxSteeringForce, avoidInvisBoidWalls
         );
     }
     
@@ -147,8 +148,9 @@ public class BoidSteerer {
     public static Vector3 Avoidance1PFlat(Vector3 pos, Vector3 velocity, GeneralBoidSO boidData) {
         velocity.y = 0;
         return Avoidance1P(
-            pos, velocity,
-            boidData.AvoidanceMaxLookDist, boidData.AvoidanceMinIntensity, boidData.AvoidanceMaxIntensity, boidData.AvoidanceMaxSteeringForce
+            pos, velocity, boidData.AvoidanceMaxLookDist,
+            boidData.AvoidanceMinIntensity, boidData.AvoidanceMaxIntensity,
+            boidData.AvoidanceMaxSteeringForce, boidData.AvoidInvisBoidWalls
         );
     }
     
@@ -156,7 +158,7 @@ public class BoidSteerer {
     /// Avoidance using two additional whiskers.<br/>
     /// All whiskers (forward, right, left) are locked in the x-z plane.
     /// </summary>
-    public static Vector3 Avoidance3PFlat(Vector3 pos, Vector3 velocity, float angleDeg, float lookDist, float minAvoidIntensity, float maxAvoidIntensity, float maxSteeringForce) {
+    public static Vector3 Avoidance3PFlat(Vector3 pos, Vector3 velocity, float angleDeg, float lookDist, float minAvoidIntensity, float maxAvoidIntensity, float maxSteeringForce, bool avoidInvisBoidWalls) {
         velocity.y = 0;
         float speed = velocity.magnitude;
         Vector3 forward = velocity / speed;
@@ -164,9 +166,9 @@ public class BoidSteerer {
         Vector3 velFactor = forward * Mathf.Cos(angleDeg * Mathf.Deg2Rad);
         Vector3 rightFactor = right * Mathf.Sin(angleDeg * Mathf.Deg2Rad);
         return Vector3.ClampMagnitude(
-            calcAvoid(pos, velocity, lookDist, minAvoidIntensity, maxAvoidIntensity) + // Center whisker
-            calcAvoid(pos, (velFactor + rightFactor) * speed, lookDist, minAvoidIntensity, maxAvoidIntensity) + // Right whisker
-            calcAvoid(pos, (velFactor - rightFactor) * speed, lookDist, minAvoidIntensity, maxAvoidIntensity), // Left whisker
+            calcAvoid(pos, velocity, lookDist, minAvoidIntensity, maxAvoidIntensity, avoidInvisBoidWalls) + // Center whisker
+            calcAvoid(pos, (velFactor + rightFactor) * speed, lookDist, minAvoidIntensity, maxAvoidIntensity, avoidInvisBoidWalls) + // Right whisker
+            calcAvoid(pos, (velFactor - rightFactor) * speed, lookDist, minAvoidIntensity, maxAvoidIntensity, avoidInvisBoidWalls), // Left whisker
             maxSteeringForce
         );
     }
@@ -177,8 +179,9 @@ public class BoidSteerer {
     /// </summary>
     public static Vector3 Avoidance3PFlat(Vector3 pos, Vector3 velocity, GeneralBoidSO boidData) {
         return Avoidance3PFlat(
-            pos, velocity, boidData.AvoidanceWhiskerAngle,
-            boidData.AvoidanceMaxLookDist, boidData.AvoidanceMinIntensity, boidData.AvoidanceMaxIntensity, boidData.AvoidanceMaxSteeringForce
+            pos, velocity, boidData.AvoidanceWhiskerAngle, boidData.AvoidanceMaxLookDist,
+            boidData.AvoidanceMinIntensity, boidData.AvoidanceMaxIntensity,
+            boidData.AvoidanceMaxSteeringForce, boidData.AvoidInvisBoidWalls
         );
     }
     
@@ -186,7 +189,7 @@ public class BoidSteerer {
     /// Avoidance using two additional whiskers.<br/>
     /// Rotates the right and left whiskers based on a given rotation.
     /// </summary>
-    public static Vector3 Avoidance3P3D(Vector3 pos, Vector3 velocity, Quaternion rotation, float angleDeg, float lookDist, float minAvoidIntensity, float maxAvoidIntensity, float maxSteeringForce) {
+    public static Vector3 Avoidance3P3D(Vector3 pos, Vector3 velocity, Quaternion rotation, float angleDeg, float lookDist, float minAvoidIntensity, float maxAvoidIntensity, float maxSteeringForce, bool avoidInvisBoidWalls) {
         float speed = velocity.magnitude;
         Vector3 forward = velocity / speed;
         // The below commented-out code may be faster by a little bit, but is not as cool as weird quaternion math
@@ -196,11 +199,11 @@ public class BoidSteerer {
         Vector3 rightVect = Quaternion.AngleAxis(angleDeg, rotation * Vector3.up) * forward;
         Vector3 leftVect = Vector3.Reflect(-rightVect, forward); // Quaternion.AngleAxis(angleDeg, Vector3.up) * forward;
         return Vector3.ClampMagnitude(
-            calcAvoid(pos, velocity, lookDist, minAvoidIntensity, maxAvoidIntensity) + // Center whisker
+            calcAvoid(pos, velocity, lookDist, minAvoidIntensity, maxAvoidIntensity, avoidInvisBoidWalls) + // Center whisker
             // calcAvoid(pos, (velFactor + rightFactor) * speed, lookDist, minAvoidIntensity, maxAvoidIntensity) + // Right whisker
             // calcAvoid(pos, (velFactor - rightFactor) * speed, lookDist, minAvoidIntensity, maxAvoidIntensity), // Left whisker
-            calcAvoid(pos, rightVect * speed, lookDist, minAvoidIntensity, maxAvoidIntensity) + // Right whisker
-            calcAvoid(pos, leftVect * speed, lookDist, minAvoidIntensity, maxAvoidIntensity), // Left whisker
+            calcAvoid(pos, rightVect * speed, lookDist, minAvoidIntensity, maxAvoidIntensity, avoidInvisBoidWalls) + // Right whisker
+            calcAvoid(pos, leftVect * speed, lookDist, minAvoidIntensity, maxAvoidIntensity, avoidInvisBoidWalls), // Left whisker
             maxSteeringForce
         );
     }
@@ -211,8 +214,9 @@ public class BoidSteerer {
     /// </summary>
     public static Vector3 Avoidance3P3D(Vector3 pos, Vector3 velocity, Quaternion rotation, GeneralBoidSO boidData) {
         return Avoidance3P3D(
-            pos, velocity, rotation, boidData.AvoidanceWhiskerAngle,
-            boidData.AvoidanceMaxLookDist, boidData.AvoidanceMinIntensity, boidData.AvoidanceMaxIntensity, boidData.AvoidanceMaxSteeringForce
+            pos, velocity, rotation, boidData.AvoidanceWhiskerAngle, boidData.AvoidanceMaxLookDist,
+            boidData.AvoidanceMinIntensity, boidData.AvoidanceMaxIntensity,
+            boidData.AvoidanceMaxSteeringForce, boidData.AvoidInvisBoidWalls
         );
     }
     
@@ -245,9 +249,11 @@ public class BoidSteerer {
         );
     }
     
-    static Vector3 calcAvoid(Vector3 pos, Vector3 velocity, float lookDist, float minAvoidIntensity, float maxAvoidIntensity) {
+    static Vector3 calcAvoid(Vector3 pos, Vector3 velocity, float lookDist, float minAvoidIntensity, float maxAvoidIntensity, bool avoidInvisBoidWalls) {
         Ray ray = new(pos, velocity);
-        if (Physics.Raycast(ray: ray, maxDistance: lookDist, layerMask: AVOIDANCE_LAYER_MASK, hitInfo: out RaycastHit hit)) {
+        if (Physics.Raycast(
+                ray: ray, maxDistance: lookDist, layerMask: avoidInvisBoidWalls ? AVOID_MASK_WITH_INVIS : AVOIDANCE_LAYER_MASK, hitInfo: out RaycastHit hit
+            )) {
             Vector3 reflect = Vector3.Reflect(velocity, hit.normal);
 #if UNITY_EDITOR && DEBUG_RAYS
             Debug.DrawRay(ray.origin, ray.direction * hit.distance, Color.black, Time.fixedDeltaTime, false); // raycast
