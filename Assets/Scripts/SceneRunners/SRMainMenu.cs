@@ -15,7 +15,7 @@ public class SRMainMenu : SceneRunner {
     }
     
     public void LoadLevel_Tutorial() {
-        SwitchToScene("TutorialScene");
+        SwitchToScene("TutroialAdam");
     }
     
 }

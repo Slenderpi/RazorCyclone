@@ -211,9 +211,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     }
     
     public void SpendFuel(float amount) {
-#if UNITY_EDITOR
         if (NoFuelCost) return;
-#endif
         
         bool spentAsHealth = false;
         if (currentFuel > 0) {
