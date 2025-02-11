@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0aea5ff175ad86a42baf3d1681f76aa6, type: 3}
-  m_Name: CanonFodderBoidData
+  m_Name: CFTest
   m_EditorClassIdentifier: 
   MaxSteeringVelocity: 10
   MaxSteeringForce: 10
@@ -19,9 +19,9 @@ MonoBehaviour:
   WanderChangeDist: 0.12
   WanderMinimumDelay: 0.1
   AvoidanceTestType: 3
-  AvoidanceMaxLookDist: 3
-  AvoidanceWhiskerAngle: 30
-  AvoidanceMinIntensity: 0.3
-  AvoidanceMaxIntensity: 5
-  AvoidanceMaxSteeringForce: 15
+  AvoidanceMaxLookDist: 10
+  AvoidanceWhiskerAngle: 10
+  AvoidanceMinIntensity: 100
+  AvoidanceMaxIntensity: 100
+  AvoidanceMaxSteeringForce: 300
   FleeTriggerDistance: 10

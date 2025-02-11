@@ -30,7 +30,9 @@ public class BM_Basic : BoidMover {
     [SerializeField]
     float AvoidanceWhiskerAngle = 30f;
     [SerializeField]
-    float AvoidanceIntensity = 7;
+    float AvoidanceMinIntensity = 1;
+    [SerializeField]
+    float AvoidanceMaxIntensity = 7;
     [SerializeField]
     float AvoidanceMaxSteeringForce = 10;
     
@@ -45,7 +47,8 @@ public class BM_Basic : BoidMover {
     float wmd;
     float amld;
     float awa;
-    float ai;
+    float ami;
+    float aMi;
     float amsf;
     
     
@@ -88,10 +91,10 @@ public class BM_Basic : BoidMover {
 
     Vector3 testObstAvoid() {
         Vector3 forward = rb.velocity;
-        if (forward.sqrMagnitude <= 0.001f)
+        if (forward.sqrMagnitude <= 0.0001f)
             forward = transform.forward;
         // Vector3 avoid = BoidSteerer.Avoidance3P(transform.position, forward, awa, amld, ai, amsf);
-        Vector3 straight = BoidSteerer.Seek(transform.position, transform.position + forward.normalized * 1, rb.velocity, msv, msf);
+        Vector3 straight = BoidSteerer.Seek(transform.position, transform.position + forward.normalized * BoidData.MaxSteeringForce / 10f, rb.velocity, msv, msf);
         return straight;
         // return avoid + straight;
         // return doWander() + avoid;
@@ -118,7 +121,8 @@ public class BM_Basic : BoidMover {
             wmd = WanderMinimumDelay;
             amld = AvoidanceMaxLookDist;
             awa = AvoidanceWhiskerAngle;
-            ai = AvoidanceIntensity;
+            aMi = AvoidanceMinIntensity;
+            aMi = AvoidanceMaxIntensity;
             amsf = AvoidanceMaxSteeringForce;
         } else {
             bt = BoidData.BehaviourType;
@@ -132,7 +136,8 @@ public class BM_Basic : BoidMover {
             wmd = BoidData.WanderMinimumDelay;
             amld = BoidData.AvoidanceMaxLookDist;
             awa = BoidData.AvoidanceWhiskerAngle;
-            ai = BoidData.AvoidanceIntensity;
+            aMi = BoidData.AvoidanceMinIntensity;
+            aMi = BoidData.AvoidanceMaxIntensity;
             amsf = BoidData.AvoidanceMaxSteeringForce;
         }
     }

@@ -10,20 +10,20 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 636b3ab64528d464e83293e64426ac4f, type: 3}
-  m_Name: TestBasicBoidData
+  m_Name: TestBasic2
   m_EditorClassIdentifier: 
-  MaxSteeringVelocity: 100
-  MaxSteeringForce: 70
-  WanderLimitRadius: 10
-  WanderLimitDist: 5
-  WanderChangeDist: 2
+  MaxSteeringVelocity: 15
+  MaxSteeringForce: 6
+  WanderLimitRadius: 0.5
+  WanderLimitDist: 0.5
+  WanderChangeDist: 0.15
   WanderMinimumDelay: 0
-  AvoidanceTestType: 3
-  AvoidanceMaxLookDist: 30
+  AvoidanceTestType: 4
+  AvoidanceMaxLookDist: 4
   AvoidanceWhiskerAngle: 30
-  AvoidanceMinIntensity: 1
-  AvoidanceMaxIntensity: 100
-  AvoidanceMaxSteeringForce: 1000000
-  BehaviourType: 4
-  RotationType: 1
+  AvoidanceMinIntensity: 0
+  AvoidanceMaxIntensity: 10
+  AvoidanceMaxSteeringForce: 30
+  BehaviourType: 5
+  RotationType: 4
   CanFly: 0
