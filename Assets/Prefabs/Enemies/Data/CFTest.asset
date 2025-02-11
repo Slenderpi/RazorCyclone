@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0aea5ff175ad86a42baf3d1681f76aa6, type: 3}
+  m_Name: CFTest
+  m_EditorClassIdentifier: 
+  MaxSteeringVelocity: 10
+  MaxSteeringForce: 10
+  WanderLimitRadius: 0.7
+  WanderLimitDist: 1
+  WanderChangeDist: 0.12
+  WanderMinimumDelay: 0.1
+  AvoidanceTestType: 3
+  AvoidanceMaxLookDist: 10
+  AvoidanceWhiskerAngle: 10
+  AvoidanceMinIntensity: 100
+  AvoidanceMaxIntensity: 100
+  AvoidanceMaxSteeringForce: 300
+  FleeTriggerDistance: 10
