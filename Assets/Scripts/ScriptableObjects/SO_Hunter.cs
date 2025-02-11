@@ -18,5 +18,7 @@ public class SO_Hunter : GeneralBoidSO {
     public bool IncludeWander = false;
     [Tooltip("When the Hunter is GREATER than this distance, enable wander.")]
     public float WanderTriggerDist = 7;
+    [Tooltip("If the Hunter is within this distance (inclusive) to the player, obstacle avoidance will be disabled to make sure they actually hit the player.")]
+    public float AvoidanceDisableDist = 5;
     
 }

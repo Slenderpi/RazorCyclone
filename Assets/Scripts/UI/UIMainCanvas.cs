@@ -83,7 +83,7 @@ public class UIMainCanvas : UIPanel {
     }
 
     public override void OnPlayerDestroying(PlayerCharacterCtrlr plr) {
-        SetCanvasState(ECanvasState.None); // TODO: Death screen
+        SetCanvasState(ECanvasState.None);
     }
 
     public override void OnPlayerSpawned(PlayerCharacterCtrlr plr) {
@@ -92,7 +92,7 @@ public class UIMainCanvas : UIPanel {
     
     public override void Init() {
         base.Init();
-#if UNITY_EDITOR
+#if UNITY_EDITOR || KEEP_DEBUG
         DebugPanel.SetActive(true);
 #endif
         SetCanvasState(ECanvasState.None);

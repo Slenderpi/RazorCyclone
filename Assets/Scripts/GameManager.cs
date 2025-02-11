@@ -34,7 +34,7 @@ public class GameManager : MonoBehaviour {
     
     // Pause menu input actions
     PlayerInputActions.PauseMenuActions PauseInputActions;
-#if UNITY_EDITOR
+#if UNITY_EDITOR || KEEP_DEBUG
     PlayerInputActions.DEBUGActions DebugActions;
 #endif
     
@@ -51,6 +51,14 @@ public class GameManager : MonoBehaviour {
             _currentMouseSensitivity = value;
             if (CurrentPlayer != null) CurrentPlayer.mouseSensitivity = _currentMouseSensitivity;
             SettingsPanel.SetMouseSenseText(_currentMouseSensitivity);
+        }
+    }
+    int _currentFOV = 90;
+    public int CurrentFOV {
+        get => _currentFOV;
+        set {
+            _currentFOV = value;
+            onFOVChanged(value);
         }
     }
     [Header("Player Settings")]
@@ -83,7 +91,7 @@ public class GameManager : MonoBehaviour {
         PauseInputActions = new PlayerInputActions().PauseMenu;
         SetPauseInputActionsEnabled(true);
         
-#if UNITY_EDITOR
+#if UNITY_EDITOR || KEEP_DEBUG
         setupDebugActions();
 #endif
     }
@@ -199,9 +207,14 @@ public class GameManager : MonoBehaviour {
         CurrentMouseSensitivity = Mathf.Lerp(LowestSensitivity, HighestSensitivity, SettingsPanel.MouseSenseSlider.value);
     }
     
+    // public void OnFOVChanged(int newfov) {
+    //     Camera.main.fieldOfView = newfov;
+    // }
+    
     public void OnSceneLoaded(Scene scene, LoadSceneMode mode) {
         if (scene.name != "CoreScene") {
             SceneManager.SetActiveScene(scene);
+            // Camera.main.fieldOfView = _currentFOV;
         }
     }
 
@@ -218,14 +231,18 @@ public class GameManager : MonoBehaviour {
     void onPlayerDied() {
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
-        SetPauseInputActionsEnabled(false);
+        // SetPauseInputActionsEnabled(false);
+    }
+    
+    void onFOVChanged(int value) {
+        Camera.main.fieldOfView = value;
     }
     
     
     
     /******  DEBUGGING  ******/
     
-#if UNITY_EDITOR
+#if UNITY_EDITOR || KEEP_DEBUG
     void setupDebugActions() {
         DebugActions = new PlayerInputActions().DEBUG;
         DebugActions.ToggleMouseLock.Enable();
@@ -247,6 +264,14 @@ public class GameManager : MonoBehaviour {
                 CurrentPlayer.TakeDamage(CurrentPlayer.MaxHealth);
             }
         };
+    }
+    
+    public static void D_DrawPoint(Vector3 position, Color c) {
+        float t = Time.fixedDeltaTime;
+        bool b = false;
+        float rad = 0.15f;
+        Debug.DrawRay(position + Vector3.forward * rad, 2 * rad * Vector3.back, c, t, b);
+        Debug.DrawRay(position + Vector3.right * rad, 2 * rad * Vector3.left, c, t, b);
     }
 #endif
     
@@ -287,7 +312,7 @@ class ProgrammerPreferences {
     
     public bool UsePreferences;
     public float MouseSensitivity;
-    public float MasterVolume = 1;
+    public float MasterVolume = 100;
 
     internal void SetPreferences() {
         if (!UsePreferences) return;
@@ -295,6 +320,7 @@ class ProgrammerPreferences {
         float highSens = GameManager.Instance.HighestSensitivity;
         float lowSens = GameManager.Instance.LowestSensitivity;
         GameManager.Instance.SettingsPanel.MouseSenseSlider.value = (GameManager.Instance.CurrentMouseSensitivity - lowSens) / (highSens - lowSens);
+        if (MasterVolume == 1f) Debug.LogWarning(">> Programmer preferences file has MasterVolume set to 1. Did you mean 100? Currently, volume is on a scale from 0 to 100 rather than 0 to 1.");
         GameManager.Instance.Audio2D.SetMasterVolume(MasterVolume);
     }
 }

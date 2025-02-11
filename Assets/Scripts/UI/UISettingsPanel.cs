@@ -30,9 +30,11 @@ public class UISettingsPanel : UIPanel {
     [Header("Video References")]
     public Toggle fullscreenToggle;
     public TMP_Dropdown resolutionDropdown;
+    public Toggle vsyncToggle;
     public Slider fpsLimitSlider;
     public TMP_InputField fpsLimitInputField;
-    public Toggle vsyncToggle;
+    public Slider fovSlider;
+    public TMP_InputField fovInputField;
     public TMP_Dropdown shadowResolutionDropdown;
     
     [Header("Audio References")]
@@ -60,6 +62,10 @@ public class UISettingsPanel : UIPanel {
         Screen.SetResolution(resop.width, resop.height, Screen.fullScreen, resop.refreshRate);
     }
     
+    public void OnToggle_VSync(bool isOn) {
+        QualitySettings.vSyncCount = isOn ? 1 : 0;
+    }
+    
     public void OnSlider_FPSLimit(float val) {
         setFrameLimit((int)val);
     }
@@ -70,8 +76,14 @@ public class UISettingsPanel : UIPanel {
         }
     }
     
-    public void OnToggle_VSync(bool isOn) {
-        QualitySettings.vSyncCount = isOn ? 1 : 0;
+    public void OnSlider_FOV(float val) {
+        setFOV(Mathf.RoundToInt(val));
+    }
+    
+    public void OnField_FOV(string str) {
+        if (int.TryParse(str, out int fps)) {
+            setFOV(fps);
+        }
     }
     
     public void OnDropdown_ShadowResolution(int option) {
@@ -193,16 +205,23 @@ public class UISettingsPanel : UIPanel {
     }
     
     void setFrameLimit(int val) {
-        val = Math.Clamp(val, 20, 241);
-        if (val == 241) {
+        val = Math.Clamp(val, 20, 200);
+        if (val == 200) {
             Application.targetFrameRate = -1;
             fpsLimitInputField.SetTextWithoutNotify("Unlimited");
-            fpsLimitSlider.SetValueWithoutNotify(241);
+            fpsLimitSlider.SetValueWithoutNotify(200);
         } else {
             Application.targetFrameRate = val;
             fpsLimitInputField.SetTextWithoutNotify(val.ToString());
             fpsLimitSlider.SetValueWithoutNotify(val);
         }
+    }
+    
+    void setFOV(int val) {
+        val = Math.Clamp(val, 40, 130);
+        GameManager.Instance.CurrentFOV = val;
+        fovInputField.SetTextWithoutNotify(val.ToString());
+        fovSlider.SetValueWithoutNotify(val);
     }
     
     void setVolumeMaster(int val) {
@@ -238,8 +257,11 @@ public class UISettingsPanel : UIPanel {
         }
         if (!found) print("RESOLUTION NOT FOUND.");
         resolutionDropdown.SetValueWithoutNotify(resopi);
-        setFrameLimit(Application.targetFrameRate <= 0 ? 241 : Application.targetFrameRate);
         vsyncToggle.SetIsOnWithoutNotify(QualitySettings.vSyncCount > 0);
+        setFrameLimit(Application.targetFrameRate <= 0 ? 200 : Application.targetFrameRate);
+        float fov = Camera.main.fieldOfView;
+        fovInputField.SetTextWithoutNotify(Mathf.RoundToInt(fov).ToString());
+        fovSlider.SetValueWithoutNotify(fov);
         int shadresopi = 0;
         switch (QualitySettings.shadowResolution) {
         case ShadowResolution.Low:
@@ -262,11 +284,15 @@ public class UISettingsPanel : UIPanel {
         AudioMixer mam = AudioPlayer2D.Instance.MainAudioMixer;
         float val;
         mam.GetFloat("volMaster", out val);
-        setVolumeMaster(Mathf.RoundToInt((1 - val / -80f) * 100f));
+        setVolumeMaster(calcPowerVolume(val));
         mam.GetFloat("volSFX", out val);
-        setVolumeSFX(Mathf.RoundToInt((1 - val / -80f) * 100f));
+        setVolumeSFX(calcPowerVolume(val));
         mam.GetFloat("volMusic", out val);
-        setVolumeMusic(Mathf.RoundToInt((1 - val / -80f) * 100f));
+        setVolumeMusic(calcPowerVolume(val));
+    }
+    
+    int calcPowerVolume(float volAsLog) {
+        return Mathf.RoundToInt(100 * Mathf.Pow(10, volAsLog / 20f));
     }
     
 }
