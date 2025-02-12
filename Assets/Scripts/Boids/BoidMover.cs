@@ -46,13 +46,13 @@ public abstract class BoidMover : MonoBehaviour {
         if (!plr) return;
         Vector3 steer = CalculateSteering();
         if (ModelToRotate)
-            calculatedRotation = _calcSteering(rb.velocity, steer);
+            calculatedRotation = _calcRotation(rb.velocity, steer);
         if (enableAvoidanceTest)
             steer += testAvoidance();
         rb.AddForce(steer, ForceMode.Acceleration);
     }
     
-    Quaternion _calcSteering(Vector3 forward, Vector3 steer) {
+    Quaternion _calcRotation(Vector3 forward, Vector3 steer) {
         if (forward.sqrMagnitude <= 0.0001f) forward = ModelToRotate.forward; // If vel is 0, use model's current forward
         if (forward.sqrMagnitude <= 0.0001f) return ModelToRotate.rotation; // If forward is 0, maintain prev rot
         if (steer.sqrMagnitude <= 0.0001f) return ModelToRotate.rotation; // If steer is 0, maintain prev rot

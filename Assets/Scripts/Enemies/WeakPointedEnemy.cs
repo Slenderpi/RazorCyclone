@@ -1,8 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class WeakPointedEnemy : EnemyBase {
+public class WeakpointedEnemy : EnemyBase {
     
     [Header("Weakpoints")]
     [Tooltip("List of weakpoints for this enemy. The health of this enemy will be set to the number of weakpoints they have.")]
@@ -11,6 +9,8 @@ public class WeakPointedEnemy : EnemyBase {
     
     
     protected override void Init() {
+        CanGetVacuumSucked = false;
+        CanGetVacuumKilled = false;
         MaxHealth = weakpoints.Length;
         health = MaxHealth;
         foreach (EnemyWeakpoint wkp in weakpoints) {
@@ -26,10 +26,10 @@ public class WeakPointedEnemy : EnemyBase {
     }
     
     protected virtual void TakeWeakpointDamage(EDamageType damageType) {
-        health--;
-        if (health <= 0) {
+        if (health <= 0) return;
+        if (--health <= 0) {
             GameManager.Instance.OnEnemyTookDamage(this, damageType, true);
-            OnDefeated(damageType);
+            OnDefeated(EDamageType.Any);
         }
     }
 

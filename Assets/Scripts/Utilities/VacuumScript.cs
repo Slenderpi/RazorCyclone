@@ -53,7 +53,8 @@ public class VacuumScript : MonoBehaviour {
     void onKillboxEnter(Collider collider) {
         if (collider.CompareTag("Enemy")) {
             EnemyBase en = collider.GetComponentInParent<EnemyBase>();
-            en.TakeDamage(en.MaxHealth, EDamageType.Vacuum);
+            if (en.CanGetVacuumKilled)
+                en.TakeDamage(en.MaxHealth, EDamageType.Vacuum);
         }
     }
     

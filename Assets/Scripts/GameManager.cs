@@ -283,6 +283,7 @@ public class GameManager : MonoBehaviour {
 /// The type of damage applied on an enemy.
 /// </summary>
 public enum EDamageType {
+    Any,
     Projectile,
     Vacuum,
     ProjectileExplosion

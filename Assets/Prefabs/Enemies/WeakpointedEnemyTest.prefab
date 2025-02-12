@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 7574440012222913657}
   - component: {fileID: 3856138652977017902}
   - component: {fileID: 8754407793141711248}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: WeakpointedEnemyTest
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -54,10 +54,11 @@ MonoBehaviour:
   DealDamageOnTouch: 1
   lastVacuumHitTime: 0
   CanGetVacuumSucked: 1
+  CanGetVacuumKilled: 1
   FuelAmount: 50
   rb: {fileID: 0}
   boid: {fileID: 0}
-  fuelPickupPrefab: {fileID: 0}
+  fuelPickupPrefab: {fileID: 5163220815717078053, guid: bb72521b10fb34d7bbbed5f6f77687b4, type: 3}
   invincible: 0
   weakpoints:
   - {fileID: 6143634286852103868}
@@ -78,6 +79,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ModelToRotate: {fileID: 530630314941688073}
   rotationPerFrameLerpAlpha: 0.1
+  WeakPTestData: {fileID: 11400000, guid: ed70e524658b800429592f2acd0b6508, type: 2}
 --- !u!54 &8754407793141711248
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -105,7 +107,7 @@ GameObject:
   - component: {fileID: 1051995243006212164}
   - component: {fileID: 637787025138266261}
   - component: {fileID: 6225244911196347091}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Sphere_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -188,7 +190,7 @@ GameObject:
   - component: {fileID: 1055618944025041446}
   - component: {fileID: 4553531903477354131}
   - component: {fileID: 4632293336880319546}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Sphere_2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -272,7 +274,7 @@ GameObject:
   - component: {fileID: 2810587553991495187}
   - component: {fileID: 5581453083555709348}
   - component: {fileID: 6432464064930480721}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -354,7 +356,7 @@ BoxCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2227934649610191717}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: 7e240f9fbfb932d4387f9e8ea1dd65d6, type: 2}
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
@@ -371,7 +373,7 @@ GameObject:
   - component: {fileID: 4572694283666499015}
   - component: {fileID: 5744013279119595365}
   - component: {fileID: 8909464819390024994}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Sphere_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -454,7 +456,7 @@ GameObject:
   - component: {fileID: 8629626885806457638}
   - component: {fileID: 8513297706417064125}
   - component: {fileID: 8772310517339358034}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Sphere_3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -535,7 +537,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 530630314941688073}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Pivot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -577,7 +579,7 @@ GameObject:
   - component: {fileID: 9120784853267180044}
   - component: {fileID: 7308511994136324355}
   - component: {fileID: 6705904853618801099}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Sphere
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -660,7 +662,7 @@ GameObject:
   - component: {fileID: 8270822900210766830}
   - component: {fileID: 2140267992911640546}
   - component: {fileID: 3262248010822944493}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Sphere
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -743,7 +745,7 @@ GameObject:
   - component: {fileID: 4250893197401763867}
   - component: {fileID: 9170906564974062298}
   - component: {fileID: 2450085413928160896}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Sphere_2
   m_TagString: Untagged
   m_Icon: {fileID: 0}

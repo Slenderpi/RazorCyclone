@@ -36,6 +36,7 @@ public class HunterEnemy : EnemyBase {
             isStunned = true;
             DealDamageOnTouch = false;
             CanGetVacuumSucked = true;
+            CanGetVacuumKilled = true;
             boid.enabled = false;
             rb.useGravity = true;
             rb.drag = stunDrag;
@@ -48,6 +49,7 @@ public class HunterEnemy : EnemyBase {
         yield return new WaitForSeconds(StunDuration);
         DealDamageOnTouch = true;
         CanGetVacuumSucked = false;
+        CanGetVacuumKilled = false;
         boid.enabled = true;
         rb.useGravity = false;
         rb.drag = shieldDrag;

@@ -18,6 +18,8 @@ public class EnemyBase : MonoBehaviour {
     public float lastVacuumHitTime = 0f;
     [Tooltip("Determines if this enemy allows vacuum forces to be applied on it.\n\nNote: certain enemies (e.g. Hunter) will set this value on their own, and do not need this to be touched.")]
     public bool CanGetVacuumSucked = true;
+    [Tooltip("Determines if this enemy can be killed when touched by the vacuum's killbox.\n\nNote: certain enemies (e.g. Hunter) will set this value on their own, and do not need this to be touched.")]
+    public bool CanGetVacuumKilled = true;
     public int FuelAmount = 50; // The value of the fuel this enemy will drop
     [HideInInspector]
     public Rigidbody rb;
@@ -92,8 +94,6 @@ public class EnemyBase : MonoBehaviour {
         fuel.FuelValue = FuelAmount;
     }
     
-    protected virtual void Init() {
-        
-    }
+    protected virtual void Init() {}
     
 }
