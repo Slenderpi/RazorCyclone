@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.PlayerLoop;
 
 public class HunterEnemy : EnemyBase {
     
@@ -11,10 +12,10 @@ public class HunterEnemy : EnemyBase {
     public Material shieldActiveMaterial;
     public Material shieldInactiveMaterial;
     [SerializeField] MeshRenderer ModelMeshRenderer;
-    
-    
-    
-    void Start() {
+
+
+
+    protected override void Init() {
         CanGetVacuumSucked = false;
         rb.drag = shieldDrag;
         SetEffectState();

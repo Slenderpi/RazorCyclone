@@ -19,11 +19,6 @@ public class WeakpointedEnemy : EnemyBase {
             };
         }
     }
-
-    public override void TakeDamage(float amnt, EDamageType damageType) {
-        // WeakPointedEnemies cannot take direct damage
-        return;
-    }
     
     protected virtual void TakeWeakpointDamage(EDamageType damageType) {
         if (health <= 0) return;

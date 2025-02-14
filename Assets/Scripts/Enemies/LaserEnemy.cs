@@ -67,13 +67,14 @@ public class LaserEnemy : EnemyBase {
             rotateTowardsPlayer(GameManager.CurrentPlayer.transform.position, currRotRate);
         }
     }
-    
-    void FixedUpdate() {
+
+    protected override void onFixedUpdate() {
+        base.onFixedUpdate();
         if (GameManager.CurrentPlayer) {
             currStateFunc();
         }
     }
-    
+
     public override void TakeDamage(float amnt, EDamageType damageType) {
         if (damageType == EDamageType.Vacuum) {
             base.TakeDamage(amnt, damageType);
@@ -152,7 +153,7 @@ public class LaserEnemy : EnemyBase {
             return;
         }
         if (updateLaserLine(false))
-            plr.TakeDamage(Damage * Time.deltaTime); // ASSUMES DAMAGE IS DAMAGE PER SEC
+            plr.TakeDamage(Damage * Time.deltaTime, EDamageType.Enemy); // ASSUMES DAMAGE IS DAMAGE PER SEC
     }
     
     void enterStateAttack() {

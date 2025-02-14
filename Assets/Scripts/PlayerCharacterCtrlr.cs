@@ -109,6 +109,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     Quaternion rotBeforeInputUpdate = Quaternion.identity;
     float pivotRotLerpPower = 4;
     float pivotRotLerpTime = 0.1f;
+    Lava lava;
     
     
     
@@ -169,6 +170,8 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         currentMuzzleFlashEffect = Instantiate(muzzleFlashEffect, canonTip);
         currentMuzzleFlashEffect.SetActive(false);
         
+        lava = GameManager.Instance.currentSceneRunner.lava;
+        
         updateCameraTransform();
     }
     
@@ -180,7 +183,6 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         charModel.localEulerAngles = new Vector3(0, camtrans.localEulerAngles.y, 0);
         
         interpRotPivot();
-        healthRegen();
     }
 
     void FixedUpdate() {
@@ -195,9 +197,9 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
                 rb.AddForce(charPivot.forward * (rb.velocity.magnitude <= VacuumForceNormalSpeed ? VacuumForceLowSpeed : VacuumForce), ForceMode.Acceleration);
             }
         }
-        
+        handleHealthRegen();
+        handleLavaCheck();
         _gamePanel.SetSpeedText(rb.velocity.magnitude);
-        
     }
     
     void LateUpdate() {
@@ -218,13 +220,13 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
             currentFuel -= amount;
             if (currentFuel < 0) {
                 spentAsHealth = true;
-                TakeDamage(-currentFuel * FuelHelathCostMultiplier);
+                TakeDamage(-currentFuel * FuelHelathCostMultiplier, EDamageType.Any);
                 currentFuel = 0;
             }
         } else {
             spentAsHealth = true;
             //StartCoroutine(StartRefillFuelTimer());
-            TakeDamage(amount * FuelHelathCostMultiplier);
+            TakeDamage(amount * FuelHelathCostMultiplier, EDamageType.Any);
         }
         A_FuelSpent?.Invoke(amount, currentFuel / MaxFuel, spentAsHealth);
     }
@@ -234,7 +236,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         AddFuel(MaxFuel);
     }
     
-    public void TakeDamage(float amount) {
+    public void TakeDamage(float amount, EDamageType damageType) {
         if (IsInvincible) return;
         
         CurrentHealth = Mathf.Max(CurrentHealth - amount, 0);
@@ -248,7 +250,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         
         A_PlayerTakenDamage?.Invoke(amount);
 
-        lastDmgTimeForRegen = Time.time;
+        lastDmgTimeForRegen = Time.fixedTime;
     }
     
     public void HealHealth(float amount) {
@@ -436,6 +438,22 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         _gamePanel.UpdateCrosshairPositions(screenPointVacuum, screenPointCanon);
     }
     
+    void handleHealthRegen() {
+        if ((CurrentHealth < MaxHealth) && (Time.fixedTime - lastDmgTimeForRegen >= HealthRegenDelay)) {
+            HealHealth(HealthRegenPerSecond * Time.fixedDeltaTime);
+        }
+    }
+    
+    void handleLavaCheck() {
+        if (lava && transform.position.y <= lava.currentHeight) {
+            transform.position = new(transform.position.x, lava.currentHeight + 0.1f, transform.position.z);
+            Vector3 bouncedVel = Vector3.Reflect(rb.velocity, Vector3.up);
+            bouncedVel.y = Mathf.Max(bouncedVel.y, lava.MinimumVerticalBounceSpeed);
+            rb.velocity = bouncedVel;
+            TakeDamage(lava.LavaDamage, EDamageType.Any);
+        }
+    }
+    
     void playMuzzleFlashEffect() {
         currentMuzzleFlashEffect.SetActive(true);
         Destroy(currentMuzzleFlashEffect, 1);
@@ -557,7 +575,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     void On_TakeDamage(InputAction.CallbackContext context) {
         float DamageAmount = 10;
         print("Damaging player for " + DamageAmount + " damage.");
-        TakeDamage(DamageAmount);
+        TakeDamage(DamageAmount, EDamageType.Any);
     }
     
     void On_HealHealth(InputAction.CallbackContext context) {
@@ -565,10 +583,9 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         print("Healing player for " + HealAmount + " health.");
         HealHealth(HealAmount);
     }
-
-    void healthRegen(){
-        if ((Time.time - lastDmgTimeForRegen > HealthRegenDelay) && (CurrentHealth < MaxHealth)){
-            HealHealth(HealthRegenPerSecond * Time.deltaTime);
-        } 
-    }
+    
+    // public void OnSinkBelowLava() {
+    //     TakeDamage(GameManager.Instance.currentSceneRunner.lava.LavaDamage, EDamageType.Any);
+    // }
+    
 }

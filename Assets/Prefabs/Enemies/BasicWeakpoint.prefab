@@ -137,6 +137,8 @@ MonoBehaviour:
   lastVacuumHitTime: 0
   CanGetVacuumSucked: 0
   CanGetVacuumKilled: 1
+  AffectedByLava: 0
+  LavaSubmergeOffset: 1
   FuelAmount: 50
   rb: {fileID: 0}
   boid: {fileID: 0}

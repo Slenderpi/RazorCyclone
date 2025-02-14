@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -7,6 +8,9 @@ public class SceneRunner : MonoBehaviour {
     [Header("Consistent References")] // References consistent for all SceneRunners
     public Transform playerSpawnPoint;
     public Lava lava;
+    
+    [HideInInspector]
+    public List<EnemyBase> SpawnedEnemies; // TODO
     
     
     

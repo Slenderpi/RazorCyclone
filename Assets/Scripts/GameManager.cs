@@ -261,7 +261,7 @@ public class GameManager : MonoBehaviour {
         DebugActions.KillPlayer.started += (InputAction.CallbackContext context) => {
             if (CurrentPlayer != null && CurrentPlayer.CurrentHealth > 0) {
                 print("Killing player from hotkey.");
-                CurrentPlayer.TakeDamage(CurrentPlayer.MaxHealth);
+                CurrentPlayer.TakeDamage(CurrentPlayer.MaxHealth, EDamageType.Any);
             }
         };
     }
@@ -284,6 +284,7 @@ public class GameManager : MonoBehaviour {
 /// </summary>
 public enum EDamageType {
     Any,
+    Enemy,
     Projectile,
     Vacuum,
     ProjectileExplosion

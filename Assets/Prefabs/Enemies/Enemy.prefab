@@ -137,6 +137,9 @@ MonoBehaviour:
   DealDamageOnTouch: 0
   lastVacuumHitTime: 0
   CanGetVacuumSucked: 1
+  CanGetVacuumKilled: 1
+  AffectedByLava: 1
+  LavaSubmergeOffset: 0.5
   FuelAmount: 100
   rb: {fileID: 9113617427949065013}
   boid: {fileID: 0}
