@@ -51,7 +51,7 @@ MonoBehaviour:
   LavaRiseSpeed: 0.5
   MaxLavaHeight: 25
   LavaLowerSpeed: 4
-  LavaDamage: 10
+  LavaDamage: 40
   MinimumVerticalBounceSpeed: 10
   ForceDisable: 0
   LavaHitboxNotifier: {fileID: 4563611578955618028}

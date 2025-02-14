@@ -887,6 +887,7 @@ GameObject:
   - component: {fileID: 81388966}
   - component: {fileID: 81388968}
   - component: {fileID: 81388967}
+  - component: {fileID: 81388969}
   m_Layer: 6
   m_Name: Fill
   m_TagString: Untagged
@@ -927,7 +928,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 0.38841486, b: 0, a: 1}
+  m_Color: {r: 1, g: 0.3882353, b: 0, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -952,6 +953,26 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 81388965}
   m_CullTransparentMesh: 1
+--- !u!95 &81388969
+Animator:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 81388965}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 93c0043edd00fa84bb31ca2e0cd9570b, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &84991666
 GameObject:
   m_ObjectHideFlags: 0
@@ -2550,6 +2571,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   FuelSlider: {fileID: 125639532}
   FuelOutlineAnimator: {fileID: 701307696}
+  FuelFillAnimator: {fileID: 81388969}
   HealthSlider: {fileID: 102897746}
   HealthText: {fileID: 1268275324}
   HealthFillAnimator: {fileID: 1636576748}
