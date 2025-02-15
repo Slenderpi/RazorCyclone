@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using JetBrains.Annotations;
+using UnityEditor.Callbacks;
 using UnityEngine;
 
 public class FuelPickup : MonoBehaviour {
@@ -12,14 +14,32 @@ public class FuelPickup : MonoBehaviour {
     public float AnimCycleDuration = 2;
     [Tooltip("In deg per sec.")]
     public float SpinRate = 180;
+    [Tooltip(@"When a fuel pickup spawns, it will have a bit of a jump.
+    - The Y-value determines the vertical velocity.
+        The jump's Y will always be exactly this value.
+    - The X-value determines the horizontal (x-z)
+        velocity. The jump's horizontal velocity
+        will lie on a circle formed by this value.")]
+    public Vector2 SpawnJumpVelRange;
     
     [Header("References")]
     [SerializeField]
     Transform ModelPivot;
+    public Rigidbody rb;
+    
     bool hasBeenCollected = false;
-    
-    
-    
+
+
+
+    void Start() {
+        float angle = Random.Range(0, Mathf.PI * 2);
+        rb.AddForce(new(
+            SpawnJumpVelRange.x * Mathf.Cos(angle),
+            SpawnJumpVelRange.y,
+            SpawnJumpVelRange.x * Mathf.Sin(angle)
+        ), ForceMode.VelocityChange);
+    }
+
     void OnTriggerEnter(Collider other) {
         if (hasBeenCollected) return;
         if (other.CompareTag("Player"))  {

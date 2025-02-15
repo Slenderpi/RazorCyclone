@@ -3,14 +3,14 @@ using System;
 public class EnemyWeakpoint : EnemyBase {
     
     public Action<EDamageType> A_WeakpointDefeated; // EDamageType dmgtype
-
-
-
+    
+    
+    
     protected override void Init() {
         DealDamageOnTouch = false;
         CanGetVacuumSucked = false;
     }
-
+    
     public override void TakeDamage(float amnt, EDamageType damageType) {
         if (invincible) return;
         if (health <= 0) return;
@@ -21,7 +21,7 @@ public class EnemyWeakpoint : EnemyBase {
             GameManager.Instance.OnEnemyTookDamage(this, damageType, false);
         }
     }
-
+    
     protected override void OnDefeated(EDamageType damageType) {
         if (damageType == EDamageType.Vacuum) {
             // Give player fuel immediately if killed by vacuum
@@ -32,5 +32,5 @@ public class EnemyWeakpoint : EnemyBase {
         gameObject.SetActive(false);
         A_WeakpointDefeated.Invoke(damageType);
     }
-
+    
 }

@@ -38,7 +38,10 @@ public class ProjectileBase : MonoBehaviour {
             !hitObject.CompareTag("Projectile") &&
             !hitObject.CompareTag("Pickup")) {
             hasHit = true;
-            if (hitObject.TryGetComponent(out EnemyBase enemy)) {
+            if (hitObject.CompareTag("Enemy")) {
+                if (!hitObject.TryGetComponent(out EnemyBase enemy)) {
+                    enemy = hitObject.GetComponentInParent<EnemyBase>();
+                }
                 OnHitEnemy(enemy);
             } else {
                 OnHitNonEnemy(hitObject);

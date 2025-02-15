@@ -1,6 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class EnemyBase : MonoBehaviour {
@@ -103,7 +100,11 @@ public class EnemyBase : MonoBehaviour {
     }
 
     public void DropFuel() {
-        FuelPickup fuel = Instantiate(fuelPickupPrefab, transform.position, Quaternion.identity);
+        DropFuel(transform.position);
+    }
+
+    public void DropFuel(Vector3 position) {
+        FuelPickup fuel = Instantiate(fuelPickupPrefab, position, Quaternion.identity);
         fuel.FuelValue = FuelAmount;
     }
     

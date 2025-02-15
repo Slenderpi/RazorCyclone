@@ -445,8 +445,9 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     }
     
     void handleLavaCheck() {
-        if (lava && transform.position.y <= lava.currentHeight) {
-            transform.position = new(transform.position.x, lava.currentHeight + 0.1f, transform.position.z);
+        float offset = 0.7321717f;
+        if (lava && transform.position.y - offset <= lava.currentHeight) {
+            transform.position = new(transform.position.x, lava.currentHeight + offset + 0.1f, transform.position.z);
             Vector3 bouncedVel = Vector3.Reflect(rb.velocity, Vector3.up);
             bouncedVel.y = Mathf.Max(bouncedVel.y, lava.MinimumVerticalBounceSpeed);
             rb.velocity = bouncedVel;
