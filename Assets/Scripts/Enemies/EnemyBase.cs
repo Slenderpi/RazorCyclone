@@ -134,6 +134,7 @@ public class EnemyBase : MonoBehaviour {
     /// </summary>
     protected virtual void OnSubmerged() {
         gameObject.SetActive(false); // TODO: Set inactive or just kill?
+        Destroy(gameObject, 1);
     }
     
 }
