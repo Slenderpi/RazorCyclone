@@ -18,10 +18,10 @@ MonoBehaviour:
   WanderLimitDist: 0.5
   WanderChangeDist: 0.15
   WanderMinimumDelay: 0
-  AvoidanceTestType: 0
-  AvoidanceMaxLookDist: 4
+  AvoidanceTestType: 3
+  AvoidanceMaxLookDist: 6
   AvoidanceWhiskerAngle: 30
   AvoidanceMinIntensity: 1
   AvoidanceMaxIntensity: 10
-  AvoidanceMaxSteeringForce: 10
+  AvoidanceMaxSteeringForce: 30
   AvoidInvisBoidWalls: 0

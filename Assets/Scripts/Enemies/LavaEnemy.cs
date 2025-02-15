@@ -1,4 +1,3 @@
-using System.Collections;
 using UnityEngine;
 
 public class LavaEnemy : WeakpointedEnemy {
@@ -9,6 +8,7 @@ public class LavaEnemy : WeakpointedEnemy {
     
     LavaWeakpoint weakpoint;
     bool isArmored = true;
+    float lastExposeTime = -1000f;
     
     
     
@@ -24,55 +24,44 @@ public class LavaEnemy : WeakpointedEnemy {
         base.LateInit();
         lava.OnLavaEnemySpawned();
     }
-
+    
     protected override void onFixedUpdate() {
         if (transform.position.y < lava.currentHeight) {
             if (!rb.constraints.HasFlag(RigidbodyConstraints.FreezePositionY))
                 rb.constraints |= RigidbodyConstraints.FreezePositionY;
             transform.position = new(transform.position.x, lava.currentHeight, transform.position.z);
         }
+        if (!isArmored && Time.fixedTime - lastExposeTime > WeakpointExposeDuration) {
+            ReArmor();
+        }
     }
     
     protected override void OnDefeated(EDamageType damageType) {
         lava.OnLavaEnemyDefeated();
         // Lava enemy does not drop its own fuel cell. Instead, its weakpoint(s) will.
-        // base.OnDefeated(damageType);
         gameObject.SetActive(false);
         Destroy(gameObject, 1);
     }
-
+    
     public override void TakeDamage(float amnt, EDamageType damageType) {
-        if (damageType == EDamageType.Projectile && isArmored) {
+        if (damageType == EDamageType.Projectile) {
             OnShotByCanon();
         }
     }
     
     void OnShotByCanon() {
+        lastExposeTime = Time.fixedTime;
+        if (!isArmored)
+            return;
         isArmored = false;
         weakpoint.BeginExpose();
-        StartCoroutine(hideWeakpointTimer());
+        boid.enabled = false;
     }
     
     void ReArmor() {
-        weakpoint.BeginHide();
         isArmored = true;
+        weakpoint.BeginHide();
+        boid.enabled = true;
     }
-    
-    IEnumerator hideWeakpointTimer() {
-        yield return exposeWaiter;
-        if (health > 0)
-            ReArmor();
-    }
-    
-    /*
-    Two states, armored and exposed
-    During armored state:
-        - 
-    During exposed state:
-        - 
-    Enter exposed state:
-        - Enable weakpoint
-        - Start timer to hide weakpoint
-    */
     
 }
