@@ -1,77 +1,170 @@
+using Unity.VisualScripting;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
+using UnityEngine.LowLevel;
 
 public class LaserEnemy : EnemyBase {
     
     [Header("Laser Enemy Config")]
-    [Tooltip("In degrees/sec.")]
-    public float CooldownRotSpeed = 30;
-    [Tooltip("In degrees/sec.")]
-    public float WindupRotSpeed = 20;
-    [Tooltip("In degrees/sec.")]
-    public float AttackRotSpeed = 10;
+    // [Tooltip("In degrees/sec.")]
+    // public float CooldownRotSpeed = 30;
+    // [Tooltip("In degrees/sec.")]
+    // public float WindupRotSpeed = 20;
+    // [Tooltip("In degrees/sec.")]
+    // public float AttackRotSpeed = 10;
+    // [SerializeField]
+    // [Tooltip("Maximum distance (inclusive) from the Player in Cooldown phase. Outside of this distance, the Laser enemy will be AFK.")]
+    // float CooldownMaxDist = 50;
+    // [SerializeField]
+    // [Tooltip("Maximum distance (inclusive) from the Player for both Windup and Attack. Outside of this distance, the Laser enemy will switch to Cooldown.\n\nAlso determines max length of the laser beam.")]
+    // float WindupAndAttackMaxDist = 30;
+    // [SerializeField]
+    // [Tooltip("Duration for Laser to be in its Cooldown phase until it moves onto the Windup phase.")]
+    // float CooldownDuration = 2;
+    // [SerializeField]
+    // [Tooltip("Duration for Laser to be in its Windup phase until it moves onto the Attack phase.")]
+    // float WindupDuration = 3f;
+    // [SerializeField]
+    // [Tooltip("Duration for Laser to be in its Attack phase until it moves onto the Cooldown phase.")]
+    // float AttackDuration = 3f;
     [SerializeField]
-    [Tooltip("Maximum distance (inclusive) from the Player in Cooldown phase. Outside of this distance, the Laser enemy will be AFK.")]
-    float CooldownMaxDist = 50;
+    [Tooltip("Duration the Laser enemy will be in its weak damage state with damage set to WeakDamagePerSecond.\nAfter this duration, its damage will increase to StrongDamagePerSecond.")]
+    float WeakDamageDuration = 5;
     [SerializeField]
-    [Tooltip("Maximum distance (inclusive) from the Player for both Windup and Attack. Outside of this distance, the Laser enemy will switch to Cooldown.\n\nAlso determines max length of the laser beam.")]
-    float WindupAndAttackMaxDist = 30;
+    [Tooltip("Duration the Laser enemy will be stunned for after getting hit by a canon shot. Once the stun is over, it will attack the player with weak damage.")]
+    float StunDuration = 3;
     [SerializeField]
-    [Tooltip("Duration for Laser to be in its Cooldown phase until it moves onto the Windup phase.")]
-    float CooldownDuration = 2;
+    [Tooltip("Before the end of the stun, the Laser enemy will animate itself rotating towards the player. This value determines the length of the animation, but does not affect the stun duration.\nThis means that if StunDuration = 3 and ReArmDuration = 1, the re-arm phase will start 2 seconds into the stun.")]
+    float ReArmDuration = 1;
     [SerializeField]
-    [Tooltip("Duration for Laser to be in its Windup phase until it moves onto the Attack phase.")]
-    float WindupDuration = 3f;
+    [Tooltip("Weak damage value.")]
+    float WeakDamagePerSecond = 10;
     [SerializeField]
-    [Tooltip("Duration for Laser to be in its Attack phase until it moves onto the Cooldown phase.")]
-    float AttackDuration = 3f;
-    [SerializeField]
-    [Tooltip("Color of the laser when in the Windup state.")]
-    Gradient LaserColorWindup;
-    [SerializeField]
-    [Tooltip("Color of the laser when in the Attack state.")]
-    Gradient LaserColorAttack;
+    [Tooltip("Strong damave value.")]
+    float StrongDamagePerSecond = 30;
+    // [SerializeField]
+    // [Tooltip("Color of the laser when in the Windup state.")]
+    // Gradient LaserColorWindup;
+    // [SerializeField]
+    // [Tooltip("Color of the laser when in the Attack state.")]
+    // Gradient LaserColorAttack;
     [SerializeField]
     [Tooltip("Reference to the laser's line renderer.")]
     LineRenderer LaserLineRenderer;
     [SerializeField]
     [Tooltip("Endpoint of the laser whose children are game objects with particle effects at the laser's endpoint.")]
     Transform LaserEndpoint;
+    [SerializeField]
+    [Tooltip("Laser color when damage is weak.")]
+    Gradient WeakColor;
+    [SerializeField]
+    [Tooltip("Laser colro when damage is strong.")]
+    Gradient StrongColor;
     
-    LayerMask laserRayMaskWindup; // 1 = layer to be included in raycast
-    LayerMask laserRayMaskAttack;
-    float laserRaycastDist;
+    [SerializeField]
+    [Tooltip("Reference to the transform the turret will revolve (yaw) around.")]
+    Transform revolvePivot;
+    [Tooltip("Reference to the transform the turret's barrel will rotate (pitch) around.")]
+    [SerializeField]
+    Transform barrelPivot;
+    
+    // 0 weak | 1 strong | 2 stunned | 3 transition from stunned to weak | 4 no LOS
+    float state = 0;
+    float lastStateChangeTime = 0;
+    
+    // LayerMask laserRayMaskWindup; // 1 = layer to be included in raycast
+    // LayerMask laserRayMaskAttack;
+    // float laserRaycastDist;
     ParticleSystem[] laserPointParticles;
+    LayerMask laserMask; // 1 = layer to be included in raycast
+    bool isPlayerInLOS = false;
+    Vector3 laserHitPos;
     
-    delegate void StateFunc();
-    StateFunc currStateFunc;
-    // Tracks the time the current state was entered. This same variable can be used for all the states
-    float lastStateEnterTime = -1000;
-    float currRotRate;
+    // delegate void StateFunc();
+    // StateFunc currStateFunc;
+    // // Tracks the time the current state was entered. This same variable can be used for all the states
+    // float lastStateEnterTime = -1000;
+    // float currRotRate;
     
     
     
     protected override void Init() {
         DealDamageOnTouch = false;
         laserPointParticles = LaserEndpoint.GetComponentsInChildren<ParticleSystem>();
-        setLaserRenderEnabled(false);
-        setLaserPointVFXEnabled(false);
-        laserRayMaskWindup = 1 << LayerMask.NameToLayer("Default");
-        laserRayMaskAttack = laserRayMaskWindup | (1 << LayerMask.NameToLayer("Player"));
-        enterStateCooldown();
+        setLaserRenderEnabled(true);
+        setLaserPointVFXEnabled(true);
+        // laserRayMaskWindup = 1 << LayerMask.NameToLayer("Default");
+        // laserRayMaskAttack = laserRayMaskWindup | (1 << LayerMask.NameToLayer("Player"));
+        // enterStateCooldown();
+        Damage = WeakDamagePerSecond;
+        LaserLineRenderer.colorGradient = WeakColor;
+        laserMask = (1 << LayerMask.NameToLayer("Default")) | (1 << LayerMask.NameToLayer("Player"));
     }
-    
-    // NOTE: Rotation is done in Update() and state functions (including raycasts and damage dealing) are in FixedUpdate()
     
     void Update() {
         if (GameManager.CurrentPlayer) {
-            rotateTowardsPlayer(GameManager.CurrentPlayer.transform.position, currRotRate);
+            // rotateTowardsPlayer(GameManager.CurrentPlayer.transform.position, currRotRate);
+            switch (state) {
+            case 0: // Weak damage
+                pointAtPlayer();
+                if (!LaserLineRenderer.enabled) {
+                    if (fireLaser())
+                        setLaserAll(true);
+                }
+                if (Time.time - lastStateChangeTime >= WeakDamageDuration) {
+                    state = 1;
+                    lastStateChangeTime += WeakDamageDuration;
+                    Damage = StrongDamagePerSecond;
+                    LaserLineRenderer.colorGradient = StrongColor;
+                }
+                break;
+            case 1: // Strong damage
+                pointAtPlayer();
+                break;
+            case 2: // Stunned
+                if (Time.time - lastStateChangeTime >= StunDuration - ReArmDuration) {
+                    state = 3;
+                    lastStateChangeTime += StunDuration - ReArmDuration;
+                }
+                break;
+            case 3: // Re-arming
+                if (Time.time - lastStateChangeTime >= ReArmDuration) {
+                    state = 0;
+                    lastStateChangeTime += ReArmDuration;
+                    Damage = WeakDamagePerSecond;
+                    LaserLineRenderer.colorGradient = WeakColor;
+                    pointAtPlayer();
+                } else {
+                    // Slerp rot to player
+                    slerpToPlayer();
+                }
+                break;
+            case 4: // No LOS
+                break;
+            }
         }
     }
 
     protected override void onFixedUpdate() {
         base.onFixedUpdate();
         if (GameManager.CurrentPlayer) {
-            currStateFunc();
+            // currStateFunc();
+            if (state < 2) {
+                if (fireLaser()) {
+                    GameManager.CurrentPlayer.TakeDamage(Damage * Time.fixedDeltaTime, EDamageType.Enemy);
+                } else {
+                    // Go to no LOS state
+                    state = 4;
+                    setLaserAll(false);
+                    lastStateChangeTime = Time.fixedTime;
+                }
+            } else if (state == 4) {
+                if (fireLaser()) {
+                    // Go to re-arm state
+                    state = 3;
+                    lastStateChangeTime = Time.fixedTime;
+                }
+            }
         }
     }
 
@@ -83,124 +176,165 @@ public class LaserEnemy : EnemyBase {
         }
     }
     
-    /*
-    - Cooldown:
-        - Look towards player (cldRotSpeed)
-        - if dist < medDist
-            if cooldownDuration seconds has passed
-                - Enter Windup
-        - else
-            - reset timer cooldownDuration
-    */
-    void stateCooldown() {
-        if (stateDistCheck(GameManager.CurrentPlayer.transform.position, CooldownMaxDist)) {
-            if (Time.time - lastStateEnterTime > CooldownDuration) {
-                enterStateWindup();
-            }
-        } else {
-            lastStateEnterTime = Time.time;
-        }
+    // /*
+    // - Cooldown:
+    //     - Look towards player (cldRotSpeed)
+    //     - if dist < medDist
+    //         if cooldownDuration seconds has passed
+    //             - Enter Windup
+    //     - else
+    //         - reset timer cooldownDuration
+    // */
+    // void stateCooldown() {
+    //     if (stateDistCheck(GameManager.CurrentPlayer.transform.position, CooldownMaxDist)) {
+    //         if (Time.time - lastStateEnterTime > CooldownDuration) {
+    //             enterStateWindup();
+    //         }
+    //     } else {
+    //         lastStateEnterTime = Time.time;
+    //     }
+    // }
+    
+    // void enterStateCooldown() {
+    //     // print("Entered Cooldown");
+    //     lastStateEnterTime = Time.time;
+    //     currStateFunc = stateCooldown;
+    //     currRotRate = CooldownRotSpeed;
+    //     setLaserRenderEnabled(false);
+    //     setLaserPointVFXEnabled(false);
+    // }
+    
+    // /*
+    // - Windup:
+    //     - Look towards player (windupRotSpeed)
+    //     - Render laser as white line
+    //     - if dist > MaxLaserDist, go back to Cooldown
+    //     - if windupDuration seconds passes, enter Attack
+    // */
+    // void stateWindup() {
+    //     updateLaserLine(true);
+    //     if (stateDistCheck(GameManager.CurrentPlayer.transform.position, WindupAndAttackMaxDist)) {
+    //         if (Time.time - lastStateEnterTime > WindupDuration) {
+    //             enterStateAttack();
+    //         }
+    //     } else {
+    //         enterStateCooldown();
+    //     }
+    // }
+    
+    // void enterStateWindup() {
+    //     // print("Entered Windup");
+    //     lastStateEnterTime = Time.time;
+    //     currStateFunc = stateWindup;
+    //     LaserLineRenderer.colorGradient = LaserColorWindup;
+    //     currRotRate = WindupRotSpeed;
+    //     // Turn laser line on. Assume laser point already off
+    //     setLaserRenderEnabled(true);
+    // }
+    
+    // /*
+    // - Attack:
+    //     - Lasts attackDuration seconds. Returns to Cooldown when done
+    //     - Look towards player (attackRotSpeed)
+    //     - Laser is laser-colored
+    //     - If laser hits player, deal continuous damage over time while hitting
+    // */
+    // void stateAttack() {
+    //     PlayerCharacterCtrlr plr = GameManager.CurrentPlayer;
+    //     if (!stateDistCheck(plr.transform.position, WindupAndAttackMaxDist) || Time.time - lastStateEnterTime > AttackDuration) {
+    //         enterStateCooldown();
+    //         return;
+    //     }
+    //     if (updateLaserLine(false))
+    //         plr.TakeDamage(Damage * Time.deltaTime, EDamageType.Enemy); // ASSUMES DAMAGE IS DAMAGE PER SEC
+    // }
+    
+    // void enterStateAttack() {
+    //     // print("Entered Attack");
+    //     lastStateEnterTime = Time.time;
+    //     currStateFunc = stateAttack;
+    //     LaserLineRenderer.colorGradient = LaserColorAttack;
+    //     currRotRate = AttackRotSpeed;
+    //     // Assume laser VFX already enabled so only turn on laser point VFX
+    //     setLaserPointVFXEnabled(true);
+    // }
+    
+    // bool stateDistCheck(Vector3 plrPos, float maxDist) {
+    //     return (plrPos - transform.position).sqrMagnitude <= maxDist * maxDist;
+    // }
+    
+    // void rotateTowardsPlayer(Vector3 plrPos, float rotationSpeed) {
+    //     transform.rotation = Quaternion.RotateTowards(
+    //         LaserLineRenderer.transform.rotation,
+    //         Quaternion.LookRotation(plrPos - LaserLineRenderer.transform.position, Vector3.up),
+    //         rotationSpeed * Time.deltaTime
+    //     );
+    // }
+    
+    // bool updateLaserLine(bool useWindupMask) {
+    //     Ray ray = new(LaserLineRenderer.transform.position, LaserLineRenderer.transform.forward);
+    //     bool laserHitPlayer = false;
+    //     if (Physics.Raycast(
+    //         ray: ray,
+    //         maxDistance: WindupAndAttackMaxDist,
+    //         layerMask: useWindupMask ? laserRayMaskWindup : laserRayMaskAttack,
+    //         hitInfo: out RaycastHit hit)) {
+    //         laserRaycastDist = hit.distance;
+    //         if (!useWindupMask)
+    //             laserHitPlayer = hit.collider.CompareTag("Player");
+    //     } else {
+    //         laserRaycastDist = WindupAndAttackMaxDist;
+    //     }
+    //     LaserEndpoint.localPosition = new(0, 0, laserRaycastDist);
+    //     LaserLineRenderer.SetPosition(1, new(0, 0, laserRaycastDist));
+    //     return laserHitPlayer;
+    // }
+    
+    void pointAtPlayer() {
+        Vector3 toPlayer = GameManager.CurrentPlayer.transform.position - barrelPivot.position;
+        Vector3 flat = toPlayer;
+        flat.y = 0;
+        revolvePivot.rotation = Quaternion.LookRotation(flat);
+        barrelPivot.rotation = Quaternion.LookRotation(toPlayer);
+        LaserLineRenderer.SetPosition(0, LaserLineRenderer.transform.position);
+        LaserEndpoint.position = isPlayerInLOS ? toPlayer.normalized * (toPlayer.magnitude - 0.5f) + barrelPivot.position : laserHitPos;
+        LaserLineRenderer.SetPosition(1, LaserEndpoint.position);
     }
     
-    void enterStateCooldown() {
-        // print("Entered Cooldown");
-        lastStateEnterTime = Time.time;
-        currStateFunc = stateCooldown;
-        currRotRate = CooldownRotSpeed;
-        setLaserRenderEnabled(false);
-        setLaserPointVFXEnabled(false);
-    }
-    
-    /*
-    - Windup:
-        - Look towards player (windupRotSpeed)
-        - Render laser as white line
-        - if dist > MaxLaserDist, go back to Cooldown
-        - if windupDuration seconds passes, enter Attack
-    */
-    void stateWindup() {
-        updateLaserLine(true);
-        if (stateDistCheck(GameManager.CurrentPlayer.transform.position, WindupAndAttackMaxDist)) {
-            if (Time.time - lastStateEnterTime > WindupDuration) {
-                enterStateAttack();
-            }
-        } else {
-            enterStateCooldown();
-        }
-    }
-    
-    void enterStateWindup() {
-        // print("Entered Windup");
-        lastStateEnterTime = Time.time;
-        currStateFunc = stateWindup;
-        LaserLineRenderer.colorGradient = LaserColorWindup;
-        currRotRate = WindupRotSpeed;
-        // Turn laser line on. Assume laser point already off
-        setLaserRenderEnabled(true);
-    }
-    
-    /*
-    - Attack:
-        - Lasts attackDuration seconds. Returns to Cooldown when done
-        - Look towards player (attackRotSpeed)
-        - Laser is laser-colored
-        - If laser hits player, deal continuous damage over time while hitting
-    */
-    void stateAttack() {
-        PlayerCharacterCtrlr plr = GameManager.CurrentPlayer;
-        if (!stateDistCheck(plr.transform.position, WindupAndAttackMaxDist) || Time.time - lastStateEnterTime > AttackDuration) {
-            enterStateCooldown();
-            return;
-        }
-        if (updateLaserLine(false))
-            plr.TakeDamage(Damage * Time.deltaTime, EDamageType.Enemy); // ASSUMES DAMAGE IS DAMAGE PER SEC
-    }
-    
-    void enterStateAttack() {
-        // print("Entered Attack");
-        lastStateEnterTime = Time.time;
-        currStateFunc = stateAttack;
-        LaserLineRenderer.colorGradient = LaserColorAttack;
-        currRotRate = AttackRotSpeed;
-        // Assume laser VFX already enabled so only turn on laser point VFX
-        setLaserPointVFXEnabled(true);
-    }
-    
-    bool stateDistCheck(Vector3 plrPos, float maxDist) {
-        return (plrPos - transform.position).sqrMagnitude <= maxDist * maxDist;
-    }
-    
-    void rotateTowardsPlayer(Vector3 plrPos, float rotationSpeed) {
-        transform.rotation = Quaternion.RotateTowards(
-            LaserLineRenderer.transform.rotation,
-            Quaternion.LookRotation(plrPos - LaserLineRenderer.transform.position, Vector3.up),
-            rotationSpeed * Time.deltaTime
+    void slerpToPlayer() {
+        Vector3 toPlayer = GameManager.CurrentPlayer.transform.position - barrelPivot.position;
+        float a = (Time.time - lastStateChangeTime) / ReArmDuration;
+        a = a * a * a * a * a;
+        revolvePivot.rotation = Quaternion.Slerp(
+            revolvePivot.rotation,
+            Quaternion.LookRotation(new (toPlayer.x, 0, toPlayer.z)),
+            a
         );
+        // Project the direction onto the plane defined by revolvePivot's right vector
+        Vector3 right = revolvePivot.right;
+        Vector3 forward = Vector3.ProjectOnPlane(toPlayer.normalized, right).normalized;
+        // Calculate the angle to rotate around revolvePivot's right vector
+        float angle = Vector3.SignedAngle(revolvePivot.forward, forward, right);
+        // Create the quaternion by rotating around revolvePivot's right axis
+        Quaternion rotation = Quaternion.AngleAxis(angle, right) * revolvePivot.rotation;
+        barrelPivot.rotation = Quaternion.Slerp(barrelPivot.rotation, rotation, a);
     }
     
-    bool updateLaserLine(bool useWindupMask) {
-        // NOTE: Consider using mask with player no matter what, and that in windup mode if player is hit just render laser at max dist anyway
-        // NOTE cont.: Could be useful if making a system to warn the player they're in LOS of laser
-        Ray ray = new(LaserLineRenderer.transform.position, LaserLineRenderer.transform.forward);
-        bool laserHitPlayer = false;
-        if (Physics.Raycast(
-            ray: ray,
-            maxDistance: WindupAndAttackMaxDist,
-            layerMask: useWindupMask ? laserRayMaskWindup : laserRayMaskAttack,
-            hitInfo: out RaycastHit hit)) {
-            laserRaycastDist = hit.distance;
-            if (!useWindupMask)
-                laserHitPlayer = hit.collider.CompareTag("Player");
-        } else {
-            laserRaycastDist = WindupAndAttackMaxDist;
-        }
-        LaserEndpoint.localPosition = new(0, 0, laserRaycastDist);
-        LaserLineRenderer.SetPosition(1, new(0, 0, laserRaycastDist));
-        return laserHitPlayer;
+    bool fireLaser() {
+        Ray ray = new(barrelPivot.position, GameManager.CurrentPlayer.transform.position - barrelPivot.position);
+        if (Physics.Raycast(ray: ray, maxDistance: 500, layerMask: laserMask, hitInfo: out RaycastHit hit)) {
+            laserHitPos = hit.point;
+            isPlayerInLOS = hit.collider.CompareTag("Player");
+        } else
+            isPlayerInLOS = false;
+        return isPlayerInLOS;
     }
     
     void onStunned() {
-        enterStateCooldown();
+        // enterStateCooldown();
+        state = 2;
+        lastStateChangeTime = Time.time;
+        setLaserAll(false);
     }
     
     void setLaserRenderEnabled(bool newEnabled) {
@@ -210,6 +344,11 @@ public class LaserEnemy : EnemyBase {
     void setLaserPointVFXEnabled(bool newEnabled) {
         foreach (ParticleSystem p in laserPointParticles)
             p.gameObject.SetActive(newEnabled);
+    }
+    
+    void setLaserAll(bool newEnabled) {
+        setLaserRenderEnabled(newEnabled);
+        setLaserPointVFXEnabled(newEnabled);
     }
     
 }
