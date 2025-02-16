@@ -52,7 +52,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   damage: 0
   MaxLifetime: 10
-  MaxRicochet: 10000
+  MaxRicochet: 1
   rb: {fileID: 0}
   ExplosionDamage: 0
   ExplosionRadius: 3
