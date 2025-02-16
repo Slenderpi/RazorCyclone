@@ -124,7 +124,7 @@ SphereCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2124225236483108557}
   m_Material: {fileID: 0}
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 0.5
@@ -316,6 +316,9 @@ MonoBehaviour:
   CanGetVacuumSucked: 0
   CanGetVacuumKilled: 1
   AffectedByLava: 0
+  RicochetCanon: 0
+  ConsiderForRicochet: 1
+  TransformForRicochetToAimAt: {fileID: 3289913355028547861}
   LavaSubmergeOffset: 1
   FuelAmount: 50
   rb: {fileID: 0}

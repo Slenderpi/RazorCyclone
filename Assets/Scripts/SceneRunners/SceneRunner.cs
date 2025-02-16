@@ -10,11 +10,12 @@ public class SceneRunner : MonoBehaviour {
     public Lava lava;
     
     [HideInInspector]
-    public List<EnemyBase> SpawnedEnemies; // TODO
+    public List<EnemyBase> SpawnedEnemies;
     
     
     
     void Awake() {
+        SpawnedEnemies = new List<EnemyBase>();
         if (SceneManager.GetSceneByName("CoreScene").IsValid()) {
             startScene();
         } else {
@@ -48,6 +49,31 @@ public class SceneRunner : MonoBehaviour {
     
     public void ReloadCurrentScene() {
         SwitchToScene(SceneManager.GetActiveScene().name);
+    }
+    
+    public void AddEnemyToList(EnemyBase en) {
+        SpawnedEnemies.Add(en);
+    }
+    
+    public void RemoveEnemyFromList(EnemyBase en) {
+        SpawnedEnemies.Remove(en);
+    }
+    
+    public EnemyBase GetClosestEnemy(Vector3 pos, EnemyBase ignore) {
+        int c = SpawnedEnemies.Count;
+        if (c == 0) return null;
+        EnemyBase closestEn = null;
+        float closestSqrd = 9999999f;
+        for (int i = 0; i < c; i++) {
+            EnemyBase en = SpawnedEnemies[i];
+            if (!en.gameObject.activeSelf || !en.ConsiderForRicochet || en == ignore) continue;
+            float distSqrd = (pos - en.TransformForRicochetToAimAt.position).sqrMagnitude;
+            if (distSqrd < closestSqrd) {
+                closestSqrd = distSqrd;
+                closestEn = en;
+            }
+        }
+        return closestEn;
     }
     
     void startScene() {

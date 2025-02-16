@@ -136,6 +136,10 @@ MonoBehaviour:
   DealDamageOnTouch: 1
   lastVacuumHitTime: 0
   CanGetVacuumSucked: 1
+  CanGetVacuumKilled: 1
+  AffectedByLava: 1
+  RicochetCanon: 0
+  LavaSubmergeOffset: 1
   FuelAmount: 100
   rb: {fileID: 0}
   boid: {fileID: 0}
@@ -328,7 +332,7 @@ GameObject:
   - component: {fileID: 4390644868106737556}
   m_Layer: 7
   m_Name: sphereCollider
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

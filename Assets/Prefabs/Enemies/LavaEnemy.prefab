@@ -56,6 +56,8 @@ MonoBehaviour:
   CanGetVacuumSucked: 0
   CanGetVacuumKilled: 0
   AffectedByLava: 0
+  RicochetCanon: 0
+  ConsiderForRicochet: 1
   LavaSubmergeOffset: 1
   FuelAmount: 50
   rb: {fileID: 8116625089142116925}
@@ -274,7 +276,7 @@ GameObject:
   - component: {fileID: 591623219085065836}
   m_Layer: 7
   m_Name: Pivot
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -311,7 +313,7 @@ BoxCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 4, y: 0.2, z: 4}
-  m_Center: {x: 0, y: 0.24107134, z: 0}
+  m_Center: {x: 0, y: 0.1, z: 0}
 --- !u!1 &6023364697236365038
 GameObject:
   m_ObjectHideFlags: 0

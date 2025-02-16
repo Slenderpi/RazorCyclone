@@ -3,7 +3,6 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
-using UnityEngine.Video;
 
 public class PlayerCharacterCtrlr : MonoBehaviour {
     
@@ -383,9 +382,10 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     void fireCanon() {
         updateRayCastedAimPoint();
         rb.AddForce((charModel.rotation * weaponRelativeRot).normalized * CanonForce * 100000);
-        ProjectileBase proj = Instantiate(projectilePrefab, canonTip.position, canonTip.rotation);
+        Vector3 projVel = (aimPoint - canonTip.position).normalized * CanonProjSpeed + rb.velocity;
+        ProjectileBase proj = Instantiate(projectilePrefab, canonTip.position, Quaternion.LookRotation(projVel));
         proj.damage = CanonDamage;
-        proj.GetComponent<Rigidbody>().AddForce((aimPoint - canonTip.position).normalized * CanonProjSpeed + rb.velocity, ForceMode.VelocityChange);
+        proj.rb.AddForce(projVel, ForceMode.VelocityChange);
         SpendFuel(CanonFuelCost);
         GameManager.Instance.Audio2D.PlayClipSFX(AudioPlayer2D.EClipSFX.Weapon_CanonShot);
         playMuzzleFlashEffect();

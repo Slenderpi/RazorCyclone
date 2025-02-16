@@ -19,6 +19,12 @@ public class EnemyBase : MonoBehaviour {
     public bool CanGetVacuumKilled = true;
     [Tooltip("If enabled, this enemy will call its OnSubmerged() method when it detects that it is below lava.")]
     public bool AffectedByLava = true;
+    [Tooltip("If enabled, projectiles will also try to ricochet when they hit this enemy.")]
+    public bool RicochetCanon = false;
+    [HideInInspector]
+    public bool ConsiderForRicochet = true;
+    [Tooltip("If left null, will default to the gameobject's transform. This is primarily for the EnemyWeakpoint type.")]
+    public Transform TransformForRicochetToAimAt = null;
     [Tooltip("This enemy will be affected by lava if its y position + HeightOffset is below the lava. This is to allow objects to sink lower before actually being counted as submerged.")]
     public float LavaSubmergeOffset = 1;
     public int FuelAmount = 50; // The value of the fuel this enemy will drop
@@ -50,10 +56,12 @@ public class EnemyBase : MonoBehaviour {
         rb = GetComponent<Rigidbody>();
         boid = GetComponent<BoidMover>();
         health = MaxHealth;
+        if (TransformForRicochetToAimAt == null) TransformForRicochetToAimAt = transform;
         Init();
     }
-
+    
     void Start() {
+        GameManager.Instance.currentSceneRunner.AddEnemyToList(this);
         LateInit();
     }
 
@@ -135,6 +143,10 @@ public class EnemyBase : MonoBehaviour {
     protected virtual void OnSubmerged() {
         gameObject.SetActive(false); // TODO: Set inactive or just kill?
         Destroy(gameObject, 1);
+    }
+    
+    void OnDestroy() {
+        GameManager.Instance.currentSceneRunner.RemoveEnemyFromList(this);
     }
     
 }

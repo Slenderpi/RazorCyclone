@@ -52,6 +52,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   damage: 0
   MaxLifetime: 10
+  MaxRicochet: 10000
+  rb: {fileID: 0}
   ExplosionDamage: 0
   ExplosionRadius: 3
   ExplosionRadForEffectSize: 0.98
@@ -67,7 +69,7 @@ SphereCollider:
   m_GameObject: {fileID: 2318144422338356800}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}

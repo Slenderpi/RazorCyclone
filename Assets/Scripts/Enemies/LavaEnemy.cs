@@ -54,12 +54,14 @@ public class LavaEnemy : WeakpointedEnemy {
         if (!isArmored)
             return;
         isArmored = false;
+        ConsiderForRicochet = false;
         weakpoint.BeginExpose();
         boid.enabled = false;
     }
     
     void ReArmor() {
         isArmored = true;
+        ConsiderForRicochet = true;
         weakpoint.BeginHide();
         boid.enabled = true;
     }
