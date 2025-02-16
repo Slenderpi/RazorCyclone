@@ -28,6 +28,7 @@ public class LavaWeakpoint : EnemyWeakpoint {
         // If start enabled, immediate go to disabled state
         weakpointTransform.gameObject.SetActive(false);
         startY = weakpointTransform.localPosition.y;
+        ConsiderForRicochet = false;
     }
     
     void Update() {
@@ -43,6 +44,7 @@ public class LavaWeakpoint : EnemyWeakpoint {
                 if (t <= 0) {
                     t = 0;
                     shouldAnimate = false;
+                    ConsiderForRicochet = false;
                     weakpointTransform.gameObject.SetActive(false);
                 }
             }
@@ -79,9 +81,10 @@ public class LavaWeakpoint : EnemyWeakpoint {
     
     public void BeginExpose() {
         lastBeginTime = Time.time;
-        weakpointTransform.gameObject.SetActive(true);
         isExposed = true;
         shouldAnimate = true;
+        ConsiderForRicochet = true;
+        weakpointTransform.gameObject.SetActive(true);
     }
     
     public void BeginHide() {
