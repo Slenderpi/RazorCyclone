@@ -97,7 +97,7 @@ LightmapSettings:
     m_ExportTrainingData: 0
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
-  m_LightingDataAsset: {fileID: 112000000, guid: a86c798806f039e48b2e8a4a77e2ef23, type: 2}
+  m_LightingDataAsset: {fileID: 112000000, guid: 8de5da03cf925b24785b7a5121b55f8e, type: 2}
   m_LightingSettings: {fileID: 0}
 --- !u!196 &4
 NavMeshSettings:
@@ -3494,6 +3494,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerSpawnPoint: {fileID: 1430545054}
   lava: {fileID: 747643374}
+  SpawnedEnemies: []
   WaveSpawnManager: {fileID: 1163138148}
   EndlessStartTime: 0
   EnemiesKilled: 0
