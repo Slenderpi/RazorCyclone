@@ -70,7 +70,7 @@ public class LaserEnemy : EnemyBase {
     
     // 0 weak | 1 strong | 2 stunned | 3 transition from stunned to weak | 4 no LOS
     float state = 0;
-    float lastStateChangeTime = 0;
+    float lastStateChangeTime;
     
     // LayerMask laserRayMaskWindup; // 1 = layer to be included in raycast
     // LayerMask laserRayMaskAttack;
@@ -144,7 +144,7 @@ public class LaserEnemy : EnemyBase {
             }
         }
     }
-
+    
     protected override void onFixedUpdate() {
         base.onFixedUpdate();
         if (GameManager.CurrentPlayer) {
@@ -167,7 +167,7 @@ public class LaserEnemy : EnemyBase {
             }
         }
     }
-
+    
     public override void TakeDamage(float amnt, EDamageType damageType) {
         if (damageType == EDamageType.Vacuum) {
             base.TakeDamage(amnt, damageType);
@@ -175,7 +175,7 @@ public class LaserEnemy : EnemyBase {
             onStunned();
         }
     }
-    
+        
     // /*
     // - Cooldown:
     //     - Look towards player (cldRotSpeed)
@@ -289,6 +289,10 @@ public class LaserEnemy : EnemyBase {
     //     LaserLineRenderer.SetPosition(1, new(0, 0, laserRaycastDist));
     //     return laserHitPlayer;
     // }
+    
+    void OnEnable() {
+        lastStateChangeTime = Time.time;
+    }
     
     void pointAtPlayer() {
         Vector3 toPlayer = GameManager.CurrentPlayer.transform.position - barrelPivot.position;
