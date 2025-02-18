@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class VacuumScript : MonoBehaviour {
@@ -52,8 +53,10 @@ public class VacuumScript : MonoBehaviour {
     
     void onKillboxEnter(Collider collider) {
         if (collider.CompareTag("Enemy")) {
-            EnemyBase en = collider.GetComponentInParent<EnemyBase>();
-            if (en.CanGetVacuumKilled)
+            if (!collider.TryGetComponent(out EnemyBase en)) {
+                en = collider.GetComponentInParent<EnemyBase>();
+            }
+            if (en != null)
                 en.TakeDamage(en.MaxHealth, EDamageType.Vacuum);
         }
     }

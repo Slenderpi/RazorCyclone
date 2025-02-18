@@ -30,7 +30,9 @@ public class ProjectileBase : MonoBehaviour {
     
     void Awake() {
         rb = GetComponent<Rigidbody>();
-        layerMask = (1 << LayerMask.NameToLayer("Default")) | (1 << LayerMask.NameToLayer("Enemy"));
+        layerMask = (1 << LayerMask.NameToLayer("Default")) |
+                    (1 << LayerMask.NameToLayer("Enemy")) |
+                    (1 << LayerMask.NameToLayer("EnemyWeapon"));
         Init();
     }
     

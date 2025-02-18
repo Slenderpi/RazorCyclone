@@ -1,4 +1,5 @@
 using System.Collections;
+using TreeEditor;
 using UnityEngine;
 
 public class CentipedeEnemy : EnemyBase {
@@ -13,6 +14,19 @@ public class CentipedeEnemy : EnemyBase {
     public float MoveSpeed = 5;
     [Tooltip("Distance the body segments will maintain from the previous segment.")]
     public float FollowOffset = 1; // Distance to keep from previous
+    [Tooltip("The time between each missile firing.")]
+    public float MissileFireDelay = 5;
+    [Tooltip("Additional time to prevent the entire centipede from firing at once.\nExample: using 0.1, the head will fire after MissileFireDelay, the first body will fire after MissileFireDelay + 0.1, the next at MissileFireDelay + 0.2, etc.")]
+    public float MissileFireDelayOffset = 0.1f;
+    [SerializeField]
+    [Tooltip("Prefab of missile. Needs to be of type CentipedeMissile.")]
+    CentipedeMissile missilePrefab;
+    [SerializeField]
+    [Tooltip("VFX to use when a missile gets launched.")]
+    GameObject missileFireEffectPrefab;
+    [SerializeField]
+    [Tooltip("Transform that the missile will be launched form. Make sure the forward (-z) direction of this transform is set correctly, because missiles will spawn with this orientation.")]
+    Transform missileLaunchPoint;
     [SerializeField]
     MeshRenderer modelMeshRenderer;
     [SerializeField]
@@ -30,13 +44,19 @@ public class CentipedeEnemy : EnemyBase {
     float samplingDelay;
     float lastSampleTime;
     WaitForSeconds sampleWaiter;
+    WaitForSeconds missileWaiter;
+    CentipedeMissile pooledMissile;
+    GameObject pooledFireEffect;
     
     
     
     protected override void Init() {
         base.Init();
         ConsiderForRicochet = false;
-        if (!SpawnAsHead) return;
+        if (!SpawnAsHead) {
+            // poolMissile();
+            return;
+        }
         SpawnAsHead = false;
         samplingDelay = FollowOffset / MoveSpeed;
         samplingLength = BodyLength + 1;
@@ -54,29 +74,33 @@ public class CentipedeEnemy : EnemyBase {
             prev.ceAft = ce;
             ce.bodyIndex = i + 1; // First body piece is at 1. I'm considering the head as 0
             ce.sampleWaiter = new WaitForSeconds(samplingDelay);
+            ce.missileWaiter = new WaitForSeconds(MissileFireDelay);
             ce.samplingDelay = samplingDelay;
             prev = ce;
         }
         prev.ceAft = null; // Make sure the last segment has an aft of null
         sampleWaiter = new WaitForSeconds(samplingDelay);
+        missileWaiter = new WaitForSeconds(MissileFireDelay);
         sampledPositions = samposs;
         sampledRots = samrots;
         modelMeshRenderer.material = headMaterial;
+        // poolMissile();
         SpawnAsHead = true;
     }
-
+    
     protected override void LateInit() {
         base.LateInit();
+        StartCoroutine(offsetMissileFiring());
         if (head != null) return;
         lastSampleTime = Time.time;
         StartCoroutine(sampleTransform());
     }
-
+    
     void Update() {
         if (head == null) {
             if (!GameManager.CurrentPlayer) return;
             Vector3 toplr = GameManager.CurrentPlayer.transform.position - transform.position;
-            transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(toplr), 70 * Time.deltaTime);
+            transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(toplr), 60 * Time.deltaTime);
             transform.position += transform.forward * MoveSpeed * Time.deltaTime;
         } else {
             transform.position = head.getLerpedPosition(bodyIndex);
@@ -99,7 +123,15 @@ public class CentipedeEnemy : EnemyBase {
         gameObject.SetActive(false);
         Destroy(gameObject, 1);
     }
-    
+
+    protected override void OnDestroying() {
+        base.OnDestroying();
+        if (pooledMissile)
+            Destroy(pooledMissile.gameObject);
+        // if (pooledFireEffect)
+        //     Destroy(pooledFireEffect);
+    }
+
     void updateHeadAboutDefeat(int index) {
         // When a segment is defeated, shrink the sampling arrays
         Vector3[] newPoss = new Vector3[index];
@@ -141,6 +173,30 @@ public class CentipedeEnemy : EnemyBase {
         if (ceAft)
             ceAft.onNewHeadWasCreated(this, 1);
         StartCoroutine(sampleTransform());
+    }
+    
+    IEnumerator offsetMissileFiring() {
+        yield return new WaitForSeconds(MissileFireDelayOffset * bodyIndex);
+        StartCoroutine(fireMissile());
+    }
+    
+    IEnumerator fireMissile() {
+        poolMissile();
+        yield return missileWaiter;
+        pooledMissile.transform.position = missileLaunchPoint.position;
+        pooledMissile.transform.rotation = missileLaunchPoint.rotation;
+        // pooledFireEffect.transform.position = missileLaunchPoint.position;
+        // pooledFireEffect.transform.rotation = missileLaunchPoint.rotation;
+        pooledMissile.gameObject.SetActive(true);
+        pooledFireEffect.gameObject.SetActive(true);
+        StartCoroutine(fireMissile());
+    }
+    
+    void poolMissile() {
+        pooledMissile = Instantiate(missilePrefab, transform.position, transform.rotation);
+        pooledMissile.gameObject.SetActive(false);
+        pooledFireEffect = Instantiate(missileFireEffectPrefab, missileLaunchPoint.transform);
+        pooledFireEffect.gameObject.SetActive(false);
     }
     
     Vector3 getLerpedPosition(int index) {

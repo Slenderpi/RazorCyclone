@@ -60,15 +60,28 @@ public class EnemyBase : MonoBehaviour {
         Init();
     }
     
+    /// <summary>
+    /// Called by Awake().
+    /// </summary>
+    protected virtual void Init() {}
+    
     void Start() {
-        GameManager.Instance.currentSceneRunner.AddEnemyToList(this);
+        if (ConsiderForRicochet)
+            GameManager.Instance.currentSceneRunner.AddEnemyToList(this);
         LateInit();
     }
-
+    
+    /// <summary>
+    /// Called by Start().
+    /// </summary>
+    protected virtual void LateInit() {
+        lava = GameManager.Instance.currentSceneRunner.lava;
+    }
+    
     void FixedUpdate() {
         onFixedUpdate();
     }
-
+    
     void OnTriggerEnter(Collider collider) {
         if (DealDamageOnTouch && collider.CompareTag("Player")) {
             Attack();
@@ -106,11 +119,11 @@ public class EnemyBase : MonoBehaviour {
         gameObject.SetActive(false);
         Destroy(gameObject, 1);
     }
-
+    
     public void DropFuel() {
         DropFuel(transform.position);
     }
-
+    
     public void DropFuel(Vector3 position) {
         FuelPickup fuel = Instantiate(fuelPickupPrefab, position, Quaternion.identity);
         fuel.FuelValue = FuelAmount;
@@ -126,18 +139,6 @@ public class EnemyBase : MonoBehaviour {
     }
     
     /// <summary>
-    /// Called by Awake().
-    /// </summary>
-    protected virtual void Init() {}
-    
-    /// <summary>
-    /// Called by Start().
-    /// </summary>
-    protected virtual void LateInit() {
-        lava = GameManager.Instance.currentSceneRunner.lava;
-    }
-    
-    /// <summary>
     /// Called when this enemy detects that its y position + LavaSubmergeOffset is below the current lava height.
     /// </summary>
     protected virtual void OnSubmerged() {
@@ -146,6 +147,10 @@ public class EnemyBase : MonoBehaviour {
     }
     
     void OnDestroy() {
+        OnDestroying();
+    }
+    
+    protected virtual void OnDestroying() {
         GameManager.Instance.currentSceneRunner.RemoveEnemyFromList(this);
     }
     

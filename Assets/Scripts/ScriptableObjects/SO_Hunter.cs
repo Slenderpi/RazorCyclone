@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "HunterBoidData", menuName = "ScriptableObjects/HunterBoid", order = 4)]
+[CreateAssetMenu(fileName = "HunterBoidData", menuName = "ScriptableObjects/HunterBoid", order = 5)]
 public class SO_Hunter : GeneralBoidSO {
     
     [Header("Hunter Boid parameters")]
