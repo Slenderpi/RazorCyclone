@@ -1,7 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using JetBrains.Annotations;
-using UnityEditor.Callbacks;
 using UnityEngine;
 
 public class FuelPickup : MonoBehaviour {

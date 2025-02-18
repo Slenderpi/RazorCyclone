@@ -48,12 +48,13 @@ public class ProjectileBase : MonoBehaviour {
     
     void FixedUpdate() {
         GameManager.D_DrawPoint(transform.position, Color.magenta);
-        checkForCollision(Vector3.zero);
+        float dist = rb.velocity.magnitude * Time.fixedDeltaTime;
+        checkForCollision(Vector3.zero, dist);
         if (ProjectileRadius >= 0.1f) {
-            checkForCollision(transform.right * ProjectileRadius);
-            checkForCollision(-transform.right * ProjectileRadius);
-            checkForCollision(transform.up * ProjectileRadius);
-            checkForCollision(-transform.up * ProjectileRadius);
+            checkForCollision(transform.right * ProjectileRadius, dist);
+            checkForCollision(-transform.right * ProjectileRadius, dist);
+            checkForCollision(transform.up * ProjectileRadius, dist);
+            checkForCollision(-transform.up * ProjectileRadius, dist);
         }
         if (closestHit) {
             transform.position = closestHitPos;
@@ -61,12 +62,12 @@ public class ProjectileBase : MonoBehaviour {
         }
     }
     
-    void checkForCollision(Vector3 offset) {
+    void checkForCollision(Vector3 offset, float dist) {
         Debug.DrawRay(transform.position + offset, rb.velocity * Time.fixedDeltaTime, Color.white, Time.fixedDeltaTime, false);
         if (Physics.Raycast(
             origin: transform.position + offset,
             direction: rb.velocity,
-            maxDistance: rb.velocity.magnitude * Time.fixedDeltaTime,
+            maxDistance: dist,
             layerMask: layerMask,
             hitInfo: out RaycastHit hit)) {
             float hitDistSqrd = (hit.point - transform.position).sqrMagnitude;

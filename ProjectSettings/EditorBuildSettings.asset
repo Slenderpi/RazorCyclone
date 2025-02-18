@@ -11,16 +11,16 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/CoreScene.unity
     guid: 240bc87ebc3103841a867ad49036aeb7
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/Old Scenes/SampleScene.unity
     guid: 9fc0d4010bbf28b4594072e72b8655ab
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/Testing/TestScene.unity
     guid: 6cb43fa206622c743a789fa6dea5efd0
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/Old Scenes/EndlessLevel.unity
     guid: d0cd135d386f82542bb78a7a541c433b
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/Tutorial/TutorialScene.unity
     guid: b4e7dfb835947e34dbac868d55ba4f98
   - enabled: 1
