@@ -102,7 +102,7 @@ public class CentipedeEnemy : EnemyBase {
             if (!GameManager.CurrentPlayer) return;
             Vector3 toplr = GameManager.CurrentPlayer.transform.position - transform.position;
             transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(toplr), 60 * Time.deltaTime);
-            transform.position += transform.forward * MoveSpeed * Time.deltaTime;
+            transform.position += MoveSpeed * Time.deltaTime * transform.forward;
         } else {
             transform.SetPositionAndRotation(
                 head.getLerpedPosition(bodyIndex),
