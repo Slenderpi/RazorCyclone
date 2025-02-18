@@ -213,7 +213,8 @@ public class WaveSpawnerManager : MonoBehaviour {
             List<Spawner> currSpList = availableSpawners[esi];
             for (int ci = 0; ci < wave.enemyCounts[esi]; ci++) { // (Enemy) Count i
                 EnemyBase en = loadedWave[lei++];
-                en.transform.position = currSpList[rnd.Next(currSpList.Count)].transform.position;
+                Transform spawnTrans = currSpList[rnd.Next(currSpList.Count)].transform;
+                en.transform.SetPositionAndRotation(spawnTrans.position, spawnTrans.rotation);
                 en.gameObject.SetActive(true);
             }
         }

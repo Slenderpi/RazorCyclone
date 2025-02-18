@@ -65,8 +65,8 @@ public class CentipedeEnemy : EnemyBase {
         samrots[BodyLength] = transform.rotation;
         CentipedeEnemy prev = this;
         for (int i = 0; i < BodyLength; i++) {
-            samposs[i] = transform.position - transform.forward * FollowOffset * i;
-            samrots[i] = transform.rotation;
+            // samposs[i] = transform.position - transform.forward * FollowOffset * i;
+            // samrots[i] = transform.rotation;
             CentipedeEnemy ce = Instantiate(this);
             ce.head = this;
             ce.cePre = prev;
@@ -89,10 +89,12 @@ public class CentipedeEnemy : EnemyBase {
     
     protected override void LateInit() {
         base.LateInit();
+        if (head == null) {
+            setStartSamples();
+            lastSampleTime = Time.time;
+            StartCoroutine(sampleTransform());
+        }
         StartCoroutine(offsetMissileFiring());
-        if (head != null) return;
-        lastSampleTime = Time.time;
-        StartCoroutine(sampleTransform());
     }
     
     void Update() {
@@ -102,8 +104,10 @@ public class CentipedeEnemy : EnemyBase {
             transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(toplr), 60 * Time.deltaTime);
             transform.position += transform.forward * MoveSpeed * Time.deltaTime;
         } else {
-            transform.position = head.getLerpedPosition(bodyIndex);
-            transform.rotation = head.getLerpedRotation(bodyIndex);
+            transform.SetPositionAndRotation(
+                head.getLerpedPosition(bodyIndex),
+                head.getLerpedRotation(bodyIndex)
+            );
         }
     }
     
@@ -223,6 +227,13 @@ public class CentipedeEnemy : EnemyBase {
         //     GameManager.D_DrawPoint(sampledPositions[(sampleHead + i) % samplingLength], Color.green, samplingDelay);
         // }
         StartCoroutine(sampleTransform());
+    }
+    
+    void setStartSamples() {
+        for (int i = 0; i < BodyLength; i++) {
+            sampledPositions[i] = transform.position;
+            sampledRots[i] = transform.rotation;
+        }
     }
     
     int mod(float a, float b) {
