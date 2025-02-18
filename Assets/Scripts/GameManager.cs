@@ -11,11 +11,11 @@ public class GameManager : MonoBehaviour {
     /// </summary>
     public static readonly string[] EnemyStrs = { // ENSURE THE WAVE SPREADSHEET COLUMNS AND THIS ARRAY LINE UP
         "EnemyBase",
+        "CanonFodder",
         "Hunter",
         "Laser",
         "Lava",
-        "CanonFodder",
-        "HunterPursuit"
+        "Centipede"
     };
     
     public static GameManager Instance;
@@ -298,14 +298,11 @@ public enum EDamageType {
 /// </summary>
 public enum EnemyType {
     EnemyBase,
-    FlyingGrunt,
-    GroundGrunt,
+    CanonFodder,
     Hunter,
     Laser,
-    FloorIsLava,
-    ShieldedTurret,
-    CanonFodder,
-    HunterPursuit
+    Lava,
+    Centipede
 }
 
 
