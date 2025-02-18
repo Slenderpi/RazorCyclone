@@ -25,4 +25,4 @@ MonoBehaviour:
   AvoidanceMaxIntensity: 10
   AvoidanceMaxSteeringForce: 10
   AvoidInvisBoidWalls: 0
-  UseSeek: 0
+  UseSeek: 1
