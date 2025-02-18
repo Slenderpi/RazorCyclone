@@ -69,7 +69,7 @@ public class BM_Basic : BoidMover {
             BoidBehaviour.Pursuit => BoidSteerer.Pursuit(transform.position, GameManager.CurrentPlayer.transform.position, rb.velocity, GameManager.CurrentPlayer.rb.velocity, msv, msf),
             BoidBehaviour.Evade => BoidSteerer.Evade(transform.position, GameManager.CurrentPlayer.transform.position, rb.velocity, GameManager.CurrentPlayer.rb.velocity, msv, msf),
             BoidBehaviour.Wander => doWander(),
-            BoidBehaviour.ObstacleAvoidanceTest => testObstAvoid(),
+            BoidBehaviour.TestState => testObstAvoid(),
             _ => Vector3.zero,
         };
     }

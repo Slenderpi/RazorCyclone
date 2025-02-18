@@ -14,12 +14,12 @@ public class HunterEnemy : EnemyBase {
     
     
     
-    void Start() {
+    protected override void Init() {
         CanGetVacuumSucked = false;
         rb.drag = shieldDrag;
         SetEffectState();
     }
-
+    
     public override void TakeDamage(float amnt, EDamageType damageType) {
         if (invincible) return;
         if (!isStunned) {
@@ -30,12 +30,13 @@ public class HunterEnemy : EnemyBase {
             base.TakeDamage(amnt, damageType);
         }
     }
-
+    
     public void GetStunned() {
         if (!isStunned) {
             isStunned = true;
             DealDamageOnTouch = false;
             CanGetVacuumSucked = true;
+            CanGetVacuumKilled = true;
             boid.enabled = false;
             rb.useGravity = true;
             rb.drag = stunDrag;
@@ -43,18 +44,19 @@ public class HunterEnemy : EnemyBase {
             StartCoroutine(StunRecovery());
         }
     }
-
+    
     IEnumerator StunRecovery() {
         yield return new WaitForSeconds(StunDuration);
         DealDamageOnTouch = true;
         CanGetVacuumSucked = false;
+        CanGetVacuumKilled = false;
         boid.enabled = true;
         rb.useGravity = false;
         rb.drag = shieldDrag;
         isStunned = false;
         SetEffectState();
     }
-
+    
     void SetEffectState() {
         if (isStunned) {
             ModelMeshRenderer.material = shieldInactiveMaterial;

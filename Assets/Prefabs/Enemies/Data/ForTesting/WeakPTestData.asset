@@ -9,21 +9,19 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 636b3ab64528d464e83293e64426ac4f, type: 3}
-  m_Name: TestBasic2
+  m_Script: {fileID: 11500000, guid: 1e33356a4b2c35f41a9535042f9480f9, type: 3}
+  m_Name: WeakPTestData
   m_EditorClassIdentifier: 
   MaxSteeringVelocity: 15
-  MaxSteeringForce: 6
+  MaxSteeringForce: 10
   WanderLimitRadius: 0.5
   WanderLimitDist: 0.5
   WanderChangeDist: 0.15
   WanderMinimumDelay: 0
-  AvoidanceTestType: 4
+  AvoidanceTestType: 3
   AvoidanceMaxLookDist: 4
   AvoidanceWhiskerAngle: 30
-  AvoidanceMinIntensity: 0
+  AvoidanceMinIntensity: 1
   AvoidanceMaxIntensity: 10
-  AvoidanceMaxSteeringForce: 30
-  BehaviourType: 5
-  RotationType: 4
-  CanFly: 0
+  AvoidanceMaxSteeringForce: 10
+  AvoidInvisBoidWalls: 0

@@ -69,11 +69,11 @@ public class Spawner : MonoBehaviour
         // Convert estr to EnemyType enum
         EnemyType etype;
         if (estr == "EnemyBase") etype = EnemyType.EnemyBase;
+        else if (estr == "CanonFodder") etype = EnemyType.CanonFodder;
         else if (estr == "Hunter") etype = EnemyType.Hunter;
         else if (estr == "Laser") etype = EnemyType.Laser;
-        else if (estr == "Lava") etype = EnemyType.FloorIsLava;
-        else if (estr == "CanonFodder") etype = EnemyType.CanonFodder;
-        else if (estr == "HunterPursuit") etype = EnemyType.HunterPursuit;
+        else if (estr == "Lava") etype = EnemyType.Lava;
+        else if (estr == "Centipede") etype = EnemyType.Centipede;
         else return false;
         
         // If etype is in enemyTypes, then return !UseAsExc

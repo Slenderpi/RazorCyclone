@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using UnityEngine;
 
@@ -8,43 +7,107 @@ public class ProjectileBase : MonoBehaviour {
     [HideInInspector]
     public float damage;
     // public GameObject explosionEffect;
+    [Tooltip("The radius to use when doing multiple raycasts for collision detection.\n\nNOTE: if set to a value less than 0.1, this projectile will only check directly in front of it once.")]
+    public float ProjectileRadius = 0.2f;
     [Tooltip("Maximum lifetime in seconds of this projectile to prevent projectiles that go into the void from living too long.")]
     public float MaxLifetime = 10f;
+    [Tooltip("Maximum number of times this projectile can ricochet.\nA value of 0 means NO ricochet.")]
+    public int MaxRicochet = 1;
+    int ricRemain;
     
-    bool hasHit = false;
+    [HideInInspector]
+    public Rigidbody rb;
+    EnemyBase enemyToIgnore = null; // Most recent enemy that was hit for ricocheting
+    LayerMask layerMask;
+    
+    GameObject closestHit = null;
+    Vector3 closestHitPos;
+    Vector3 closestHitNorm;
+    float closestHitSqrd = float.MaxValue;
+    
+    WaitForFixedUpdate waitFixedUpdForRic;
     
     
+    
+    void Awake() {
+        rb = GetComponent<Rigidbody>();
+        layerMask = (1 << LayerMask.NameToLayer("Default")) |
+                    (1 << LayerMask.NameToLayer("Enemy")) |
+                    (1 << LayerMask.NameToLayer("EnemyWeapon"));
+        waitFixedUpdForRic = new WaitForFixedUpdate();
+        Init();
+    }
     
     void Start() {
+        ricRemain = MaxRicochet;
         StartCoroutine(ProjectileLifetime());
     }
     
-    void Update() {
-        
+    /// <summary>
+    /// Called by Awake().
+    /// </summary>
+    protected virtual void Init() {}
+    
+    void FixedUpdate() {
+        // GameManager.D_DrawPoint(transform.position, Color.green);
+        float dist = rb.velocity.magnitude * Time.fixedDeltaTime;
+        checkForCollision(Vector3.zero, dist);
+        if (ProjectileRadius >= 0.1f) {
+            checkForCollision(transform.right * ProjectileRadius, dist);
+            checkForCollision(-transform.right * ProjectileRadius, dist);
+            checkForCollision(transform.up * ProjectileRadius, dist);
+            checkForCollision(-transform.up * ProjectileRadius, dist);
+        }
+        if (closestHit) {
+            transform.position = closestHitPos;
+            onHitSomething(closestHit);
+        }
     }
     
-    void OnCollisionEnter(Collision collision) {
-        // TODO: For some reason the collision version does not work with enemy weakpoints
-        onHitSomething(collision.gameObject);
+    void checkForCollision(Vector3 offset, float dist) {
+        // Debug.DrawRay(transform.position + offset, rb.velocity * Time.fixedDeltaTime, Color.white, Time.fixedDeltaTime, false);
+        if (Physics.Raycast(
+            origin: transform.position + offset,
+            direction: rb.velocity,
+            maxDistance: dist,
+            layerMask: layerMask,
+            hitInfo: out RaycastHit hit)) {
+            float hitDistSqrd = (hit.point - transform.position).sqrMagnitude;
+            if (hitDistSqrd < closestHitSqrd) {
+                if (!hit.collider.CompareTag("Enemy") || enemyToIgnore == null || hit.collider.GetComponent<EnemyBase>() != enemyToIgnore) {
+                    closestHitSqrd = hitDistSqrd;
+                    closestHit = hit.collider.gameObject;
+                    closestHitPos = hit.point;
+                    closestHitNorm = hit.normal;
+                }
+            }
+        }
     }
     
-    void OnTriggerEnter(Collider collider) {
-        onHitSomething(collider.gameObject);
-    }
+    // void OnCollisionEnter(Collision collision) {
+    //     onHitSomething(collision.gameObject);
+    // }
     
     // This function allows for a projectile's hitbox to be either a collider or a trigger
     void onHitSomething(GameObject hitObject) {
-        if (hasHit) return;
         if (!hitObject.CompareTag("Player") &&
             !hitObject.CompareTag("Projectile") &&
             !hitObject.CompareTag("Pickup")) {
-            hasHit = true;
-            if (hitObject.TryGetComponent(out EnemyBase enemy)) {
-                OnHitEnemy(enemy);
+            if (hitObject.CompareTag("Enemy")) {
+                if (!hitObject.TryGetComponent(out EnemyBase enemy)) {
+                    enemy = hitObject.GetComponentInParent<EnemyBase>();
+                }
+                if (enemy == enemyToIgnore) return;
+                if (enemy.RicochetCanon && ricRemain > 0)
+                    OnRicochetEnemy(enemy);
+                else {
+                    OnHitEnemy(enemy);
+                    Destroy(gameObject);
+                }
             } else {
                 OnHitNonEnemy(hitObject);
+                Destroy(gameObject);
             }
-            Destroy(gameObject);
         }
     }
     
@@ -65,6 +128,26 @@ public class ProjectileBase : MonoBehaviour {
     /// </summary>
     /// <param name="other"></param>
     protected virtual void OnHitNonEnemy(GameObject other) {}
+    
+    protected virtual void OnRicochetEnemy(EnemyBase enemy) {
+        ricRemain--;
+        enemyToIgnore = enemy;
+        closestHit = null;
+        closestHitSqrd = float.MaxValue;
+        EnemyBase closestEn = GameManager.Instance.currentSceneRunner.GetClosestEnemy(transform.position, enemyToIgnore);
+        Vector3 ricVel = closestEn ?
+                         (closestEn.TransformForRicochetToAimAt.position - transform.position).normalized * rb.velocity.magnitude :
+                         Vector3.Reflect(rb.velocity, closestHitNorm);
+        rb.velocity *= 0;
+        transform.rotation = Quaternion.LookRotation(ricVel);
+        StartCoroutine(ricochetVelNextFrame(ricVel));
+        enemy.TakeDamage(damage, EDamageType.Projectile);
+    }
+    
+    IEnumerator ricochetVelNextFrame(Vector3 ricVel) {
+        yield return waitFixedUpdForRic;
+        rb.velocity = ricVel;
+    }
     
     /// <summary>
     /// Called if the projectile lives up to its MaxLifetime without collision. By default,

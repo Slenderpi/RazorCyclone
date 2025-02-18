@@ -1,6 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class EnemyBase : MonoBehaviour {
@@ -18,6 +15,18 @@ public class EnemyBase : MonoBehaviour {
     public float lastVacuumHitTime = 0f;
     [Tooltip("Determines if this enemy allows vacuum forces to be applied on it.\n\nNote: certain enemies (e.g. Hunter) will set this value on their own, and do not need this to be touched.")]
     public bool CanGetVacuumSucked = true;
+    [Tooltip("Determines if this enemy can be killed when touched by the vacuum's killbox.\n\nNote: certain enemies (e.g. Hunter) will set this value on their own, and do not need this to be touched.")]
+    public bool CanGetVacuumKilled = true;
+    [Tooltip("If enabled, this enemy will call its OnSubmerged() method when it detects that it is below lava.")]
+    public bool AffectedByLava = true;
+    [Tooltip("If enabled, projectiles will also try to ricochet when they hit this enemy.")]
+    public bool RicochetCanon = false;
+    [HideInInspector]
+    public bool ConsiderForRicochet = true;
+    [Tooltip("If left null, will default to the gameobject's transform. This is primarily for the EnemyWeakpoint type.")]
+    public Transform TransformForRicochetToAimAt = null;
+    [Tooltip("This enemy will be affected by lava if its y position + HeightOffset is below the lava. This is to allow objects to sink lower before actually being counted as submerged.")]
+    public float LavaSubmergeOffset = 1;
     public int FuelAmount = 50; // The value of the fuel this enemy will drop
     [HideInInspector]
     public Rigidbody rb;
@@ -27,7 +36,9 @@ public class EnemyBase : MonoBehaviour {
     
     [Header("References")]
     [SerializeField]
-    private FuelPickup fuelPickupPrefab;
+    FuelPickup fuelPickupPrefab;
+    
+    protected Lava lava;
     
     [Header("For testing")]
     [SerializeField]
@@ -38,7 +49,6 @@ public class EnemyBase : MonoBehaviour {
     
     
     
-    
     void Awake() {
         if (MaxHealth <= 0) Debug.LogWarning("Enemy MaxHealth set to a value <= 0 (set to " + MaxHealth + ").");
         if (fuelPickupPrefab == null)
@@ -46,7 +56,30 @@ public class EnemyBase : MonoBehaviour {
         rb = GetComponent<Rigidbody>();
         boid = GetComponent<BoidMover>();
         health = MaxHealth;
+        if (TransformForRicochetToAimAt == null) TransformForRicochetToAimAt = transform;
         Init();
+    }
+    
+    /// <summary>
+    /// Called by Awake().
+    /// </summary>
+    protected virtual void Init() {}
+    
+    void Start() {
+        if (ConsiderForRicochet)
+            GameManager.Instance.currentSceneRunner.AddEnemyToList(this);
+        LateInit();
+    }
+    
+    /// <summary>
+    /// Called by Start().
+    /// </summary>
+    protected virtual void LateInit() {
+        lava = GameManager.Instance.currentSceneRunner.lava;
+    }
+    
+    void FixedUpdate() {
+        onFixedUpdate();
     }
     
     void OnTriggerEnter(Collider collider) {
@@ -61,7 +94,7 @@ public class EnemyBase : MonoBehaviour {
         if (!plr) return;
         if (Time.time - lastAttackTime <= AttackDelay) return;
         lastAttackTime = Time.time;
-        plr.TakeDamage(Damage);
+        plr.TakeDamage(Damage, EDamageType.Enemy);
     }
     
     public virtual void TakeDamage(float amnt, EDamageType damageType) {
@@ -86,14 +119,39 @@ public class EnemyBase : MonoBehaviour {
         gameObject.SetActive(false);
         Destroy(gameObject, 1);
     }
-
+    
     public void DropFuel() {
-        FuelPickup fuel = Instantiate(fuelPickupPrefab, transform.position, Quaternion.identity);
+        DropFuel(transform.position);
+    }
+    
+    public void DropFuel(Vector3 position) {
+        FuelPickup fuel = Instantiate(fuelPickupPrefab, position, Quaternion.identity);
         fuel.FuelValue = FuelAmount;
     }
     
-    protected virtual void Init() {
-        
+    protected virtual void onFixedUpdate() {
+        if (AffectedByLava && lava) {
+            // Check if below lava
+            if (transform.position.y + LavaSubmergeOffset < lava.currentHeight) {
+                OnSubmerged();
+            }
+        }
+    }
+    
+    /// <summary>
+    /// Called when this enemy detects that its y position + LavaSubmergeOffset is below the current lava height.
+    /// </summary>
+    protected virtual void OnSubmerged() {
+        gameObject.SetActive(false); // TODO: Set inactive or just kill?
+        Destroy(gameObject, 1);
+    }
+    
+    void OnDestroy() {
+        OnDestroying();
+    }
+    
+    protected virtual void OnDestroying() {
+        GameManager.Instance.currentSceneRunner.RemoveEnemyFromList(this);
     }
     
 }

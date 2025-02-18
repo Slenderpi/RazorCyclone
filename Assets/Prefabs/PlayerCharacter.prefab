@@ -1695,7 +1695,7 @@ MonoBehaviour:
   CanonDamage: 50
   MaxFuel: 100
   FuelRefillDelay: 1
-  CanonFuelCost: 15
+  CanonFuelCost: 10
   VacuumFuelTime: 10
   MaxHealth: 100
   CurrentHealth: 0
@@ -1715,6 +1715,9 @@ MonoBehaviour:
   NoFuelCost: 0
   thirdPersonDist: 4
   rearMirrorModel: {fileID: 2843522477064941511}
+  spaceInput: 1
+  vacEnableddd: 1
+  cannonEnabled: 1
 --- !u!54 &726438411730522680
 Rigidbody:
   m_ObjectHideFlags: 0

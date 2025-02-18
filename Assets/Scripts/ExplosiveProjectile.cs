@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class ExplosiveProjectile : ProjectileBase {
@@ -24,24 +22,24 @@ public class ExplosiveProjectile : ProjectileBase {
     int MaxHits = 20;
     Collider[] hitColliders;
     int ExplosionLayerMask;
-
     
     
-    void Awake() {
+    
+    protected override void Init() {
         ExplosionLayerMask = 1 << LayerMask.NameToLayer("Enemy");
         hitColliders = new Collider[MaxHits];
         initExplosionEffect();
     }
-
+    
     protected override void OnHitEnemy(EnemyBase enemy) {
         base.OnHitEnemy(enemy);
         explode(enemy);
     }
-
+    
     protected override void OnHitNonEnemy(GameObject other) {
         explode();
     }
-
+    
     protected override void OnProjectileLifetimeExpired() {
         explode();
         Destroy(gameObject);

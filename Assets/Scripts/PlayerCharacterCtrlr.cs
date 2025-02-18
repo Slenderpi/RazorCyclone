@@ -3,7 +3,6 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
-using UnityEngine.Video;
 
 public class PlayerCharacterCtrlr : MonoBehaviour {
     
@@ -109,6 +108,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     Quaternion rotBeforeInputUpdate = Quaternion.identity;
     float pivotRotLerpPower = 4;
     float pivotRotLerpTime = 0.1f;
+    Lava lava;
     
     
     
@@ -125,6 +125,11 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     // Sprite[] crosshairSprites = new Sprite[200];
     // int crosshairIndex = 0;
     
+    // NOTE: Adams stuff
+    [HideInInspector]public bool spaceInput = true;
+    [HideInInspector]public bool vacEnableddd = true;
+    [HideInInspector]public bool cannonEnabled = true;
+
     void Awake() {
         // inputActions = GameManager.PInputActions.Player;
         inputActions = new PlayerInputActions().Player;
@@ -164,6 +169,8 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         currentMuzzleFlashEffect = Instantiate(muzzleFlashEffect, canonTip);
         currentMuzzleFlashEffect.SetActive(false);
         
+        lava = GameManager.Instance.currentSceneRunner.lava;
+        
         updateCameraTransform();
     }
     
@@ -175,11 +182,10 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         charModel.localEulerAngles = new Vector3(0, camtrans.localEulerAngles.y, 0);
         
         interpRotPivot();
-        healthRegen();
     }
 
     void FixedUpdate() {
-        if (isVacuumOn) {
+        if (isVacuumOn && vacEnableddd) {
             if (CurrentHealth <= 0) {
                 isVacuumOn = false;
                 vacuumHitbox.SetActive(false);
@@ -190,9 +196,9 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
                 rb.AddForce(charPivot.forward * (rb.velocity.magnitude <= VacuumForceNormalSpeed ? VacuumForceLowSpeed : VacuumForce), ForceMode.Acceleration);
             }
         }
-        
+        handleHealthRegen();
+        handleLavaCheck();
         _gamePanel.SetSpeedText(rb.velocity.magnitude);
-        
     }
     
     void LateUpdate() {
@@ -206,22 +212,20 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     }
     
     public void SpendFuel(float amount) {
-#if UNITY_EDITOR
         if (NoFuelCost) return;
-#endif
         
         bool spentAsHealth = false;
         if (currentFuel > 0) {
             currentFuel -= amount;
             if (currentFuel < 0) {
                 spentAsHealth = true;
-                TakeDamage(-currentFuel * FuelHelathCostMultiplier);
+                TakeDamage(-currentFuel * FuelHelathCostMultiplier, EDamageType.Any);
                 currentFuel = 0;
             }
         } else {
             spentAsHealth = true;
             //StartCoroutine(StartRefillFuelTimer());
-            TakeDamage(amount * FuelHelathCostMultiplier);
+            TakeDamage(amount * FuelHelathCostMultiplier, EDamageType.Any);
         }
         A_FuelSpent?.Invoke(amount, currentFuel / MaxFuel, spentAsHealth);
     }
@@ -231,10 +235,8 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         AddFuel(MaxFuel);
     }
     
-    public void TakeDamage(float amount) {
-#if UNITY_EDITOR
+    public void TakeDamage(float amount, EDamageType damageType) {
         if (IsInvincible) return;
-#endif
         
         CurrentHealth = Mathf.Max(CurrentHealth - amount, 0);
         
@@ -247,7 +249,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         
         A_PlayerTakenDamage?.Invoke(amount);
 
-        lastDmgTimeForRegen = Time.time;
+        lastDmgTimeForRegen = Time.fixedTime;
     }
     
     public void HealHealth(float amount) {
@@ -272,14 +274,18 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     }
 
     private void VertInputChanged(InputAction.CallbackContext context) {
-        setDesiredRotation(desiredRotation.x, context.ReadValue<float>(), desiredRotation.z);
-        
-        /** Input overlay stuff **/
-        // A_VertInputChanged?.Invoke(context.ReadValue<float>());
-        _gamePanel.OnVertInputChanged(context.ReadValue<float>());
+        if(spaceInput){
+            setDesiredRotation(desiredRotation.x, context.ReadValue<float>(), desiredRotation.z);
+            
+            /** Input overlay stuff **/
+            // A_VertInputChanged?.Invoke(context.ReadValue<float>());
+            _gamePanel.OnVertInputChanged(context.ReadValue<float>());
+        }
     }
 
     private void FireVacuumStarted(InputAction.CallbackContext context) {
+        if (!vacEnableddd) return;
+        
         _gamePanel.OnFireVacuum(true);
         
         if (CurrentHealth <= 0) {
@@ -289,6 +295,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         }
         isVacuumOn = true;
         vacuumHitbox.SetActive(true);
+        
     }
 
     private void FireVacuumCanceled(InputAction.CallbackContext context) {
@@ -307,7 +314,10 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
             return;
         }
         // Time.timeScale = 0.15f;
-        fireCanon();
+        if(cannonEnabled){
+            fireCanon();
+        }
+        
     }
 
     private void FireCanonCanceled(InputAction.CallbackContext context) {
@@ -372,9 +382,10 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     void fireCanon() {
         updateRayCastedAimPoint();
         rb.AddForce((charModel.rotation * weaponRelativeRot).normalized * CanonForce * 100000);
-        ProjectileBase proj = Instantiate(projectilePrefab, canonTip.position, canonTip.rotation);
+        Vector3 projVel = (aimPoint - canonTip.position).normalized * CanonProjSpeed + rb.velocity;
+        ProjectileBase proj = Instantiate(projectilePrefab, canonTip.position, Quaternion.LookRotation(projVel));
         proj.damage = CanonDamage;
-        proj.GetComponent<Rigidbody>().AddForce((aimPoint - canonTip.position).normalized * CanonProjSpeed + rb.velocity, ForceMode.VelocityChange);
+        proj.rb.AddForce(projVel, ForceMode.VelocityChange);
         SpendFuel(CanonFuelCost);
         GameManager.Instance.Audio2D.PlayClipSFX(AudioPlayer2D.EClipSFX.Weapon_CanonShot);
         playMuzzleFlashEffect();
@@ -425,6 +436,23 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         }
         
         _gamePanel.UpdateCrosshairPositions(screenPointVacuum, screenPointCanon);
+    }
+    
+    void handleHealthRegen() {
+        if ((CurrentHealth < MaxHealth) && (Time.fixedTime - lastDmgTimeForRegen >= HealthRegenDelay)) {
+            HealHealth(HealthRegenPerSecond * Time.fixedDeltaTime);
+        }
+    }
+    
+    void handleLavaCheck() {
+        float offset = 0.7321717f;
+        if (lava && transform.position.y - offset <= lava.currentHeight) {
+            transform.position = new(transform.position.x, lava.currentHeight + offset + 0.1f, transform.position.z);
+            Vector3 bouncedVel = Vector3.Reflect(rb.velocity, Vector3.up);
+            bouncedVel.y = Mathf.Max(bouncedVel.y, lava.MinimumVerticalBounceSpeed);
+            rb.velocity = bouncedVel;
+            TakeDamage(lava.LavaDamage, EDamageType.Any);
+        }
     }
     
     void playMuzzleFlashEffect() {
@@ -548,7 +576,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     void On_TakeDamage(InputAction.CallbackContext context) {
         float DamageAmount = 10;
         print("Damaging player for " + DamageAmount + " damage.");
-        TakeDamage(DamageAmount);
+        TakeDamage(DamageAmount, EDamageType.Any);
     }
     
     void On_HealHealth(InputAction.CallbackContext context) {
@@ -556,10 +584,9 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         print("Healing player for " + HealAmount + " health.");
         HealHealth(HealAmount);
     }
-
-    void healthRegen(){
-        if ((Time.time - lastDmgTimeForRegen > HealthRegenDelay) && (CurrentHealth < MaxHealth)){
-            HealHealth(HealthRegenPerSecond * Time.deltaTime);
-        } 
-    }
+    
+    // public void OnSinkBelowLava() {
+    //     TakeDamage(GameManager.Instance.currentSceneRunner.lava.LavaDamage, EDamageType.Any);
+    // }
+    
 }

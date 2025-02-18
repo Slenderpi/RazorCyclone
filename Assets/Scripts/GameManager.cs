@@ -11,11 +11,11 @@ public class GameManager : MonoBehaviour {
     /// </summary>
     public static readonly string[] EnemyStrs = { // ENSURE THE WAVE SPREADSHEET COLUMNS AND THIS ARRAY LINE UP
         "EnemyBase",
+        "CanonFodder",
         "Hunter",
         "Laser",
         "Lava",
-        "CanonFodder",
-        "HunterPursuit"
+        "Centipede"
     };
     
     public static GameManager Instance;
@@ -34,7 +34,7 @@ public class GameManager : MonoBehaviour {
     
     // Pause menu input actions
     PlayerInputActions.PauseMenuActions PauseInputActions;
-#if UNITY_EDITOR
+#if UNITY_EDITOR || KEEP_DEBUG
     PlayerInputActions.DEBUGActions DebugActions;
 #endif
     
@@ -91,7 +91,7 @@ public class GameManager : MonoBehaviour {
         PauseInputActions = new PlayerInputActions().PauseMenu;
         SetPauseInputActionsEnabled(true);
         
-#if UNITY_EDITOR
+#if UNITY_EDITOR || KEEP_DEBUG
         setupDebugActions();
 #endif
     }
@@ -231,7 +231,7 @@ public class GameManager : MonoBehaviour {
     void onPlayerDied() {
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
-        SetPauseInputActionsEnabled(false);
+        // SetPauseInputActionsEnabled(false);
     }
     
     void onFOVChanged(int value) {
@@ -242,7 +242,7 @@ public class GameManager : MonoBehaviour {
     
     /******  DEBUGGING  ******/
     
-#if UNITY_EDITOR
+#if UNITY_EDITOR || KEEP_DEBUG
     void setupDebugActions() {
         DebugActions = new PlayerInputActions().DEBUG;
         DebugActions.ToggleMouseLock.Enable();
@@ -261,13 +261,16 @@ public class GameManager : MonoBehaviour {
         DebugActions.KillPlayer.started += (InputAction.CallbackContext context) => {
             if (CurrentPlayer != null && CurrentPlayer.CurrentHealth > 0) {
                 print("Killing player from hotkey.");
-                CurrentPlayer.TakeDamage(CurrentPlayer.MaxHealth);
+                CurrentPlayer.TakeDamage(CurrentPlayer.MaxHealth, EDamageType.Any);
             }
         };
     }
     
     public static void D_DrawPoint(Vector3 position, Color c) {
-        float t = Time.fixedDeltaTime;
+        D_DrawPoint(position, c, Time.fixedDeltaTime);
+    }
+    
+    public static void D_DrawPoint(Vector3 position, Color c, float t) {
         bool b = false;
         float rad = 0.15f;
         Debug.DrawRay(position + Vector3.forward * rad, 2 * rad * Vector3.back, c, t, b);
@@ -283,6 +286,8 @@ public class GameManager : MonoBehaviour {
 /// The type of damage applied on an enemy.
 /// </summary>
 public enum EDamageType {
+    Any,
+    Enemy,
     Projectile,
     Vacuum,
     ProjectileExplosion
@@ -293,14 +298,11 @@ public enum EDamageType {
 /// </summary>
 public enum EnemyType {
     EnemyBase,
-    FlyingGrunt,
-    GroundGrunt,
+    CanonFodder,
     Hunter,
     Laser,
-    FloorIsLava,
-    ShieldedTurret,
-    CanonFodder,
-    HunterPursuit
+    Lava,
+    Centipede
 }
 
 

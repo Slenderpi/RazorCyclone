@@ -16,8 +16,9 @@ public class UIPausePanel : UIPanel {
     }
     
     public void OnButton_ResetPlayer() {
-        GameManager.Instance.DestroyPlayer();
-        GameManager.Instance.SpawnPlayer();
+        if (!GameManager.CurrentPlayer) return;
+        GameManager.Instance.ResumeGame();
+        GameManager.CurrentPlayer.TakeDamage(9999, EDamageType.Any);
     }
     
     public void OnCloseGameButtonClicked() {

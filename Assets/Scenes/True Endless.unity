@@ -97,7 +97,7 @@ LightmapSettings:
     m_ExportTrainingData: 0
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
-  m_LightingDataAsset: {fileID: 112000000, guid: a86c798806f039e48b2e8a4a77e2ef23, type: 2}
+  m_LightingDataAsset: {fileID: 112000000, guid: 8de5da03cf925b24785b7a5121b55f8e, type: 2}
   m_LightingSettings: {fileID: 0}
 --- !u!196 &4
 NavMeshSettings:
@@ -151,11 +151,11 @@ Transform:
   m_GameObject: {fileID: 24105812}
   m_LocalRotation: {x: -0, y: -0.74072343, z: -0, w: 0.6718101}
   m_LocalPosition: {x: 21.1, y: -5.84, z: 4.6}
-  m_LocalScale: {x: 37.229942, y: 43.570656, z: 35.23547}
+  m_LocalScale: {x: 37.22995, y: 43.570656, z: 35.23547}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2019356283}
-  m_RootOrder: 9
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: -95.586, z: 0}
 --- !u!65 &24105814
 BoxCollider:
@@ -248,11 +248,11 @@ Transform:
   m_GameObject: {fileID: 70666200}
   m_LocalRotation: {x: -0, y: -0.70918506, z: -0, w: 0.7050224}
   m_LocalPosition: {x: -22.1, y: -5.84, z: 0.4}
-  m_LocalScale: {x: 37.229942, y: 43.570656, z: 35.23547}
+  m_LocalScale: {x: 37.229935, y: 43.570656, z: 35.235462}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2019356283}
-  m_RootOrder: 12
+  m_RootOrder: 11
   m_LocalEulerAnglesHint: {x: 0, y: -90.337, z: 0}
 --- !u!65 &70666202
 BoxCollider:
@@ -328,7 +328,7 @@ GameObject:
   - component: {fileID: 89715701}
   - component: {fileID: 89715703}
   - component: {fileID: 89715702}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: spawnVisual
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -410,7 +410,7 @@ GameObject:
   m_Component:
   - component: {fileID: 185331674}
   - component: {fileID: 185331675}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: EdgeIslandSpawner4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -445,8 +445,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0442acdc3b074c4db82e78425535f9d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  EnemyTypes: 04000000
-  UseTypesAsInclude: 0
+  EnemyTypes: 0100000002000000
+  UseTypesAsInclude: 1
   canSpawn: 1
   playerDetectionRange: 15
   enemyDetectionRange: 5
@@ -482,7 +482,7 @@ Transform:
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 321706995}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!64 &291114498
 MeshCollider:
@@ -576,9 +576,11 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 601074364}
   - {fileID: 291114497}
+  - {fileID: 2019356283}
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &332723466
 GameObject:
@@ -591,7 +593,7 @@ GameObject:
   - component: {fileID: 332723467}
   - component: {fileID: 332723469}
   - component: {fileID: 332723468}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: spawnVisual
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -695,7 +697,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2019356283}
-  m_RootOrder: 10
+  m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: -45.561, z: 0}
 --- !u!65 &356080820
 BoxCollider:
@@ -788,7 +790,7 @@ Transform:
   m_GameObject: {fileID: 358339898}
   m_LocalRotation: {x: -0, y: -0.31847355, z: -0, w: 0.94793177}
   m_LocalPosition: {x: -25.55, y: 2, z: 25.54}
-  m_LocalScale: {x: 18.116396, y: 41.95, z: 20.360222}
+  m_LocalScale: {x: 18.116394, y: 41.95, z: 20.360222}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2019356283}
@@ -868,7 +870,7 @@ GameObject:
   - component: {fileID: 445896891}
   - component: {fileID: 445896893}
   - component: {fileID: 445896892}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: spawnVisual
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -951,7 +953,7 @@ GameObject:
   - component: {fileID: 461294542}
   - component: {fileID: 461294544}
   - component: {fileID: 461294543}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: spawnVisual
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1034,7 +1036,7 @@ GameObject:
   - component: {fileID: 485299203}
   - component: {fileID: 485299205}
   - component: {fileID: 485299204}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: spawnVisual
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1117,7 +1119,7 @@ GameObject:
   - component: {fileID: 497073407}
   - component: {fileID: 497073409}
   - component: {fileID: 497073408}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: spawnVisual
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1200,7 +1202,7 @@ GameObject:
   - component: {fileID: 528354157}
   - component: {fileID: 528354159}
   - component: {fileID: 528354158}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: spawnVisual
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1282,7 +1284,7 @@ GameObject:
   m_Component:
   - component: {fileID: 544964460}
   - component: {fileID: 544964461}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: CrabSpawner_8
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1317,7 +1319,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0442acdc3b074c4db82e78425535f9d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  EnemyTypes: 04000000
+  EnemyTypes: 03000000
   UseTypesAsInclude: 1
   canSpawn: 1
   playerDetectionRange: 15
@@ -1332,7 +1334,7 @@ GameObject:
   m_Component:
   - component: {fileID: 552804912}
   - component: {fileID: 552804913}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: CrabSpawner_4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1367,7 +1369,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0442acdc3b074c4db82e78425535f9d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  EnemyTypes: 04000000
+  EnemyTypes: 03000000
   UseTypesAsInclude: 1
   canSpawn: 1
   playerDetectionRange: 15
@@ -1463,8 +1465,8 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_Father: {fileID: 321706995}
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
 --- !u!1 &605909355
 GameObject:
@@ -1476,7 +1478,7 @@ GameObject:
   m_Component:
   - component: {fileID: 605909356}
   - component: {fileID: 605909357}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: CrabSpawner_3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1511,7 +1513,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0442acdc3b074c4db82e78425535f9d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  EnemyTypes: 04000000
+  EnemyTypes: 03000000
   UseTypesAsInclude: 1
   canSpawn: 1
   playerDetectionRange: 15
@@ -1527,7 +1529,7 @@ GameObject:
   - component: {fileID: 640041481}
   - component: {fileID: 640041483}
   - component: {fileID: 640041482}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: spawnVisual
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1620,7 +1622,7 @@ GameObject:
   m_Component:
   - component: {fileID: 835792594}
   - component: {fileID: 835792595}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: CrabSpawner
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1655,7 +1657,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0442acdc3b074c4db82e78425535f9d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  EnemyTypes: 04000000
+  EnemyTypes: 03000000
   UseTypesAsInclude: 1
   canSpawn: 1
   playerDetectionRange: 15
@@ -1685,7 +1687,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 867006017}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: -0.5, z: 0}
   m_LocalScale: {x: 1, y: 0.026607, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1701,8 +1703,8 @@ MeshRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 867006017}
   m_Enabled: 1
-  m_CastShadows: 1
-  m_ReceiveShadows: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
   m_DynamicOccludee: 1
   m_StaticShadowCaster: 0
   m_MotionVectors: 1
@@ -1756,19 +1758,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3258954005348018360, guid: 3673c5e01ef9a8a4cb02e0f60d7648cb, type: 3}
       propertyPath: m_RootOrder
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 3258954005348018360, guid: 3673c5e01ef9a8a4cb02e0f60d7648cb, type: 3}
       propertyPath: m_LocalScale.x
-      value: 100
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 3258954005348018360, guid: 3673c5e01ef9a8a4cb02e0f60d7648cb, type: 3}
       propertyPath: m_LocalScale.y
-      value: 100
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 3258954005348018360, guid: 3673c5e01ef9a8a4cb02e0f60d7648cb, type: 3}
       propertyPath: m_LocalScale.z
-      value: 100
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 3258954005348018360, guid: 3673c5e01ef9a8a4cb02e0f60d7648cb, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1776,7 +1778,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3258954005348018360, guid: 3673c5e01ef9a8a4cb02e0f60d7648cb, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 30
       objectReference: {fileID: 0}
     - target: {fileID: 3258954005348018360, guid: 3673c5e01ef9a8a4cb02e0f60d7648cb, type: 3}
       propertyPath: m_LocalPosition.z
@@ -1844,7 +1846,7 @@ Transform:
   m_GameObject: {fileID: 881919917}
   m_LocalRotation: {x: -0, y: 0.37728268, z: -0, w: 0.9260982}
   m_LocalPosition: {x: 21.82, y: 3.5, z: -21.15}
-  m_LocalScale: {x: 18.116396, y: 41.95, z: 20.360222}
+  m_LocalScale: {x: 18.116396, y: 41.95, z: 20.360224}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2019356283}
@@ -1924,7 +1926,7 @@ GameObject:
   - component: {fileID: 903128440}
   - component: {fileID: 903128442}
   - component: {fileID: 903128441}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: spawnVisual
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2006,7 +2008,7 @@ GameObject:
   m_Component:
   - component: {fileID: 919189180}
   - component: {fileID: 919189181}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: EdgeIslandSpawner5
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2041,8 +2043,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0442acdc3b074c4db82e78425535f9d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  EnemyTypes: 04000000
-  UseTypesAsInclude: 0
+  EnemyTypes: 0100000002000000
+  UseTypesAsInclude: 1
   canSpawn: 1
   playerDetectionRange: 15
   enemyDetectionRange: 5
@@ -2073,8 +2075,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 927649688}
   m_LocalRotation: {x: -0, y: -0.059177812, z: -0, w: 0.99824744}
-  m_LocalPosition: {x: 34.43, y: -2.85, z: 6.04}
-  m_LocalScale: {x: 18.116396, y: 41.95, z: 20.360222}
+  m_LocalPosition: {x: 34.43, y: -2.8500004, z: 6.04}
+  m_LocalScale: {x: 18.116392, y: 41.95, z: 20.360222}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2019356283}
@@ -2171,11 +2173,11 @@ Transform:
   m_GameObject: {fileID: 928074790}
   m_LocalRotation: {x: -0, y: -0.566983, z: -0, w: 0.8237296}
   m_LocalPosition: {x: 9.39, y: -5.84, z: 25.56}
-  m_LocalScale: {x: 37.229942, y: 43.570656, z: 35.23547}
+  m_LocalScale: {x: 37.229942, y: 43.570656, z: 35.235466}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2019356283}
-  m_RootOrder: 8
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: -69.08, z: 0}
 --- !u!65 &928074792
 BoxCollider:
@@ -2240,103 +2242,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 928074790}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!1 &937451099
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 937451100}
-  - component: {fileID: 937451103}
-  - component: {fileID: 937451102}
-  - component: {fileID: 937451101}
-  m_Layer: 0
-  m_Name: f_10
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &937451100
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 937451099}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.51, y: -5.84, z: 0}
-  m_LocalScale: {x: 37.229942, y: 43.570656, z: 35.23547}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 2019356283}
-  m_RootOrder: 7
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &937451101
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 937451099}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
---- !u!23 &937451102
-MeshRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 937451099}
-  m_Enabled: 1
-  m_CastShadows: 1
-  m_ReceiveShadows: 1
-  m_DynamicOccludee: 1
-  m_StaticShadowCaster: 0
-  m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 2
-  m_RayTraceProcedural: 0
-  m_RenderingLayerMask: 1
-  m_RendererPriority: 0
-  m_Materials:
-  - {fileID: 2100000, guid: ed35471f6291c42c2988f8b8924a3531, type: 2}
-  m_StaticBatchInfo:
-    firstSubMesh: 0
-    subMeshCount: 0
-  m_StaticBatchRoot: {fileID: 0}
-  m_ProbeAnchor: {fileID: 0}
-  m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_ReceiveGI: 1
-  m_PreserveUVs: 0
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 3
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
-  m_AdditionalVertexStreams: {fileID: 0}
---- !u!33 &937451103
-MeshFilter:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 937451099}
-  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!1 &974067046
 GameObject:
   m_ObjectHideFlags: 0
@@ -2365,11 +2270,11 @@ Transform:
   m_GameObject: {fileID: 974067046}
   m_LocalRotation: {x: -0, y: -0.5545032, z: -0, w: 0.8321816}
   m_LocalPosition: {x: -6.6, y: -5.84, z: -6.4}
-  m_LocalScale: {x: 37.229942, y: 43.570656, z: 35.23547}
+  m_LocalScale: {x: 37.229942, y: 43.570656, z: 35.235466}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2019356283}
-  m_RootOrder: 11
+  m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: -67.353, z: 0}
 --- !u!65 &974067048
 BoxCollider:
@@ -2444,7 +2349,7 @@ GameObject:
   m_Component:
   - component: {fileID: 991702505}
   - component: {fileID: 991702506}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: CrabSpawner_9
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2479,7 +2384,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0442acdc3b074c4db82e78425535f9d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  EnemyTypes: 04000000
+  EnemyTypes: 03000000
   UseTypesAsInclude: 1
   canSpawn: 1
   playerDetectionRange: 15
@@ -2494,7 +2399,7 @@ GameObject:
   m_Component:
   - component: {fileID: 997104226}
   - component: {fileID: 997104225}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: EdgeIslandSpawner1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2513,8 +2418,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0442acdc3b074c4db82e78425535f9d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  EnemyTypes: 04000000
-  UseTypesAsInclude: 0
+  EnemyTypes: 0100000002000000
+  UseTypesAsInclude: 1
   canSpawn: 1
   playerDetectionRange: 15
   enemyDetectionRange: 5
@@ -2544,7 +2449,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1104660008}
   - component: {fileID: 1104660009}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: CrabSpawner_7
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2579,7 +2484,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0442acdc3b074c4db82e78425535f9d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  EnemyTypes: 04000000
+  EnemyTypes: 03000000
   UseTypesAsInclude: 1
   canSpawn: 1
   playerDetectionRange: 15
@@ -2595,7 +2500,7 @@ GameObject:
   - component: {fileID: 1108289080}
   - component: {fileID: 1108289082}
   - component: {fileID: 1108289081}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: spawnVisual
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2677,7 +2582,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1137564077}
   - component: {fileID: 1137564078}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: MiddleSpawner
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2712,7 +2617,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0442acdc3b074c4db82e78425535f9d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  EnemyTypes: 0700000004000000
+  EnemyTypes: 01000000
   UseTypesAsInclude: 1
   canSpawn: 1
   playerDetectionRange: 15
@@ -2749,7 +2654,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2019356283}
-  m_RootOrder: 13
+  m_RootOrder: 12
   m_LocalEulerAnglesHint: {x: 0, y: -127.549, z: 0}
 --- !u!65 &1161445136
 BoxCollider:
@@ -2843,7 +2748,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 286aa498e89c9e745a10858c9e29ee23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  WaveTableFile: {fileID: 4900000, guid: 467018a3a90fed349afc0c27f0abe8f3, type: 3}
+  WaveTableFile: {fileID: 4900000, guid: a3d78c810d1d2418ab18327707d64e52, type: 3}
   EnemyPrefabs:
   - {fileID: 4682280902325755084, guid: 7cf1fba186346694eb69b97032290412, type: 3}
   - {fileID: -1261992107006566908, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
@@ -2867,8 +2772,8 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 7
+  m_Father: {fileID: 1545043122}
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1169319913
 GameObject:
@@ -2880,7 +2785,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1169319914}
   - component: {fileID: 1169319915}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: CrabSpawner_5
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2915,7 +2820,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0442acdc3b074c4db82e78425535f9d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  EnemyTypes: 04000000
+  EnemyTypes: 03000000
   UseTypesAsInclude: 1
   canSpawn: 1
   playerDetectionRange: 15
@@ -2931,7 +2836,7 @@ GameObject:
   - component: {fileID: 1266187381}
   - component: {fileID: 1266187384}
   - component: {fileID: 1266187383}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: spawnVisual
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3013,7 +2918,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1312281793}
   - component: {fileID: 1312281794}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: CrabSpawner_6
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3048,7 +2953,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0442acdc3b074c4db82e78425535f9d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  EnemyTypes: 04000000
+  EnemyTypes: 03000000
   UseTypesAsInclude: 1
   canSpawn: 1
   playerDetectionRange: 15
@@ -3064,7 +2969,7 @@ GameObject:
   - component: {fileID: 1343384890}
   - component: {fileID: 1343384892}
   - component: {fileID: 1343384891}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: spawnVisual
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3164,7 +3069,7 @@ Transform:
   m_GameObject: {fileID: 1369355841}
   m_LocalRotation: {x: -0, y: -0.56802034, z: -0, w: 0.82301456}
   m_LocalPosition: {x: -12.94, y: -10.3, z: -23.37}
-  m_LocalScale: {x: 18.116396, y: 76.07633, z: 20.360222}
+  m_LocalScale: {x: 18.116398, y: 76.07633, z: 20.360226}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2019356283}
@@ -3263,7 +3168,7 @@ Transform:
   m_Children:
   - {fileID: 867006018}
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1430938794
 GameObject:
@@ -3275,7 +3180,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1430938795}
   - component: {fileID: 1430938796}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: CrabSpawner_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3310,7 +3215,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0442acdc3b074c4db82e78425535f9d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  EnemyTypes: 04000000
+  EnemyTypes: 03000000
   UseTypesAsInclude: 1
   canSpawn: 1
   playerDetectionRange: 15
@@ -3326,7 +3231,7 @@ GameObject:
   - component: {fileID: 1484868809}
   - component: {fileID: 1484868811}
   - component: {fileID: 1484868810}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: spawnVisual
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3408,7 +3313,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1536181861}
   - component: {fileID: 1536181860}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: EdgeIslandSpawner
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3427,8 +3332,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0442acdc3b074c4db82e78425535f9d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  EnemyTypes: 04000000
-  UseTypesAsInclude: 0
+  EnemyTypes: 0100000002000000
+  UseTypesAsInclude: 1
   canSpawn: 1
   playerDetectionRange: 15
   enemyDetectionRange: 5
@@ -3476,7 +3381,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 1163138149}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -3494,6 +3400,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerSpawnPoint: {fileID: 1430545054}
   lava: {fileID: 747643374}
+  SpawnedEnemies: []
   WaveSpawnManager: {fileID: 1163138148}
   EndlessStartTime: 0
   EnemiesKilled: 0
@@ -3508,7 +3415,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1593708534}
   - component: {fileID: 1593708535}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: CrabSpawner_2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3543,7 +3450,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0442acdc3b074c4db82e78425535f9d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  EnemyTypes: 04000000
+  EnemyTypes: 03000000
   UseTypesAsInclude: 1
   canSpawn: 1
   playerDetectionRange: 15
@@ -3559,7 +3466,7 @@ GameObject:
   - component: {fileID: 1738914677}
   - component: {fileID: 1738914679}
   - component: {fileID: 1738914678}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: spawnVisual
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3641,7 +3548,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1750328742}
   - component: {fileID: 1750328743}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: EdgeIslandSpawner3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3676,8 +3583,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0442acdc3b074c4db82e78425535f9d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  EnemyTypes: 04000000
-  UseTypesAsInclude: 0
+  EnemyTypes: 0100000002000000
+  UseTypesAsInclude: 1
   canSpawn: 1
   playerDetectionRange: 15
   enemyDetectionRange: 5
@@ -3692,7 +3599,7 @@ GameObject:
   - component: {fileID: 1817128770}
   - component: {fileID: 1817128772}
   - component: {fileID: 1817128771}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: spawnVisual
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3853,7 +3760,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1900159623}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0.51, y: 0, z: 0}
   m_LocalScale: {x: 19.485996, y: 41.95, z: 20.360222}
   m_ConstrainProportionsScale: 0
@@ -3872,7 +3779,7 @@ GameObject:
   - component: {fileID: 1925631478}
   - component: {fileID: 1925631480}
   - component: {fileID: 1925631479}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: spawnVisual
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3972,7 +3879,7 @@ Transform:
   m_GameObject: {fileID: 1947008518}
   m_LocalRotation: {x: -0, y: 0.17920749, z: -0, w: 0.9838113}
   m_LocalPosition: {x: 12.9, y: 1.75, z: 35.34}
-  m_LocalScale: {x: 27.118433, y: 41.95, z: 20.360222}
+  m_LocalScale: {x: 27.118437, y: 41.95, z: 20.360226}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2019356283}
@@ -4067,8 +3974,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1947054158}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -34.11, y: -2.06, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -34.11, y: -2.0599995, z: 0}
   m_LocalScale: {x: 18.116396, y: 41.95, z: 20.360222}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -4148,7 +4055,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1952233748}
   - component: {fileID: 1952233747}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: EdgeIslandSpawner2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4167,8 +4074,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0442acdc3b074c4db82e78425535f9d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  EnemyTypes: 04000000
-  UseTypesAsInclude: 0
+  EnemyTypes: 0100000002000000
+  UseTypesAsInclude: 1
   canSpawn: 1
   playerDetectionRange: 15
   enemyDetectionRange: 5
@@ -4197,7 +4104,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 9213267263744958651, guid: a6a8bd0296f44eb4ba82a4f2dd71a33d, type: 3}
       propertyPath: m_RootOrder
-      value: 4
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 9213267263744958651, guid: a6a8bd0296f44eb4ba82a4f2dd71a33d, type: 3}
       propertyPath: m_LocalPosition.x
@@ -4205,11 +4112,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9213267263744958651, guid: a6a8bd0296f44eb4ba82a4f2dd71a33d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 28
+      value: 50.9
       objectReference: {fileID: 0}
     - target: {fileID: 9213267263744958651, guid: a6a8bd0296f44eb4ba82a4f2dd71a33d, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -10
+      value: -6.43
       objectReference: {fileID: 0}
     - target: {fileID: 9213267263744958651, guid: a6a8bd0296f44eb4ba82a4f2dd71a33d, type: 3}
       propertyPath: m_LocalRotation.w
@@ -4291,7 +4198,7 @@ Transform:
   - {fileID: 544964460}
   - {fileID: 991702505}
   m_Father: {fileID: 0}
-  m_RootOrder: 8
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1999728218
 GameObject:
@@ -4304,7 +4211,7 @@ GameObject:
   - component: {fileID: 1999728219}
   - component: {fileID: 1999728221}
   - component: {fileID: 1999728220}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: spawnVisual
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4399,7 +4306,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2019356282}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 26.1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -4411,13 +4318,12 @@ Transform:
   - {fileID: 881919918}
   - {fileID: 927649689}
   - {fileID: 1947054159}
-  - {fileID: 937451100}
   - {fileID: 928074791}
   - {fileID: 24105813}
   - {fileID: 356080819}
   - {fileID: 974067047}
   - {fileID: 70666201}
   - {fileID: 1161445135}
-  m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_Father: {fileID: 321706995}
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

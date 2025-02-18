@@ -11,6 +11,7 @@ public class UIGamePanel : UIPanel {
     [Header("Fuel Gauge")]
     public Slider FuelSlider;
     public Animator FuelOutlineAnimator;
+    public Animator FuelFillAnimator;
     
     [Header("Healthbar")]
     public Slider HealthSlider;
@@ -114,6 +115,8 @@ public class UIGamePanel : UIPanel {
         FuelSlider.value = perc;
         if (spentAsHealth)
             HealthFillAnimator.SetTrigger("HealthAsFuel");
+        else
+            FuelFillAnimator.SetTrigger("SpendFuel");
     }
     
     public void OnDamageTaken(float amnt) {

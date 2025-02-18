@@ -1,64 +1,69 @@
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
-public class LavaEnemy : WeakPointedEnemy {
+public class LavaEnemy : WeakpointedEnemy {
     
     [Header("Lava Enemy Configuration")]
-    public float MovementAccelerationAmnt = 7;
-    [SerializeField]
-    float directionChangeDelay = 3;
+    public float WeakpointExposeDuration = 5;
+    WaitForSeconds exposeWaiter;
     
-    Lava lava;
-    Vector3 movementDirection;
-    WaitForSeconds mvmntWait;
-    
+    LavaWeakpoint weakpoint;
+    bool isArmored = true;
+    float lastExposeTime = -1000f;
     
     
-    void Start() {
-        lava = GameManager.Instance.currentSceneRunner.lava;
-        lava.OnLavaEnemySpawned();
-        StartCoroutine(changeMovementDirection());
-    }
     
-    void FixedUpdate() {
-        rb.AddForce(movementDirection * MovementAccelerationAmnt, ForceMode.Acceleration);
-        transform.position = new Vector3(
-            transform.position.x,
-            lava.transform.position.y,
-            transform.position.z
-        );
-        transform.rotation = Quaternion.Lerp(
-            transform.rotation,
-            Quaternion.LookRotation(movementDirection, Vector3.up),
-            Mathf.Min(1, Time.fixedDeltaTime / 0.25f)
-        );
-    }
-    
-    IEnumerator changeMovementDirection() {
-        yield return mvmntWait;
-        setRandomMoveDir();
-        StartCoroutine(changeMovementDirection());
-    }
-
-    protected override void OnDefeated(EDamageType damageType) {
-        lava.OnLavaEnemyDefeated();
-        base.OnDefeated(damageType);
-    }
-
     protected override void Init() {
         base.Init();
-        mvmntWait = new WaitForSeconds(directionChangeDelay);
-        movementDirection = new Vector3(1, 0, 0);
-        setRandomMoveDir();
+        if (MaxHealth > 1)
+            Debug.LogWarning(">> Lava Enemy has more than one weakpoint!");
+        weakpoint = weakpoints[0] as LavaWeakpoint;
+        exposeWaiter = new WaitForSeconds(WeakpointExposeDuration);
     }
     
-    void setRandomMoveDir() {
-        float angle = Random.value * 2f * Mathf.PI;
-        Vector2 v2 = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle));
-        movementDirection.x = v2.x;
-        movementDirection.z = v2.y;
+    protected override void LateInit() {
+        base.LateInit();
+        lava.OnLavaEnemySpawned();
     }
-
+    
+    protected override void onFixedUpdate() {
+        if (transform.position.y < lava.currentHeight) {
+            if (!rb.constraints.HasFlag(RigidbodyConstraints.FreezePositionY))
+                rb.constraints |= RigidbodyConstraints.FreezePositionY;
+            transform.position = new(transform.position.x, lava.currentHeight, transform.position.z);
+        }
+        if (!isArmored && Time.fixedTime - lastExposeTime > WeakpointExposeDuration) {
+            ReArmor();
+        }
+    }
+    
+    protected override void OnDefeated(EDamageType damageType) {
+        lava.OnLavaEnemyDefeated();
+        // Lava enemy does not drop its own fuel cell. Instead, its weakpoint(s) will.
+        gameObject.SetActive(false);
+        Destroy(gameObject, 1);
+    }
+    
+    public override void TakeDamage(float amnt, EDamageType damageType) {
+        if (damageType == EDamageType.Projectile) {
+            OnShotByCanon();
+        }
+    }
+    
+    void OnShotByCanon() {
+        lastExposeTime = Time.fixedTime;
+        if (!isArmored)
+            return;
+        isArmored = false;
+        ConsiderForRicochet = false;
+        weakpoint.BeginExpose();
+        boid.enabled = false;
+    }
+    
+    void ReArmor() {
+        isArmored = true;
+        ConsiderForRicochet = true;
+        weakpoint.BeginHide();
+        boid.enabled = true;
+    }
+    
 }

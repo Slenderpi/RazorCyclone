@@ -9,9 +9,13 @@ public class SceneRunner : MonoBehaviour {
     public Transform playerSpawnPoint;
     public Lava lava;
     
+    [HideInInspector]
+    public List<EnemyBase> SpawnedEnemies;
+    
     
     
     void Awake() {
+        SpawnedEnemies = new List<EnemyBase>();
         if (SceneManager.GetSceneByName("CoreScene").IsValid()) {
             startScene();
         } else {
@@ -19,17 +23,25 @@ public class SceneRunner : MonoBehaviour {
             SceneManager.LoadScene("CoreScene", LoadSceneMode.Additive);
         }
     }
-    
+
     /// <summary>
     /// This method begins the logic and gameplay loop for the current scene. To change what
     /// happens at the beginning, create a new child class of SceneRunner and override this method.
     /// By default, this method spawns the player.
     /// </summary>
     public virtual void BeginScene() {
+        GameManager.A_PlayerSpawned += _onPlayerSpawned;
         GameManager.Instance.SpawnPlayer();
     }
     
+    protected virtual void OnPlayerDied() {
+        // GameManager.Instance.SpawnPlayer();
+        GameManager.Instance.DestroyPlayer();
+        StartCoroutine(delayedRespawn());
+    }
+    
     public void SwitchToScene(string sceneName) {
+        onSceneAboutToUnload();
         Scene curr = SceneManager.GetActiveScene();
         SceneManager.UnloadSceneAsync(curr);
         SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
@@ -37,6 +49,31 @@ public class SceneRunner : MonoBehaviour {
     
     public void ReloadCurrentScene() {
         SwitchToScene(SceneManager.GetActiveScene().name);
+    }
+    
+    public void AddEnemyToList(EnemyBase en) {
+        SpawnedEnemies.Add(en);
+    }
+    
+    public void RemoveEnemyFromList(EnemyBase en) {
+        SpawnedEnemies.Remove(en);
+    }
+    
+    public EnemyBase GetClosestEnemy(Vector3 pos, EnemyBase ignore) {
+        int c = SpawnedEnemies.Count;
+        if (c == 0) return null;
+        EnemyBase closestEn = null;
+        float closestSqrd = 9999999f;
+        for (int i = 0; i < c; i++) {
+            EnemyBase en = SpawnedEnemies[i];
+            if (!en.gameObject.activeSelf || !en.ConsiderForRicochet || en == ignore) continue;
+            float distSqrd = (pos - en.TransformForRicochetToAimAt.position).sqrMagnitude;
+            if (distSqrd < closestSqrd) {
+                closestSqrd = distSqrd;
+                closestEn = en;
+            }
+        }
+        return closestEn;
     }
     
     void startScene() {
@@ -57,6 +94,25 @@ public class SceneRunner : MonoBehaviour {
             SceneManager.sceneLoaded -= OnSceneLoaded;
             startScene();
         }
+    }
+    
+    protected virtual void onSceneAboutToUnload() {
+        GameManager.A_PlayerSpawned -= _onPlayerSpawned;
+    }
+    
+    void _onPlayerSpawned(PlayerCharacterCtrlr plr) {
+        plr.A_PlayerDied += _onPlayerDied;
+    }
+    
+    void _onPlayerDied() {
+        GameManager.CurrentPlayer.A_PlayerDied -= _onPlayerDied;
+        OnPlayerDied();
+    }
+    
+    IEnumerator delayedRespawn() {
+        yield return new WaitForSecondsRealtime(2);
+        GameManager.Instance.SetPauseInputActionsEnabled(true);
+        GameManager.Instance.SpawnPlayer();
     }
     
 }

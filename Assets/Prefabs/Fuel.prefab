@@ -467,7 +467,6 @@ GameObject:
   m_Component:
   - component: {fileID: 7514447397186948068}
   - component: {fileID: 5163220815717078053}
-  - component: {fileID: 8202605987043710167}
   - component: {fileID: 8390901187994722333}
   m_Layer: 11
   m_Name: Fuel
@@ -510,20 +509,9 @@ MonoBehaviour:
   AnimPeakHeight: 0.05
   AnimCycleDuration: 2
   SpinRate: 180
+  SpawnJumpVelRange: {x: 1, y: 2.5}
   ModelPivot: {fileID: 8985206314847298851}
---- !u!135 &8202605987043710167
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8934087127753941361}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 1
-  m_Center: {x: 0, y: 0, z: 0}
+  rb: {fileID: 8390901187994722333}
 --- !u!54 &8390901187994722333
 Rigidbody:
   m_ObjectHideFlags: 0
