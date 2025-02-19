@@ -15,7 +15,7 @@ public class HunterEnemy : EnemyBase {
     
     
     protected override void Init() {
-        CanGetVacuumSucked = false;
+        suckable.CanGetVacuumSucked = false;
         rb.drag = shieldDrag;
         SetEffectState();
     }
@@ -35,7 +35,7 @@ public class HunterEnemy : EnemyBase {
         if (!isStunned) {
             isStunned = true;
             DealDamageOnTouch = false;
-            CanGetVacuumSucked = true;
+            suckable.CanGetVacuumSucked = true;
             CanGetVacuumKilled = true;
             boid.enabled = false;
             rb.useGravity = true;
@@ -48,7 +48,7 @@ public class HunterEnemy : EnemyBase {
     IEnumerator StunRecovery() {
         yield return new WaitForSeconds(StunDuration);
         DealDamageOnTouch = true;
-        CanGetVacuumSucked = false;
+        suckable.CanGetVacuumSucked = false;
         CanGetVacuumKilled = false;
         boid.enabled = true;
         rb.useGravity = false;

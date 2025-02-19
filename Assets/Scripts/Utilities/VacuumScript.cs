@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class VacuumScript : MonoBehaviour {
@@ -14,41 +13,38 @@ public class VacuumScript : MonoBehaviour {
     [SerializeField]
     TriggerNotifier KillboxNotifier;
     
-    List<EnemyBase> enemiesInRange;
-    int defaultListSize = 10;
+    List<Suckable> suckablesInRange;
+    readonly int defaultListSize = 7;
     
     void Awake() {
-        enemiesInRange = new List<EnemyBase>(defaultListSize);
+        suckablesInRange = new List<Suckable>(defaultListSize);
     }
     
     void FixedUpdate() {
-        if (enemiesInRange.Count > 0) {
-            for (int i = enemiesInRange.Count - 1; i >= 0; i--) {
-                EnemyBase en = enemiesInRange.ElementAt(i);
-                if (!en) {
-                    enemiesInRange.RemoveAt(i);
-                    continue;
-                } else if (Time.time - en.lastVacuumHitTime >= pchar.VacuumSuckRate) {
-                    // TODO: Check that the enemy isn't behind a wall
-                    // en.lastVacuumHitTime = Time.time;
-                    // en.TakeDamage(pchar.VacuumDamage);
-                    if (en.health <= 0)
-                        enemiesInRange.RemoveAt(i);
-                    else if (en.CanGetVacuumSucked)
-                        en.rb.AddForce((VacuumKillbox.position - en.transform.position).normalized * pchar.VacuumSuckForce);
-                }
+        for (int i = suckablesInRange.Count - 1; i >= 0; i--) {
+            Suckable s = suckablesInRange.ElementAt(i);
+            if (!s) {
+                suckablesInRange.RemoveAt(i);
+                continue;
             }
+            // TODO: Check that the object is in conical (or frustrum?) range and not behind a wall
+            if (s.CanGetVacuumSucked)
+                s.rb.AddForce((VacuumKillbox.position - s.transform.position).normalized * pchar.VacuumSuckForce);
         }
     }
     
     void onSuckboxEnter(Collider collider) {
-        EnemyBase en = collider.GetComponentInParent<EnemyBase>();
-        if (en) enemiesInRange.Add(en);
+        if (!collider.TryGetComponent(out Suckable s))
+            s = collider.GetComponentInParent<Suckable>();
+        if (s)
+            suckablesInRange.Add(s);
     }
     
     void onSuckboxExit(Collider collider) {
-        EnemyBase en = collider.GetComponentInParent<EnemyBase>();
-        if (en) enemiesInRange.Remove(en);
+        if (!collider.TryGetComponent(out Suckable s))
+            s = collider.GetComponentInParent<Suckable>();
+        if (s)
+            suckablesInRange.Remove(s);
     }
     
     void onKillboxEnter(Collider collider) {
@@ -68,7 +64,7 @@ public class VacuumScript : MonoBehaviour {
     }
     
     void OnDisable() {
-        enemiesInRange.Clear();
+        suckablesInRange.Clear();
         SuckboxNotifier.A_TriggerEntered -= onSuckboxEnter;
         SuckboxNotifier.A_TriggerExited -= onSuckboxExit;
         KillboxNotifier.A_TriggerEntered -= onKillboxEnter;

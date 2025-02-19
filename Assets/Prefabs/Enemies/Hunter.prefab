@@ -89,6 +89,7 @@ GameObject:
   - component: {fileID: 7161423610750410142}
   - component: {fileID: -1261992107006566908}
   - component: {fileID: 7510554508798159381}
+  - component: {fileID: 6776544896198288600}
   - component: {fileID: 9113617427949065013}
   - component: {fileID: 8161223251265051182}
   - component: {fileID: -831972436789096369}
@@ -134,15 +135,16 @@ MonoBehaviour:
   Damage: 30
   AttackDelay: 3
   DealDamageOnTouch: 1
-  lastVacuumHitTime: 0
-  CanGetVacuumSucked: 1
   CanGetVacuumKilled: 1
   AffectedByLava: 1
   RicochetCanon: 0
+  ConsiderForRicochet: 1
+  TransformForRicochetToAimAt: {fileID: 0}
   LavaSubmergeOffset: 1
   FuelAmount: 100
   rb: {fileID: 0}
   boid: {fileID: 0}
+  suckable: {fileID: 0}
   fuelPickupPrefab: {fileID: 5163220815717078053, guid: bb72521b10fb34d7bbbed5f6f77687b4, type: 3}
   invincible: 0
   StunDuration: 5
@@ -166,6 +168,20 @@ MonoBehaviour:
   ModelToRotate: {fileID: 1737118453480132617}
   rotationPerFrameLerpAlpha: 0.1
   HunterData: {fileID: 11400000, guid: eb940b3ce6e212f4289f1868724c692c, type: 2}
+--- !u!114 &6776544896198288600
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3890492832594851018}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 99dea5d3584f2cc4387264d49f2af21e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CanGetVacuumSucked: 1
+  rb: {fileID: 0}
 --- !u!54 &9113617427949065013
 Rigidbody:
   m_ObjectHideFlags: 0

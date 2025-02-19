@@ -8,7 +8,6 @@ public class EnemyWeakpoint : EnemyBase {
     
     protected override void Init() {
         DealDamageOnTouch = false;
-        CanGetVacuumSucked = false;
     }
     
     public override void TakeDamage(float amnt, EDamageType damageType) {

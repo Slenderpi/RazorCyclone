@@ -9891,6 +9891,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1992487050733126193}
   - component: {fileID: 5207972207715144811}
+  - component: {fileID: 4101778514245048547}
   - component: {fileID: 1745451246302694824}
   m_Layer: 7
   m_Name: LaserEnemy
@@ -9932,15 +9933,16 @@ MonoBehaviour:
   Damage: 100
   AttackDelay: 1.5
   DealDamageOnTouch: 1
-  lastVacuumHitTime: 0
-  CanGetVacuumSucked: 1
   CanGetVacuumKilled: 1
   AffectedByLava: 1
   RicochetCanon: 1
+  ConsiderForRicochet: 1
+  TransformForRicochetToAimAt: {fileID: 0}
   LavaSubmergeOffset: 1
   FuelAmount: 100
   rb: {fileID: 1745451246302694824}
   boid: {fileID: 0}
+  suckable: {fileID: 0}
   fuelPickupPrefab: {fileID: 5163220815717078053, guid: bb72521b10fb34d7bbbed5f6f77687b4, type: 3}
   invincible: 0
   WeakDamageDuration: 5
@@ -10010,6 +10012,20 @@ MonoBehaviour:
     m_NumAlphaKeys: 2
   revolvePivot: {fileID: 3634931314128218591}
   barrelPivot: {fileID: 3649529104826026762}
+--- !u!114 &4101778514245048547
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4272552222902198248}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 99dea5d3584f2cc4387264d49f2af21e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CanGetVacuumSucked: 1
+  rb: {fileID: 0}
 --- !u!54 &1745451246302694824
 Rigidbody:
   m_ObjectHideFlags: 0

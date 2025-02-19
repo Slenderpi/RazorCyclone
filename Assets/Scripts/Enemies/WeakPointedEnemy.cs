@@ -9,7 +9,6 @@ public class WeakpointedEnemy : EnemyBase {
     
     
     protected override void Init() {
-        CanGetVacuumSucked = false;
         CanGetVacuumKilled = false;
         MaxHealth = weakpoints.Length;
         health = MaxHealth;

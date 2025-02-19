@@ -262,6 +262,7 @@ GameObject:
   - component: {fileID: 7161423610750410142}
   - component: {fileID: 4682280902325755084}
   - component: {fileID: 8082838698744000531}
+  - component: {fileID: -671571568929607629}
   - component: {fileID: 9113617427949065013}
   m_Layer: 7
   m_Name: CanonFodder
@@ -303,11 +304,16 @@ MonoBehaviour:
   Damage: 0
   AttackDelay: 1
   DealDamageOnTouch: 0
-  lastVacuumHitTime: 0
-  CanGetVacuumSucked: 1
+  CanGetVacuumKilled: 1
+  AffectedByLava: 1
+  RicochetCanon: 0
+  ConsiderForRicochet: 1
+  TransformForRicochetToAimAt: {fileID: 0}
+  LavaSubmergeOffset: 1
   FuelAmount: 100
   rb: {fileID: 9113617427949065013}
   boid: {fileID: 0}
+  suckable: {fileID: 0}
   fuelPickupPrefab: {fileID: 5163220815717078053, guid: bb72521b10fb34d7bbbed5f6f77687b4, type: 3}
   invincible: 0
 --- !u!114 &8082838698744000531
@@ -325,6 +331,20 @@ MonoBehaviour:
   ModelToRotate: {fileID: 2039270182480673860}
   rotationPerFrameLerpAlpha: 0.1
   CanonFodderData: {fileID: 11400000, guid: ecc3839188a02c94d9336aaa5c36ab9b, type: 2}
+--- !u!114 &-671571568929607629
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3890492832594851018}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 99dea5d3584f2cc4387264d49f2af21e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CanGetVacuumSucked: 1
+  rb: {fileID: 0}
 --- !u!54 &9113617427949065013
 Rigidbody:
   m_ObjectHideFlags: 0

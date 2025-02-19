@@ -11,10 +11,6 @@ public class EnemyBase : MonoBehaviour {
     public float AttackDelay = 1;
     float lastAttackTime = -1000;
     public bool DealDamageOnTouch = true;
-    [HideInInspector]
-    public float lastVacuumHitTime = 0f;
-    [Tooltip("Determines if this enemy allows vacuum forces to be applied on it.\n\nNote: certain enemies (e.g. Hunter) will set this value on their own, and do not need this to be touched.")]
-    public bool CanGetVacuumSucked = true;
     [Tooltip("Determines if this enemy can be killed when touched by the vacuum's killbox.\n\nNote: certain enemies (e.g. Hunter) will set this value on their own, and do not need this to be touched.")]
     public bool CanGetVacuumKilled = true;
     [Tooltip("If enabled, this enemy will call its OnSubmerged() method when it detects that it is below lava.")]
@@ -32,6 +28,8 @@ public class EnemyBase : MonoBehaviour {
     public Rigidbody rb;
     [HideInInspector]
     public BoidMover boid;
+    [HideInInspector]
+    public Suckable suckable;
     // public PlayerCharacterCtrlr player = GameManager.CurrentPlayer;
     
     [Header("References")]
@@ -55,6 +53,7 @@ public class EnemyBase : MonoBehaviour {
             Debug.LogWarning("This enemy's fuelPickupPrefab was not set!");
         rb = GetComponent<Rigidbody>();
         boid = GetComponent<BoidMover>();
+        suckable = GetComponent<Suckable>();
         health = MaxHealth;
         if (TransformForRicochetToAimAt == null) TransformForRicochetToAimAt = transform;
         Init();

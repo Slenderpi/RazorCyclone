@@ -312,8 +312,6 @@ MonoBehaviour:
   Damage: 0
   AttackDelay: 1
   DealDamageOnTouch: 0
-  lastVacuumHitTime: 0
-  CanGetVacuumSucked: 0
   CanGetVacuumKilled: 1
   AffectedByLava: 0
   RicochetCanon: 0
@@ -323,6 +321,7 @@ MonoBehaviour:
   FuelAmount: 50
   rb: {fileID: 0}
   boid: {fileID: 0}
+  suckable: {fileID: 0}
   fuelPickupPrefab: {fileID: 5163220815717078053, guid: bb72521b10fb34d7bbbed5f6f77687b4, type: 3}
   invincible: 0
   WeakpointHeightAboveLava: 4
