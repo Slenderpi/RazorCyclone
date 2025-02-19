@@ -1,12 +1,14 @@
+// UNCOMMENT THE LINE BELOW FOR DEBUGGING PROJECTILE RAYCASTS
+// #define DEBUG_RAYS
+
 using System.Collections;
 using UnityEngine;
 
 public class ProjectileBase : MonoBehaviour {
     
-    // [Tooltip("Damage of this projectile.")]
+    [Header("Projectile Config")]
     [HideInInspector]
     public float damage;
-    // public GameObject explosionEffect;
     [Tooltip("The radius to use when doing multiple raycasts for collision detection.\n\nNOTE: if set to a value less than 0.1, this projectile will only check directly in front of it once.")]
     public float ProjectileRadius = 0.2f;
     [Tooltip("Maximum lifetime in seconds of this projectile to prevent projectiles that go into the void from living too long.")]
@@ -60,7 +62,9 @@ public class ProjectileBase : MonoBehaviour {
     }
     
     void checkForCollisions() {
-        // GameManager.D_DrawPoint(transform.position, Color.green);
+#if DEBUG_RAYS
+        GameManager.D_DrawPoint(transform.position, Color.green);
+#endif
         float dist = rb.velocity.magnitude * Time.fixedDeltaTime;
         raycastCollision(Vector3.zero, dist);
         if (ProjectileRadius >= 0.1f) {
@@ -70,13 +74,14 @@ public class ProjectileBase : MonoBehaviour {
             raycastCollision(-transform.up * ProjectileRadius, dist);
         }
         if (closestHit) {
-            transform.position = closestHitPos;
             onHitSomething(closestHit);
         }
     }
     
     void raycastCollision(Vector3 offset, float dist) {
-        // Debug.DrawRay(transform.position + offset, rb.velocity * Time.fixedDeltaTime, Color.white, Time.fixedDeltaTime, false);
+#if DEBUG_RAYS
+        Debug.DrawRay(transform.position + offset, rb.velocity * Time.fixedDeltaTime, Color.white, Time.fixedDeltaTime, false);
+#endif
         if (Physics.Raycast(
             origin: transform.position + offset,
             direction: rb.velocity,
@@ -85,7 +90,14 @@ public class ProjectileBase : MonoBehaviour {
             hitInfo: out RaycastHit hit)) {
             float hitDistSqrd = (hit.point - transform.position).sqrMagnitude;
             if (hitDistSqrd < closestHitSqrd) {
-                if (!hit.collider.CompareTag("Enemy") || enemyToIgnore == null || hit.collider.GetComponent<EnemyBase>() != enemyToIgnore) {
+                bool canCheck = !hit.collider.CompareTag("Enemy");
+                if (!canCheck) {
+                    if (!hit.collider.TryGetComponent(out EnemyBase en)) {
+                        en = hit.collider.GetComponentInParent<EnemyBase>();
+                    }
+                    canCheck = en != enemyToIgnore;
+                }
+                if (canCheck) {
                     closestHitSqrd = hitDistSqrd;
                     closestHit = hit.collider.gameObject;
                     closestHitPos = hit.point;
@@ -109,6 +121,7 @@ public class ProjectileBase : MonoBehaviour {
                     enemy = hitObject.GetComponentInParent<EnemyBase>();
                 }
                 if (enemy == enemyToIgnore) return;
+                transform.position = closestHitPos;
                 if (enemy.RicochetCanon && ricRemain > 0)
                     OnRicochetEnemy(enemy);
                 else {
@@ -116,6 +129,7 @@ public class ProjectileBase : MonoBehaviour {
                     Destroy(gameObject);
                 }
             } else {
+                transform.position = closestHitPos;
                 OnHitNonEnemy(hitObject);
                 Destroy(gameObject);
             }

@@ -1745,7 +1745,7 @@ MonoBehaviour:
   rearCamPos: {fileID: 4826576570863280527}
   rb: {fileID: 0}
   IsInvincible: 0
-  NoFuelCost: 1
+  NoFuelCost: 0
   thirdPersonDist: 4
   rearMirrorModel: {fileID: 2843522477064941511}
   spaceInput: 1
@@ -4080,7 +4080,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6820678197557786777}
   m_LocalRotation: {x: -2.4868996e-14, y: -1, z: -0.0000002682209, w: -0.000000014901158}
-  m_LocalPosition: {x: -0, y: -0.51, z: -0}
+  m_LocalPosition: {x: 0, y: -0.261, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
