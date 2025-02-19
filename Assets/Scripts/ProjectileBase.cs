@@ -14,6 +14,12 @@ public class ProjectileBase : MonoBehaviour {
     [Tooltip("Maximum number of times this projectile can ricochet.\nA value of 0 means NO ricochet.")]
     public int MaxRicochet = 1;
     int ricRemain;
+    [Tooltip("VFX for projectile impact.")]
+    public GameObject ImpactEffect;
+    protected GameObject impeffect; // Pre-spawned impact effect
+    [Tooltip("VFX for ricochet.")]
+    public GameObject RicochetEffect;
+    protected GameObject[] riceffects;
     
     [HideInInspector]
     public Rigidbody rb;
@@ -35,6 +41,7 @@ public class ProjectileBase : MonoBehaviour {
                     (1 << LayerMask.NameToLayer("Enemy")) |
                     (1 << LayerMask.NameToLayer("EnemyWeapon"));
         waitFixedUpdForRic = new WaitForFixedUpdate();
+        poolVFX();
         Init();
     }
     
@@ -49,14 +56,18 @@ public class ProjectileBase : MonoBehaviour {
     protected virtual void Init() {}
     
     void FixedUpdate() {
+        checkForCollisions();
+    }
+    
+    void checkForCollisions() {
         // GameManager.D_DrawPoint(transform.position, Color.green);
         float dist = rb.velocity.magnitude * Time.fixedDeltaTime;
-        checkForCollision(Vector3.zero, dist);
+        raycastCollision(Vector3.zero, dist);
         if (ProjectileRadius >= 0.1f) {
-            checkForCollision(transform.right * ProjectileRadius, dist);
-            checkForCollision(-transform.right * ProjectileRadius, dist);
-            checkForCollision(transform.up * ProjectileRadius, dist);
-            checkForCollision(-transform.up * ProjectileRadius, dist);
+            raycastCollision(transform.right * ProjectileRadius, dist);
+            raycastCollision(-transform.right * ProjectileRadius, dist);
+            raycastCollision(transform.up * ProjectileRadius, dist);
+            raycastCollision(-transform.up * ProjectileRadius, dist);
         }
         if (closestHit) {
             transform.position = closestHitPos;
@@ -64,7 +75,7 @@ public class ProjectileBase : MonoBehaviour {
         }
     }
     
-    void checkForCollision(Vector3 offset, float dist) {
+    void raycastCollision(Vector3 offset, float dist) {
         // Debug.DrawRay(transform.position + offset, rb.velocity * Time.fixedDeltaTime, Color.white, Time.fixedDeltaTime, false);
         if (Physics.Raycast(
             origin: transform.position + offset,
@@ -119,6 +130,7 @@ public class ProjectileBase : MonoBehaviour {
     /// <param name="enemy">The enemy that the projectile hit.</param>
     protected virtual void OnHitEnemy(EnemyBase enemy) {
         enemy.TakeDamage(damage, EDamageType.Projectile);
+        showImpactEffect();
     }
     
     /// <summary>
@@ -127,7 +139,9 @@ public class ProjectileBase : MonoBehaviour {
     /// will be destroyed.
     /// </summary>
     /// <param name="other"></param>
-    protected virtual void OnHitNonEnemy(GameObject other) {}
+    protected virtual void OnHitNonEnemy(GameObject other) {
+        showImpactEffect();
+    }
     
     protected virtual void OnRicochetEnemy(EnemyBase enemy) {
         ricRemain--;
@@ -139,14 +153,15 @@ public class ProjectileBase : MonoBehaviour {
                          (closestEn.TransformForRicochetToAimAt.position - transform.position).normalized * rb.velocity.magnitude :
                          Vector3.Reflect(rb.velocity, closestHitNorm);
         rb.velocity *= 0;
-        transform.rotation = Quaternion.LookRotation(ricVel);
         StartCoroutine(ricochetVelNextFrame(ricVel));
         enemy.TakeDamage(damage, EDamageType.Projectile);
+        showRicochetEffect();
     }
     
     IEnumerator ricochetVelNextFrame(Vector3 ricVel) {
         yield return waitFixedUpdForRic;
         rb.velocity = ricVel;
+        transform.rotation = Quaternion.LookRotation(ricVel);
     }
     
     /// <summary>
@@ -154,12 +169,40 @@ public class ProjectileBase : MonoBehaviour {
     /// this method destroys the projectile.
     /// </summary>
     protected virtual void OnProjectileLifetimeExpired() {
+        showImpactEffect();
         Destroy(gameObject);
+    }
+
+    void OnDestroy() {
+        for (int i = 0; i < ricRemain; i++) {
+            Destroy(riceffects[i]);
+        }
+    }
+
+    void showImpactEffect() {
+        impeffect.transform.SetPositionAndRotation(transform.position, transform.rotation);
+        impeffect.SetActive(true);
+    }
+    
+    void showRicochetEffect() {
+        GameObject re = riceffects[ricRemain];
+        re.transform.SetPositionAndRotation(transform.position, transform.rotation);
+        re.SetActive(true);
     }
     
     IEnumerator ProjectileLifetime() {
         yield return new WaitForSeconds(MaxLifetime);
         OnProjectileLifetimeExpired();
+    }
+    
+    void poolVFX() {
+        impeffect = Instantiate(ImpactEffect);
+        impeffect.SetActive(false);
+        riceffects = new GameObject[MaxRicochet];
+        for (int i = 0; i < MaxRicochet; i++) {
+            riceffects[i] = Instantiate(RicochetEffect);
+            riceffects[i].SetActive(false);
+        }
     }
     
 }

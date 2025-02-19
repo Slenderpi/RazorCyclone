@@ -88,7 +88,11 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     [SerializeField]
     GameObject vacuumHitbox;
     [SerializeField]
-    Transform canonTip;
+    [Tooltip("Transform indicating where the projectile will spawn from.")]
+    Transform canonProjSpawnTrans;
+    [SerializeField]
+    [Tooltip("Transform for spawning muzzle flash VFX.")]
+    Transform canonMuzzleTrans;
     [SerializeField]
     ProjectileBase projectilePrefab;
     [SerializeField]
@@ -166,7 +170,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
         
-        currentMuzzleFlashEffect = Instantiate(muzzleFlashEffect, canonTip);
+        currentMuzzleFlashEffect = Instantiate(muzzleFlashEffect, canonMuzzleTrans);
         currentMuzzleFlashEffect.SetActive(false);
         
         lava = GameManager.Instance.currentSceneRunner.lava;
@@ -357,7 +361,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         }
         mainCamera.transform.rotation = camtrans.rotation;
         rearCamera.transform.position = rearCamPos.position;
-        rearCamera.transform.rotation = Quaternion.LookRotation(canonTip.forward, canonTip.up);
+        rearCamera.transform.rotation = Quaternion.LookRotation(-camtrans.forward, camtrans.up);
     }
     
     void setDesiredRotation(float x, float y, float z) {
@@ -382,10 +386,11 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     void fireCanon() {
         updateRayCastedAimPoint();
         rb.AddForce((charModel.rotation * weaponRelativeRot).normalized * CanonForce * 100000);
-        Vector3 projVel = (aimPoint - canonTip.position).normalized * CanonProjSpeed + rb.velocity;
-        ProjectileBase proj = Instantiate(projectilePrefab, canonTip.position, Quaternion.LookRotation(projVel));
+        Vector3 projVel = (aimPoint - canonProjSpawnTrans.position).normalized * CanonProjSpeed + rb.velocity;
+        ProjectileBase proj = Instantiate(projectilePrefab, canonProjSpawnTrans.position, Quaternion.LookRotation(projVel));
         proj.damage = CanonDamage;
-        proj.rb.AddForce(projVel, ForceMode.VelocityChange);
+        // proj.rb.AddForce(projVel, ForceMode.VelocityChange);
+        proj.rb.velocity = projVel;
         SpendFuel(CanonFuelCost);
         GameManager.Instance.Audio2D.PlayClipSFX(AudioPlayer2D.EClipSFX.Weapon_CanonShot);
         playMuzzleFlashEffect();
@@ -458,7 +463,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     void playMuzzleFlashEffect() {
         currentMuzzleFlashEffect.SetActive(true);
         Destroy(currentMuzzleFlashEffect, 1);
-        currentMuzzleFlashEffect = Instantiate(muzzleFlashEffect, canonTip);
+        currentMuzzleFlashEffect = Instantiate(muzzleFlashEffect, canonMuzzleTrans);
         currentMuzzleFlashEffect.SetActive(false);
     }
     
