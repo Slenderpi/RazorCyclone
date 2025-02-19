@@ -15,10 +15,6 @@ public class ExplosiveProjectile : ProjectileBase {
     [Tooltip("Rigidbodies hit can experience an additional upward boost from this.")]
     public float AdditionalUpwardForce = 190f;
     
-    [Header("References")]
-    public EffectInstance explosionEffect;
-    EffectInstance expeffect;
-    
     int MaxHits = 20;
     Collider[] hitColliders;
     int ExplosionLayerMask;
@@ -32,22 +28,21 @@ public class ExplosiveProjectile : ProjectileBase {
     }
     
     protected override void OnHitEnemy(EnemyBase enemy) {
-        base.OnHitEnemy(enemy);
         explode(enemy);
+        base.OnHitEnemy(enemy);
     }
     
     protected override void OnHitNonEnemy(GameObject other) {
         explode();
+        base.OnHitNonEnemy(other);
     }
     
     protected override void OnProjectileLifetimeExpired() {
         explode();
-        Destroy(gameObject);
+        base.OnProjectileLifetimeExpired();
     }
     
     void explode(EnemyBase enemyToNotDmg = null) {
-        expeffect.transform.position = transform.position;
-        expeffect.gameObject.SetActive(true);
         Physics.OverlapSphereNonAlloc(transform.position, ExplosionRadius, hitColliders, ExplosionLayerMask);
         foreach (Collider co in hitColliders) {
             if (co && co.TryGetComponent(out Rigidbody rb)) {
@@ -65,9 +60,7 @@ public class ExplosiveProjectile : ProjectileBase {
     }
     
     void initExplosionEffect() {
-        expeffect = Instantiate(explosionEffect, transform.position, Quaternion.identity);
-        expeffect.gameObject.SetActive(false);
-        ParticleSystem[] particleEffects = expeffect.GetComponentsInChildren<ParticleSystem>();
+        ParticleSystem[] particleEffects = impeffect.GetComponentsInChildren<ParticleSystem>();
         foreach (ParticleSystem p in particleEffects)
             p.transform.localScale = Vector3.one * ExplosionRadius / ExplosionRadForEffectSize;
     }

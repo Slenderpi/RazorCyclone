@@ -53,13 +53,13 @@ MonoBehaviour:
   ProjectileRadius: 0.2
   MaxLifetime: 10
   MaxRicochet: 1
+  ImpactEffect: {fileID: 4772271045912793400, guid: 1ea0b4aed0201304d8198ddb98729913, type: 3}
   rb: {fileID: 0}
   ExplosionDamage: 0
   ExplosionRadius: 3
   ExplosionRadForEffectSize: 0.98
   ExplosionForce: 0
   AdditionalUpwardForce: 190
-  explosionEffect: {fileID: 7694346226867815474, guid: 1ea0b4aed0201304d8198ddb98729913, type: 3}
 --- !u!54 &456872262032847242
 Rigidbody:
   m_ObjectHideFlags: 0

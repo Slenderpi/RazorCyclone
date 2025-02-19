@@ -166,6 +166,37 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!1 &564717543462369722
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6440768663712675171}
+  m_Layer: 6
+  m_Name: Muzzle
+  m_TagString: Player
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6440768663712675171
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 564717543462369722}
+  m_LocalRotation: {x: -2.4868996e-14, y: -1, z: -0.0000002682209, w: -0.000000014901158}
+  m_LocalPosition: {x: 0, y: -0.525, z: -1.203}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 647242247470878322}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 180}
 --- !u!1 &642002790188042294
 GameObject:
   m_ObjectHideFlags: 0
@@ -313,6 +344,7 @@ Transform:
   - {fileID: 8847639879034609891}
   - {fileID: 4826576570863280527}
   - {fileID: 3309179816023804107}
+  - {fileID: 6440768663712675171}
   m_Father: {fileID: 8629852985814836286}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1706,8 +1738,9 @@ MonoBehaviour:
   charModel: {fileID: 8629852985814836286}
   charPivot: {fileID: 647242247470878322}
   vacuumHitbox: {fileID: 7635587825747637255}
-  canonTip: {fileID: 1158141871152860794}
-  projectilePrefab: {fileID: 5929468832651977126, guid: 0a63bf8aed6b031488c4a663d6f4bdd7, type: 3}
+  canonProjSpawnTrans: {fileID: 1158141871152860794}
+  canonMuzzleTrans: {fileID: 6440768663712675171}
+  projectilePrefab: {fileID: 926027913916158325, guid: b847a6b45c135a4409f379593532cfce, type: 3}
   muzzleFlashEffect: {fileID: 1468955641749855403, guid: 52ed0e933e8fd8f44a05f09d3a08c76a, type: 3}
   rearCamPos: {fileID: 4826576570863280527}
   rb: {fileID: 0}
@@ -4033,7 +4066,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1158141871152860794}
   m_Layer: 6
-  m_Name: CanonTip
+  m_Name: CanonProjectileTransform
   m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4047,7 +4080,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6820678197557786777}
   m_LocalRotation: {x: -2.4868996e-14, y: -1, z: -0.0000002682209, w: -0.000000014901158}
-  m_LocalPosition: {x: 0, y: -0.259, z: -0.8}
+  m_LocalPosition: {x: 0, y: -0.261, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

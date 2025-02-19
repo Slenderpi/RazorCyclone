@@ -1,12 +1,14 @@
+// UNCOMMENT THE LINE BELOW FOR DEBUGGING PROJECTILE RAYCASTS
+// #define DEBUG_RAYS
+
 using System.Collections;
 using UnityEngine;
 
 public class ProjectileBase : MonoBehaviour {
     
-    // [Tooltip("Damage of this projectile.")]
+    [Header("Projectile Config")]
     [HideInInspector]
     public float damage;
-    // public GameObject explosionEffect;
     [Tooltip("The radius to use when doing multiple raycasts for collision detection.\n\nNOTE: if set to a value less than 0.1, this projectile will only check directly in front of it once.")]
     public float ProjectileRadius = 0.2f;
     [Tooltip("Maximum lifetime in seconds of this projectile to prevent projectiles that go into the void from living too long.")]
@@ -14,6 +16,12 @@ public class ProjectileBase : MonoBehaviour {
     [Tooltip("Maximum number of times this projectile can ricochet.\nA value of 0 means NO ricochet.")]
     public int MaxRicochet = 1;
     int ricRemain;
+    [Tooltip("VFX for projectile impact.")]
+    public GameObject ImpactEffect;
+    protected GameObject impeffect; // Pre-spawned impact effect
+    [Tooltip("VFX for ricochet.")]
+    public GameObject RicochetEffect;
+    protected GameObject[] riceffects;
     
     [HideInInspector]
     public Rigidbody rb;
@@ -35,6 +43,7 @@ public class ProjectileBase : MonoBehaviour {
                     (1 << LayerMask.NameToLayer("Enemy")) |
                     (1 << LayerMask.NameToLayer("EnemyWeapon"));
         waitFixedUpdForRic = new WaitForFixedUpdate();
+        poolVFX();
         Init();
     }
     
@@ -49,23 +58,30 @@ public class ProjectileBase : MonoBehaviour {
     protected virtual void Init() {}
     
     void FixedUpdate() {
-        // GameManager.D_DrawPoint(transform.position, Color.green);
+        checkForCollisions();
+    }
+    
+    void checkForCollisions() {
+#if DEBUG_RAYS
+        GameManager.D_DrawPoint(transform.position, Color.green);
+#endif
         float dist = rb.velocity.magnitude * Time.fixedDeltaTime;
-        checkForCollision(Vector3.zero, dist);
+        raycastCollision(Vector3.zero, dist);
         if (ProjectileRadius >= 0.1f) {
-            checkForCollision(transform.right * ProjectileRadius, dist);
-            checkForCollision(-transform.right * ProjectileRadius, dist);
-            checkForCollision(transform.up * ProjectileRadius, dist);
-            checkForCollision(-transform.up * ProjectileRadius, dist);
+            raycastCollision(transform.right * ProjectileRadius, dist);
+            raycastCollision(-transform.right * ProjectileRadius, dist);
+            raycastCollision(transform.up * ProjectileRadius, dist);
+            raycastCollision(-transform.up * ProjectileRadius, dist);
         }
         if (closestHit) {
-            transform.position = closestHitPos;
             onHitSomething(closestHit);
         }
     }
     
-    void checkForCollision(Vector3 offset, float dist) {
-        // Debug.DrawRay(transform.position + offset, rb.velocity * Time.fixedDeltaTime, Color.white, Time.fixedDeltaTime, false);
+    void raycastCollision(Vector3 offset, float dist) {
+#if DEBUG_RAYS
+        Debug.DrawRay(transform.position + offset, rb.velocity * Time.fixedDeltaTime, Color.white, Time.fixedDeltaTime, false);
+#endif
         if (Physics.Raycast(
             origin: transform.position + offset,
             direction: rb.velocity,
@@ -74,7 +90,14 @@ public class ProjectileBase : MonoBehaviour {
             hitInfo: out RaycastHit hit)) {
             float hitDistSqrd = (hit.point - transform.position).sqrMagnitude;
             if (hitDistSqrd < closestHitSqrd) {
-                if (!hit.collider.CompareTag("Enemy") || enemyToIgnore == null || hit.collider.GetComponent<EnemyBase>() != enemyToIgnore) {
+                bool canCheck = !hit.collider.CompareTag("Enemy");
+                if (!canCheck) {
+                    if (!hit.collider.TryGetComponent(out EnemyBase en)) {
+                        en = hit.collider.GetComponentInParent<EnemyBase>();
+                    }
+                    canCheck = en != enemyToIgnore;
+                }
+                if (canCheck) {
                     closestHitSqrd = hitDistSqrd;
                     closestHit = hit.collider.gameObject;
                     closestHitPos = hit.point;
@@ -98,6 +121,7 @@ public class ProjectileBase : MonoBehaviour {
                     enemy = hitObject.GetComponentInParent<EnemyBase>();
                 }
                 if (enemy == enemyToIgnore) return;
+                transform.position = closestHitPos;
                 if (enemy.RicochetCanon && ricRemain > 0)
                     OnRicochetEnemy(enemy);
                 else {
@@ -105,6 +129,7 @@ public class ProjectileBase : MonoBehaviour {
                     Destroy(gameObject);
                 }
             } else {
+                transform.position = closestHitPos;
                 OnHitNonEnemy(hitObject);
                 Destroy(gameObject);
             }
@@ -119,6 +144,7 @@ public class ProjectileBase : MonoBehaviour {
     /// <param name="enemy">The enemy that the projectile hit.</param>
     protected virtual void OnHitEnemy(EnemyBase enemy) {
         enemy.TakeDamage(damage, EDamageType.Projectile);
+        showImpactEffect();
     }
     
     /// <summary>
@@ -127,7 +153,9 @@ public class ProjectileBase : MonoBehaviour {
     /// will be destroyed.
     /// </summary>
     /// <param name="other"></param>
-    protected virtual void OnHitNonEnemy(GameObject other) {}
+    protected virtual void OnHitNonEnemy(GameObject other) {
+        showImpactEffect();
+    }
     
     protected virtual void OnRicochetEnemy(EnemyBase enemy) {
         ricRemain--;
@@ -139,14 +167,15 @@ public class ProjectileBase : MonoBehaviour {
                          (closestEn.TransformForRicochetToAimAt.position - transform.position).normalized * rb.velocity.magnitude :
                          Vector3.Reflect(rb.velocity, closestHitNorm);
         rb.velocity *= 0;
-        transform.rotation = Quaternion.LookRotation(ricVel);
         StartCoroutine(ricochetVelNextFrame(ricVel));
         enemy.TakeDamage(damage, EDamageType.Projectile);
+        showRicochetEffect();
     }
     
     IEnumerator ricochetVelNextFrame(Vector3 ricVel) {
         yield return waitFixedUpdForRic;
         rb.velocity = ricVel;
+        transform.rotation = Quaternion.LookRotation(ricVel);
     }
     
     /// <summary>
@@ -154,12 +183,40 @@ public class ProjectileBase : MonoBehaviour {
     /// this method destroys the projectile.
     /// </summary>
     protected virtual void OnProjectileLifetimeExpired() {
+        showImpactEffect();
         Destroy(gameObject);
+    }
+
+    void OnDestroy() {
+        for (int i = 0; i < ricRemain; i++) {
+            Destroy(riceffects[i]);
+        }
+    }
+
+    void showImpactEffect() {
+        impeffect.transform.SetPositionAndRotation(transform.position, transform.rotation);
+        impeffect.SetActive(true);
+    }
+    
+    void showRicochetEffect() {
+        GameObject re = riceffects[ricRemain];
+        re.transform.SetPositionAndRotation(transform.position, transform.rotation);
+        re.SetActive(true);
     }
     
     IEnumerator ProjectileLifetime() {
         yield return new WaitForSeconds(MaxLifetime);
         OnProjectileLifetimeExpired();
+    }
+    
+    void poolVFX() {
+        impeffect = Instantiate(ImpactEffect);
+        impeffect.SetActive(false);
+        riceffects = new GameObject[MaxRicochet];
+        for (int i = 0; i < MaxRicochet; i++) {
+            riceffects[i] = Instantiate(RicochetEffect);
+            riceffects[i].SetActive(false);
+        }
     }
     
 }
