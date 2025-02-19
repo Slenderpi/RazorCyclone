@@ -25,4 +25,4 @@ MonoBehaviour:
   AvoidanceMaxIntensity: 5
   AvoidanceMaxSteeringForce: 15
   AvoidInvisBoidWalls: 1
-  FleeTriggerDistance: 10
+  FleeTriggerDistance: 0.1

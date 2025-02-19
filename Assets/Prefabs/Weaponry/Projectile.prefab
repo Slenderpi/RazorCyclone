@@ -50,7 +50,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   damage: 100
-  ProjectileRadius: 0.2
+  ProjectileRadius: 0.5
   MaxLifetime: 10
   MaxRicochet: 1
   ImpactEffect: {fileID: 3002241975603437205, guid: 80374ef7d0b981b4cbffdeb0ebf79bc9, type: 3}
