@@ -1,8 +1,6 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
-using UnityEngine.SceneManagement;
 
 public class DataPersistenceManager : MonoBehaviour {
     
@@ -16,7 +14,7 @@ public class DataPersistenceManager : MonoBehaviour {
     
     [Header("File Storage Config")]
     [SerializeField] private string fileName;
-
+    
     GameData gameData;
     List<IDataPersistence> dataPersistenceObjects;
     FileDataHandler dataHandler;
@@ -30,21 +28,21 @@ public class DataPersistenceManager : MonoBehaviour {
             return;
         }
         Instance = this;
-
+        
         if (disableDataPersistence) {
             Debug.LogWarning("Data Persistence is currently disabled. Loaded GameData will use default values.");
             gameData = new GameData();
         }
-
+        
         dataHandler = new FileDataHandler(Application.persistentDataPath, fileName);
     }
-
+    
     public void NewGame() {
         if (disableDataPersistence) return;
         
         gameData = new GameData();
     }
-
+    
     public void LoadGame() {
         if (disableDataPersistence) return;
         
@@ -58,7 +56,7 @@ public class DataPersistenceManager : MonoBehaviour {
         }
         // print("Game loaded!");
     }
-
+    
     public void SaveGame() {
         if (disableDataPersistence) return;
         
@@ -68,7 +66,7 @@ public class DataPersistenceManager : MonoBehaviour {
         
         dataHandler.Save(gameData);
     }
-
+    
     private void OnApplicationQuit() {
         SaveGame();
     }
@@ -86,7 +84,7 @@ public class DataPersistenceManager : MonoBehaviour {
         // FindObjectsofType takes in an optional boolean to include inactive gameobjects
         IEnumerable<IDataPersistence> dataPersistenceObjects = FindObjectsOfType<MonoBehaviour>(true)
             .OfType<IDataPersistence>();
-
+        
         return new List<IDataPersistence>(dataPersistenceObjects);
     }
     

@@ -9,7 +9,7 @@ public class SceneRunner : MonoBehaviour {
     public Transform playerSpawnPoint;
     public Lava lava;
     
-    [HideInInspector]
+    // [HideInInspector]
     public List<EnemyBase> SpawnedEnemies;
     
     LayerMask ricochetLOSMask;

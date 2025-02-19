@@ -31,5 +31,5 @@ public class BM_CanonFodder : BoidMover {
     public override Quaternion CalculateRotation(Vector3 forward, Vector3 steer) {
         return BoidRotator.YawOnly(forward);
     }
-
+    
 }

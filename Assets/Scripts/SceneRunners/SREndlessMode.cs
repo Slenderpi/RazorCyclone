@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class SREndlessMode : SceneRunner, IDataPersistence {
@@ -41,11 +39,11 @@ public class SREndlessMode : SceneRunner, IDataPersistence {
         mainCanvas.SetCanvasState(UIMainCanvas.ECanvasState.DiedEndless);
         DataPersistenceManager.Instance.SaveGame();
     }
-
+    
     public void LoadData(GameData data) {
         HighestTimeSurvived = data.HighestTimeSurvived;
     }
-
+    
     public void SaveData(GameData data) {
         data.HighestTimeSurvived = HighestTimeSurvived;
     }

@@ -24,9 +24,9 @@ public class FuelPickup : MonoBehaviour {
     public Rigidbody rb;
     
     bool hasBeenCollected = false;
-
-
-
+    
+    
+    
     void Start() {
         float angle = Random.Range(0, Mathf.PI * 2);
         rb.AddForce(new(
@@ -35,7 +35,7 @@ public class FuelPickup : MonoBehaviour {
             SpawnJumpVelRange.x * Mathf.Sin(angle)
         ), ForceMode.VelocityChange);
     }
-
+    
     void OnTriggerEnter(Collider other) {
         if (hasBeenCollected) return;
         if (other.CompareTag("Player"))  {

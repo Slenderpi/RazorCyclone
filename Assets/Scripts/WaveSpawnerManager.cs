@@ -21,7 +21,7 @@ public struct WaveEntry {
     public float spawnTime;
     public int[] enemyCounts;
     public int[] typesInWave; // List of indices for GameManager.EnemyStrs[]
-
+    
     public override readonly string ToString() {
         string s = $"Wave: {num, 2} | time: {spawnTime, 3} | Counts:";
         for (int i = 0; i < enemyCounts.Length; i++) {
@@ -45,7 +45,7 @@ public class WaveSpawnerManager : MonoBehaviour {
     public int CurrentWaveNumber = -1;
     [HideInInspector]
     public int CurrentPreloadedWaveNumber = -1;
-
+    
     readonly List<Spawner> spawners = new();
     WaveEntry[] waveEntries;
     readonly List<EnemyBase> loadedWave = new();
@@ -73,7 +73,7 @@ public class WaveSpawnerManager : MonoBehaviour {
         StringReader stringReader = new(WaveTableFile.text);
         List<string[]> data = new();
         char[] splitStr = ",".ToCharArray();
-
+        
         while (stringReader.Peek() != -1) {
             string line = stringReader.ReadLine();
             string[] items = line.Split(splitStr, StringSplitOptions.None);

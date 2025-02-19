@@ -5,11 +5,11 @@ public class BM_WeakPTester : BoidMover {
     public SO_WeakPTest WeakPTestData;
     
     
-
+    
     protected override void Init() {
         generalBoidData = WeakPTestData;
     }
-
+    
     public override Vector3 CalculateSteering() {
         StepWanderPoint2D(WeakPTestData);
         return BoidSteerer.Wander(

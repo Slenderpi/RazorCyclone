@@ -186,13 +186,13 @@ public class ProjectileBase : MonoBehaviour {
         showImpactEffect();
         Destroy(gameObject);
     }
-
+    
     void OnDestroy() {
         for (int i = 0; i < ricRemain; i++) {
             Destroy(riceffects[i]);
         }
     }
-
+    
     void showImpactEffect() {
         impeffect.transform.SetPositionAndRotation(transform.position, transform.rotation);
         impeffect.SetActive(true);

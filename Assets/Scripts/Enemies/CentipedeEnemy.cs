@@ -50,8 +50,8 @@ public class CentipedeEnemy : EnemyBase {
     
     
     protected override void Init() {
-        base.Init();
         ConsiderForRicochet = false;
+        base.Init();
         if (!SpawnAsHead) {
             // poolMissile();
             return;
@@ -131,8 +131,6 @@ public class CentipedeEnemy : EnemyBase {
         base.OnDestroying();
         if (pooledMissile)
             Destroy(pooledMissile.gameObject);
-        // if (pooledFireEffect)
-        //     Destroy(pooledFireEffect);
     }
 
     void updateHeadAboutDefeat(int index) {
@@ -186,12 +184,9 @@ public class CentipedeEnemy : EnemyBase {
     IEnumerator fireMissile() {
         poolMissile();
         yield return missileWaiter;
-        pooledMissile.transform.position = missileLaunchPoint.position;
-        pooledMissile.transform.rotation = missileLaunchPoint.rotation;
-        // pooledFireEffect.transform.position = missileLaunchPoint.position;
-        // pooledFireEffect.transform.rotation = missileLaunchPoint.rotation;
+        pooledMissile.transform.SetPositionAndRotation(missileLaunchPoint.position, missileLaunchPoint.rotation);
         pooledMissile.gameObject.SetActive(true);
-        pooledFireEffect.gameObject.SetActive(true);
+        pooledFireEffect.SetActive(true);
         StartCoroutine(fireMissile());
     }
     
@@ -199,7 +194,7 @@ public class CentipedeEnemy : EnemyBase {
         pooledMissile = Instantiate(missilePrefab, transform.position, transform.rotation);
         pooledMissile.gameObject.SetActive(false);
         pooledFireEffect = Instantiate(missileFireEffectPrefab, missileLaunchPoint.transform);
-        pooledFireEffect.gameObject.SetActive(false);
+        pooledFireEffect.SetActive(false);
     }
     
     Vector3 getLerpedPosition(int index) {

@@ -71,12 +71,12 @@ public class GameManager : MonoBehaviour {
     PlayerCharacterCtrlr playerPrefab;
     [SerializeField]
     EnemyBase enemyPrefab;
-    // [SerializeField]
-    // Transform enemySpawnPoint;
     public Camera rearCamera;
     
     [HideInInspector]
     public bool gameIsPaused = false;
+    
+    
     
     void Awake() {
         if (Instance != null) {
@@ -111,7 +111,7 @@ public class GameManager : MonoBehaviour {
         }
 #endif
     }
-
+    
     void initializeUI() {
         SettingsPanel = MainCanvas.SettingsPanel;
         MainCanvas.GamePanel.Init();
@@ -182,7 +182,7 @@ public class GameManager : MonoBehaviour {
         A_GameResumed?.Invoke();
         Time.timeScale = 1;
     }
-
+    
     public void PauseInputPressed(InputAction.CallbackContext context) {
         if (SceneManager.GetActiveScene() == SceneManager.GetSceneByName("MainMenuScene")) {
             if (MainCanvas.CurrentCanvasState == UIMainCanvas.ECanvasState.Settings)
@@ -217,7 +217,7 @@ public class GameManager : MonoBehaviour {
             // Camera.main.fieldOfView = _currentFOV;
         }
     }
-
+    
     public void SetPauseInputActionsEnabled(bool newEnabled) {
         if (newEnabled) {
             PauseInputActions.Escape.Enable();
@@ -315,7 +315,7 @@ class ProgrammerPreferences {
     public bool UsePreferences;
     public float MouseSensitivity;
     public float MasterVolume = 100;
-
+    
     internal void SetPreferences() {
         if (!UsePreferences) return;
         GameManager.Instance.CurrentMouseSensitivity = MouseSensitivity;

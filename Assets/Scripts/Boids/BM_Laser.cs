@@ -5,7 +5,7 @@ public class BM_Laser : BoidMover {
     public GeneralBoidSO LaserData;
     
     
-
+    
     protected override void Init() {
         generalBoidData = LaserData;
     }

@@ -73,7 +73,7 @@ public class BM_Basic : BoidMover {
             _ => Vector3.zero,
         };
     }
-
+    
     public override Quaternion CalculateRotation(Vector3 forward, Vector3 steer) {
         return rt switch {
             BoidRotationType.YawOnly => BoidRotator.YawOnly(forward),
@@ -88,7 +88,7 @@ public class BM_Basic : BoidMover {
         StepWanderPoint2D(wmd, wlr, wcd);
         return BoidSteerer.Wander(transform.position, rb.velocity, wanderPoint, wld, msv, msf);
     }
-
+    
     Vector3 testObstAvoid() {
         Vector3 forward = rb.velocity;
         if (forward.sqrMagnitude <= 0.0001f)
@@ -100,14 +100,14 @@ public class BM_Basic : BoidMover {
         // return doWander() + avoid;
         // return doWander();
     }
-
+    
     // public override Vector3 AddObstacleAvoidance() {
     //     Vector3 forward = rb.velocity;
     //     if (forward.sqrMagnitude <= 0.001f)
     //         forward = transform.forward;
     //     return BoidSteerer.Avoidance3P(transform.position, forward, awa, amld, ai, amsf);
     // }
-
+    
     void checkAndSetForOverride() {
         if (USE_OVERRIDES) {
             bt = BehaviourType;

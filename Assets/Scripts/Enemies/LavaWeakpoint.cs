@@ -29,12 +29,12 @@ public class LavaWeakpoint : EnemyWeakpoint {
         weakpointTransform.gameObject.SetActive(false);
         startY = weakpointTransform.localPosition.y;
     }
-
+    
     protected override void LateInit() {
         base.LateInit();
         ConsiderForRicochet = false;
     }
-
+    
     void Update() {
         if (shouldAnimate) {
             float t = (Time.time - lastBeginTime) / AnimationDuration;

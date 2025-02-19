@@ -1,9 +1,5 @@
-
-using System;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Analytics;
 using UnityEngine.UI;
 
 public class UIGamePanel : UIPanel {
@@ -50,7 +46,7 @@ public class UIGamePanel : UIPanel {
     public void OnFireVacuum(bool started) {
         KeyImageM1.color = started ? Color.white : Color.gray;
     }
-
+    
     public void UpdateCrosshairPositions(Vector3 screenPointVacuum, Vector3 screenPointCanon) {
         if (screenPointVacuum.z > 0.01f) {
             if (!MainVacuumCrosshair.gameObject.activeSelf) MainVacuumCrosshair.gameObject.SetActive(true);
@@ -110,7 +106,7 @@ public class UIGamePanel : UIPanel {
         // Temporary?
         GameManager.Instance.Audio2D.PlayClipSFX(AudioPlayer2D.EClipSFX.Plr_PickupFuel);
     }
-
+    
     public void OnFuelSpent(float amnt, float perc, bool spentAsHealth) {
         FuelSlider.value = perc;
         if (spentAsHealth)
@@ -151,11 +147,11 @@ public class UIGamePanel : UIPanel {
             
     //     }
     // }
-
+    
     public override void OnGameResumed() {
         // SetActive(true);
     }
-
+    
     public override void OnGamePaused() {
         // SetActive(false);
     }
@@ -167,7 +163,7 @@ public class UIGamePanel : UIPanel {
         plr.A_PlayerHealed += OnPlayerHealed;
         ResetUIElements();
     }
-
+    
     public override void OnPlayerDestroying(PlayerCharacterCtrlr plr) {
         plr.A_FuelAdded -= OnFuelAdded;
         plr.A_FuelSpent -= OnFuelSpent;

@@ -64,5 +64,5 @@ public class ExplosiveProjectile : ProjectileBase {
         foreach (ParticleSystem p in particleEffects)
             p.transform.localScale = Vector3.one * ExplosionRadius / ExplosionRadForEffectSize;
     }
-
+    
 }
