@@ -12,9 +12,12 @@ public class SceneRunner : MonoBehaviour {
     [HideInInspector]
     public List<EnemyBase> SpawnedEnemies;
     
+    LayerMask ricochetLOSMask;
+    
     
     
     void Awake() {
+        ricochetLOSMask = 1 << LayerMask.NameToLayer("Default");
         SpawnedEnemies = new List<EnemyBase>();
         if (SceneManager.GetSceneByName("CoreScene").IsValid()) {
             startScene();
@@ -69,11 +72,23 @@ public class SceneRunner : MonoBehaviour {
             if (!en.gameObject.activeSelf || !en.ConsiderForRicochet || en == ignore) continue;
             float distSqrd = (pos - en.TransformForRicochetToAimAt.position).sqrMagnitude;
             if (distSqrd < closestSqrd) {
+                if (!checkEnLOS(pos, en.TransformForRicochetToAimAt.position, distSqrd))
+                    continue;
                 closestSqrd = distSqrd;
                 closestEn = en;
             }
         }
         return closestEn;
+    }
+    
+    bool checkEnLOS(Vector3 pos, Vector3 enPos, float maxDstSqrd) {
+        // If raycasting for walls is a success, then no LOS
+        return !Physics.Raycast(
+            origin: pos,
+            direction: enPos - pos,
+            maxDistance: Mathf.Sqrt(maxDstSqrd),
+            layerMask: ricochetLOSMask
+        );
     }
     
     void startScene() {
