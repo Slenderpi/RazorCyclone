@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 69f9961cf92bd854b8153643462a6011, type: 3}
   m_Name: LavaEnemyData
   m_EditorClassIdentifier: 
-  MaxSteeringVelocity: 15
-  MaxSteeringForce: 10
-  WanderLimitRadius: 0.5
-  WanderLimitDist: 0.5
+  MaxSteeringVelocity: 20
+  MaxSteeringForce: 20
+  WanderLimitRadius: 2
+  WanderLimitDist: 5
   WanderChangeDist: 0.15
   WanderMinimumDelay: 0
   AvoidanceTestType: 3

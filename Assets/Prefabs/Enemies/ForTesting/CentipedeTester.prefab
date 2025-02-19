@@ -180,11 +180,11 @@ MonoBehaviour:
   fuelPickupPrefab: {fileID: 5163220815717078053, guid: bb72521b10fb34d7bbbed5f6f77687b4, type: 3}
   invincible: 0
   SpawnAsHead: 1
-  BodyLength: 10
+  BodyLength: 30
   MoveSpeed: 5
   FollowOffset: 1.5
   MissileFireDelay: 10
-  MissileFireDelayOffset: 0.04
+  MissileFireDelayOffset: 0.1
   missilePrefab: {fileID: 6751577663681668669, guid: 9228885265ca714478c763de6e658fd9, type: 3}
   missileFireEffectPrefab: {fileID: 6498789483473948991, guid: ef11bc4966759d743b0d851211ffeaf8, type: 3}
   missileLaunchPoint: {fileID: 4952710601486893520}

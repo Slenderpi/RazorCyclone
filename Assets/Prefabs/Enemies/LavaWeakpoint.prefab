@@ -62,7 +62,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 0.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 2128063871310386290}
   m_Father: {fileID: 2511934953390636211}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -153,13 +154,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6599918015942626513}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: -0.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 2511934953390636211}
-  m_RootOrder: 2
+  m_Father: {fileID: 3289913355028547861}
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!120 &2491242878235509558
 LineRenderer:
@@ -291,7 +292,6 @@ Transform:
   m_Children:
   - {fileID: 3289913355028547861}
   - {fileID: 6342812463714376095}
-  - {fileID: 2128063871310386290}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -326,7 +326,7 @@ MonoBehaviour:
   fuelPickupPrefab: {fileID: 5163220815717078053, guid: bb72521b10fb34d7bbbed5f6f77687b4, type: 3}
   invincible: 0
   WeakpointHeightAboveLava: 4
-  AnimationDuration: 1
+  AnimationDuration: 2
   weakpointTransform: {fileID: 3289913355028547861}
   lid: {fileID: 6342812463714376095}
   line: {fileID: 2491242878235509558}
