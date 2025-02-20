@@ -10,23 +10,20 @@ using Random = System.Random;
 /*
  * ADDING AN ENEMY
  * Add column to wave csv file
- * Drag/drop reference to respective prefab into WaveSpawnerManager.EnemyPrefabs
  * Add enemy type to GameManager.EnemyType enum
- * Add enemy name to GameManager.EnemyStrs array
- * Add string check to else-ifs in Spawner.AcceptsEnemyStr()
+ * Drag/drop reference to respective prefab into WaveSpawnerManager.EnemyPrefabs
  */
 
 public struct WaveEntry {
     public int num;
     public float spawnTime;
     public int[] enemyCounts;
-    public int[] typesInWave; // List of indices for GameManager.EnemyStrs[]
     
     public override readonly string ToString() {
         string s = $"Wave: {num, 2} | time: {spawnTime, 3} | Counts:";
         for (int i = 0; i < enemyCounts.Length; i++) {
             if (enemyCounts[i] == 0) continue;
-            s += string.Format("\n{2, 11}{0, -11}: {1, 3}", GameManager.EnemyStrs[i], enemyCounts[i], "> ");
+            s += string.Format("\n{2, 11}{0, -11}: {1, 3}", (EnemyType)i, enemyCounts[i], "> ");
         }
         return s;
     }
@@ -36,8 +33,8 @@ public class WaveSpawnerManager : MonoBehaviour {
     
     [Header("Wave Spawner Config")]
     public TextAsset WaveTableFile;
-    [Tooltip("List of enemy prefab references. ORDER MATTERS. ASK FOR PRESTON'S APPROVAL BEFORE TOUCHING.")]
-    public EnemyBase[] EnemyPrefabs; // ENSURE THIS LINES UP WITH "enemyStrs" ARRAY
+    [Tooltip("List of enemy prefab references.\n\nORDER MATTERS. ASK FOR PRESTON'S APPROVAL BEFORE TOUCHING.")]
+    public EnemyBase[] EnemyPrefabs;
     
     [HideInInspector]
     public SREndlessMode OwningEndlessMode;
@@ -94,9 +91,6 @@ public class WaveSpawnerManager : MonoBehaviour {
             for (int j = 0; j < strs.Length - 1; j++) {
                 waveEntries[i].enemyCounts[j] = int.Parse(strs[j + 1]);
             }
-            // NOTE---------------
-            // Set typesInWave
-            waveEntries[i].typesInWave = new int[strs.Length - 1];
         }
         
 #if DEBUG_WAVE_STRS && UNITY_EDITOR
@@ -160,35 +154,35 @@ public class WaveSpawnerManager : MonoBehaviour {
         Debug.Log("DEBUG: Activating wave number: " + CurrentWaveNumber);
 #endif
         /* PSUEDOCODE for creating an array of spawners to choose from when positioning an enemy:
-        // Create a "map" where the key is the EnemyStr (but parallel to GameManager.EnemyStrs so
+        // Create a "map" where the key is the EnemyType (but parallel to EnemyTypes enum so
         /   just use the int index) and the value is a list of spawners that can spawn
-        /   enemies with that EnemyStr
-        List<Spawner>[] availableSpawners = new List<>[enemyStr.len]
+        /   enemies with that type
+        List<Spawner>[] availableSpawners = new List<>[EnemyTypes.len]
         foreach spawner:
             ValidateSpawnerSpecificCriteria()
-            for i = 0 to enemyStr.len:
-                if spawner accepts enemyStr[i]:
+            for i = 0 to EnemyTypes.len:
+                if spawner accepts (EnemyType)i:
                     add it to availableSpawners[i]
         // The availableSpawners array will now be populated with lists of spawners that accept
-        /   respective EnemyStrs.
+        /   respective EnemyTypes.
         */
-        int numEStrs = GameManager.EnemyStrs.Length;
+        int numETypes = (int)EnemyType.COUNT;
         WaveEntry wave = waveEntries[CurrentPreloadedWaveNumber - 1];
         Random rnd = new();
-        List<Spawner>[] availableSpawners = new List<Spawner>[numEStrs];
-        for (int i = 0; i < numEStrs; i++) availableSpawners[i] = new List<Spawner>(); // Initialize lists
+        List<Spawner>[] availableSpawners = new List<Spawner>[numETypes];
+        for (int i = 0; i < numETypes; i++) availableSpawners[i] = new List<Spawner>(); // Initialize lists
         foreach (Spawner sp in spawners) {
             sp.ValidateSpawnerSpecificCriteria();
             if (!sp.canSpawn) continue;
-            for (int si = 0; si < numEStrs; si++) {
-                if (wave.enemyCounts[si] == 0) continue;
-                if (sp.AcceptsEnemyStr(GameManager.EnemyStrs[si])) {
-                    availableSpawners[si].Add(sp);
+            for (int ti = 0; ti < numETypes; ti++) { // type i
+                if (wave.enemyCounts[ti] == 0) continue;
+                if (sp.AcceptsEnemy((EnemyType)ti)) {
+                    availableSpawners[ti].Add(sp);
                 }
             }
         }
         // Ensure a minimum of 1 randomly chosen spawner for each list
-        for (int i = 0; i < numEStrs; i++)
+        for (int i = 0; i < numETypes; i++)
             if (availableSpawners[i].Count == 0)
                 availableSpawners[i].Add(spawners[rnd.Next(spawners.Count)]);
         /* PSUEDOCODE for positioning and activating each enemy:
@@ -201,17 +195,17 @@ public class WaveSpawnerManager : MonoBehaviour {
         /   because the current index i in EnemyStrs will be used to index the correct list of
         /   spawners in AvailableSpawners
         int lei = 0; // i representing the current loadedEnemy to position and activate
-        for esi in enemyStr.len:
-            List<Spawner> currSpawnerList = availableSpawners[esi] // list of spawners valid for this enemyStr
-            for ci = 0 to wave.enemyCounts[esi] // There are wave.enemyCounts[esi] duplicates of the current enemy type
+        for eti in EnemyTypes.len:
+            List<Spawner> currSpawnerList = availableSpawners[eti] // list of spawners valid for this enemyStr
+            for ci = 0 to wave.enemyCounts[eti] // There are wave.enemyCounts[eti] duplicates of the current enemy type
                 loadedWave[lei].position = currSpawnerList[random from 0 to list length]
                 loadedWave[lei].SetEnabled(true)
                 lei++
         */
         int lei = 0; // Loaded Enemy i
-        for (int esi = 0; esi < numEStrs; esi++) { // Enemy String i
-            List<Spawner> currSpList = availableSpawners[esi];
-            for (int ci = 0; ci < wave.enemyCounts[esi]; ci++) { // (Enemy) Count i
+        for (int eti = 0; eti < numETypes; eti++) { // Enemy Type i
+            List<Spawner> currSpList = availableSpawners[eti];
+            for (int ci = 0; ci < wave.enemyCounts[eti]; ci++) { // (Enemy) Count i
                 EnemyBase en = loadedWave[lei++];
                 Transform spawnTrans = currSpList[rnd.Next(currSpList.Count)].transform;
                 en.transform.SetPositionAndRotation(spawnTrans.position, spawnTrans.rotation);

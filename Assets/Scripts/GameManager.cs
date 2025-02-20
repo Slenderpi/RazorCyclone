@@ -5,19 +5,6 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour {
     
-    /// <summary>
-    /// Strings representing enemies. In the future, using a different
-    /// method of identification may be better.
-    /// </summary>
-    public static readonly string[] EnemyStrs = { // ENSURE THE WAVE SPREADSHEET COLUMNS AND THIS ARRAY LINE UP
-        "EnemyBase",
-        "CanonFodder",
-        "Hunter",
-        "Laser",
-        "Lava",
-        "Centipede"
-    };
-    
     public static GameManager Instance;
     public static PlayerCharacterCtrlr CurrentPlayer;
     
@@ -302,7 +289,8 @@ public enum EnemyType {
     Hunter,
     Laser,
     Lava,
-    Centipede
+    Centipede,
+    COUNT // ALWAYS HAVE THIS BE LAST. Meant to be used for the number of EnemyTypes via (int)EnemyType.COUNT
 }
 
 

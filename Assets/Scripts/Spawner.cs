@@ -27,23 +27,7 @@ public class Spawner : MonoBehaviour {
         canSpawn = (plrTrans.position - transform.position).magnitude > playerDetectionRange;
     }
     
-    /// <summary>
-    /// Determines if the provided string refers to a valid enemy type and if that type is accepted by this spawner.
-    /// </summary>
-    /// <param name="estr"></param>
-    /// <returns></returns>
-    public bool AcceptsEnemyStr(string estr) {
-        // TODO: Find a better way to do this, perhaps by not using strings or the EnemyStrs system
-        // Convert estr to EnemyType enum
-        EnemyType etype;
-        if (estr == "EnemyBase") etype = EnemyType.EnemyBase;
-        else if (estr == "CanonFodder") etype = EnemyType.CanonFodder;
-        else if (estr == "Hunter") etype = EnemyType.Hunter;
-        else if (estr == "Laser") etype = EnemyType.Laser;
-        else if (estr == "Lava") etype = EnemyType.Lava;
-        else if (estr == "Centipede") etype = EnemyType.Centipede;
-        else return false;
-        
+    public bool AcceptsEnemy(EnemyType etype) {
         // If etype is in enemyTypes, then return !UseAsExc
         foreach (EnemyType flag in EnemyTypes) {
             if (etype == flag) {
@@ -53,4 +37,5 @@ public class Spawner : MonoBehaviour {
         // etype not found in list of flags, so return UseAsExc
         return !UseTypesAsInclude;
     }
+    
 }
