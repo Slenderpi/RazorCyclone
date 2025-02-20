@@ -8,7 +8,7 @@ public class DataPersistenceManager : MonoBehaviour {
     
     [Header("Debugging")]
     [SerializeField]
-    bool disableDataPersistence = false;
+    bool disableDataPersistence = true;
     [SerializeField]
     bool initializeDataIfNull = true;
     
@@ -22,6 +22,9 @@ public class DataPersistenceManager : MonoBehaviour {
     
     
     void Awake() {
+#if !UNITY_EDITOR
+        disableDataPersistence = false; // Force data if in build
+#endif
         if (Instance != null) {
             Debug.Log("Found more than one Data Persistence Manager in the scene. Destroying the newest one.");
             Destroy(gameObject);
@@ -30,7 +33,6 @@ public class DataPersistenceManager : MonoBehaviour {
         Instance = this;
         
         if (disableDataPersistence) {
-            Debug.LogWarning("Data Persistence is currently disabled. Loaded GameData will use default values.");
             gameData = new GameData();
         }
         

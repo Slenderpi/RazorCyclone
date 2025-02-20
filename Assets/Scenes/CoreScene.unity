@@ -6239,7 +6239,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c4c93200410c3354aa4a3e3dc04a8646, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  disableDataPersistence: 0
+  disableDataPersistence: 1
   initializeDataIfNull: 1
   fileName: rcGameData
 --- !u!4 &649502890

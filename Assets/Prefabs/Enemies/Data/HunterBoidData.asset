@@ -24,6 +24,7 @@ MonoBehaviour:
   AvoidanceMinIntensity: 0
   AvoidanceMaxIntensity: 8
   AvoidanceMaxSteeringForce: 24
+  AvoidInvisBoidWalls: 0
   RunAwayMaxSteerVelocity: 10
   RunAwayMaxSteerForce: 10
   RunAwayDuration: 0.5
