@@ -144,6 +144,7 @@ public class UIDEBUGPanel : UIPanel {
         TogIndInputOverlay.SetActive(GameManager.Instance.MainCanvas.GamePanel.InputOverlay.activeSelf);
         TogIndInvincibility.SetActive(plr.IsInvincible);
         TogIndInfFuel.SetActive(plr.NoFuelCost);
+        if (!wsm) return;
         SpawnWaveButtonText.text = "Spawn Wave (1-" + wsm.waveEntries.Length + "):";
     }
     

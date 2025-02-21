@@ -2,6 +2,14 @@ using System.Collections;
 using UnityEngine;
 
 public class CentipedeEnemy : EnemyBase {
+
+    enum MissileAction {
+        Waiting,
+        OpeningDoor,
+        FiringMissile,
+        LeaveOpen,
+        ClosingDoor
+    }
     
     [Header("Centipede Config")]
     [Tooltip("Set this to true in the inspector.\nWhen the head spawns centipede body pieces, it will automatically make sure those pieces have this value set to false.")]
@@ -17,6 +25,10 @@ public class CentipedeEnemy : EnemyBase {
     public float MissileFireDelay = 5;
     [Tooltip("Additional time to prevent the entire centipede from firing at once.\nExample: using 0.1, the head will fire after MissileFireDelay, the first body will fire after MissileFireDelay + 0.1, the next at MissileFireDelay + 0.2, etc.")]
     public float MissileFireDelayOffset = 0.1f;
+    [Tooltip("The length of time the missile door animates opening for.\nDoes not affect MissileFireDelay.")]
+    public float MissileDoorAnimTime = 0.2f;
+    [Tooltip("The length of the time the missile door stays open right after firing the missile.\nDoes not affect MissileFireDelay.")]
+    public float MissileDoorLeaveOpenTime = 0.2f;
     [SerializeField]
     [Tooltip("Prefab of missile. Needs to be of type CentipedeMissile.")]
     CentipedeMissile missilePrefab;
@@ -26,6 +38,8 @@ public class CentipedeEnemy : EnemyBase {
     [SerializeField]
     [Tooltip("Transform that the missile will be launched form. Make sure the forward (-z) direction of this transform is set correctly, because missiles will spawn with this orientation.")]
     Transform missileLaunchPoint;
+    [SerializeField]
+    Transform doorHinge;
     [SerializeField]
     MeshRenderer modelMeshRenderer;
     [SerializeField]
@@ -44,6 +58,8 @@ public class CentipedeEnemy : EnemyBase {
     float lastSampleTime;
     WaitForSeconds sampleWaiter;
     WaitForSeconds missileWaiter;
+    float lastMissileActionTime;
+    MissileAction currMissileAction;
     CentipedeMissile pooledMissile;
     GameObject pooledFireEffect;
     
@@ -52,10 +68,7 @@ public class CentipedeEnemy : EnemyBase {
     protected override void Init() {
         ConsiderForRicochet = false;
         base.Init();
-        if (!SpawnAsHead) {
-            // poolMissile();
-            return;
-        }
+        if (!SpawnAsHead) return;
         SpawnAsHead = false;
         samplingDelay = FollowOffset / MoveSpeed;
         samplingLength = BodyLength + 1;
@@ -83,7 +96,6 @@ public class CentipedeEnemy : EnemyBase {
         sampledPositions = samposs;
         sampledRots = samrots;
         modelMeshRenderer.material = headMaterial;
-        // poolMissile();
         SpawnAsHead = true;
     }
     
@@ -94,7 +106,9 @@ public class CentipedeEnemy : EnemyBase {
             lastSampleTime = Time.time;
             StartCoroutine(sampleTransform());
         }
-        StartCoroutine(offsetMissileFiring());
+        poolMissile();
+        lastMissileActionTime = Time.time + MissileFireDelayOffset * bodyIndex;
+        currMissileAction = MissileAction.Waiting;
     }
     
     void Update() {
@@ -109,6 +123,7 @@ public class CentipedeEnemy : EnemyBase {
                 head.getLerpedRotation(bodyIndex)
             );
         }
+        handleMissileActionState();
     }
     
     protected override void OnDefeated(EDamageType damageType) {
@@ -176,18 +191,53 @@ public class CentipedeEnemy : EnemyBase {
         StartCoroutine(sampleTransform());
     }
     
-    IEnumerator offsetMissileFiring() {
-        yield return new WaitForSeconds(MissileFireDelayOffset * bodyIndex);
-        StartCoroutine(fireMissile());
+    void handleMissileActionState() {
+        switch (currMissileAction) {
+        case MissileAction.Waiting:
+            if (Time.time - lastMissileActionTime >= MissileFireDelay - MissileDoorAnimTime * 2 - MissileDoorLeaveOpenTime) {
+                lastMissileActionTime += MissileFireDelay - MissileDoorAnimTime * 2 - MissileDoorLeaveOpenTime;
+                currMissileAction = MissileAction.OpeningDoor;
+            }
+            break;
+        case MissileAction.OpeningDoor:
+            float alpha = (Time.time - lastMissileActionTime) / MissileDoorAnimTime;
+            if (alpha >= 1) {
+                animateDoors(1);
+                lastMissileActionTime += MissileDoorAnimTime;
+                currMissileAction = MissileAction.FiringMissile;
+            } else {
+                animateDoors(alpha);
+            }
+            break;
+        case MissileAction.FiringMissile:
+            pooledMissile.transform.SetPositionAndRotation(missileLaunchPoint.position, missileLaunchPoint.rotation);
+            pooledMissile.gameObject.SetActive(true);
+            pooledFireEffect.SetActive(true);
+            currMissileAction = MissileAction.LeaveOpen;
+            break;
+        case MissileAction.LeaveOpen:
+            if (Time.time - lastMissileActionTime >= MissileDoorLeaveOpenTime) {
+                lastMissileActionTime += MissileDoorLeaveOpenTime;
+                currMissileAction = MissileAction.ClosingDoor;
+            }
+            break;
+        case MissileAction.ClosingDoor:
+            alpha = (Time.time - lastMissileActionTime) / MissileDoorAnimTime;
+            if (alpha >= 1) {
+                animateDoors(0);
+                lastMissileActionTime += MissileDoorAnimTime;
+                poolMissile();
+                currMissileAction = MissileAction.Waiting;
+            } else {
+                animateDoors(1 - alpha);
+            }
+            break;
+        }
     }
     
-    IEnumerator fireMissile() {
-        poolMissile();
-        yield return missileWaiter;
-        pooledMissile.transform.SetPositionAndRotation(missileLaunchPoint.position, missileLaunchPoint.rotation);
-        pooledMissile.gameObject.SetActive(true);
-        pooledFireEffect.SetActive(true);
-        StartCoroutine(fireMissile());
+    void animateDoors(float alpha) {
+        float angle = Mathf.Lerp(0, -120, alpha * (2 - alpha));
+        doorHinge.localRotation = Quaternion.AngleAxis(angle, Vector3.right);
     }
     
     void poolMissile() {
