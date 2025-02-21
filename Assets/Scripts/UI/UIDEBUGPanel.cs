@@ -140,11 +140,10 @@ public class UIDEBUGPanel : UIPanel {
     
     void initUI() {
         PlayerCharacterCtrlr plr = GameManager.CurrentPlayer;
-        if (plr) {
-            TogIndInputOverlay.SetActive(GameManager.Instance.MainCanvas.GamePanel.InputOverlay.activeSelf);
-            TogIndInvincibility.SetActive(plr.IsInvincible);
-            TogIndInfFuel.SetActive(plr.NoFuelCost);
-        }
+        if (!plr) return;
+        TogIndInputOverlay.SetActive(GameManager.Instance.MainCanvas.GamePanel.InputOverlay.activeSelf);
+        TogIndInvincibility.SetActive(plr.IsInvincible);
+        TogIndInfFuel.SetActive(plr.NoFuelCost);
         SpawnWaveButtonText.text = "Spawn Wave (1-" + wsm.waveEntries.Length + "):";
     }
     
