@@ -2,6 +2,9 @@ using UnityEngine;
 
 public class EnemyBase : MonoBehaviour {
     
+    [Tooltip("FOR PRESTON TO SET.")]
+    public EnemyType etypeid;
+    
     [Header("Enemy Configuration")]
     public float MaxHealth = 50;
     [HideInInspector]
@@ -18,7 +21,7 @@ public class EnemyBase : MonoBehaviour {
     [Tooltip("If enabled, projectiles will ricochet when they hit this enemy.\n\nNote: this variable does not determine if this enemy can be targeted by ricochet aimbot, that is done by an internal variable.")]
     public bool RicochetCanon = false;
     [HideInInspector]
-    // If enabled, ricochets can target this enemy. Note: if an enemy sets this value to false in its LateInit() override, the enemy will not be added to the SceneRunner's list.
+    // If enabled, ricochets can target this enemy. Note: if an enemy sets this value to false in its LateInit() override or earlier, the enemy will not be added to the SceneRunner's list.
     public bool ConsiderForRicochet = true;
     [Tooltip("If left null, will default to the gameobject's transform. This is primarily for the EnemyWeakpoint type.")]
     public Transform TransformForRicochetToAimAt = null;
@@ -38,6 +41,8 @@ public class EnemyBase : MonoBehaviour {
     FuelPickup fuelPickupPrefab;
     
     protected Lava lava;
+    
+    bool wasEverStarted = false;
     
     [Header("For testing")]
     [SerializeField]
@@ -66,9 +71,9 @@ public class EnemyBase : MonoBehaviour {
     protected virtual void Init() {}
     
     void Start() {
+        wasEverStarted = true;
         LateInit();
-        if (ConsiderForRicochet)
-            GameManager.Instance.currentSceneRunner.AddEnemyToList(this);
+        GameManager.Instance.currentSceneRunner.AddEnemyToList(this);
     }
     
     /// <summary>
@@ -117,7 +122,7 @@ public class EnemyBase : MonoBehaviour {
             DropFuel();
         }
         gameObject.SetActive(false);
-        Destroy(gameObject, 1);
+        Destroy(gameObject);
     }
     
     public void DropFuel() {
@@ -143,7 +148,7 @@ public class EnemyBase : MonoBehaviour {
     /// </summary>
     protected virtual void OnSubmerged() {
         gameObject.SetActive(false); // TODO: Set inactive or just kill?
-        Destroy(gameObject, 1);
+        Destroy(gameObject);
     }
     
     void OnDestroy() {
@@ -151,7 +156,8 @@ public class EnemyBase : MonoBehaviour {
     }
     
     protected virtual void OnDestroying() {
-        GameManager.Instance.currentSceneRunner.RemoveEnemyFromList(this);
+        if (wasEverStarted)
+            GameManager.Instance.currentSceneRunner.RemoveEnemyFromList(this);
     }
     
 }

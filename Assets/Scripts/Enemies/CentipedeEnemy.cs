@@ -67,7 +67,6 @@ public class CentipedeEnemy : EnemyBase {
     
     protected override void Init() {
         ConsiderForRicochet = false;
-        base.Init();
         if (!SpawnAsHead) return;
         SpawnAsHead = false;
         samplingDelay = FollowOffset / MoveSpeed;

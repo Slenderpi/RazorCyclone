@@ -47,21 +47,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 030f505e7e80e9149b3a3befe1af1340, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  etypeid: 4
   MaxHealth: 50
   health: 0
   Damage: 10
   AttackDelay: 1
   DealDamageOnTouch: 0
-  lastVacuumHitTime: 0
-  CanGetVacuumSucked: 0
   CanGetVacuumKilled: 0
   AffectedByLava: 0
   RicochetCanon: 0
   ConsiderForRicochet: 1
+  TransformForRicochetToAimAt: {fileID: 0}
   LavaSubmergeOffset: 1
   FuelAmount: 50
   rb: {fileID: 8116625089142116925}
   boid: {fileID: 0}
+  suckable: {fileID: 0}
   fuelPickupPrefab: {fileID: 5163220815717078053, guid: bb72521b10fb34d7bbbed5f6f77687b4, type: 3}
   invincible: 0
   weakpoints:

@@ -23,7 +23,6 @@ public class CentipedeMissile : EnemyBase {
     
     protected override void Init() {
         ConsiderForRicochet = false;
-        base.Init();
         boid.enabled = false;
         drag = rb.drag;
         rb.drag = ArmingDrag;

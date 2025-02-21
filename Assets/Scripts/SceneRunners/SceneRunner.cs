@@ -10,7 +10,7 @@ public class SceneRunner : MonoBehaviour {
     public Lava lava;
     
     // [HideInInspector]
-    public List<EnemyBase> SpawnedEnemies;
+    public List<EnemyBase> EnemiesForRicochet;
     
     LayerMask ricochetLOSMask;
     
@@ -18,7 +18,7 @@ public class SceneRunner : MonoBehaviour {
     
     void Awake() {
         ricochetLOSMask = 1 << LayerMask.NameToLayer("Default");
-        SpawnedEnemies = new List<EnemyBase>();
+        EnemiesForRicochet = new List<EnemyBase>();
         if (SceneManager.GetSceneByName("CoreScene").IsValid()) {
             startScene();
         } else {
@@ -54,21 +54,22 @@ public class SceneRunner : MonoBehaviour {
         SwitchToScene(SceneManager.GetActiveScene().name);
     }
     
-    public void AddEnemyToList(EnemyBase en) {
-        SpawnedEnemies.Add(en);
+    public virtual void AddEnemyToList(EnemyBase en) {
+        if (en.ConsiderForRicochet)
+            EnemiesForRicochet.Add(en);
     }
     
-    public void RemoveEnemyFromList(EnemyBase en) {
-        SpawnedEnemies.Remove(en);
+    public virtual void RemoveEnemyFromList(EnemyBase en) {
+        EnemiesForRicochet.Remove(en);
     }
     
     public EnemyBase GetClosestEnemy(Vector3 pos, EnemyBase ignore) {
-        int c = SpawnedEnemies.Count;
+        int c = EnemiesForRicochet.Count;
         if (c == 0) return null;
         EnemyBase closestEn = null;
         float closestSqrd = 9999999f;
         for (int i = 0; i < c; i++) {
-            EnemyBase en = SpawnedEnemies[i];
+            EnemyBase en = EnemiesForRicochet[i];
             if (!en.gameObject.activeSelf || !en.ConsiderForRicochet || en == ignore) continue;
             float distSqrd = (pos - en.TransformForRicochetToAimAt.position).sqrMagnitude;
             if (distSqrd < closestSqrd) {

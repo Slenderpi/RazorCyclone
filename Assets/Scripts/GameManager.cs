@@ -299,7 +299,10 @@ public enum EnemyType {
     Laser,
     Lava,
     Centipede,
-    COUNT // ALWAYS HAVE THIS BE LAST. Meant to be used for the number of EnemyTypes via (int)EnemyType.COUNT
+    COUNT, // ALWAYS HAVE THIS BE LAST. Meant to be used for the number of EnemyTypes via (int)EnemyType.COUNT
+    // ANY TYPES AFTER COUNT ARE EXTRANEOUS TYPES NOT MEANT TO BE CONSIDERED BY MOST SCRIPTS
+    Weakpoint,
+    CentipedeMissile
 }
 
 

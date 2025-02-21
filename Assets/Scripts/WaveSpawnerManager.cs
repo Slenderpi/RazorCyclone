@@ -1,7 +1,8 @@
 // UNCOMMENT THE LINE BELOW TO PRINT WAVES AS STRINGS
-#define DEBUG_WAVE_STRS
+// #define DEBUG_WAVE_STRS
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
@@ -65,19 +66,22 @@ public class WaveSpawnerManager : MonoBehaviour {
     // [HideInInspector]
     // public float currentWaveSpawnTime = float.MaxValue;
     
+    bool hasDefeatedActiveWave = false;
+    bool activatedWaveIsOnlyFodder = false;
+    
     
     
     void Awake() {
         spawners.AddRange(FindObjectsOfType<Spawner>());
     }
     
-    void Update() {
-        // if (OwningEndlessMode.TimeSurvived >= currentWaveSpawnTime && CurrentPreloadedWaveNumber != -1) {
-        //     ActivateWave();
-        //     PreloadWave(CurrentWaveNumber + 1);
-        // }
-        // TODO
-    }
+    // void Update() {
+    //     // if (OwningEndlessMode.TimeSurvived >= currentWaveSpawnTime && CurrentPreloadedWaveNumber != -1) {
+    //     //     ActivateWave();
+    //     //     PreloadWave(CurrentWaveNumber + 1);
+    //     // }
+    //     // TODO
+    // }
     
     public void InitWaveSpawner() {
         if (WaveTableFile == null) {
@@ -125,8 +129,9 @@ public class WaveSpawnerManager : MonoBehaviour {
 #if DEBUG_WAVE_STRS && UNITY_EDITOR
         PrintWaveEntries();
 #endif
-        // Automatically preload the first wave
-        PreloadWave(1);
+        Debug.LogWarning("Beginning the game!");
+        CurrentWaveNumber = 0;
+        StartCoroutine(delaySpawnNextWave());
     }
     
     /// <summary>
@@ -180,9 +185,19 @@ public class WaveSpawnerManager : MonoBehaviour {
         if (CurrentPreloadedWaveNumber == -1 || loadedWave.Count == 0)
             return;
         CurrentWaveNumber = CurrentPreloadedWaveNumber;
+        hasDefeatedActiveWave = false;
 #if DEBUG_WAVE_STRS && UNITY_EDITOR
         Debug.Log("DEBUG: Activating wave number: " + CurrentWaveNumber);
 #endif
+        // Check if the wave to activate only has fodders in it
+        WaveEntry wave = waveEntries[CurrentPreloadedWaveNumber - 1];
+        activatedWaveIsOnlyFodder = wave.enemyCounts[(int)EnemyType.CanonFodder] > 0;
+        if (activatedWaveIsOnlyFodder)
+            for (int ti = (int)EnemyType.CanonFodder + 1; ti < (int)EnemyType.COUNT; ti++)
+                if (wave.enemyCounts[ti] > 0) {
+                    activatedWaveIsOnlyFodder = false;
+                    break;
+                }
         /* PSUEDOCODE for creating an array of spawners to choose from when positioning an enemy:
         // Create a "map" where the key is the EnemyType (but parallel to EnemyTypes enum so
         /   just use the int index) and the value is a list of spawners that can spawn
@@ -198,7 +213,6 @@ public class WaveSpawnerManager : MonoBehaviour {
         */
         int numETypes = (int)EnemyType.COUNT;
         // TimedWaveEntry wave = waveEntries[CurrentPreloadedWaveNumber - 1];
-        WaveEntry wave = waveEntries[CurrentPreloadedWaveNumber - 1];
         Random rnd = new();
         List<Spawner>[] availableSpawners = new List<Spawner>[numETypes];
         for (int i = 0; i < numETypes; i++) availableSpawners[i] = new List<Spawner>(); // Initialize lists
@@ -246,6 +260,37 @@ public class WaveSpawnerManager : MonoBehaviour {
         // Clear loadedWave so that if ActivateWave() is quickly called again (it shouldn't be) that we
         // don't perform uneccessary extra work.
         loadedWave.Clear();
+    }
+    
+    public void OnEnemyCountDecreased(int[] counts) {
+        if (hasDefeatedActiveWave) return;
+        bool waveComplete = true;
+        if (activatedWaveIsOnlyFodder) {
+            if (counts[(int)EnemyType.CanonFodder] > 0)
+                waveComplete = false;
+        } else {
+            for (int i = ((int)EnemyType.CanonFodder) + 1; i < (int)EnemyType.COUNT; i++) // Start at enemy right after canon fodder
+                if (counts[i] > 0) {
+                    waveComplete = false;
+                    break;
+                }
+                
+        }
+        if (waveComplete) {
+            hasDefeatedActiveWave = true;
+            Debug.LogWarning("Wave completed!");
+            StartCoroutine(delaySpawnNextWave());
+        }
+    }
+    
+    IEnumerator delaySpawnNextWave() {
+        PreloadWave(CurrentWaveNumber + 1);
+        yield return new WaitForSeconds(2);
+        Debug.LogWarning("Get ready for round " + CurrentPreloadedWaveNumber + "...");
+        yield return new WaitForSeconds(2);
+        Debug.LogWarning("Go!");
+        GameManager.Instance.MainCanvas.GamePanel.RoundLabel.text = "Round: " + CurrentPreloadedWaveNumber;
+        ActivateWave();
     }
     
 #if DEBUG_WAVE_STRS && UNITY_EDITOR

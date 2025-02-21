@@ -20,6 +20,7 @@ public class UIGamePanel : UIPanel {
     public Animator HitmarkerAnimator;
     
     [Header("Misc.")]
+    public TMP_Text RoundLabel;
     public TMP_Text Speedometer;
     
     [Header("Input Overlay")]
