@@ -338,15 +338,6 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         // fireCanon();
     }
     
-    private void OnTimeSlowStarted(InputAction.CallbackContext context) {
-        // frontIsVacuum = !frontIsVacuum;
-        Time.timeScale = 0.1f;
-    }
-    
-    private void OnTimeSlowCanceled(InputAction.CallbackContext context) {
-        Time.timeScale = 1f;
-    }
-    
     public void OnPauseGame() {
         SetPlayerControlsEnabled(false);
     }
@@ -497,7 +488,6 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
             inputActions.VertInputs.Enable();
             inputActions.Vacuum.Enable();
             inputActions.Canon.Enable();
-            inputActions.SlowTime.Enable();
             
             inputActions.TurnInputs.performed += TurnInputChanged;
             inputActions.TurnInputs.canceled += TurnInputChanged;
@@ -508,11 +498,12 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
             inputActions.Vacuum.canceled += FireVacuumCanceled;
             inputActions.Canon.started += FireCanonStarted;
             inputActions.Canon.canceled += FireCanonCanceled;
-            inputActions.SlowTime.started += OnTimeSlowStarted;
-            inputActions.SlowTime.canceled += OnTimeSlowCanceled;
             
             
             /** Features not necessarily meant for final gameplay **/
+            inputActions.SlowTime.Enable();
+            inputActions.SlowTime.started += OnTimeSlowStarted;
+            inputActions.SlowTime.canceled += OnTimeSlowCanceled;
             inputActions._ToggleTP.Enable();
             inputActions._ToggleTP.started += On_ToggleThirdPerson;
             inputActions._AddFuel.Enable();
@@ -529,7 +520,6 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
             inputActions.VertInputs.Disable();
             inputActions.Vacuum.Disable();
             inputActions.Canon.Disable();
-            inputActions.SlowTime.Disable();
             
             inputActions.TurnInputs.performed -= TurnInputChanged;
             inputActions.TurnInputs.canceled -= TurnInputChanged;
@@ -540,11 +530,12 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
             inputActions.Vacuum.canceled -= FireVacuumCanceled;
             inputActions.Canon.started -= FireCanonStarted;
             inputActions.Canon.canceled -= FireCanonCanceled;
-            inputActions.SlowTime.started -= OnTimeSlowStarted;
-            inputActions.SlowTime.canceled -= OnTimeSlowCanceled;
             
             
             /** Features not necessarily meant for final gameplay **/
+            inputActions.SlowTime.Disable();
+            inputActions.SlowTime.started -= OnTimeSlowStarted;
+            inputActions.SlowTime.canceled -= OnTimeSlowCanceled;
             inputActions._ToggleTP.Disable();
             inputActions._ToggleTP.started -= On_ToggleThirdPerson;
             inputActions._AddFuel.Disable();
@@ -565,6 +556,15 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     
     
     /*****  Probably temporary stuff  *****/
+    
+    void OnTimeSlowStarted(InputAction.CallbackContext context) {
+        // frontIsVacuum = !frontIsVacuum;
+        GameManager.Instance.SetPreferredTimeScale(0.1f);
+    }
+    
+    void OnTimeSlowCanceled(InputAction.CallbackContext context) {
+        GameManager.Instance.SetPreferredTimeScale(1);
+    }
     
     void On_ToggleThirdPerson(InputAction.CallbackContext context) {
         isInThirdPerson = !isInThirdPerson;

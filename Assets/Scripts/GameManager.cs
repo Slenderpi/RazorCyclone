@@ -62,6 +62,8 @@ public class GameManager : MonoBehaviour {
     
     [HideInInspector]
     public bool gameIsPaused = false;
+    [HideInInspector]
+    public float gameTimeScale = 1;
     
     
     
@@ -159,6 +161,7 @@ public class GameManager : MonoBehaviour {
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
         A_GamePaused?.Invoke();
+        gameTimeScale = Time.timeScale;
         Time.timeScale = 0;
     }
     
@@ -167,7 +170,7 @@ public class GameManager : MonoBehaviour {
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
         A_GameResumed?.Invoke();
-        Time.timeScale = 1;
+        Time.timeScale = gameTimeScale;
     }
     
     public void PauseInputPressed(InputAction.CallbackContext context) {
@@ -237,11 +240,10 @@ public class GameManager : MonoBehaviour {
             if (Cursor.lockState == CursorLockMode.None) {
                 Cursor.lockState = CursorLockMode.Locked;
                 Cursor.visible = false;
-                // UIDEBUGPanel.inst.F1Hint.SetActive(true);
             } else {
                 Cursor.lockState = CursorLockMode.None;
                 Cursor.visible = true;
-                UIDEBUGPanel.inst.F1Hint.SetActive(false);
+                // UIDEBUGPanel.inst.F1Hint.SetActive(false);
             }
         };
         DebugActions.KillPlayer.Enable();
@@ -251,6 +253,13 @@ public class GameManager : MonoBehaviour {
                 CurrentPlayer.TakeDamage(CurrentPlayer.MaxHealth, EDamageType.Any);
             }
         };
+    }
+    
+    public void SetPreferredTimeScale(float scale) {
+        gameTimeScale = scale;
+        if (!gameIsPaused) {
+            Time.timeScale = gameTimeScale;
+        }
     }
     
     public static void D_DrawPoint(Vector3 position, Color c) {
