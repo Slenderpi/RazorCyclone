@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 08be6a6e0a779534a84564a9262189f6, type: 3}
   m_Name: HunterBoidData
   m_EditorClassIdentifier: 
-  MaxSteeringVelocity: 20
-  MaxSteeringForce: 15
+  MaxSteeringVelocity: 40
+  MaxSteeringForce: 60
   WanderLimitRadius: 0.8
   WanderLimitDist: 2
   WanderChangeDist: 0.05
