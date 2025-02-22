@@ -1756,7 +1756,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerSpawnPoint: {fileID: 1765401280}
   lava: {fileID: 458584694}
-  SpawnedEnemies: []
+  EnemiesForRicochet: []
 --- !u!4 &742526804
 Transform:
   m_ObjectHideFlags: 0
