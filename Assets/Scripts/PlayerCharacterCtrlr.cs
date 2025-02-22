@@ -120,9 +120,9 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     [SerializeField]
     float thirdPersonDist = 1.2f;
     bool isInThirdPerson = false;
+    public bool mirrorModelEnabled = true;
     [SerializeField]
     GameObject rearMirrorModel;
-    bool mirrorModelEnabled = true;
     
     // NOTE: Adams stuff
     [HideInInspector]public bool spaceInput = true;
@@ -261,12 +261,8 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         setDesiredRotation(v.x, desiredRotation.y, v.y);
         
         // Auto mirror
-        if (rearMirrorModel.activeSelf) {
-            if (weaponRelativeRot.z < 0)
-                rearMirrorModel.SetActive(false);
-        } else {
-            if (weaponRelativeRot.z >= 0)
-                rearMirrorModel.SetActive(true);
+        if (mirrorModelEnabled) {
+            updateMirrorActive();
         }
         
         /** Input overlay stuff **/
@@ -336,8 +332,11 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         }
         mainCamera.transform.rotation = camtrans.rotation;
         Vector3 flatBackCamTrans = -camtrans.forward;
+        if (flatBackCamTrans.x * flatBackCamTrans.x + flatBackCamTrans.z * flatBackCamTrans.z <= 0.00002f) {
+            flatBackCamTrans -= camtrans.up * Mathf.Sign(flatBackCamTrans.y);
+        }
         flatBackCamTrans.y = 0;
-        rearCamera.transform.SetPositionAndRotation(rearCamPos.position, Quaternion.LookRotation(flatBackCamTrans, camtrans.up));
+        rearCamera.transform.SetPositionAndRotation(rearCamPos.position, Quaternion.LookRotation(flatBackCamTrans));
     }
     
     void setDesiredRotation(float x, float y, float z) {
@@ -558,7 +557,20 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     
     void On_ToggleMirrorInput(InputAction.CallbackContext context) {
         mirrorModelEnabled = !mirrorModelEnabled;
-        rearMirrorModel.SetActive(mirrorModelEnabled);
+        if (!mirrorModelEnabled)
+            rearMirrorModel.SetActive(false);
+        else
+            updateMirrorActive();
+    }
+    
+    void updateMirrorActive() {
+        if (rearMirrorModel.activeSelf) {
+            if (weaponRelativeRot.z < 0)
+                rearMirrorModel.SetActive(false);
+        } else {
+            if (weaponRelativeRot.z >= 0)
+                rearMirrorModel.SetActive(true);
+        }
     }
     
     void On_TakeDamage(InputAction.CallbackContext context) {
