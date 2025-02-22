@@ -8,8 +8,8 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     
     PlayerInputActions.PlayerActions inputActions;
     
-    Vector3 desiredRotation = Vector3.forward;
-    Vector3 prevDesiredRotation = Vector3.forward;
+    Vector3 desiredRotation = Vector3.zero;
+    Vector3 prevDesiredRotation = Vector3.zero;
     Vector3 weaponRelativeRot = Vector3.forward;
     
     // Events
