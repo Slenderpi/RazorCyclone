@@ -66,7 +66,7 @@ public class LaserEnemy : EnemyBase {
     Transform barrelPivot;
     
     // 0 weak | 1 strong | 2 stunned | 3 transition from stunned to weak | 4 no LOS
-    float state = 0;
+    float state = 3;
     float lastStateChangeTime;
     
     // LayerMask laserRayMaskWindup; // 1 = layer to be included in raycast
@@ -88,8 +88,10 @@ public class LaserEnemy : EnemyBase {
     protected override void Init() {
         DealDamageOnTouch = false;
         laserPointParticles = LaserEndpoint.GetComponentsInChildren<ParticleSystem>();
-        setLaserRenderEnabled(true);
-        setLaserPointVFXEnabled(true);
+        if (state > 1) {
+            setLaserRenderEnabled(false);
+            setLaserPointVFXEnabled(false);
+        }
         // laserRayMaskWindup = 1 << LayerMask.NameToLayer("Default");
         // laserRayMaskAttack = laserRayMaskWindup | (1 << LayerMask.NameToLayer("Player"));
         // enterStateCooldown();
