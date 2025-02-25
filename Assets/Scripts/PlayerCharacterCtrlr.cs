@@ -8,8 +8,8 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     
     PlayerInputActions.PlayerActions inputActions;
     
-    Vector3 desiredRotation = Vector3.forward;
-    Vector3 prevDesiredRotation = Vector3.forward;
+    Vector3 desiredRotation = Vector3.zero;
+    Vector3 prevDesiredRotation = Vector3.zero;
     Vector3 weaponRelativeRot = Vector3.forward;
     
     // Events
@@ -24,11 +24,9 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     
     Camera mainCamera;
     Camera rearCamera;
-    // RectTransform mirrorCrosshairRectTrans;
     
     // UI variables
     UIGamePanel _gamePanel;
-    Image mirrorCrosshairImageComp;
     
     bool isVacuumOn;
     [Header("Weapon Settings")]
@@ -55,8 +53,8 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     [Header("Fuel Settings")]
     [SerializeField]
     float MaxFuel = 100f;
-    [SerializeField]
-    float FuelRefillDelay = 3;
+    // [SerializeField]
+    // float FuelRefillDelay = 3;
     [SerializeField]
     float CanonFuelCost = 6f;
     [SerializeField]
@@ -106,7 +104,6 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     float lookVertRot = 0;
     Vector3 aimPoint = Vector3.zero;
     float AimRayMaxDist = 1000f;
-    // float AimRayMinDist = 0f;
     int AimRayLayerMask;
     float desiredRotationUpdateTime = 0;
     Quaternion rotBeforeInputUpdate = Quaternion.identity;
@@ -123,11 +120,9 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     [SerializeField]
     float thirdPersonDist = 1.2f;
     bool isInThirdPerson = false;
+    public bool mirrorModelEnabled = true;
     [SerializeField]
     GameObject rearMirrorModel;
-    bool mirrorModelEnabled = false;
-    // Sprite[] crosshairSprites = new Sprite[200];
-    // int crosshairIndex = 0;
     
     // NOTE: Adams stuff
     [HideInInspector]public bool spaceInput = true;
@@ -137,7 +132,6 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     
     
     void Awake() {
-        // inputActions = GameManager.PInputActions.Player;
         inputActions = new PlayerInputActions().Player;
         _gamePanel = GameManager.Instance.MainCanvas.GamePanel;
         
@@ -161,10 +155,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         vacuumFuelCost = MaxFuel / VacuumFuelTime * Time.fixedDeltaTime;
         CurrentHealth = MaxHealth;
         
-        // _pausePanel.SetActive(false);
-        
         /** Temp stuff **/
-        // crosshairSprites = Resources.LoadAll<Sprite>("White") ;
         rearMirrorModel.SetActive(mirrorModelEnabled);
     }
     
@@ -195,7 +186,6 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
             if (CurrentHealth <= 0) {
                 isVacuumOn = false;
                 vacuumHitbox.SetActive(false);
-                // print("Not enough fuel (" + currentFuel + ") for vacuum (need " + vacuumFuelCost + ").");
                 // signifyOutOfFuel();
             } else {
                 SpendFuel(vacuumFuelCost);
@@ -236,19 +226,17 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         A_FuelSpent?.Invoke(amount, currentFuel / MaxFuel, spentAsHealth);
     }
     
-    IEnumerator StartRefillFuelTimer() {
-        yield return new WaitForSeconds(FuelRefillDelay);
-        AddFuel(MaxFuel);
-    }
+    // IEnumerator StartRefillFuelTimer() {
+    //     yield return new WaitForSeconds(FuelRefillDelay);
+    //     AddFuel(MaxFuel);
+    // }
     
     public void TakeDamage(float amount, EDamageType damageType) {
         if (IsInvincible) return;
         
         CurrentHealth = Mathf.Max(CurrentHealth - amount, 0);
         
-        // print("Player took " + amount + " damage. Health: " + currentHealth);
         if (CurrentHealth == 0) {
-            // Debug.Log("player died womp womp");
             A_PlayerDied?.Invoke();
             gameObject.SetActive(false);
         }
@@ -272,11 +260,13 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         Vector2 v = context.ReadValue<Vector2>();
         setDesiredRotation(v.x, desiredRotation.y, v.y);
         
-        /** Input overlay stuff **/
-        // A_TurnInputChanged?.Invoke(v);
-        _gamePanel.OnTurnInputChanged(v);
+        // Auto mirror
+        if (mirrorModelEnabled) {
+            updateMirrorActive();
+        }
         
-        // print(context.control.name + " - pf: " + context.performed + " | st: " + context.started + " | ca: " + context.canceled);
+        /** Input overlay stuff **/
+        _gamePanel.OnTurnInputChanged(v);
     }
     
     private void VertInputChanged(InputAction.CallbackContext context) {
@@ -284,7 +274,6 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
             setDesiredRotation(desiredRotation.x, context.ReadValue<float>(), desiredRotation.z);
             
             /** Input overlay stuff **/
-            // A_VertInputChanged?.Invoke(context.ReadValue<float>());
             _gamePanel.OnVertInputChanged(context.ReadValue<float>());
         }
     }
@@ -295,7 +284,6 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         _gamePanel.OnFireVacuum(true);
         
         if (CurrentHealth <= 0) {
-            // print("Not enough fuel (" + currentFuel + ") for vacuum (need " + vacuumFuelCost + ").");
             // signifyOutOfFuel();
             return;
         }
@@ -315,11 +303,9 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         _gamePanel.OnFireCanon(true);
         
         if (CurrentHealth <= 0) {
-            // print("Not enough fuel (" + currentFuel + ") for canon (need " + CanonFuelCost + ").");
             // signifyOutOfFuel();
             return;
         }
-        // Time.timeScale = 0.15f;
         if(cannonEnabled){
             fireCanon();
         }
@@ -328,14 +314,6 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     
     private void FireCanonCanceled(InputAction.CallbackContext context) {
         _gamePanel.OnFireCanon(false);
-        
-        // Time.timeScale = 1f;
-        if (currentFuel <= 0) {
-            // print("Not enough fuel (" + currentFuel + ") for canon (need " + CanonFuelCost + ").");
-            // signifyOutOfFuel();
-            return;
-        }
-        // fireCanon();
     }
     
     public void OnPauseGame() {
@@ -353,8 +331,12 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
             mainCamera.transform.position = camtrans.position - camtrans.forward * thirdPersonDist;
         }
         mainCamera.transform.rotation = camtrans.rotation;
-        rearCamera.transform.position = rearCamPos.position;
-        rearCamera.transform.rotation = Quaternion.LookRotation(-camtrans.forward, camtrans.up);
+        Vector3 flatBackCamTrans = -camtrans.forward;
+        if (flatBackCamTrans.x * flatBackCamTrans.x + flatBackCamTrans.z * flatBackCamTrans.z <= 0.00002f) {
+            flatBackCamTrans -= camtrans.up * Mathf.Sign(flatBackCamTrans.y);
+        }
+        flatBackCamTrans.y = 0;
+        rearCamera.transform.SetPositionAndRotation(rearCamPos.position, Quaternion.LookRotation(flatBackCamTrans));
     }
     
     void setDesiredRotation(float x, float y, float z) {
@@ -382,7 +364,6 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         Vector3 projVel = (aimPoint - canonProjSpawnTrans.position).normalized * CanonProjSpeed + rb.velocity;
         ProjectileBase proj = Instantiate(projectilePrefab, canonProjSpawnTrans.position, Quaternion.LookRotation(projVel));
         proj.damage = CanonDamage;
-        // proj.rb.AddForce(projVel, ForceMode.VelocityChange);
         proj.rb.velocity = projVel;
         SpendFuel(CanonFuelCost);
         GameManager.Instance.Audio2D.PlayClipSFX(AudioPlayer2D.EClipSFX.Weapon_CanonShot);
@@ -475,7 +456,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     void OnDestroy() {
         /* A GameObject is only truly destroyed the frame after Destroy() is called on it.
          * OnDestroy() is called right before the object is destroyed. However, this means
-         * OnDestroy() is still only caleld the frame right after.
+         * OnDestroy() is still only called the frame right after.
          * If you want to do something at the moment the player (or any game object) gets
          * destroyed, do that code in OnDisable() instead.
          */
@@ -558,7 +539,6 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     /*****  Probably temporary stuff  *****/
     
     void OnTimeSlowStarted(InputAction.CallbackContext context) {
-        // frontIsVacuum = !frontIsVacuum;
         GameManager.Instance.SetPreferredTimeScale(0.1f);
     }
     
@@ -577,7 +557,20 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     
     void On_ToggleMirrorInput(InputAction.CallbackContext context) {
         mirrorModelEnabled = !mirrorModelEnabled;
-        rearMirrorModel.SetActive(mirrorModelEnabled);
+        if (!mirrorModelEnabled)
+            rearMirrorModel.SetActive(false);
+        else
+            updateMirrorActive();
+    }
+    
+    void updateMirrorActive() {
+        if (rearMirrorModel.activeSelf) {
+            if (weaponRelativeRot.z < 0)
+                rearMirrorModel.SetActive(false);
+        } else {
+            if (weaponRelativeRot.z >= 0)
+                rearMirrorModel.SetActive(true);
+        }
     }
     
     void On_TakeDamage(InputAction.CallbackContext context) {
@@ -591,9 +584,5 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         print("Healing player for " + HealAmount + " health.");
         HealHealth(HealAmount);
     }
-    
-    // public void OnSinkBelowLava() {
-    //     TakeDamage(GameManager.Instance.currentSceneRunner.lava.LavaDamage, EDamageType.Any);
-    // }
     
 }

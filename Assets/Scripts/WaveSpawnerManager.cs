@@ -286,6 +286,7 @@ public class WaveSpawnerManager : MonoBehaviour {
     IEnumerator delaySpawnNextWave() {
         PreloadWave(CurrentWaveNumber + 1);
         yield return new WaitForSeconds(2);
+        GameManager.CurrentPlayer.HealHealth(GameManager.CurrentPlayer.MaxHealth);
         Debug.LogWarning("Get ready for round " + CurrentPreloadedWaveNumber + "...");
         yield return new WaitForSeconds(2);
         Debug.LogWarning("Go!");
