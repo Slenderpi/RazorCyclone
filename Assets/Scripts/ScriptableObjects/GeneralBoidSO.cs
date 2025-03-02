@@ -14,6 +14,8 @@ public class GeneralBoidSO : ScriptableObject {
     public float WanderLimitDist = 0.5f;
     [Tooltip("Maximum distance in an axis to step the wander point.")]
     public float WanderChangeDist = 0.15f;
+    [Tooltip("Maximum steering force specifically for wander.")]
+    public float MaxWanderForce = 5;
     [Tooltip("Minimum time required to pass until a new wander point is calculated. Very low values could lead to jittery movement, depending on the other wander parameters.")]
     public float WanderMinimumDelay = 0;
     [Tooltip(@"Determines the number of raycasts to perform:

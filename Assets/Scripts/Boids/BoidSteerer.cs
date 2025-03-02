@@ -66,8 +66,8 @@ public class BoidSteerer {
     /// <param name="wanderLimitRadius"></param>
     /// <param name="wanderLimitDist"></param>
     /// <returns></returns>
-    public static Vector3 Wander(Vector3 pos, Vector3 velocity, Vector3 wanderPoint, float wanderLimitDist, float maxSteeringVelocity, float maxSteeringForce) {
-        return Seek(pos, pos + wanderLimitDist * velocity.normalized + wanderPoint, velocity, maxSteeringVelocity, maxSteeringForce);
+    public static Vector3 Wander(Vector3 pos, Vector3 velocity, Vector3 wanderPoint, float wanderLimitDist, float maxSteeringVelocity, float maxWanderForce) {
+        return Seek(pos, pos + wanderLimitDist * velocity.normalized + wanderPoint, velocity, maxSteeringVelocity, maxWanderForce);
     }
     
     public static Vector3 Wander(Vector3 pos, Vector3 velocity, Vector3 wanderPoint, GeneralBoidSO boidData) {
@@ -75,7 +75,7 @@ public class BoidSteerer {
             pos, velocity, wanderPoint,
             boidData.WanderLimitDist,
             boidData.MaxSteeringVelocity,
-            boidData.MaxSteeringForce
+            boidData.MaxWanderForce
         );
     }
     
