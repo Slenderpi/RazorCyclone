@@ -9,8 +9,12 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     PlayerInputActions.PlayerActions inputActions;
     
     Vector3 desiredRotation = Vector3.zero;
-    Vector3 prevDesiredRotation = Vector3.zero;
     Vector3 weaponRelativeRot = Vector3.forward;
+    Vector3 prevWeaponRelRot = Vector3.zero;
+    int currentBikeSpins = 0;
+    int bikeSpinProgress = 0;
+    Vector2 prevBikeFaceDir = Vector2.up; // For spinning the bike
+    // int bikeRotSpinDir = 0; // For spinning the bike (determines CW or CCW)
     
     // Events
     public event Action<float, float> A_FuelAdded; // float changeAmnt, float fuelPerc
@@ -18,6 +22,9 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     public event Action<float> A_PlayerTakenDamage; // float amount
     public event Action<float> A_PlayerHealed; // float amount
     public event Action A_PlayerDied;
+    public event Action<int> A_SpinProgressed; // int progress
+    public event Action<int> A_SpinProgressReset; // int progressBeforeReset
+    public event Action<int> A_SpinCompleted; // int newSpinCount
     
     [HideInInspector]
     public float mouseSensitivity;
@@ -258,7 +265,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     
     private void TurnInputChanged(InputAction.CallbackContext context) {
         Vector2 v = context.ReadValue<Vector2>();
-        setDesiredRotation(v.x, desiredRotation.y, v.y);
+        updateBikeTurning(v.x, desiredRotation.y, v.y);
         
         // Auto mirror
         if (mirrorModelEnabled) {
@@ -271,7 +278,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     
     private void VertInputChanged(InputAction.CallbackContext context) {
         if(spaceInput){
-            setDesiredRotation(desiredRotation.x, context.ReadValue<float>(), desiredRotation.z);
+            updateBikeTurning(desiredRotation.x, context.ReadValue<float>(), desiredRotation.z);
             
             /** Input overlay stuff **/
             _gamePanel.OnVertInputChanged(context.ReadValue<float>());
@@ -339,23 +346,105 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         rearCamera.transform.SetPositionAndRotation(rearCamPos.position, Quaternion.LookRotation(flatBackCamTrans));
     }
     
-    void setDesiredRotation(float x, float y, float z) {
+    void updateBikeTurning(float x, float y, float z) {
         desiredRotationUpdateTime = Time.time;
         rotBeforeInputUpdate = charPivot.localRotation;
-        
+        setDesiredAndWepRelRots(x, y, z);
+    }
+    
+    void setDesiredAndWepRelRots(float x, float y, float z) {
+        prevWeaponRelRot = weaponRelativeRot;
         desiredRotation.x = x;
         desiredRotation.y = y;
         desiredRotation.z = z;
-        if (desiredRotation.magnitude > 0.0001f) {
-            prevDesiredRotation = desiredRotation;
-            Vector3 prevWpRelRot = weaponRelativeRot;
+        if (desiredRotation.sqrMagnitude > 0.0001f) {
             weaponRelativeRot = desiredRotation.normalized;
-            if (prevWpRelRot != weaponRelativeRot) {
+            if (prevWeaponRelRot != weaponRelativeRot) {
+                checkBikeSpinning();
                 AudioPlayer2D.Instance.PlayClipSFX(AudioPlayer2D.EClipSFX.Plr_RotateWoosh);
             }
         } else {
-            weaponRelativeRot = prevDesiredRotation.normalized;
+            weaponRelativeRot = prevWeaponRelRot;
         }
+    }
+    
+    void checkBikeSpinning() {
+        // print("wrr: " + weaponRelativeRot);
+        Vector2 currDir = new(weaponRelativeRot.x, weaponRelativeRot.z);
+        currDir = currDir.normalized;
+        if (currDir.x * currDir.x + currDir.y * currDir.y > 1) {
+            // print("DIAGONAL detected. currDir: " + currDir);
+            return; // Ignore diagonal directions
+        }
+        if (prevBikeFaceDir.x == currDir.x && prevBikeFaceDir.y == currDir.y) {
+            // print("SAME dir. currDir: " + currDir);
+            // prevBikeFaceDir.x = currDir.x;
+            // prevBikeFaceDir.y = currDir.y;
+            return; // Ignore if dir doesn't change
+        }
+        // print("Passed validations. prevDir: " + prevBikeFaceDir + "; currDir: " + currDir);
+        rotVec2ccw90(ref currDir);
+        int dot = Mathf.RoundToInt(Vector2.Dot(prevBikeFaceDir, currDir)); // 1 is CW, -1 is CCW, 0 is 180 fail
+        // if (bikeRotSpinDir == 0) { // RESET STATE
+        if (bikeSpinProgress == 0) { // RESET STATE
+            // If currdir cw, go cw
+            // else if ccw, go ccw
+            // else that means it's 180 back. Reset spin progress if possible
+            if (prevBikeFaceDir == Vector2.up) {
+                if (dot != 0) {
+                    // bikeRotSpinDir = dot;
+                    // bikeSpinProgressed();
+                    bikeSpinProgress = dot;
+                    A_SpinProgressed?.Invoke(bikeSpinProgress);
+                } else if (bikeSpinProgress > 0) {
+                    bikeSpinProgressReset();
+                }
+            }
+        } else {
+            // if (bikeRotSpinDir == dot) { // Checks if the rotation matches spin direction
+            if (Math.Sign(bikeSpinProgress) == dot) { // Checks if the rotation matches spin direction
+                bikeSpinProgressed();
+            } else {
+                bikeSpinProgressReset();
+            }
+        }
+        prevBikeFaceDir.x = currDir.y;
+        prevBikeFaceDir.y = -currDir.x;
+    }
+    
+    /// <summary>
+    /// Rotates a Vector2 90 degrees counter-clockwise. Pass the vector by reference:
+    /// <code>rotVec2ccw90(ref myVector);</code>
+    /// </summary>
+    /// <param name="v"></param>
+    void rotVec2ccw90(ref Vector2 v) {
+        (v.x, v.y) = (-v.y, v.x);
+    }
+
+    void bikeSpinProgressReset() {
+        A_SpinProgressReset?.Invoke(bikeSpinProgress);
+        bikeSpinProgress = 0;
+        // bikeRotSpinDir = 0;
+        // Debug.LogError("Spin progress reset.");
+    }
+    
+    void bikeSpinProgressComplete() {
+        bikeSpinProgress = 0;
+        // bikeRotSpinDir = 0;
+        A_SpinCompleted?.Invoke(++currentBikeSpins);
+        // Debug.LogWarning("Spin complete! Spins: " + currentBikeSpins);
+    }
+    
+    void bikeSpinProgressed() {
+        bikeSpinProgress += bikeSpinProgress > 0 ? 1 : -1;
+        // print("Spin progressed to: " + bikeSpinProgress + "; Direction: " + (bikeRotSpinDir == 1 ? "clockwise" : "counter-clockwise"));
+        if (bikeSpinProgress * bikeSpinProgress == 4 * 4)
+            bikeSpinProgressComplete();
+        else
+            A_SpinProgressed?.Invoke(bikeSpinProgress);
+        // if (++bikeSpinProgress == 4) {
+        //     bikeSpinProgressComplete();
+        // }
     }
     
     void fireCanon() {

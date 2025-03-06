@@ -1,3 +1,4 @@
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -18,6 +19,17 @@ public class UIGamePanel : UIPanel {
     public RectTransform MainVacuumCrosshair;
     public RectTransform MainCanonCrosshair;
     public Animator HitmarkerAnimator;
+    
+    [Header("Bike Spinning")]
+    public Material SpinTileMatDefault;
+    public Material SpinTileMatProgress;
+    // public Material SpinTileMat;
+    public MeshRenderer TileRendW;
+    public MeshRenderer TileRendA;
+    public MeshRenderer TileRendS;
+    public MeshRenderer TileRendD;
+    public TMP_Text SpinCounterText;
+    public TMP_Text SpinCounterText_1;
     
     [Header("Misc.")]
     public TMP_Text RoundLabel;
@@ -126,6 +138,40 @@ public class UIGamePanel : UIPanel {
         updateHealthUI(plr.CurrentHealth, plr.MaxHealth);
     }
     
+    void onSpinProgressed(int progress) {
+        switch (progress) {
+        case 1:
+            TileRendW.material = SpinTileMatProgress;
+            TileRendD.material = SpinTileMatProgress;
+            break;
+        case 2:
+            TileRendS.material = SpinTileMatProgress;
+            break;
+        case 3:
+            TileRendA.material = SpinTileMatProgress;
+            break;
+        case -1:
+            TileRendW.material = SpinTileMatProgress;
+            TileRendA.material = SpinTileMatProgress;
+            break;
+        case -2:
+            TileRendS.material = SpinTileMatProgress;
+            break;
+        case -3:
+            TileRendD.material = SpinTileMatProgress;
+            break;
+        }
+    }
+    
+    void onSpinProgressReset(int progressBeforeReset) {
+        resetSpinTileColors();
+    }
+    
+    void onSpinCompleted(int newSpinCount) {
+        resetSpinTileColors();
+        setSpinCounterText(newSpinCount);
+    }
+    
     void updateHealthUI(float currH, float maxH) {
         HealthSlider.value = currH / maxH;
         HealthText.text = Mathf.CeilToInt(currH).ToString();
@@ -149,6 +195,18 @@ public class UIGamePanel : UIPanel {
     //     }
     // }
     
+    void resetSpinTileColors() {
+        TileRendW.material = SpinTileMatDefault;
+        TileRendA.material = SpinTileMatDefault;
+        TileRendS.material = SpinTileMatDefault;
+        TileRendD.material = SpinTileMatDefault;
+    }
+    
+    void setSpinCounterText(int spins) {
+        SpinCounterText.text = spins.ToString();
+        SpinCounterText_1.text = SpinCounterText.text;
+    }
+    
     public override void OnGameResumed() {
         // SetActive(true);
     }
@@ -162,14 +220,21 @@ public class UIGamePanel : UIPanel {
         plr.A_FuelSpent += OnFuelSpent;
         plr.A_PlayerTakenDamage += OnDamageTaken;
         plr.A_PlayerHealed += OnPlayerHealed;
+        plr.A_SpinProgressed += onSpinProgressed;
+        plr.A_SpinProgressReset += onSpinProgressReset;
+        plr.A_SpinCompleted += onSpinCompleted;
         ResetUIElements();
     }
     
     public override void OnPlayerDestroying(PlayerCharacterCtrlr plr) {
+        // NOTE: Not sure if these unsubscriptions are necessary since the player's getting destroyed anyway
         plr.A_FuelAdded -= OnFuelAdded;
         plr.A_FuelSpent -= OnFuelSpent;
         plr.A_PlayerTakenDamage -= OnDamageTaken;
         plr.A_PlayerHealed -= OnPlayerHealed;
+        plr.A_SpinProgressed -= onSpinProgressed;
+        plr.A_SpinProgressReset -= onSpinProgressReset;
+        plr.A_SpinCompleted -= onSpinCompleted;
     }
     
     public void ResetUIElements() {
@@ -180,6 +245,8 @@ public class UIGamePanel : UIPanel {
         OnFireCanon(false);
         HealthSlider.value = 100;
         HealthText.text = "100";
+        resetSpinTileColors();
+        setSpinCounterText(0);
         if (gameObject.activeSelf) FuelOutlineAnimator.SetTrigger("Reset");
     }
 
