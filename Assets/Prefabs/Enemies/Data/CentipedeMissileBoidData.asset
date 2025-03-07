@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7335dd23559ff5243819155e94b642b0, type: 3}
   m_Name: CentipedeMissileBoidData
   m_EditorClassIdentifier: 
-  MaxSteeringVelocity: 15
-  MaxSteeringForce: 10
+  MaxSteeringVelocity: 50
+  MaxSteeringForce: 250
   WanderLimitRadius: 0.5
   WanderLimitDist: 0.5
   WanderChangeDist: 0.15

@@ -437,10 +437,10 @@ MonoBehaviour:
   etypeid: 8
   MaxHealth: 50
   health: 0
-  Damage: 10
+  Damage: 25
   AttackDelay: 1
   DealDamageOnTouch: 1
-  CanGetVacuumKilled: 1
+  CanGetVacuumKilled: 0
   AffectedByLava: 1
   RicochetCanon: 0
   ConsiderForRicochet: 1
