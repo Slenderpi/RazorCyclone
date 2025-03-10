@@ -1103,7 +1103,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4272552222902198248, guid: 80d58e45e87d74c40b38558360b6a028, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5207972207715144811, guid: 80d58e45e87d74c40b38558360b6a028, type: 3}
       propertyPath: invincible
@@ -1410,7 +1410,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4272552222902198248, guid: 80d58e45e87d74c40b38558360b6a028, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5207972207715144811, guid: 80d58e45e87d74c40b38558360b6a028, type: 3}
       propertyPath: invincible
@@ -1963,7 +1963,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &924986953
 Transform:
   m_ObjectHideFlags: 0
@@ -4224,7 +4224,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4272552222902198248, guid: 80d58e45e87d74c40b38558360b6a028, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5207972207715144811, guid: 80d58e45e87d74c40b38558360b6a028, type: 3}
       propertyPath: invincible
@@ -4499,7 +4499,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4020569799350787883, guid: 46d12bfbb5907754c99c404dde16b028, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8262409154726825091, guid: 46d12bfbb5907754c99c404dde16b028, type: 3}
       propertyPath: m_RootOrder

@@ -315,7 +315,7 @@ MonoBehaviour:
   DealDamageOnTouch: 0
   CanGetVacuumKilled: 1
   AffectedByLava: 0
-  RicochetCanon: 0
+  RicochetCanon: 1
   ConsiderForRicochet: 1
   TransformForRicochetToAimAt: {fileID: 3289913355028547861}
   LavaSubmergeOffset: 1

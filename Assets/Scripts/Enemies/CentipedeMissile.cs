@@ -22,7 +22,7 @@ public class CentipedeMissile : EnemyBase {
     
     
     protected override void Init() {
-        ConsiderForRicochet = false;
+        // ConsiderForRicochet = false;
         boid.enabled = false;
         drag = rb.drag;
         rb.drag = ArmingDrag;

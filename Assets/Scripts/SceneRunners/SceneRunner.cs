@@ -55,8 +55,8 @@ public class SceneRunner : MonoBehaviour {
     }
     
     public virtual void AddEnemyToList(EnemyBase en) {
-        if (en.ConsiderForRicochet)
-            EnemiesForRicochet.Add(en);
+        // if (en.ConsiderForRicochet)
+        EnemiesForRicochet.Add(en);
     }
     
     public virtual void RemoveEnemyFromList(EnemyBase en) {

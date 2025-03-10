@@ -125,6 +125,7 @@ public class ProjectileBase : MonoBehaviour {
                 if (enemy.RicochetCanon && ricRemain > 0)
                     OnRicochetEnemy(enemy);
                 else {
+                    if (!enemy.RicochetCanon) print("No ricochet for '" + enemy.gameObject.name + "'");
                     OnHitEnemy(enemy);
                     Destroy(gameObject);
                 }
