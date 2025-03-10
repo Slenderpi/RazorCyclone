@@ -22,6 +22,7 @@ public class UIGamePanel : UIPanel {
     
     [Header("Bike Spinning")]
     public Material SpinTileMatDefault;
+    public Material SpinTileMatNextHint;
     public Material SpinTileMatProgress;
     // public Material SpinTileMat;
     public MeshRenderer TileRendW;
@@ -141,24 +142,28 @@ public class UIGamePanel : UIPanel {
     void onSpinProgressed(int progress) {
         switch (progress) {
         case 1:
-            TileRendW.material = SpinTileMatProgress;
             TileRendD.material = SpinTileMatProgress;
+            TileRendS.material = SpinTileMatNextHint;
             break;
         case 2:
             TileRendS.material = SpinTileMatProgress;
+            TileRendA.material = SpinTileMatNextHint;
             break;
         case 3:
             TileRendA.material = SpinTileMatProgress;
+            TileRendW.material = SpinTileMatNextHint;
             break;
         case -1:
-            TileRendW.material = SpinTileMatProgress;
             TileRendA.material = SpinTileMatProgress;
+            TileRendS.material = SpinTileMatNextHint;
             break;
         case -2:
             TileRendS.material = SpinTileMatProgress;
+            TileRendD.material = SpinTileMatNextHint;
             break;
         case -3:
             TileRendD.material = SpinTileMatProgress;
+            TileRendW.material = SpinTileMatNextHint;
             break;
         }
     }
@@ -169,6 +174,10 @@ public class UIGamePanel : UIPanel {
     
     void onSpinCompleted(int newSpinCount) {
         resetSpinTileColors();
+        setSpinCounterText(newSpinCount);
+    }
+    
+    void onSpinsSpent(int prevSpinCount, int newSpinCount) {
         setSpinCounterText(newSpinCount);
     }
     
@@ -223,7 +232,8 @@ public class UIGamePanel : UIPanel {
         plr.A_SpinProgressed += onSpinProgressed;
         plr.A_SpinProgressReset += onSpinProgressReset;
         plr.A_SpinCompleted += onSpinCompleted;
-        ResetUIElements();
+        plr.A_SpinsSpent += onSpinsSpent;
+        ResetUIElements(plr);
     }
     
     public override void OnPlayerDestroying(PlayerCharacterCtrlr plr) {
@@ -235,9 +245,10 @@ public class UIGamePanel : UIPanel {
         plr.A_SpinProgressed -= onSpinProgressed;
         plr.A_SpinProgressReset -= onSpinProgressReset;
         plr.A_SpinCompleted -= onSpinCompleted;
+        plr.A_SpinsSpent -= onSpinsSpent;
     }
     
-    public void ResetUIElements() {
+    public void ResetUIElements(PlayerCharacterCtrlr plr) {
         OnFuelAdded(0, 1);
         OnTurnInputChanged(Vector2.zero);
         OnVertInputChanged(0);
@@ -246,7 +257,7 @@ public class UIGamePanel : UIPanel {
         HealthSlider.value = 100;
         HealthText.text = "100";
         resetSpinTileColors();
-        setSpinCounterText(0);
+        setSpinCounterText(plr.currentBikeSpins);
         if (gameObject.activeSelf) FuelOutlineAnimator.SetTrigger("Reset");
     }
 

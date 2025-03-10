@@ -18,8 +18,9 @@ public class EnemyBase : MonoBehaviour {
     public bool CanGetVacuumKilled = true;
     [Tooltip("If enabled, this enemy will call its OnSubmerged() method when it detects that it is below lava.")]
     public bool AffectedByLava = true;
-    [Tooltip("If enabled, projectiles will ricochet when they hit this enemy.\n\nNote: this variable does not determine if this enemy can be targeted by ricochet aimbot, that is done by an internal variable.")]
-    public bool RicochetCanon = false;
+    // [Tooltip("If enabled, projectiles will ricochet when they hit this enemy.\n\nNote: this variable does not determine if this enemy can be targeted by ricochet aimbot, that is done by an internal variable.")]
+    [HideInInspector]
+    public bool RicochetCanon = true;
     [HideInInspector]
     // If enabled, ricochets can target this enemy. Note: if an enemy sets this value to false in its LateInit() override or earlier, the enemy will not be added to the SceneRunner's list.
     public bool ConsiderForRicochet = true;

@@ -11,9 +11,11 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     Vector3 desiredRotation = Vector3.zero;
     Vector3 weaponRelativeRot = Vector3.forward;
     Vector3 prevWeaponRelRot = Vector3.zero;
-    int currentBikeSpins = 0;
+    [HideInInspector]
+    public int currentBikeSpins = 1;
     int bikeSpinProgress = 0;
     Vector2 prevBikeFaceDir = Vector2.up; // For spinning the bike
+    int ricochetBaseVal = 1;
     // int bikeRotSpinDir = 0; // For spinning the bike (determines CW or CCW)
     
     // Events
@@ -25,6 +27,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     public event Action<int> A_SpinProgressed; // int progress
     public event Action<int> A_SpinProgressReset; // int progressBeforeReset
     public event Action<int> A_SpinCompleted; // int newSpinCount
+    public event Action<int, int> A_SpinsSpent; // int prevSpinCount, int newSpinCount
     
     [HideInInspector]
     public float mouseSensitivity;
@@ -361,6 +364,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
             weaponRelativeRot = desiredRotation.normalized;
             if (prevWeaponRelRot != weaponRelativeRot) {
                 checkBikeSpinning();
+                updateSpecialShotBonus();
                 AudioPlayer2D.Instance.PlayClipSFX(AudioPlayer2D.EClipSFX.Plr_RotateWoosh);
             }
         } else {
@@ -371,17 +375,14 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     void checkBikeSpinning() {
         // print("wrr: " + weaponRelativeRot);
         Vector2 currDir = new(weaponRelativeRot.x, weaponRelativeRot.z);
-        currDir = currDir.normalized;
-        if (currDir.x * currDir.x + currDir.y * currDir.y > 1) {
+        if (Mathf.Abs(currDir.x) > 0.1f && Mathf.Abs(currDir.y) > 0.1f) {
             // print("DIAGONAL detected. currDir: " + currDir);
             return; // Ignore diagonal directions
         }
-        if (prevBikeFaceDir.x == currDir.x && prevBikeFaceDir.y == currDir.y) {
-            // print("SAME dir. currDir: " + currDir);
-            // prevBikeFaceDir.x = currDir.x;
-            // prevBikeFaceDir.y = currDir.y;
-            return; // Ignore if dir doesn't change
-        }
+        currDir = currDir.normalized;
+        if (prevBikeFaceDir.x == currDir.x && prevBikeFaceDir.y == currDir.y)
+            // This case can occur when, for example, pressing WD, holding W and releasing D, then pressing D again
+            return;
         // print("Passed validations. prevDir: " + prevBikeFaceDir + "; currDir: " + currDir);
         rotVec2ccw90(ref currDir);
         int dot = Mathf.RoundToInt(Vector2.Dot(prevBikeFaceDir, currDir)); // 1 is CW, -1 is CCW, 0 is 180 fail
@@ -412,6 +413,25 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         prevBikeFaceDir.y = -currDir.x;
     }
     
+    void updateSpecialShotBonus() {
+        int newRicBaseVal = 0;
+        if (weaponRelativeRot.x == 0 && weaponRelativeRot.y == 0 && weaponRelativeRot.z == -1)
+            newRicBaseVal = 0;
+        else {
+            // +1 if non-zero y
+            newRicBaseVal += Mathf.Abs(weaponRelativeRot.y) > 0.1f ? 1 : 0;
+            // +1 if non-zero x
+            newRicBaseVal += Mathf.Abs(weaponRelativeRot.x) > 0.1f ? 1 : 0;;
+            // +1 if 0 z
+            if (Mathf.Abs(weaponRelativeRot.z) <= 0.001f)
+                newRicBaseVal++;
+        }
+        if (newRicBaseVal != ricochetBaseVal) {
+            ricochetBaseVal = newRicBaseVal;
+            print("Base ricochet: " + ricochetBaseVal);
+        }
+    }
+    
     /// <summary>
     /// Rotates a Vector2 90 degrees counter-clockwise. Pass the vector by reference:
     /// <code>rotVec2ccw90(ref myVector);</code>
@@ -420,7 +440,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     void rotVec2ccw90(ref Vector2 v) {
         (v.x, v.y) = (-v.y, v.x);
     }
-
+    
     void bikeSpinProgressReset() {
         A_SpinProgressReset?.Invoke(bikeSpinProgress);
         bikeSpinProgress = 0;
@@ -451,6 +471,14 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         updateRayCastedAimPoint();
         rb.AddForce((charModel.rotation * weaponRelativeRot).normalized * CanonForce * 100000);
         Vector3 projVel = (aimPoint - canonProjSpawnTrans.position).normalized * CanonProjSpeed + rb.velocity;
+        if (ricochetBaseVal > 0) { // Only spend spins of base val is non-zero
+            projectilePrefab.MaxRicochet = ricochetBaseVal * currentBikeSpins;
+            print($"Ricochets: {projectilePrefab.MaxRicochet} ({ricochetBaseVal} * {currentBikeSpins})");
+            A_SpinsSpent?.Invoke(currentBikeSpins, 1);
+            currentBikeSpins = 1;
+        } else {
+            projectilePrefab.MaxRicochet = 0;
+        }
         ProjectileBase proj = Instantiate(projectilePrefab, canonProjSpawnTrans.position, Quaternion.LookRotation(projVel));
         proj.damage = CanonDamage;
         proj.rb.velocity = projVel;
