@@ -7,20 +7,21 @@ using UnityEngine;
 public class ProjectileBase : MonoBehaviour {
     
     [Header("Projectile Config")]
+    public ProjectileSO ProjConfig;
     [HideInInspector]
     public float damage;
-    [Tooltip("The radius to use when doing multiple raycasts for collision detection.\n\nNOTE: if set to a value less than 0.1, this projectile will only check directly in front of it once.")]
-    public float ProjectileRadius = 0.2f;
-    [Tooltip("Maximum lifetime in seconds of this projectile to prevent projectiles that go into the void from living too long.")]
-    public float MaxLifetime = 10f;
+    // [Tooltip("The radius to use when doing multiple raycasts for collision detection.\n\nNOTE: if set to a value less than 0.1, this projectile will only check directly in front of it once.")]
+    // public float ProjectileRadius = 0.2f;
+    // [Tooltip("Maximum lifetime in seconds of this projectile to prevent projectiles that go into the void from living too long.")]
+    // public float MaxLifetime = 10f;
     [Tooltip("Maximum number of times this projectile can ricochet.\nA value of 0 means NO ricochet.")]
     public int MaxRicochet = 1;
     int ricRemain;
-    [Tooltip("VFX for projectile impact.")]
-    public GameObject ImpactEffect;
+    // [Tooltip("VFX for projectile impact.")]
+    // public GameObject ImpactEffect;
     protected GameObject impeffect; // Pre-spawned impact effect
-    [Tooltip("VFX for ricochet.")]
-    public GameObject RicochetEffect;
+    // [Tooltip("VFX for ricochet.")]
+    // public GameObject RicochetEffect;
     protected GameObject[] riceffects;
     
     [HideInInspector]
@@ -67,11 +68,11 @@ public class ProjectileBase : MonoBehaviour {
 #endif
         float dist = rb.velocity.magnitude * Time.fixedDeltaTime;
         raycastCollision(Vector3.zero, dist);
-        if (ProjectileRadius >= 0.1f) {
-            raycastCollision(transform.right * ProjectileRadius, dist);
-            raycastCollision(-transform.right * ProjectileRadius, dist);
-            raycastCollision(transform.up * ProjectileRadius, dist);
-            raycastCollision(-transform.up * ProjectileRadius, dist);
+        if (ProjConfig.ProjectileRadius >= 0.1f) {
+            raycastCollision(transform.right * ProjConfig.ProjectileRadius, dist);
+            raycastCollision(-transform.right * ProjConfig.ProjectileRadius, dist);
+            raycastCollision(transform.up * ProjConfig.ProjectileRadius, dist);
+            raycastCollision(-transform.up * ProjConfig.ProjectileRadius, dist);
         }
         if (closestHit) {
             onHitSomething(closestHit);
@@ -125,7 +126,7 @@ public class ProjectileBase : MonoBehaviour {
                 if (enemy.RicochetCanon && ricRemain > 0)
                     OnRicochetEnemy(enemy);
                 else {
-                    if (!enemy.RicochetCanon) print("No ricochet for '" + enemy.gameObject.name + "'");
+                    // if (!enemy.RicochetCanon) print("No ricochet for '" + enemy.gameObject.name + "'");
                     OnHitEnemy(enemy);
                     Destroy(gameObject);
                 }
@@ -206,16 +207,16 @@ public class ProjectileBase : MonoBehaviour {
     }
     
     IEnumerator ProjectileLifetime() {
-        yield return new WaitForSeconds(MaxLifetime);
+        yield return new WaitForSeconds(ProjConfig.MaxLifetime);
         OnProjectileLifetimeExpired();
     }
     
     void poolVFX() {
-        impeffect = Instantiate(ImpactEffect);
+        impeffect = Instantiate(ProjConfig.ImpactEffect);
         impeffect.SetActive(false);
         riceffects = new GameObject[MaxRicochet];
         for (int i = 0; i < MaxRicochet; i++) {
-            riceffects[i] = Instantiate(RicochetEffect);
+            riceffects[i] = Instantiate(ProjConfig.RicochetEffect);
             riceffects[i].SetActive(false);
         }
     }

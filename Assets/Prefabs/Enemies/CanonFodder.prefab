@@ -260,7 +260,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7161423610750410142}
-  - component: {fileID: 4682280902325755084}
+  - component: {fileID: 382276047645554307}
   - component: {fileID: 8082838698744000531}
   - component: {fileID: -671571568929607629}
   - component: {fileID: 9113617427949065013}
@@ -287,7 +287,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4682280902325755084
+--- !u!114 &382276047645554307
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -296,26 +296,20 @@ MonoBehaviour:
   m_GameObject: {fileID: 3890492832594851018}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 09129ffe74e62e343a7c6ef35ff55517, type: 3}
+  m_Script: {fileID: 11500000, guid: ab6f7e57fa0e5e24aa0bea1e56b0abc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   etypeid: 1
+  EnData: {fileID: 11400000, guid: c89375f262addc940997082d0c32fcf1, type: 2}
+  IsEmpowered: 0
+  TransformForRicochetToAimAt: {fileID: 0}
   MaxHealth: 50
   health: 0
-  Damage: 0
-  AttackDelay: 1
-  DealDamageOnTouch: 0
-  CanGetVacuumKilled: 1
-  AffectedByLava: 1
-  RicochetCanon: 1
-  ConsiderForRicochet: 1
-  TransformForRicochetToAimAt: {fileID: 0}
-  LavaSubmergeOffset: 1
-  FuelAmount: 100
-  rb: {fileID: 9113617427949065013}
+  rb: {fileID: 0}
   boid: {fileID: 0}
   suckable: {fileID: 0}
-  fuelPickupPrefab: {fileID: 5163220815717078053, guid: bb72521b10fb34d7bbbed5f6f77687b4, type: 3}
+  RicochetCanon: 1
+  ConsiderForRicochet: 1
   invincible: 0
 --- !u!114 &8082838698744000531
 MonoBehaviour:

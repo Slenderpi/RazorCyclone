@@ -9859,28 +9859,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   etypeid: 0
+  EnData: {fileID: 11400000, guid: 52c1642a7706cf64da79d8ccf4fb58a8, type: 2}
+  IsEmpowered: 0
+  TransformForRicochetToAimAt: {fileID: 0}
   MaxHealth: 50
   health: 0
-  Damage: 10
-  AttackDelay: 1
-  DealDamageOnTouch: 1
-  CanGetVacuumKilled: 1
-  AffectedByLava: 1
-  RicochetCanon: 1
-  ConsiderForRicochet: 1
-  TransformForRicochetToAimAt: {fileID: 0}
-  LavaSubmergeOffset: 1
-  FuelAmount: 100
   rb: {fileID: 0}
   boid: {fileID: 0}
   suckable: {fileID: 0}
-  fuelPickupPrefab: {fileID: 5163220815717078053, guid: bb72521b10fb34d7bbbed5f6f77687b4, type: 3}
+  RicochetCanon: 1
+  ConsiderForRicochet: 1
   invincible: 0
-  StunDuration: 5
-  shieldDrag: 0.2
-  stunDrag: 1
-  shieldActiveMaterial: {fileID: 2100000, guid: d402f20341eac8342a329631d23d84bb, type: 2}
-  shieldInactiveMaterial: {fileID: 2100000, guid: 9dbb91c22b3258f4f82cab15a344d533, type: 2}
+  HunterConfig: {fileID: 11400000, guid: 74cb069c5b0f5884b8cddab4f13d13c1, type: 2}
   ModelMeshRenderer: {fileID: 4667816667457809461}
 --- !u!54 &9113617427949065013
 Rigidbody:

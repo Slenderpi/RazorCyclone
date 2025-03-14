@@ -1717,6 +1717,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ad1eb8074300cf41b3206d26bb51def, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentBikeSpins: 1
   mouseSensitivity: 0.11
   VacuumForce: 26
   VacuumForceLowSpeed: 25

@@ -507,7 +507,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5207972207715144811, guid: 80d58e45e87d74c40b38558360b6a028, type: 3}
       propertyPath: invincible
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 80d58e45e87d74c40b38558360b6a028, type: 3}
@@ -573,7 +573,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5207972207715144811, guid: 80d58e45e87d74c40b38558360b6a028, type: 3}
       propertyPath: invincible
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 80d58e45e87d74c40b38558360b6a028, type: 3}
@@ -1103,7 +1103,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4272552222902198248, guid: 80d58e45e87d74c40b38558360b6a028, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5207972207715144811, guid: 80d58e45e87d74c40b38558360b6a028, type: 3}
       propertyPath: invincible
@@ -1218,7 +1218,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5207972207715144811, guid: 80d58e45e87d74c40b38558360b6a028, type: 3}
       propertyPath: invincible
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 80d58e45e87d74c40b38558360b6a028, type: 3}
@@ -1299,6 +1299,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: -1261992107006566908, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
+      propertyPath: IsEmpowered
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3890492832594851018, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
       propertyPath: m_Name
       value: Hunter
@@ -1410,7 +1414,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4272552222902198248, guid: 80d58e45e87d74c40b38558360b6a028, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5207972207715144811, guid: 80d58e45e87d74c40b38558360b6a028, type: 3}
       propertyPath: invincible
@@ -1617,7 +1621,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5207972207715144811, guid: 80d58e45e87d74c40b38558360b6a028, type: 3}
       propertyPath: invincible
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 80d58e45e87d74c40b38558360b6a028, type: 3}
@@ -2001,10 +2005,6 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2373799848132920033, guid: 3673c5e01ef9a8a4cb02e0f60d7648cb, type: 3}
       propertyPath: ForceDisable
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2373799848132920033, guid: 3673c5e01ef9a8a4cb02e0f60d7648cb, type: 3}
-      propertyPath: LavaRiseSpeed
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2373799848132920033, guid: 3673c5e01ef9a8a4cb02e0f60d7648cb, type: 3}
@@ -3127,7 +3127,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5207972207715144811, guid: 80d58e45e87d74c40b38558360b6a028, type: 3}
       propertyPath: invincible
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 80d58e45e87d74c40b38558360b6a028, type: 3}
@@ -3647,7 +3647,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5207972207715144811, guid: 80d58e45e87d74c40b38558360b6a028, type: 3}
       propertyPath: invincible
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 80d58e45e87d74c40b38558360b6a028, type: 3}
@@ -3903,7 +3903,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5207972207715144811, guid: 80d58e45e87d74c40b38558360b6a028, type: 3}
       propertyPath: invincible
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 80d58e45e87d74c40b38558360b6a028, type: 3}
@@ -4224,7 +4224,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4272552222902198248, guid: 80d58e45e87d74c40b38558360b6a028, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5207972207715144811, guid: 80d58e45e87d74c40b38558360b6a028, type: 3}
       propertyPath: invincible
@@ -4293,7 +4293,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5207972207715144811, guid: 80d58e45e87d74c40b38558360b6a028, type: 3}
       propertyPath: invincible
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 80d58e45e87d74c40b38558360b6a028, type: 3}
@@ -4461,7 +4461,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5207972207715144811, guid: 80d58e45e87d74c40b38558360b6a028, type: 3}
       propertyPath: invincible
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 80d58e45e87d74c40b38558360b6a028, type: 3}
@@ -4499,7 +4499,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4020569799350787883, guid: 46d12bfbb5907754c99c404dde16b028, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8262409154726825091, guid: 46d12bfbb5907754c99c404dde16b028, type: 3}
       propertyPath: m_RootOrder

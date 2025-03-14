@@ -3,6 +3,7 @@ using UnityEngine;
 public class LaserEnemy : EnemyBase {
     
     [Header("Laser Enemy Config")]
+    public LaserEnemySO LaserConfig;
     // [Tooltip("In degrees/sec.")]
     // public float CooldownRotSpeed = 30;
     // [Tooltip("In degrees/sec.")]
@@ -24,39 +25,43 @@ public class LaserEnemy : EnemyBase {
     // [SerializeField]
     // [Tooltip("Duration for Laser to be in its Attack phase until it moves onto the Cooldown phase.")]
     // float AttackDuration = 3f;
-    [SerializeField]
-    [Tooltip("Duration the Laser enemy will be in its weak damage state with damage set to WeakDamagePerSecond.\nAfter this duration, its damage will increase to StrongDamagePerSecond.")]
-    float WeakDamageDuration = 5;
-    [SerializeField]
-    [Tooltip("Duration the Laser enemy will be stunned for after getting hit by a canon shot. Once the stun is over, it will attack the player with weak damage.")]
-    float StunDuration = 3;
-    [SerializeField]
-    [Tooltip("Before the end of the stun, the Laser enemy will animate itself rotating towards the player. This value determines the length of the animation, but does not affect the stun duration.\nThis means that if StunDuration = 3 and ReArmDuration = 1, the re-arm phase will start 2 seconds into the stun.")]
-    float ReArmDuration = 1;
-    [SerializeField]
-    [Tooltip("Weak damage value.")]
-    float WeakDamagePerSecond = 10;
-    [SerializeField]
-    [Tooltip("Strong damave value.")]
-    float StrongDamagePerSecond = 30;
+    
+    // [SerializeField]
+    // [Tooltip("Duration the Laser enemy will be in its weak damage state with damage set to WeakDamagePerSecond.\nAfter this duration, its damage will increase to StrongDamagePerSecond.")]
+    // float WeakDamageDuration = 5;
+    // [SerializeField]
+    // [Tooltip("Duration the Laser enemy will be stunned for after getting hit by a canon shot. Once the stun is over, it will attack the player with weak damage.")]
+    // float StunDuration = 3;
+    // [SerializeField]
+    // [Tooltip("Before the end of the stun, the Laser enemy will animate itself rotating towards the player. This value determines the length of the animation, but does not affect the stun duration.\nThis means that if StunDuration = 3 and ReArmDuration = 1, the re-arm phase will start 2 seconds into the stun.")]
+    // float ReArmDuration = 1;
+    // [SerializeField]
+    // [Tooltip("Weak damage value.")]
+    // float WeakDamagePerSecond = 10;
+    // [SerializeField]
+    // [Tooltip("Strong damave value.")]
+    // float StrongDamagePerSecond = 30;
+    
     // [SerializeField]
     // [Tooltip("Color of the laser when in the Windup state.")]
     // Gradient LaserColorWindup;
     // [SerializeField]
     // [Tooltip("Color of the laser when in the Attack state.")]
     // Gradient LaserColorAttack;
+    
     [SerializeField]
     [Tooltip("Reference to the laser's line renderer.")]
     LineRenderer LaserLineRenderer;
     [SerializeField]
     [Tooltip("Endpoint of the laser whose children are game objects with particle effects at the laser's endpoint.")]
     Transform LaserEndpoint;
-    [SerializeField]
-    [Tooltip("Laser color when damage is weak.")]
-    Gradient WeakColor;
-    [SerializeField]
-    [Tooltip("Laser colro when damage is strong.")]
-    Gradient StrongColor;
+    
+    // [SerializeField]
+    // [Tooltip("Laser color when damage is weak.")]
+    // Gradient WeakColor;
+    // [SerializeField]
+    // [Tooltip("Laser colro when damage is strong.")]
+    // Gradient StrongColor;
     
     [SerializeField]
     [Tooltip("Reference to the transform the turret will revolve (yaw) around.")]
@@ -76,6 +81,7 @@ public class LaserEnemy : EnemyBase {
     LayerMask laserMask; // 1 = layer to be included in raycast
     bool isPlayerInLOS = false;
     Vector3 laserHitPos;
+    float currDmg;
     
     // delegate void StateFunc();
     // StateFunc currStateFunc;
@@ -86,7 +92,6 @@ public class LaserEnemy : EnemyBase {
     
     
     protected override void Init() {
-        DealDamageOnTouch = false;
         laserPointParticles = LaserEndpoint.GetComponentsInChildren<ParticleSystem>();
         if (state > 1) {
             setLaserRenderEnabled(false);
@@ -95,8 +100,8 @@ public class LaserEnemy : EnemyBase {
         // laserRayMaskWindup = 1 << LayerMask.NameToLayer("Default");
         // laserRayMaskAttack = laserRayMaskWindup | (1 << LayerMask.NameToLayer("Player"));
         // enterStateCooldown();
-        Damage = WeakDamagePerSecond;
-        LaserLineRenderer.colorGradient = WeakColor;
+        currDmg = LaserConfig.WeakDamagePerSecond;
+        LaserLineRenderer.colorGradient = LaserConfig.WeakColor;
         laserMask = (1 << LayerMask.NameToLayer("Default")) | (1 << LayerMask.NameToLayer("Player"));
     }
     
@@ -110,28 +115,28 @@ public class LaserEnemy : EnemyBase {
                     if (fireLaser())
                         setLaserAll(true);
                 }
-                if (Time.time - lastStateChangeTime >= WeakDamageDuration) {
+                if (Time.time - lastStateChangeTime >= LaserConfig.WeakDamageDuration) {
                     state = 1;
-                    lastStateChangeTime += WeakDamageDuration;
-                    Damage = StrongDamagePerSecond;
-                    LaserLineRenderer.colorGradient = StrongColor;
+                    lastStateChangeTime += LaserConfig.WeakDamageDuration;
+                    currDmg = LaserConfig.StrongDamagePerSecond;
+                    LaserLineRenderer.colorGradient = LaserConfig.StrongColor;
                 }
                 break;
             case 1: // Strong damage
                 pointAtPlayer();
                 break;
             case 2: // Stunned
-                if (Time.time - lastStateChangeTime >= StunDuration - ReArmDuration) {
+                if (Time.time - lastStateChangeTime >= LaserConfig.StunDuration - LaserConfig.ReArmDuration) {
                     state = 3;
-                    lastStateChangeTime += StunDuration - ReArmDuration;
+                    lastStateChangeTime += LaserConfig.StunDuration - LaserConfig.ReArmDuration;
                 }
                 break;
             case 3: // Re-arming
-                if (Time.time - lastStateChangeTime >= ReArmDuration) {
+                if (Time.time - lastStateChangeTime >= LaserConfig.ReArmDuration) {
                     state = 0;
-                    lastStateChangeTime += ReArmDuration;
-                    Damage = WeakDamagePerSecond;
-                    LaserLineRenderer.colorGradient = WeakColor;
+                    lastStateChangeTime += LaserConfig.ReArmDuration;
+                    currDmg = LaserConfig.WeakDamagePerSecond;
+                    LaserLineRenderer.colorGradient = LaserConfig.WeakColor;
                     pointAtPlayer();
                 } else {
                     // Slerp rot to player
@@ -150,7 +155,7 @@ public class LaserEnemy : EnemyBase {
             // currStateFunc();
             if (state < 2) {
                 if (fireLaser()) {
-                    GameManager.CurrentPlayer.TakeDamage(Damage * Time.fixedDeltaTime, EDamageType.Enemy);
+                    GameManager.CurrentPlayer.TakeDamage(currDmg * Time.fixedDeltaTime, EDamageType.Enemy);
                 } else {
                     // Go to no LOS state
                     state = 4;
@@ -306,7 +311,7 @@ public class LaserEnemy : EnemyBase {
     
     void slerpToPlayer() {
         Vector3 toPlayer = GameManager.CurrentPlayer.transform.position - barrelPivot.position;
-        float a = (Time.time - lastStateChangeTime) / ReArmDuration;
+        float a = (Time.time - lastStateChangeTime) / LaserConfig.ReArmDuration;
         a = a * a * a * a * a;
         revolvePivot.rotation = Quaternion.Slerp(
             revolvePivot.rotation,

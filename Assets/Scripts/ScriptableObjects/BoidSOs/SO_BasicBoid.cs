@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "BasicBoidData", menuName = "ScriptableObjects/BasicBoid", order = 2)]
+[CreateAssetMenu(fileName = "BasicBoidData", menuName = "ScriptableObjects/Boids/BasicBoid", order = 2)]
 public class SO_BasicBoid : GeneralBoidSO {
     
     [Header("Basic Boid Config")]

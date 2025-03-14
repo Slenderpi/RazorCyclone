@@ -4,64 +4,76 @@ using UnityEngine;
 public class HunterEnemy : EnemyBase {
     
     [Header("Hunter Config")]
-    public float StunDuration = 5f;
-    [SerializeField] float shieldDrag = 0.2f;
-    [SerializeField] float stunDrag = 1f;
+    public HunterEnemySO HunterConfig;
+    // public float StunDuration = 5f;
+    // [SerializeField] float shieldDrag = 0.2f;
+    // [SerializeField] float stunDrag = 1f;
     bool isStunned = false;
-    public Material shieldActiveMaterial;
-    public Material shieldInactiveMaterial;
+    // public Material shieldActiveMaterial;
+    // public Material shieldInactiveMaterial;
     [SerializeField] MeshRenderer ModelMeshRenderer;
     
     
     
     protected override void Init() {
-        suckable.CanGetVacuumSucked = false;
-        rb.drag = shieldDrag;
-        SetEffectState();
+        if (IsEmpowered) {
+            suckable.CanGetVacuumSucked = false;
+            rb.drag = HunterConfig.ShieldDrag;
+            SetEffectState(isStunned);
+        } else {
+            SetEffectState(true);
+        }
     }
     
     public override void TakeDamage(float amnt, EDamageType damageType) {
         if (invincible) return;
-        if (!isStunned) {
-            if (damageType == EDamageType.Projectile) {
-                GetStunned();
+        if (IsEmpowered) {
+            if (!isStunned) {
+                if (damageType == EDamageType.Projectile) {
+                    GetStunned();
+                }
+            } else {
+                base.TakeDamage(amnt, damageType);
             }
         } else {
             base.TakeDamage(amnt, damageType);
         }
     }
-    
+
+    public override void Attack() {
+        if (isStunned) return;
+        base.Attack();
+    }
+
     public void GetStunned() {
         if (!isStunned) {
             isStunned = true;
-            DealDamageOnTouch = false;
             suckable.CanGetVacuumSucked = true;
-            CanGetVacuumKilled = true;
+            // CanGetVacuumKilled = true;
             boid.enabled = false;
             rb.useGravity = true;
-            rb.drag = stunDrag;
-            SetEffectState();
+            rb.drag = HunterConfig.StunDrag;
+            SetEffectState(true);
             StartCoroutine(StunRecovery());
         }
     }
     
     IEnumerator StunRecovery() {
-        yield return new WaitForSeconds(StunDuration);
-        DealDamageOnTouch = true;
+        yield return new WaitForSeconds(HunterConfig.StunDuration);
         suckable.CanGetVacuumSucked = false;
-        CanGetVacuumKilled = false;
+        // CanGetVacuumKilled = false;
         boid.enabled = true;
         rb.useGravity = false;
-        rb.drag = shieldDrag;
+        rb.drag = HunterConfig.ShieldDrag;
         isStunned = false;
-        SetEffectState();
+        SetEffectState(false);
     }
     
-    void SetEffectState() {
-        if (isStunned) {
-            ModelMeshRenderer.material = shieldInactiveMaterial;
+    void SetEffectState(bool toUnshielded) {
+        if (toUnshielded) {
+            ModelMeshRenderer.material = HunterConfig.ShieldInactiveMaterial;
         } else {
-            ModelMeshRenderer.material = shieldActiveMaterial;
+            ModelMeshRenderer.material = HunterConfig.ShieldActiveMaterial;
         }
     }
     

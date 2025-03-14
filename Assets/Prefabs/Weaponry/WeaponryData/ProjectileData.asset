@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7faf70c410f206e46bffdbce38def195, type: 3}
+  m_Name: ProjectileData
+  m_EditorClassIdentifier: 
+  ProjectileRadius: 0.5
+  MaxLifetime: 10
+  ImpactEffect: {fileID: 3002241975603437205, guid: 80374ef7d0b981b4cbffdeb0ebf79bc9, type: 3}
+  RicochetEffect: {fileID: 3002241975603437205, guid: e79ef6db1d7da914b931e1ea966ac2f6, type: 3}

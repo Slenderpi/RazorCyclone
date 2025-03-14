@@ -49,11 +49,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b4d7bedcdc187144a3e82c4ba164c20, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ProjConfig: {fileID: 11400000, guid: b0a2b28711645b6438abc21f436e6359, type: 2}
   damage: 0
-  ProjectileRadius: 0.2
-  MaxLifetime: 10
   MaxRicochet: 1
-  ImpactEffect: {fileID: 4772271045912793400, guid: 1ea0b4aed0201304d8198ddb98729913, type: 3}
   rb: {fileID: 0}
   ExplosionDamage: 0
   ExplosionRadius: 3

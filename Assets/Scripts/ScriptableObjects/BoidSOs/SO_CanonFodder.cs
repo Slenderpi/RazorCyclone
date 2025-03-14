@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "CanonFodderBoidData", menuName = "ScriptableObjects/CanonFodderBoid", order = 4)]
+[CreateAssetMenu(fileName = "CanonFodderBoidData", menuName = "ScriptableObjects/Boids/CanonFodderBoid", order = 4)]
 public class SO_CanonFodder : GeneralBoidSO {
     
     [Header("Canon Fodder Boid parameters")]

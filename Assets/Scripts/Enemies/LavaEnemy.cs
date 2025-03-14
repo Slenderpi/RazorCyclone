@@ -3,9 +3,9 @@ using UnityEngine;
 public class LavaEnemy : WeakpointedEnemy {
     
     [Header("Lava Enemy Configuration")]
-    public float WeakpointExposeDuration = 5;
-    WaitForSeconds exposeWaiter;
+    public LavaEnemySO LavaConfig;
     
+    // WaitForSeconds exposeWaiter;
     LavaWeakpoint weakpoint;
     bool isArmored = true;
     float lastExposeTime = -1000f;
@@ -17,7 +17,7 @@ public class LavaEnemy : WeakpointedEnemy {
         if (MaxHealth > 1)
             Debug.LogWarning(">> Lava Enemy has more than one weakpoint!");
         weakpoint = weakpoints[0] as LavaWeakpoint;
-        exposeWaiter = new WaitForSeconds(WeakpointExposeDuration);
+        // exposeWaiter = new WaitForSeconds(LavaConfig.WeakpointExposeDuration);
     }
     
     protected override void LateInit() {
@@ -31,7 +31,7 @@ public class LavaEnemy : WeakpointedEnemy {
                 rb.constraints |= RigidbodyConstraints.FreezePositionY;
             transform.position = new(transform.position.x, lava.currentHeight, transform.position.z);
         }
-        if (!isArmored && Time.fixedTime - lastExposeTime > WeakpointExposeDuration) {
+        if (!isArmored && Time.fixedTime - lastExposeTime > LavaConfig.WeakpointExposeDuration) {
             ReArmor();
         }
     }

@@ -49,26 +49,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   etypeid: 4
+  EnData: {fileID: 11400000, guid: 5ade2589c5f140140859348ffd0f98d5, type: 2}
+  IsEmpowered: 0
+  TransformForRicochetToAimAt: {fileID: 0}
   MaxHealth: 50
   health: 0
-  Damage: 10
-  AttackDelay: 1
-  DealDamageOnTouch: 0
-  CanGetVacuumKilled: 0
-  AffectedByLava: 0
-  RicochetCanon: 1
-  ConsiderForRicochet: 1
-  TransformForRicochetToAimAt: {fileID: 0}
-  LavaSubmergeOffset: 1
-  FuelAmount: 100
   rb: {fileID: 8116625089142116925}
   boid: {fileID: 0}
   suckable: {fileID: 0}
-  fuelPickupPrefab: {fileID: 5163220815717078053, guid: bb72521b10fb34d7bbbed5f6f77687b4, type: 3}
+  RicochetCanon: 1
+  ConsiderForRicochet: 1
   invincible: 0
   weakpoints:
   - {fileID: 5368093908293281661}
-  WeakpointExposeDuration: 3.5
+  LavaConfig: {fileID: 11400000, guid: 71b2c049c5f19394f9f68496fc85583c, type: 2}
 --- !u!114 &156190247362111857
 MonoBehaviour:
   m_ObjectHideFlags: 0
