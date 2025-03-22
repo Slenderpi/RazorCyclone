@@ -13,6 +13,12 @@ public class HunterEnemy : EnemyBase {
     // public Material shieldInactiveMaterial;
     [SerializeField] MeshRenderer ModelMeshRenderer;
     
+    [Header("Hunter Audio")]
+    [SerializeField]
+    AudioSource AmbientAudio;
+    [SerializeField]
+    AudioSource StunAudio;
+    
     
     
     protected override void Init() {
@@ -24,7 +30,12 @@ public class HunterEnemy : EnemyBase {
             SetEffectState(true);
         }
     }
-    
+
+    protected override void LateInit() {
+        base.LateInit();
+        AmbientAudio.Play();
+    }
+
     protected override void OnTakeDamage(float amnt, EDamageType damageType) {
         if (IsEmpowered) {
             if (!isStunned) {
@@ -53,26 +64,39 @@ public class HunterEnemy : EnemyBase {
             rb.useGravity = true;
             rb.drag = HunterConfig.StunDrag;
             SetEffectState(true);
+            SetAudioState(true);
             StartCoroutine(StunRecovery());
         }
     }
     
     IEnumerator StunRecovery() {
         yield return new WaitForSeconds(HunterConfig.StunDuration);
-        suckable.CanGetVacuumSucked = false;
-        // CanGetVacuumKilled = false;
-        boid.enabled = true;
-        rb.useGravity = false;
-        rb.drag = HunterConfig.ShieldDrag;
-        isStunned = false;
-        SetEffectState(false);
+        if (!Dead) {
+            suckable.CanGetVacuumSucked = false;
+            // CanGetVacuumKilled = false;
+            boid.enabled = true;
+            rb.useGravity = false;
+            rb.drag = HunterConfig.ShieldDrag;
+            isStunned = false;
+            SetEffectState(false);
+            SetAudioState(false);
+        }
     }
     
-    void SetEffectState(bool toUnshielded) {
-        if (toUnshielded) {
+    void SetEffectState(bool toStunned) {
+        if (toStunned) {
             ModelMeshRenderer.material = HunterConfig.ShieldInactiveMaterial;
         } else {
             ModelMeshRenderer.material = HunterConfig.ShieldActiveMaterial;
+        }
+    }
+    
+    void SetAudioState(bool toStunned) {
+        if (toStunned) {
+            AmbientAudio.Stop();
+            StunAudio.Play();
+        } else {
+            AmbientAudio.Play();
         }
     }
     

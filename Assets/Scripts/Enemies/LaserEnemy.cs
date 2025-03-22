@@ -70,6 +70,10 @@ public class LaserEnemy : EnemyBase {
     [SerializeField]
     Transform barrelPivot;
     
+    [Header("Crab Audio")]
+    [SerializeField]
+    AudioSource StunAudio;
+    
     // 0 weak | 1 strong | 2 stunned | 3 transition from stunned to weak | 4 no LOS
     float state = 3;
     float lastStateChangeTime;
@@ -343,6 +347,7 @@ public class LaserEnemy : EnemyBase {
         state = 2;
         lastStateChangeTime = Time.time;
         setLaserAll(false);
+        StunAudio.Play();
     }
     
     void setLaserRenderEnabled(bool newEnabled) {

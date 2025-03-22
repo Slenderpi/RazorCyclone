@@ -16,6 +16,10 @@ public class EnemyBase : MonoBehaviour {
     [Tooltip("If left null, will default to the gameobject's transform. This is primarily for the EnemyWeakpoint type.")]
     public Transform TransformForRicochetToAimAt = null;
     
+    [Header("Audio")]
+    [SerializeField]
+    AudioSource DeathAudio;
+    
     [HideInInspector]
     public bool Dead = false;
     [HideInInspector]
@@ -126,14 +130,16 @@ public class EnemyBase : MonoBehaviour {
     protected virtual void ShowDeath() {
         if (Dead) return;
         Dead = true;
-        // Pivot.gameObject.SetActive(false);
-        // Pivot.GetComponent<Collider>().enabled = false;
         if (Hitboxes)
             Hitboxes.SetActive(false);
         if (boid)
             boid.enabled = false;
         if (suckable)
             suckable.CanGetVacuumSucked = false;
+        
+        if (DeathAudio)
+            DeathAudio.Play();
+        
         enabled = false;
         Destroy(gameObject, EnConfig.DestroyDelay);
     }
