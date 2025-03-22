@@ -25,18 +25,17 @@ public class HunterEnemy : EnemyBase {
         }
     }
     
-    public override void TakeDamage(float amnt, EDamageType damageType) {
-        if (invincible) return;
+    protected override void OnTakeDamage(float amnt, EDamageType damageType) {
         if (IsEmpowered) {
             if (!isStunned) {
                 if (damageType == EDamageType.Projectile) {
                     GetStunned();
                 }
             } else {
-                base.TakeDamage(amnt, damageType);
+                base.OnTakeDamage(amnt, damageType);
             }
         } else {
-            base.TakeDamage(amnt, damageType);
+            base.OnTakeDamage(amnt, damageType);
         }
     }
 

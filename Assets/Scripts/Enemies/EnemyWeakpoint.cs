@@ -10,9 +10,7 @@ public class EnemyWeakpoint : EnemyBase {
         // DealDamageOnTouch = false;
     }
     
-    public override void TakeDamage(float amnt, EDamageType damageType) {
-        if (invincible) return;
-        if (health <= 0) return;
+    protected override void OnTakeDamage(float amnt, EDamageType damageType) {
         health -= amnt;
         if (health <= 0) {
             OnDefeated(damageType);

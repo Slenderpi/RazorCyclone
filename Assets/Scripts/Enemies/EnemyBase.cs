@@ -8,23 +8,16 @@ public class EnemyBase : MonoBehaviour {
     
     [Header("Enemy Configuration")]
     [Tooltip("Reference to the common data of this enemy.")]
-    public GeneralEnemySO EnData;
+    public GeneralEnemySO EnConfig;
     public bool IsEmpowered = false;
-    // public float Damage = 10;
-    // [Tooltip("A cooldown for attacking the player")]
-    // public float AttackDelay = 1;
     float lastAttackTime = -1000;
-    // public bool DealDamageOnTouch = true;
-    // [Tooltip("Determines if this enemy can be killed when touched by the vacuum's killbox.\n\nNote: certain enemies (e.g. Hunter) will set this value on their own, and do not need this to be touched.")]
-    // public bool CanGetVacuumKilled = true;
-    // [Tooltip("If enabled, this enemy will call its OnSubmerged() method when it detects that it is below lava.")]
-    // public bool AffectedByLava = true;
-    // [Tooltip("If enabled, projectiles will ricochet when they hit this enemy.\n\nNote: this variable does not determine if this enemy can be targeted by ricochet aimbot, that is done by an internal variable.")]
+    [Tooltip("GameObject holding the enemy's hitboxes.")]
+    public GameObject Hitboxes;
     [Tooltip("If left null, will default to the gameobject's transform. This is primarily for the EnemyWeakpoint type.")]
     public Transform TransformForRicochetToAimAt = null;
-    // [Tooltip("This enemy will be affected by lava if its y position + HeightOffset is below the lava. This is to allow objects to sink lower before actually being counted as submerged.")]
-    // public float LavaSubmergeOffset = 1;
     
+    [HideInInspector]
+    public bool Dead = false;
     [HideInInspector]
     public float MaxHealth = 50;
     [HideInInspector]
@@ -48,20 +41,16 @@ public class EnemyBase : MonoBehaviour {
     [Header("For testing")]
     [SerializeField]
     protected bool invincible = false;
-    // [Header("Enemy movement force")]
-    // [SerializeField]
-    // float MovementForce = 425f; 
     
     
     
     void Awake() {
-        if (MaxHealth <= 0) Debug.LogWarning("Enemy MaxHealth set to a value <= 0 (set to " + MaxHealth + ").");
-        if (EnData.FuelPickupPrefab == null)
+        if (EnConfig.FuelPickupPrefab == null)
             Debug.LogWarning("This enemy's fuelPickupPrefab was not set!");
         rb = GetComponent<Rigidbody>();
         boid = GetComponent<BoidMover>();
         suckable = GetComponent<Suckable>();
-        health = MaxHealth;
+        health = 50;
         if (TransformForRicochetToAimAt == null) TransformForRicochetToAimAt = transform;
         Init();
     }
@@ -85,27 +74,35 @@ public class EnemyBase : MonoBehaviour {
     }
     
     void FixedUpdate() {
+        if (Dead) return;
         onFixedUpdate();
     }
     
     void OnTriggerEnter(Collider collider) {
-        if (EnData.DealDamageOnTouch && collider.CompareTag("Player")) {
+        if (Dead) return;
+        if (EnConfig.DealDamageOnTouch && collider.CompareTag("Player")) {
             Attack();
         }
     }
     
     public virtual void Attack() {
-        if (EnData.Damage <= 0) return;
+        if (Dead) return;
+        if (EnConfig.Damage <= 0) return;
         PlayerCharacterCtrlr plr = GameManager.CurrentPlayer;
         if (!plr) return;
-        if (Time.time - lastAttackTime <= EnData.AttackDelay) return;
+        if (Time.time - lastAttackTime <= EnConfig.AttackDelay) return;
         lastAttackTime = Time.time;
-        plr.TakeDamage(EnData.Damage, EDamageType.Enemy);
+        plr.TakeDamage(EnConfig.Damage, EDamageType.Enemy);
     }
     
-    public virtual void TakeDamage(float amnt, EDamageType damageType) {
+    public void TakeDamage(float amnt, EDamageType damageType) {
+        if (Dead) return;
         if (invincible) return;
         if (health <= 0) return;
+        OnTakeDamage(amnt, damageType);
+    }
+    
+    protected virtual void OnTakeDamage(float amnt, EDamageType damageType) {
         health = Mathf.Max(health - amnt, 0);
         if (health == 0) {
             GameManager.Instance.OnEnemyTookDamage(this, damageType, true);
@@ -116,14 +113,29 @@ public class EnemyBase : MonoBehaviour {
     }
     
     protected virtual void OnDefeated(EDamageType damageType) {
+        if (Dead) return;
         if (damageType == EDamageType.Vacuum) {
             // Give player fuel immediately if killed by vacuum
             GameManager.CurrentPlayer.AddFuel(100);
         } else {
             DropFuel();
         }
-        gameObject.SetActive(false);
-        Destroy(gameObject);
+        ShowDeath();
+    }
+    
+    protected virtual void ShowDeath() {
+        if (Dead) return;
+        Dead = true;
+        // Pivot.gameObject.SetActive(false);
+        // Pivot.GetComponent<Collider>().enabled = false;
+        if (Hitboxes)
+            Hitboxes.SetActive(false);
+        if (boid)
+            boid.enabled = false;
+        if (suckable)
+            suckable.CanGetVacuumSucked = false;
+        enabled = false;
+        Destroy(gameObject, EnConfig.DestroyDelay);
     }
     
     public void DropFuel() {
@@ -131,19 +143,20 @@ public class EnemyBase : MonoBehaviour {
     }
     
     public void DropFuel(Vector3 position) {
-        Instantiate(EnData.FuelPickupPrefab, position, Quaternion.identity);
+        Instantiate(EnConfig.FuelPickupPrefab, position, Quaternion.identity);
     }
     
     protected virtual void onFixedUpdate() {
-        if (EnData.AffectedByLava && lava) {
+        if (EnConfig.AffectedByLava && lava) {
             // Check if below lava
-            if (transform.position.y + EnData.LavaSubmergeOffset < lava.currentHeight) {
+            if (transform.position.y + EnConfig.LavaSubmergeOffset < lava.currentHeight) {
                 OnSubmerged();
             }
         }
     }
     
     public virtual void Empower() {
+        if (Dead) return;
         IsEmpowered = true;
         throw new NotImplementedException($"Empower() not yet implemented for enemy \"{gameObject.name}\" ({GetType().Name})");
     }
@@ -152,8 +165,9 @@ public class EnemyBase : MonoBehaviour {
     /// Called when this enemy detects that its y position + LavaSubmergeOffset is below the current lava height.
     /// </summary>
     protected virtual void OnSubmerged() {
-        gameObject.SetActive(false); // TODO: Set inactive or just kill?
-        Destroy(gameObject);
+        // gameObject.SetActive(false); // TODO: Set inactive or just kill?
+        // Destroy(gameObject);
+        ShowDeath();
     }
     
     void OnDestroy() {

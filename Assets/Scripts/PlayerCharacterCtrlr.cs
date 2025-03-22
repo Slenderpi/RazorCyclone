@@ -386,7 +386,6 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         // print("Passed validations. prevDir: " + prevBikeFaceDir + "; currDir: " + currDir);
         rotVec2ccw90(ref currDir);
         int dot = Mathf.RoundToInt(Vector2.Dot(prevBikeFaceDir, currDir)); // 1 is CW, -1 is CCW, 0 is 180 fail
-        // if (bikeRotSpinDir == 0) { // RESET STATE
         if (bikeSpinProgress == 0) { // RESET STATE
             // If currdir cw, go cw
             // else if ccw, go ccw
@@ -402,7 +401,6 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
                 }
             }
         } else {
-            // if (bikeRotSpinDir == dot) { // Checks if the rotation matches spin direction
             if (Math.Sign(bikeSpinProgress) == dot) { // Checks if the rotation matches spin direction
                 bikeSpinProgressed();
             } else {

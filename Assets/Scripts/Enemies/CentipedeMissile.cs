@@ -23,7 +23,7 @@ public class CentipedeMissile : EnemyBase {
     
     
     protected override void Init() {
-        // ConsiderForRicochet = false;
+        print($"Ric: {RicochetCanon}");
         boid.enabled = false;
         drag = rb.drag;
         rb.drag = CentMissConfig.ArmingDrag;
@@ -39,7 +39,7 @@ public class CentipedeMissile : EnemyBase {
     }
     
     void OnTriggerEnter(Collider collider) {
-        if (hasTriggered) return;
+        if (Dead || hasTriggered) return;
         hasTriggered = true;
         if (collider.CompareTag("Player"))
             Attack();

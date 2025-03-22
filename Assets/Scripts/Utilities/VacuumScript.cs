@@ -49,10 +49,10 @@ public class VacuumScript : MonoBehaviour {
     
     void onKillboxEnter(Collider collider) {
         if (collider.CompareTag("Enemy")) {
-            if (!collider.TryGetComponent(out EnemyBase en)) {
+            if (!collider.transform.parent.parent.TryGetComponent(out EnemyBase en)) {
                 en = collider.GetComponentInParent<EnemyBase>();
             }
-            if (en != null)
+            if (en != null && !en.Dead)
                 en.TakeDamage(en.MaxHealth, EDamageType.Vacuum);
         }
     }

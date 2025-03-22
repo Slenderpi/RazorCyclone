@@ -22,7 +22,7 @@ public class ExplosiveProjectile : ProjectileBase {
     
     
     protected override void Init() {
-        ExplosionLayerMask = 1 << LayerMask.NameToLayer("Enemy");
+        ExplosionLayerMask = 1 << LayerMask.NameToLayer("EnemyHitbox");
         hitColliders = new Collider[MaxHits];
         initExplosionEffect();
     }
@@ -51,7 +51,7 @@ public class ExplosiveProjectile : ProjectileBase {
                     rb.AddExplosionForce(ExplosionForce, transform.position, ExplosionRadius + 0.5f);
                     rb.AddForce(Vector3.up * AdditionalUpwardForce, ForceMode.Impulse);
                     if (ExplosionDamage > 0)
-                        if (co.TryGetComponent(out EnemyBase en))
+                        if (co.CompareTag("EnemyHitbox") && co.transform.parent.parent.TryGetComponent(out EnemyBase en))
                             if (en != enemyToNotDmg)
                                 en.TakeDamage(ExplosionDamage, EDamageType.ProjectileExplosion);
                 }

@@ -172,9 +172,9 @@ public class LaserEnemy : EnemyBase {
         }
     }
     
-    public override void TakeDamage(float amnt, EDamageType damageType) {
+    protected override void OnTakeDamage(float amnt, EDamageType damageType) {
         if (damageType == EDamageType.Vacuum) {
-            base.TakeDamage(amnt, damageType);
+            base.OnTakeDamage(amnt, damageType);
         } else if (damageType == EDamageType.Projectile) {
             onStunned();
         }

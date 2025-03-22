@@ -8,7 +8,7 @@ using UnityEngine;
 /// </summary>
 public class BoidSteerer {
     
-    static LayerMask AVOIDANCE_LAYER_MASK = (1 << LayerMask.NameToLayer("Default")); // | (1 << LayerMask.NameToLayer("Enemy"));
+    static LayerMask AVOIDANCE_LAYER_MASK = (1 << LayerMask.NameToLayer("Default")); // | (1 << LayerMask.NameToLayer("EnemyHitbox"));
     static LayerMask AVOID_MASK_WITH_INVIS = AVOIDANCE_LAYER_MASK | (1 << LayerMask.NameToLayer("InvisBoidWall"));
     
     

@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 3206427200916952253}
   - component: {fileID: 619389183203582803}
   - component: {fileID: 7068982771154524514}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Cube
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -31,7 +31,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2767917730891454581}
-  m_RootOrder: 0
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &619389183203582803
 MeshFilter:
@@ -92,7 +92,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4952710601486893520}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: LaunchPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -117,8 +117,53 @@ Transform:
   - {fileID: 6878099085451549285}
   - {fileID: 2220272214397308988}
   m_Father: {fileID: 2767917730891454581}
-  m_RootOrder: 5
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: -90, y: 0, z: 0}
+--- !u!1 &3748931258835018814
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2554354547631741944}
+  - component: {fileID: 8283046365490678140}
+  m_Layer: 14
+  m_Name: WorldColliders
+  m_TagString: Enemy
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2554354547631741944
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3748931258835018814}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2767917730891454581}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &8283046365490678140
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3748931258835018814}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &3791493938460506368
 GameObject:
   m_ObjectHideFlags: 0
@@ -128,7 +173,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6878099085451549285}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: DoorHinge1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -162,7 +207,7 @@ GameObject:
   - component: {fileID: 8262409154726825091}
   - component: {fileID: 2445692176423822423}
   - component: {fileID: 3885627632521822105}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: CentipedeTester
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -198,9 +243,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   etypeid: 5
-  EnData: {fileID: 11400000, guid: 06b8869de7fcbb64ab330b8fa3a60c81, type: 2}
+  EnConfig: {fileID: 11400000, guid: 06b8869de7fcbb64ab330b8fa3a60c81, type: 2}
   IsEmpowered: 0
+  Hitboxes: {fileID: 8128831689352872994}
   TransformForRicochetToAimAt: {fileID: 0}
+  Dead: 0
   MaxHealth: 50
   health: 0
   rb: {fileID: 0}
@@ -212,18 +259,9 @@ MonoBehaviour:
   CentConfig: {fileID: 11400000, guid: fab2a043f3823964db3f4f7cb1b6a00b, type: 2}
   SpawnAsHead: 1
   BodyLength: 30
-  MoveSpeed: 5
-  FollowOffset: 1.5
-  MissileFireDelay: 10
-  MissileFireDelayOffset: 0.1
-  MissileDoorAnimTime: 0.2
-  MissileDoorLeaveOpenTime: 0.2
-  missilePrefab: {fileID: 6751577663681668669, guid: 9228885265ca714478c763de6e658fd9, type: 3}
-  missileFireEffectPrefab: {fileID: 6498789483473948991, guid: ef11bc4966759d743b0d851211ffeaf8, type: 3}
   missileLaunchPoint: {fileID: 4952710601486893520}
   doorHinge: {fileID: 5894428634887974733}
   modelMeshRenderer: {fileID: 7068982771154524514}
-  headMaterial: {fileID: 2100000, guid: 4cde6ee6e09aa084ea0d3801cd4d516e, type: 2}
 --- !u!54 &3885627632521822105
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -251,7 +289,7 @@ GameObject:
   - component: {fileID: 1331989417067307414}
   - component: {fileID: 1927141147192837681}
   - component: {fileID: 4977149439621547758}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Cube_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -271,7 +309,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2767917730891454581}
-  m_RootOrder: 1
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 30, y: -35.264, z: -54.736}
 --- !u!33 &1927141147192837681
 MeshFilter:
@@ -334,7 +372,7 @@ GameObject:
   - component: {fileID: 8477564465638493896}
   - component: {fileID: 1640918642278860385}
   - component: {fileID: 7919449371579918148}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Cube_3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -354,7 +392,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2767917730891454581}
-  m_RootOrder: 2
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: -30, y: 35.264, z: -54.736}
 --- !u!33 &1640918642278860385
 MeshFilter:
@@ -417,7 +455,7 @@ GameObject:
   - component: {fileID: 5846320966911053307}
   - component: {fileID: 6781828492001719144}
   - component: {fileID: 3669348962582200259}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Door
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -498,7 +536,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5894428634887974733}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: DoorHinge
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -532,7 +570,7 @@ GameObject:
   - component: {fileID: 450356642094773475}
   - component: {fileID: 167567010336516303}
   - component: {fileID: 2778518643370513186}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: InnerCylinder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -615,7 +653,7 @@ GameObject:
   - component: {fileID: 4790148502761642759}
   - component: {fileID: 4352165938310918633}
   - component: {fileID: 2796338077388505943}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Cap
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -698,7 +736,7 @@ GameObject:
   - component: {fileID: 1408786371984749120}
   - component: {fileID: 813510926234150089}
   - component: {fileID: 7529611748364414784}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Door
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -781,7 +819,7 @@ GameObject:
   - component: {fileID: 7534127162258974993}
   - component: {fileID: 4512720764400207838}
   - component: {fileID: 2940202433970704224}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: OuterCylinder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -862,7 +900,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2220272214397308988}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: DoorHinge1_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -896,7 +934,7 @@ GameObject:
   - component: {fileID: 7805627148012478731}
   - component: {fileID: 4568128557200927032}
   - component: {fileID: 3577298808504177878}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Cube_4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -916,7 +954,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2767917730891454581}
-  m_RootOrder: 4
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: -30, y: -35.264, z: 54.736}
 --- !u!33 &4568128557200927032
 MeshFilter:
@@ -977,8 +1015,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2767917730891454581}
-  - component: {fileID: 6212560934151540400}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Pivot
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -997,6 +1034,8 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 8724561133506290194}
+  - {fileID: 2554354547631741944}
   - {fileID: 3206427200916952253}
   - {fileID: 1331989417067307414}
   - {fileID: 8477564465638493896}
@@ -1006,19 +1045,6 @@ Transform:
   m_Father: {fileID: 8262409154726825091}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &6212560934151540400
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7903256458954459788}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &8127748568717886371
 GameObject:
   m_ObjectHideFlags: 0
@@ -1030,7 +1056,7 @@ GameObject:
   - component: {fileID: 3882053308945292544}
   - component: {fileID: 3653975213872515446}
   - component: {fileID: 4321165362370686755}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Cube_2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1050,7 +1076,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2767917730891454581}
-  m_RootOrder: 3
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 30, y: 35.264, z: 54.736}
 --- !u!33 &3653975213872515446
 MeshFilter:
@@ -1102,3 +1128,48 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!1 &8128831689352872994
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8724561133506290194}
+  - component: {fileID: 5017721439243840372}
+  m_Layer: 7
+  m_Name: Hitboxes
+  m_TagString: Enemy
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8724561133506290194
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8128831689352872994}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2767917730891454581}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &5017721439243840372
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8128831689352872994}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}

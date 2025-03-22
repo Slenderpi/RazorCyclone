@@ -22,7 +22,7 @@ public class UIGamePanel : UIPanel {
     
     [Header("Bike Spinning")]
     public Material SpinTileMatDefault;
-    public Material SpinTileMatNextHint;
+    public Material SpinTileMatRecent;
     public Material SpinTileMatProgress;
     // public Material SpinTileMat;
     public MeshRenderer TileRendW;
@@ -142,28 +142,26 @@ public class UIGamePanel : UIPanel {
     void onSpinProgressed(int progress) {
         switch (progress) {
         case 1:
-            TileRendD.material = SpinTileMatProgress;
-            TileRendS.material = SpinTileMatNextHint;
+            TileRendD.material = SpinTileMatRecent;
             break;
         case 2:
-            TileRendS.material = SpinTileMatProgress;
-            TileRendA.material = SpinTileMatNextHint;
+            TileRendS.material = SpinTileMatRecent;
+            TileRendD.material = SpinTileMatProgress;
             break;
         case 3:
-            TileRendA.material = SpinTileMatProgress;
-            TileRendW.material = SpinTileMatNextHint;
+            TileRendA.material = SpinTileMatRecent;
+            TileRendS.material = SpinTileMatProgress;
             break;
         case -1:
-            TileRendA.material = SpinTileMatProgress;
-            TileRendS.material = SpinTileMatNextHint;
+            TileRendA.material = SpinTileMatRecent;
             break;
         case -2:
-            TileRendS.material = SpinTileMatProgress;
-            TileRendD.material = SpinTileMatNextHint;
+            TileRendS.material = SpinTileMatRecent;
+            TileRendA.material = SpinTileMatProgress;
             break;
         case -3:
-            TileRendD.material = SpinTileMatProgress;
-            TileRendW.material = SpinTileMatNextHint;
+            TileRendD.material = SpinTileMatRecent;
+            TileRendS.material = SpinTileMatProgress;
             break;
         }
     }
@@ -174,6 +172,7 @@ public class UIGamePanel : UIPanel {
     
     void onSpinCompleted(int newSpinCount) {
         resetSpinTileColors();
+        // TileRendW.material = SpinTileMatProgress;
         setSpinCounterText(newSpinCount);
     }
     

@@ -16,5 +16,7 @@ public class GeneralEnemySO : ScriptableObject {
     public bool AffectedByLava = true;
     [Tooltip("This enemy will be affected by lava if its y position + HeightOffset is below the lava. This is to allow objects to sink lower before actually being counted as submerged.")]
     public float LavaSubmergeOffset = 1;
+    [Tooltip("When an enemy is defeated, they will remain in the world for a duration so that death effects can be shown. This value determines how long that lasts until the the enemy gameObject gets destroyed.")]
+    public float DestroyDelay = 5;
     
 }

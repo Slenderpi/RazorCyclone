@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 3258954005348018360}
   - component: {fileID: 2373799848132920033}
   - component: {fileID: 5286866141740681498}
-  - component: {fileID: 4563611578955618028}
   m_Layer: 14
   m_Name: Lava
   m_TagString: Untagged
@@ -54,7 +53,7 @@ MonoBehaviour:
   LavaDamage: 40
   MinimumVerticalBounceSpeed: 10
   ForceDisable: 0
-  LavaHitboxNotifier: {fileID: 4563611578955618028}
+  LavaHitboxNotifier: {fileID: 0}
   currentHeight: 0
 --- !u!65 &5286866141740681498
 BoxCollider:
@@ -65,22 +64,10 @@ BoxCollider:
   m_GameObject: {fileID: 3219257141871558520}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_Size: {x: 100, y: 10, z: 100}
   m_Center: {x: 0, y: -5, z: 0}
---- !u!114 &4563611578955618028
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3219257141871558520}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 981e5516e4e3c59489415af469b29696, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &5667939793495810110
 GameObject:
   m_ObjectHideFlags: 0

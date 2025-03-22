@@ -41,8 +41,8 @@ public class ProjectileBase : MonoBehaviour {
     void Awake() {
         rb = GetComponent<Rigidbody>();
         layerMask = (1 << LayerMask.NameToLayer("Default")) |
-                    (1 << LayerMask.NameToLayer("Enemy")) |
-                    (1 << LayerMask.NameToLayer("EnemyWeapon"));
+                    (1 << LayerMask.NameToLayer("EnemyHitbox")); // |
+                    // (1 << LayerMask.NameToLayer("EnemyWeapon"));
         waitFixedUpdForRic = new WaitForFixedUpdate();
         poolVFX();
         Init();
@@ -93,10 +93,11 @@ public class ProjectileBase : MonoBehaviour {
             if (hitDistSqrd < closestHitSqrd) {
                 bool canCheck = !hit.collider.CompareTag("Enemy");
                 if (!canCheck) {
-                    if (!hit.collider.TryGetComponent(out EnemyBase en)) {
-                        en = hit.collider.GetComponentInParent<EnemyBase>();
-                    }
-                    canCheck = en != enemyToIgnore;
+                    // if (!hit.collider.TryGetComponent(out EnemyBase en)) {
+                    //     en = hit.collider.GetComponentInParent<EnemyBase>();
+                    // }
+                    // canCheck = en != enemyToIgnore;
+                    canCheck = enemyToIgnore != hit.collider.transform.parent.parent.GetComponent<EnemyBase>();
                 }
                 if (canCheck) {
                     closestHitSqrd = hitDistSqrd;
@@ -118,7 +119,7 @@ public class ProjectileBase : MonoBehaviour {
             !hitObject.CompareTag("Projectile") &&
             !hitObject.CompareTag("Pickup")) {
             if (hitObject.CompareTag("Enemy")) {
-                if (!hitObject.TryGetComponent(out EnemyBase enemy)) {
+                if (!hitObject.transform.parent.parent.TryGetComponent(out EnemyBase enemy)) {
                     enemy = hitObject.GetComponentInParent<EnemyBase>();
                 }
                 if (enemy == enemyToIgnore) return;
