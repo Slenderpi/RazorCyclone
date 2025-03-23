@@ -151,6 +151,9 @@ public class GameManager : MonoBehaviour {
             case EDamageType.Projectile:
                 Audio2D.PlayClipSFX(AudioPlayer2D.EClipSFX.Kill_DirectHit);
                 break;
+            case EDamageType.Vacuum: // TODO: Vacuum kill sfx
+                Audio2D.PlayClipSFX(AudioPlayer2D.EClipSFX.Kill_DirectHit);
+                break;
             }
         }
         MainCanvas.GamePanel.OnPlayerDamagedEnemy(enemy);

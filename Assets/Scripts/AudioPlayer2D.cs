@@ -20,8 +20,11 @@ public class AudioPlayer2D : MonoBehaviour {
     
     [Header("Audio Source and Mixer References")]
     public AudioMixer MainAudioMixer;
-    public AudioSource asSFX;
     public AudioSource asMusic;
+    public AudioSource asGeneralSFX;
+    public AudioSource asMotorcycleDriving;
+    public AudioSource asMotorcycleRotating;
+    public AudioSource asCanon;
     
     [Header("Sound Effect References")]
     [SerializeField]
@@ -40,38 +43,53 @@ public class AudioPlayer2D : MonoBehaviour {
     AudioClip mus_Test;
     
     [Header("Temporary")]
+    public float MaxMotorcyclePitch = 1.5f;
+    public float MaxMotorcyclePitchSpeed = 45;
     public bool enableRotationSound = true;
+    
+    // float lastSpeed = 0;
+    PlayerCharacterCtrlr plr;
     
     
     
     void Awake() {
         Instance = this;
+        GameManager.A_PlayerSpawned += OnPlayerSpawned;
+        GameManager.A_PlayerDestroying += OnPlayerDestroying;
         // TODO: Create multiple sfx players to play sounds from
     }
-    
+
+    void Update() {
+        if (!plr) return;
+        float speed = plr.rb.velocity.magnitude;
+        asMotorcycleDriving.pitch = Mathf.Lerp(asMotorcycleDriving.pitch, Mathf.Lerp(1, MaxMotorcyclePitch, speed / MaxMotorcyclePitchSpeed), 0.3f);
+        // lastSpeed = speed;
+    }
+
     public void PlayClipSFX(EClipSFX clip) {
         switch (clip) {
         case EClipSFX.Kill_DirectHit:
-            asSFX.PlayOneShot(sfx_Kill_DirectHit);
+            asGeneralSFX.PlayOneShot(sfx_Kill_DirectHit);
             break;
         case EClipSFX.Weapon_CanonShot:
-            asSFX.clip = sfx_Weapon_CanonShot;
-            asSFX.Play();
+            // asGeneralSFX.clip = sfx_Weapon_CanonShot;
+            asCanon.Play();
             break;
         case EClipSFX.Plr_OutOfFuel:
             // asSFX.PlayOneShot(sfx_Plr_OutOfFuel);
-            asSFX.clip = sfx_Plr_OutOfFuel;
-            asSFX.Play();
+            asGeneralSFX.clip = sfx_Plr_OutOfFuel;
+            asGeneralSFX.Play();
             break;
         case EClipSFX.Plr_PickupFuel:
             // asSFX.clip = sfx_Plr_PickupFuel;
             // asSFX.Play();
-            asSFX.PlayOneShot(sfx_Plr_PickupFuel);
+            asGeneralSFX.PlayOneShot(sfx_Plr_PickupFuel);
             break;
         case EClipSFX.Plr_RotateWoosh:
             if (!enableRotationSound) return;
-            asSFX.clip = sfx_Plr_RotateWoosh;
-            asSFX.Play();
+            // asSFX.clip = sfx_Plr_RotateWoosh;
+            // asSFX.Play();
+            asMotorcycleRotating.Play();
             break;
         }
     }
@@ -86,6 +104,16 @@ public class AudioPlayer2D : MonoBehaviour {
             asMusic.Play();
             break;
         }
+    }
+    
+    void OnPlayerSpawned(PlayerCharacterCtrlr p) {
+        asMotorcycleDriving.Play();
+        plr = p;
+    }
+    
+    void OnPlayerDestroying(PlayerCharacterCtrlr p) {
+        asMotorcycleDriving.Stop();
+        plr = null;
     }
     
     public void SetMasterVolume(float volume) {
