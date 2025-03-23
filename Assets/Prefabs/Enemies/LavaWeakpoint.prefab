@@ -260,7 +260,7 @@ GameObject:
   - component: {fileID: 816338427547072726}
   m_Layer: 7
   m_Name: Hitbox
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -344,6 +344,7 @@ MonoBehaviour:
   IsEmpowered: 0
   Hitboxes: {fileID: 7009838678611554412}
   TransformForRicochetToAimAt: {fileID: 3289913355028547861}
+  DeathAudio: {fileID: 0}
   Dead: 0
   MaxHealth: 50
   health: 0

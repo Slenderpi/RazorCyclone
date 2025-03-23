@@ -53,6 +53,7 @@ MonoBehaviour:
   IsEmpowered: 0
   Hitboxes: {fileID: 2641803881502343745}
   TransformForRicochetToAimAt: {fileID: 0}
+  DeathAudio: {fileID: 0}
   Dead: 0
   MaxHealth: 50
   health: 0
@@ -596,14 +597,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 2150874813939974814}
     m_Modifications:
-    - target: {fileID: 1954316425557711714, guid: bc0646594f35b4a4db08fe3479cd1ae7, type: 3}
-      propertyPath: m_Layer
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2124225236483108557, guid: bc0646594f35b4a4db08fe3479cd1ae7, type: 3}
-      propertyPath: m_Layer
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 2511934953390636211, guid: bc0646594f35b4a4db08fe3479cd1ae7, type: 3}
       propertyPath: m_RootOrder
       value: 2
@@ -648,25 +641,9 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 6599918015942626513, guid: bc0646594f35b4a4db08fe3479cd1ae7, type: 3}
-      propertyPath: m_Layer
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 7236243536134578558, guid: bc0646594f35b4a4db08fe3479cd1ae7, type: 3}
       propertyPath: m_Name
       value: LavaWeakpoint
-      objectReference: {fileID: 0}
-    - target: {fileID: 7236243536134578558, guid: bc0646594f35b4a4db08fe3479cd1ae7, type: 3}
-      propertyPath: m_Layer
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7236243536134578558, guid: bc0646594f35b4a4db08fe3479cd1ae7, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8750262720161505173, guid: bc0646594f35b4a4db08fe3479cd1ae7, type: 3}
-      propertyPath: m_Layer
-      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bc0646594f35b4a4db08fe3479cd1ae7, type: 3}
