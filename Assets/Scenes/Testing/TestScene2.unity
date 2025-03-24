@@ -994,7 +994,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3890492832594851018, guid: 5b34ab184a92c73468f3bb15ecb48d83, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4682280902325755084, guid: 5b34ab184a92c73468f3bb15ecb48d83, type: 3}
       propertyPath: invincible
