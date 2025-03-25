@@ -2492,7 +2492,6 @@ GameObject:
   - component: {fileID: 3805420348052575877}
   - component: {fileID: 433456351514513724}
   - component: {fileID: 1811045275387530762}
-  - component: {fileID: 4510321228264892061}
   m_Layer: 10
   m_Name: mirror.L
   m_TagString: Untagged
@@ -2565,20 +2564,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &4510321228264892061
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3969470926520836082}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 4
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!1 &4345233324522435252
 GameObject:
   m_ObjectHideFlags: 0
@@ -3005,7 +2990,6 @@ GameObject:
   - component: {fileID: 5851118504769091979}
   - component: {fileID: 5105099672734424675}
   - component: {fileID: 8322319286639774473}
-  - component: {fileID: 3637387081512089389}
   m_Layer: 10
   m_Name: mirror.R
   m_TagString: Untagged
@@ -3078,20 +3062,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &3637387081512089389
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5188196300073570667}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 4
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!1 &5331101144063861256
 GameObject:
   m_ObjectHideFlags: 0
