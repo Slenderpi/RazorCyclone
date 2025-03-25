@@ -43,7 +43,7 @@ SphereCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.5
+  m_Radius: 0.7
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &791722843030497555
 GameObject:
@@ -428,6 +428,8 @@ MonoBehaviour:
   EnConfig: {fileID: 11400000, guid: 52c1642a7706cf64da79d8ccf4fb58a8, type: 2}
   IsEmpowered: 1
   Hitboxes: {fileID: 8140204945992692989}
+  EnemyTrigger: {fileID: 470174392266193069}
+  Model: {fileID: 6010201284731712776}
   TransformForRicochetToAimAt: {fileID: 0}
   DeathAudio: {fileID: 6281550223031759357}
   Dead: 0

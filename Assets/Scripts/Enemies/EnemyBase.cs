@@ -13,6 +13,10 @@ public class EnemyBase : MonoBehaviour {
     float lastAttackTime = -1000;
     [Tooltip("GameObject holding the enemy's hitboxes.")]
     public GameObject Hitboxes;
+    [Tooltip("GameObject holding the enemy's attack triggers.")]
+    public GameObject EnemyTrigger;
+    [Tooltip("GameObject holding the enemy's meshes.")]
+    public GameObject Model;
     [Tooltip("If left null, will default to the gameobject's transform. This is primarily for the EnemyWeakpoint type.")]
     public Transform TransformForRicochetToAimAt = null;
     
@@ -41,6 +45,7 @@ public class EnemyBase : MonoBehaviour {
     protected Lava lava;
     
     bool wasEverStarted = false;
+    bool removedFromEList = false;
     
     [Header("For testing")]
     [SerializeField]
@@ -132,8 +137,17 @@ public class EnemyBase : MonoBehaviour {
         Dead = true;
         if (Hitboxes)
             Hitboxes.SetActive(false);
+        if (EnemyTrigger)
+            EnemyTrigger.SetActive(false);
+        // NOTE: For now, the enemy's mesh will be disabled on death
+        if (Model)
+            Model.SetActive(false);
         if (boid)
             boid.enabled = false;
+        if (!removedFromEList) {
+            removedFromEList = true;
+            GameManager.Instance.currentSceneRunner.RemoveEnemyFromList(this);
+        }
         if (suckable)
             suckable.CanGetVacuumSucked = false;
         
@@ -181,8 +195,10 @@ public class EnemyBase : MonoBehaviour {
     }
     
     protected virtual void OnDestroying() {
-        if (wasEverStarted)
+        if (wasEverStarted && !removedFromEList) {
+            removedFromEList = true;
             GameManager.Instance.currentSceneRunner.RemoveEnemyFromList(this);
+        }
     }
     
 }
