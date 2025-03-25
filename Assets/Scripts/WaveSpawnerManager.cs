@@ -288,7 +288,7 @@ public class WaveSpawnerManager : MonoBehaviour {
         yield return new WaitForSeconds(2);
         GameManager.CurrentPlayer.HealHealth(GameManager.CurrentPlayer.MaxHealth);
         Debug.LogWarning("Get ready for round " + CurrentPreloadedWaveNumber + "...");
-        yield return new WaitForSeconds(2);
+        yield return new WaitForSeconds(0.1f); //Adam changed this value
         Debug.LogWarning("Go!");
         GameManager.Instance.MainCanvas.GamePanel.RoundLabel.text = "Round: " + CurrentPreloadedWaveNumber;
         ActivateWave();
