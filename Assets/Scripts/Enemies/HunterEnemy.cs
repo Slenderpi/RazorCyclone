@@ -15,46 +15,36 @@ public class HunterEnemy : EnemyBase {
     
     [Header("Hunter Audio")]
     [SerializeField]
-    AudioSource AmbientAudio;
-    [SerializeField]
     AudioSource StunAudio;
     
     
     
     protected override void Init() {
-        if (IsEmpowered) {
-            suckable.CanGetVacuumSucked = false;
-            rb.drag = HunterConfig.ShieldDrag;
-            SetEffectState(isStunned);
-        } else {
-            SetEffectState(true);
-        }
+        suckable.CanGetVacuumSucked = false;
+        rb.drag = HunterConfig.ShieldDrag;
+        SetEffectState(isStunned);
     }
-
+    
     protected override void LateInit() {
         base.LateInit();
         AmbientAudio.Play();
     }
-
+    
     protected override void OnTakeDamage(float amnt, EDamageType damageType) {
-        if (IsEmpowered) {
-            if (!isStunned) {
-                if (damageType == EDamageType.Projectile) {
-                    GetStunned();
-                }
-            } else {
-                base.OnTakeDamage(amnt, damageType);
+        if (!isStunned) {
+            if (damageType == EDamageType.Projectile) {
+                GetStunned();
             }
         } else {
             base.OnTakeDamage(amnt, damageType);
         }
     }
-
+    
     public override void Attack() {
         if (isStunned) return;
         base.Attack();
     }
-
+    
     public void GetStunned() {
         if (!isStunned) {
             isStunned = true;

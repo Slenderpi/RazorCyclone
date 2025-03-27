@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 public class EnemyBase : MonoBehaviour {
@@ -9,7 +8,6 @@ public class EnemyBase : MonoBehaviour {
     [Header("Enemy Configuration")]
     [Tooltip("Reference to the common data of this enemy.")]
     public GeneralEnemySO EnConfig;
-    public bool IsEmpowered = false;
     protected float lastAttackTime = -1000;
     [Tooltip("GameObject holding the enemy's hitboxes.")]
     public GameObject Hitboxes;
@@ -22,7 +20,9 @@ public class EnemyBase : MonoBehaviour {
     
     [Header("Audio")]
     [SerializeField]
-    AudioSource DeathAudio;
+    protected AudioSource AmbientAudio;
+    [SerializeField]
+    protected AudioSource DeathAudio;
     
     [HideInInspector]
     public bool Dead = false;
@@ -80,6 +80,8 @@ public class EnemyBase : MonoBehaviour {
     /// </summary>
     protected virtual void LateInit() {
         lava = GameManager.Instance.currentSceneRunner.lava;
+        if (AmbientAudio)
+            AmbientAudio.Play();
     }
     
     void FixedUpdate() {
@@ -153,6 +155,8 @@ public class EnemyBase : MonoBehaviour {
         
         if (DeathAudio)
             DeathAudio.Play();
+        if (AmbientAudio)
+            AmbientAudio.Stop();
         
         enabled = false;
         Destroy(gameObject, EnConfig.DestroyDelay);
@@ -173,12 +177,6 @@ public class EnemyBase : MonoBehaviour {
                 OnSubmerged();
             }
         }
-    }
-    
-    public virtual void Empower() {
-        if (Dead) return;
-        IsEmpowered = true;
-        throw new NotImplementedException($"Empower() not yet implemented for enemy \"{gameObject.name}\" ({GetType().Name})");
     }
     
     /// <summary>
