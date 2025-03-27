@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "LavaWPEnemyData", menuName = "ScriptableObjects/Enemies/LavaWeakpointEnemy", order = 6)]
+[CreateAssetMenu(fileName = "LavaWPEnemyData", menuName = "ScriptableObjects/Enemies/LavaWeakpointEnemy", order = 8)]
 public class LavaWPEnemySO : ScriptableObject {
     
     [Header("Lava Weakpoint Config")]

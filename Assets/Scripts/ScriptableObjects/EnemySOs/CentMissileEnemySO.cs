@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "CentMissEnemyData", menuName = "ScriptableObjects/Enemies/CentipedeMissileEnemy", order = 8)]
+[CreateAssetMenu(fileName = "CentMissEnemyData", menuName = "ScriptableObjects/Enemies/CentipedeMissileEnemy", order = 10)]
 public class CentMissileEnemySO : ScriptableObject {
     
     [Header("Missile Config")]

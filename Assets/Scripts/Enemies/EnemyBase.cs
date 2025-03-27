@@ -10,7 +10,7 @@ public class EnemyBase : MonoBehaviour {
     [Tooltip("Reference to the common data of this enemy.")]
     public GeneralEnemySO EnConfig;
     public bool IsEmpowered = false;
-    float lastAttackTime = -1000;
+    protected float lastAttackTime = -1000;
     [Tooltip("GameObject holding the enemy's hitboxes.")]
     public GameObject Hitboxes;
     [Tooltip("GameObject holding the enemy's attack triggers.")]

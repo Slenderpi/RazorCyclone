@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "LaserEnemyData", menuName = "ScriptableObjects/Enemies/LaserEnemy", order = 4)]
+[CreateAssetMenu(fileName = "LaserEnemyData", menuName = "ScriptableObjects/Enemies/LaserEnemy", order = 6)]
 public class LaserEnemySO : ScriptableObject {
     
     [Header("Laser Enemy Config")]

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "LavaEnemyData", menuName = "ScriptableObjects/Enemies/LavaEnemy", order = 5)]
+[CreateAssetMenu(fileName = "LavaEnemyData", menuName = "ScriptableObjects/Enemies/LavaEnemy", order = 7)]
 public class LavaEnemySO : ScriptableObject {
     
     [Header("Lava Enemy Config")]

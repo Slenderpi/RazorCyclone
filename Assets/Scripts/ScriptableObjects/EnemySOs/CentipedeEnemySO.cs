@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "CentipedeEnemyData", menuName = "ScriptableObjects/Enemies/CentipedeEnemy", order = 7)]
+[CreateAssetMenu(fileName = "CentipedeEnemyData", menuName = "ScriptableObjects/Enemies/CentipedeEnemy", order = 9)]
 public class CentipedeEnemySO : ScriptableObject {
     
     [Header("Centipede Config")]
