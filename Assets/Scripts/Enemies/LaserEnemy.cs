@@ -93,7 +93,8 @@ public class LaserEnemy : EnemyBase {
     // float lastStateEnterTime = -1000;
     // float currRotRate;
     
-    
+    //ADAM CODE
+    [SerializeField] Transform crabBody;
     
     protected override void Init() {
         laserPointParticles = LaserEndpoint.GetComponentsInChildren<ParticleSystem>();
@@ -311,6 +312,9 @@ public class LaserEnemy : EnemyBase {
         LaserLineRenderer.SetPosition(0, LaserLineRenderer.transform.position);
         LaserEndpoint.position = isPlayerInLOS ? toPlayer.normalized * (toPlayer.magnitude - 0.5f) + barrelPivot.position : laserHitPos;
         LaserLineRenderer.SetPosition(1, LaserEndpoint.position);
+
+        //ADAM CODE
+        crabBody.rotation = Quaternion.LookRotation(new Vector3(toPlayer.x, crabBody.position.y, toPlayer.z));
     }
     
     void slerpToPlayer() {
