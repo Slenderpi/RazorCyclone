@@ -12,7 +12,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     Vector3 weaponRelativeRot = Vector3.forward;
     Vector3 prevWeaponRelRot = Vector3.zero;
     [HideInInspector]
-    public int currentBikeSpins = 1;
+    public int currentBikeSpins = 0;
     int bikeSpinProgress = 0;
     Vector2 prevBikeFaceDir = Vector2.up; // For spinning the bike
     int ricochetBaseVal = 1;
@@ -364,7 +364,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
             weaponRelativeRot = desiredRotation.normalized;
             if (prevWeaponRelRot != weaponRelativeRot) {
                 checkBikeSpinning();
-                updateSpecialShotBonus();
+                // updateSpecialShotBonus();
                 AudioPlayer2D.Instance.PlayClipSFX(AudioPlayer2D.EClipSFX.Plr_RotateWoosh);
             }
         } else {
@@ -469,13 +469,19 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         updateRayCastedAimPoint();
         rb.AddForce((charModel.rotation * weaponRelativeRot).normalized * CanonForce * 100000);
         Vector3 projVel = (aimPoint - canonProjSpawnTrans.position).normalized * CanonProjSpeed + rb.velocity;
-        if (ricochetBaseVal > 0) { // Only spend spins of base val is non-zero
-            projectilePrefab.MaxRicochet = ricochetBaseVal * currentBikeSpins;
-            print($"Ricochets: {projectilePrefab.MaxRicochet} ({ricochetBaseVal} * {currentBikeSpins})");
-            A_SpinsSpent?.Invoke(currentBikeSpins, 1);
-            currentBikeSpins = 1;
-        } else {
-            projectilePrefab.MaxRicochet = 0;
+        // if (ricochetBaseVal > 0) { // Only spend spins of base val is non-zero
+        //     projectilePrefab.MaxRicochet = ricochetBaseVal * currentBikeSpins;
+        //     print($"Ricochets: {projectilePrefab.MaxRicochet} ({ricochetBaseVal} * {currentBikeSpins})");
+        //     A_SpinsSpent?.Invoke(currentBikeSpins, 1);
+        //     currentBikeSpins = 1;
+        // } else {
+        //     projectilePrefab.MaxRicochet = 0;
+        // }
+        // NOTE: Ignoring special shot stuff since it's weird to figure out. Just going to have bike spins be the ricochet count
+        projectilePrefab.MaxRicochet = currentBikeSpins;
+        if (currentBikeSpins > 0) {
+            A_SpinsSpent?.Invoke(currentBikeSpins, 0);
+            currentBikeSpins = 0;
         }
         ProjectileBase proj = Instantiate(projectilePrefab, canonProjSpawnTrans.position, Quaternion.LookRotation(projVel));
         proj.damage = CanonDamage;
