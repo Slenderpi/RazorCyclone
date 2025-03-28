@@ -8,8 +8,6 @@ public class ProjectileBase : MonoBehaviour {
     
     [Header("Projectile Config")]
     public ProjectileSO ProjConfig;
-    [HideInInspector]
-    public float damage;
     // [Tooltip("The radius to use when doing multiple raycasts for collision detection.\n\nNOTE: if set to a value less than 0.1, this projectile will only check directly in front of it once.")]
     // public float ProjectileRadius = 0.2f;
     // [Tooltip("Maximum lifetime in seconds of this projectile to prevent projectiles that go into the void from living too long.")]
@@ -146,7 +144,7 @@ public class ProjectileBase : MonoBehaviour {
     /// </summary>
     /// <param name="enemy">The enemy that the projectile hit.</param>
     protected virtual void OnHitEnemy(EnemyBase enemy) {
-        enemy.TakeDamage(damage, EDamageType.Projectile);
+        enemy.TakeDamage(100, EDamageType.Projectile);
         showImpactEffect();
     }
     
@@ -171,7 +169,7 @@ public class ProjectileBase : MonoBehaviour {
                          Vector3.Reflect(rb.velocity, closestHitNorm);
         rb.velocity *= 0;
         StartCoroutine(ricochetVelNextFrame(ricVel));
-        enemy.TakeDamage(damage, EDamageType.Projectile);
+        enemy.TakeDamage(100, EDamageType.Projectile);
         showRicochetEffect();
     }
     

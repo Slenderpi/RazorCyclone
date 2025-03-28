@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class LavaWeakpoint : EnemyWeakpoint {
@@ -85,8 +86,14 @@ public class LavaWeakpoint : EnemyWeakpoint {
         lastBeginTime = Time.time;
         isExposed = true;
         shouldAnimate = true;
-        ConsiderForRicochet = true;
+        StartCoroutine(enableRicochetConsider());
         weakpointTransform.gameObject.SetActive(true);
+    }
+    
+    IEnumerator enableRicochetConsider() {
+        yield return new WaitForSeconds(0.17f);
+        if (!Dead && isExposed)
+            ConsiderForRicochet = true;
     }
     
     public void BeginHide() {

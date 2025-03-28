@@ -57,8 +57,6 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     float CanonForce;
     [SerializeField]
     float CanonProjSpeed = 100f;
-    [SerializeField]
-    float CanonDamage = 30;
     
     [Header("Fuel Settings")]
     [SerializeField]
@@ -117,8 +115,8 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     int AimRayLayerMask;
     float desiredRotationUpdateTime = 0;
     Quaternion rotBeforeInputUpdate = Quaternion.identity;
-    float pivotRotLerpPower = 4;
-    float pivotRotLerpTime = 0.1f;
+    float pivotRotLerpPower = 3;
+    float pivotRotLerpTime = 0.2f;
     Lava lava;
     
     
@@ -484,7 +482,6 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
             currentBikeSpins = 0;
         }
         ProjectileBase proj = Instantiate(projectilePrefab, canonProjSpawnTrans.position, Quaternion.LookRotation(projVel));
-        proj.damage = CanonDamage;
         proj.rb.velocity = projVel;
         SpendFuel(CanonFuelCost);
         GameManager.Instance.Audio2D.PlayClipSFX(AudioPlayer2D.EClipSFX.Weapon_CanonShot);

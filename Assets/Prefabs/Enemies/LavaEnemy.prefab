@@ -50,9 +50,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   etypeid: 4
   EnConfig: {fileID: 11400000, guid: 5ade2589c5f140140859348ffd0f98d5, type: 2}
-  IsEmpowered: 0
   Hitboxes: {fileID: 2641803881502343745}
-  TransformForRicochetToAimAt: {fileID: 0}
+  EnemyTrigger: {fileID: 0}
+  Model: {fileID: 0}
+  TransformForRicochetToAimAt: {fileID: 1436945953038877352}
+  AmbientAudio: {fileID: 0}
   DeathAudio: {fileID: 0}
   Dead: 0
   MaxHealth: 50
@@ -141,8 +143,8 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 4, y: 0.2, z: 4}
-  m_Center: {x: 0, y: 0.1, z: 0}
+  m_Size: {x: 4, y: 1.4, z: 4}
+  m_Center: {x: 0, y: 0.7, z: 0}
 --- !u!1 &2682826467116793379
 GameObject:
   m_ObjectHideFlags: 0

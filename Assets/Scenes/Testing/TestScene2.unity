@@ -1563,18 +1563,6 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 2896034069588207541, guid: 3ae622869f136174bb01b27a4b2a5191, type: 3}
-      propertyPath: RicochetCanon
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5368093908293281661, guid: 3ae622869f136174bb01b27a4b2a5191, type: 3}
-      propertyPath: RicochetCanon
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5368093908293281661, guid: 3ae622869f136174bb01b27a4b2a5191, type: 3}
-      propertyPath: AnimationDuration
-      value: 2
-      objectReference: {fileID: 0}
     - target: {fileID: 8599616807766526738, guid: 3ae622869f136174bb01b27a4b2a5191, type: 3}
       propertyPath: m_RootOrder
       value: 12
@@ -4147,14 +4135,6 @@ PrefabInstance:
     - target: {fileID: 835190569626724701, guid: 3ae622869f136174bb01b27a4b2a5191, type: 3}
       propertyPath: m_IsActive
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2896034069588207541, guid: 3ae622869f136174bb01b27a4b2a5191, type: 3}
-      propertyPath: RicochetCanon
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5368093908293281661, guid: 3ae622869f136174bb01b27a4b2a5191, type: 3}
-      propertyPath: RicochetCanon
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8599616807766526738, guid: 3ae622869f136174bb01b27a4b2a5191, type: 3}
       propertyPath: m_RootOrder
