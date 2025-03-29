@@ -129,23 +129,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 595fdb3a7d7209e4a9522f97942bc089, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  etypeid: 7
+  etypeid: 9
+  EnConfig: {fileID: 0}
+  Hitboxes: {fileID: 0}
+  EnemyTrigger: {fileID: 0}
+  Model: {fileID: 0}
+  TransformForRicochetToAimAt: {fileID: 0}
+  AmbientAudio: {fileID: 0}
+  DeathAudio: {fileID: 0}
+  Dead: 0
   MaxHealth: 50
   health: 0
-  Damage: 10
-  AttackDelay: 1
-  DealDamageOnTouch: 0
-  CanGetVacuumKilled: 1
-  AffectedByLava: 0
-  RicochetCanon: 1
-  ConsiderForRicochet: 1
-  TransformForRicochetToAimAt: {fileID: 0}
-  LavaSubmergeOffset: 1
-  FuelAmount: 50
   rb: {fileID: 0}
   boid: {fileID: 0}
   suckable: {fileID: 0}
-  fuelPickupPrefab: {fileID: 5163220815717078053, guid: bb72521b10fb34d7bbbed5f6f77687b4, type: 3}
+  RicochetCanon: 1
+  ConsiderForRicochet: 1
   invincible: 0
 --- !u!135 &799467431163833832
 SphereCollider:

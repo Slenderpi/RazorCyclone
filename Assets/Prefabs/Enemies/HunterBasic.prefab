@@ -277,7 +277,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 09129ffe74e62e343a7c6ef35ff55517, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  etypeid: 2
+  etypeid: 1
   EnConfig: {fileID: 11400000, guid: 32e3f978800731a4f83bf6b56ec99e45, type: 2}
   Hitboxes: {fileID: 8140204945992692989}
   EnemyTrigger: {fileID: 470174392266193069}

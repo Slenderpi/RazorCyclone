@@ -242,11 +242,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e42430fcfaede246b0f53bb33680ae6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  etypeid: 5
+  etypeid: 6
   EnConfig: {fileID: 11400000, guid: 06b8869de7fcbb64ab330b8fa3a60c81, type: 2}
-  IsEmpowered: 0
   Hitboxes: {fileID: 8128831689352872994}
+  EnemyTrigger: {fileID: 0}
+  Model: {fileID: 0}
   TransformForRicochetToAimAt: {fileID: 0}
+  AmbientAudio: {fileID: 0}
+  DeathAudio: {fileID: 0}
   Dead: 0
   MaxHealth: 50
   health: 0

@@ -48,7 +48,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 030f505e7e80e9149b3a3befe1af1340, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  etypeid: 4
+  etypeid: 5
   EnConfig: {fileID: 11400000, guid: 5ade2589c5f140140859348ffd0f98d5, type: 2}
   Hitboxes: {fileID: 2641803881502343745}
   EnemyTrigger: {fileID: 0}

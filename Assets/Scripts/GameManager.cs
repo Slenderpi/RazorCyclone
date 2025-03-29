@@ -296,14 +296,16 @@ public enum EDamageType {
 /// Enum representing an enemy type.
 /// </summary>
 public enum EnemyType {
-    EnemyBase,
     CanonFodder,
+    HunterBasic,
     Hunter,
-    Laser,
-    Lava,
+    CrabBasic,
+    Crab,
+    Turtle,
     Centipede,
     COUNT, // ALWAYS HAVE THIS BE LAST. Meant to be used for the number of EnemyTypes via (int)EnemyType.COUNT
     // ANY TYPES AFTER COUNT ARE EXTRANEOUS TYPES NOT MEANT TO BE CONSIDERED BY MOST SCRIPTS
+    EnemyBase,
     Weakpoint,
     CentipedeMissile
 }
