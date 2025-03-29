@@ -16,6 +16,44 @@ public class SceneRunner : MonoBehaviour {
     
     
     
+    /// <summary>
+    /// This method begins the logic and gameplay loop for the current scene. To change what
+    /// happens at the beginning, create a new child class of SceneRunner and override this method.<br/>
+    /// <br/>
+    /// By default, this method spawns the player.<br/>
+    /// <br/>
+    /// <example>
+    /// In an overridden function, you can call the original function by doing:<code>
+    ///     override MyCoolFunction(int paramA) {
+    ///         // code...
+    ///         base.MyCoolFunction(paramA);
+    ///         // code...
+    ///     }</code></example>
+    /// </summary>
+    public virtual void BeginScene() {
+        GameManager.A_PlayerSpawned += _onPlayerSpawned;
+        GameManager.Instance.SpawnPlayer();
+    }
+    
+    protected virtual void OnPlayerDied() {
+        GameManager.Instance.DestroyPlayer();
+        StartCoroutine(delayedRespawn());
+    }
+    
+    protected virtual void onSceneAboutToUnload() {
+        GameManager.A_PlayerSpawned -= _onPlayerSpawned;
+    }
+    
+    public virtual void AddEnemyToList(EnemyBase en) {
+        EnemiesForRicochet.Add(en);
+    }
+    
+    public virtual void RemoveEnemyFromList(EnemyBase en) {
+        EnemiesForRicochet.Remove(en);
+    }
+    
+    
+    
     void Awake() {
         ricochetLOSMask = 1 << LayerMask.NameToLayer("Default");
         EnemiesForRicochet = new List<EnemyBase>();
@@ -25,22 +63,6 @@ public class SceneRunner : MonoBehaviour {
             SceneManager.sceneLoaded += OnSceneLoaded;
             SceneManager.LoadScene("CoreScene", LoadSceneMode.Additive);
         }
-    }
-
-    /// <summary>
-    /// This method begins the logic and gameplay loop for the current scene. To change what
-    /// happens at the beginning, create a new child class of SceneRunner and override this method.
-    /// By default, this method spawns the player.
-    /// </summary>
-    public virtual void BeginScene() {
-        GameManager.A_PlayerSpawned += _onPlayerSpawned;
-        GameManager.Instance.SpawnPlayer();
-    }
-    
-    protected virtual void OnPlayerDied() {
-        // GameManager.Instance.SpawnPlayer();
-        GameManager.Instance.DestroyPlayer();
-        StartCoroutine(delayedRespawn());
     }
     
     public void SwitchToScene(string sceneName) {
@@ -52,15 +74,6 @@ public class SceneRunner : MonoBehaviour {
     
     public void ReloadCurrentScene() {
         SwitchToScene(SceneManager.GetActiveScene().name);
-    }
-    
-    public virtual void AddEnemyToList(EnemyBase en) {
-        // if (en.ConsiderForRicochet)
-        EnemiesForRicochet.Add(en);
-    }
-    
-    public virtual void RemoveEnemyFromList(EnemyBase en) {
-        EnemiesForRicochet.Remove(en);
     }
     
     public EnemyBase GetClosestEnemy(Vector3 pos, EnemyBase ignore) {
@@ -110,10 +123,6 @@ public class SceneRunner : MonoBehaviour {
             SceneManager.sceneLoaded -= OnSceneLoaded;
             startScene();
         }
-    }
-    
-    protected virtual void onSceneAboutToUnload() {
-        GameManager.A_PlayerSpawned -= _onPlayerSpawned;
     }
     
     void _onPlayerSpawned(PlayerCharacterCtrlr plr) {
