@@ -441,11 +441,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   etypeid: 3
   EnConfig: {fileID: 11400000, guid: bab4b867afa0d19418cfe27ae36f5564, type: 2}
-  IsEmpowered: 0
   Hitboxes: {fileID: 4109619154667978623}
   EnemyTrigger: {fileID: 0}
   Model: {fileID: 7188337209219841351}
   TransformForRicochetToAimAt: {fileID: 0}
+  AmbientAudio: {fileID: 0}
   DeathAudio: {fileID: 4616840251091339629}
   Dead: 0
   MaxHealth: 50
@@ -461,6 +461,8 @@ MonoBehaviour:
   barrelPivot: {fileID: 3649529104826026762}
   BarrelEndpoint: {fileID: 9139601731219526127}
   FireGunVFX: {fileID: 1002089136120557362}
+  predictiveFiring: 1
+  maxPredictTime: 0.15
 --- !u!114 &4101778514245048547
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -735,7 +737,7 @@ PrefabInstance:
     - target: {fileID: -7635826562936255635, guid: 602afdb2ed3a74442bb72215a223ae55, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: 7feaf3223dcd3d145a18464189b2ad7b, type: 2}
+      objectReference: {fileID: 2100000, guid: 9dbb91c22b3258f4f82cab15a344d533, type: 2}
     - target: {fileID: 919132149155446097, guid: 602afdb2ed3a74442bb72215a223ae55, type: 3}
       propertyPath: m_Name
       value: crabBarrel
@@ -884,7 +886,7 @@ PrefabInstance:
     - target: {fileID: -7635826562936255635, guid: 234df5061ac462e47b9b80b9d8a815f2, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: 7feaf3223dcd3d145a18464189b2ad7b, type: 2}
+      objectReference: {fileID: 2100000, guid: 9dbb91c22b3258f4f82cab15a344d533, type: 2}
     - target: {fileID: 919132149155446097, guid: 234df5061ac462e47b9b80b9d8a815f2, type: 3}
       propertyPath: m_Name
       value: crabBody
@@ -962,7 +964,7 @@ PrefabInstance:
     - target: {fileID: -7635826562936255635, guid: adae76a22a127e14d984a1da46aaafb7, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: 7feaf3223dcd3d145a18464189b2ad7b, type: 2}
+      objectReference: {fileID: 2100000, guid: 9dbb91c22b3258f4f82cab15a344d533, type: 2}
     - target: {fileID: 919132149155446097, guid: adae76a22a127e14d984a1da46aaafb7, type: 3}
       propertyPath: m_Name
       value: crabTank
