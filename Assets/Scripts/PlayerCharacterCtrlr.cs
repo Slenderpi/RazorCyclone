@@ -202,7 +202,6 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         }
         handleHealthRegen();
         handleLavaCheck();
-        _gamePanel.SetSpeedText(rb.velocity.magnitude);
     }
     
     void LateUpdate() {

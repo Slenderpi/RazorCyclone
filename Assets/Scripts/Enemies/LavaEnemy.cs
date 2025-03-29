@@ -46,6 +46,7 @@ public class LavaEnemy : WeakpointedEnemy {
     protected override void OnTakeDamage(float amnt, EDamageType damageType) {
         if (damageType == EDamageType.Projectile) {
             OnShotByCanon();
+            GameManager.Instance.OnEnemyTookDamage(this, damageType, false);
         }
     }
     

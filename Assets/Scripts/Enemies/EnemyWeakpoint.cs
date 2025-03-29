@@ -15,7 +15,7 @@ public class EnemyWeakpoint : EnemyBase {
         if (health <= 0) {
             OnDefeated(damageType);
         } else {
-            GameManager.Instance.OnEnemyTookDamage(this, damageType, false);
+            // GameManager.Instance.OnEnemyTookDamage(this, damageType, false);
         }
     }
     

@@ -17,7 +17,8 @@ public class UIGamePanel : UIPanel {
     [Header("Crosshairs")]
     public RectTransform MainVacuumCrosshair;
     public RectTransform MainCanonCrosshair;
-    public Animator HitmarkerAnimator;
+    public Animator CanonHitmarkerAnim;
+    public Animator VacuumHitmarkerAnim;
     
     [Header("Bike Spinning")]
     public Material SpinTileMatDefault;
@@ -33,7 +34,6 @@ public class UIGamePanel : UIPanel {
     
     [Header("Misc.")]
     public TMP_Text RoundLabel;
-    public TMP_Text Speedometer;
     
     [Header("Input Overlay")]
     public GameObject InputOverlay;
@@ -47,10 +47,6 @@ public class UIGamePanel : UIPanel {
     public Image KeyImageShift;
     
     
-    
-    public void SetSpeedText(float speed) {
-        Speedometer.text = string.Format("{0:0.0}", speed) + "";
-    }
     
     public void OnFireCanon(bool started) {
         KeyImageM2.color = started ? Color.white : Color.gray;
@@ -191,7 +187,15 @@ public class UIGamePanel : UIPanel {
     }
     
     public void OnPlayerDamagedEnemy(EnemyBase enemy) {
-        HitmarkerAnimator.SetTrigger("Show");
+        CanonHitmarkerAnim.SetTrigger("Hit");
+    }
+    
+    public void OnPlayerKilledEnemy(EnemyBase enemy, bool wasCanon) {
+        if (wasCanon) {
+            CanonHitmarkerAnim.SetTrigger("Kill");
+        } else {
+            VacuumHitmarkerAnim.SetTrigger("Kill");
+        }
     }
     
     // public void SetReadTimerOn(bool setReadOn) {

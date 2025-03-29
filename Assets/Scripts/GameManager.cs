@@ -149,14 +149,22 @@ public class GameManager : MonoBehaviour {
             A_EnemyKilled?.Invoke();
             switch (damageType) {
             case EDamageType.Projectile:
-                Audio2D.PlayClipSFX(AudioPlayer2D.EClipSFX.Kill_DirectHit);
+                MainCanvas.GamePanel.OnPlayerKilledEnemy(enemy, true);
+                Audio2D.PlayClipSFX(AudioPlayer2D.EClipSFX.Canon_Kill);
                 break;
-            case EDamageType.Vacuum: // TODO: Vacuum kill sfx
-                Audio2D.PlayClipSFX(AudioPlayer2D.EClipSFX.Kill_DirectHit);
+            case EDamageType.Vacuum:
+                MainCanvas.GamePanel.OnPlayerKilledEnemy(enemy, false);
+                Audio2D.PlayClipSFX(AudioPlayer2D.EClipSFX.Vacuum_Kill);
+                break;
+            }
+        } else {
+            switch (damageType) {
+            case EDamageType.Projectile:
+                MainCanvas.GamePanel.OnPlayerDamagedEnemy(enemy);
+                Audio2D.PlayClipSFX(AudioPlayer2D.EClipSFX.Canon_Hit);
                 break;
             }
         }
-        MainCanvas.GamePanel.OnPlayerDamagedEnemy(enemy);
     }
     
     public void PauseGame() {

@@ -1,3 +1,4 @@
+using OpenCover.Framework.Model;
 using UnityEngine;
 
 public class EnemyBase : MonoBehaviour {
@@ -15,7 +16,7 @@ public class EnemyBase : MonoBehaviour {
     public GameObject EnemyTrigger;
     [Tooltip("GameObject holding the enemy's meshes.")]
     public GameObject Model;
-    [Tooltip("If left null, will default to the gameobject's transform. This is primarily for the EnemyWeakpoint type.")]
+    [Tooltip("If left null, will default to the hitbox's transform. This is primarily for the EnemyWeakpoint type.")]
     public Transform TransformForRicochetToAimAt = null;
     
     [Header("Audio")]
@@ -54,13 +55,17 @@ public class EnemyBase : MonoBehaviour {
     
     
     void Awake() {
+#if UNITY_EDITOR
+        if (Hitboxes == null)
+            Debug.LogError($"!! ERROR: The enemy class '{GetType().Name}' does not have Hitboxes set!");
+#endif
         if (EnConfig.FuelPickupPrefab == null)
             Debug.LogWarning("This enemy's fuelPickupPrefab was not set!");
         rb = GetComponent<Rigidbody>();
         boid = GetComponent<BoidMover>();
         suckable = GetComponent<Suckable>();
         health = 50;
-        if (TransformForRicochetToAimAt == null) TransformForRicochetToAimAt = transform;
+        if (TransformForRicochetToAimAt == null) TransformForRicochetToAimAt = Hitboxes.transform;
         Init();
     }
     
@@ -155,7 +160,7 @@ public class EnemyBase : MonoBehaviour {
         
         if (DeathAudio)
             DeathAudio.Play();
-        if (AmbientAudio)
+        if (AmbientAudio && AmbientAudio.isPlaying)
             AmbientAudio.Stop();
         
         enabled = false;
