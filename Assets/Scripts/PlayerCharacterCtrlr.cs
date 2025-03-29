@@ -116,7 +116,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     float desiredRotationUpdateTime = 0;
     Quaternion rotBeforeInputUpdate = Quaternion.identity;
     float pivotRotLerpPower = 3;
-    float pivotRotLerpTime = 0.2f;
+    float pivotRotLerpTime = 0.16f;
     Lava lava;
     
     
