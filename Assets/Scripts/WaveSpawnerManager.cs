@@ -191,9 +191,9 @@ public class WaveSpawnerManager : MonoBehaviour {
 #endif
         // Check if the wave to activate only has fodders in it
         WaveEntry wave = waveEntries[CurrentPreloadedWaveNumber - 1];
-        activatedWaveIsOnlyFodder = wave.enemyCounts[(int)EnemyType.CanonFodder] > 0;
+        activatedWaveIsOnlyFodder = wave.enemyCounts[0] > 0;
         if (activatedWaveIsOnlyFodder)
-            for (int ti = (int)EnemyType.CanonFodder + 1; ti < (int)EnemyType.COUNT; ti++)
+            for (int ti = 1; ti < (int)EnemyType.COUNT; ti++)
                 if (wave.enemyCounts[ti] > 0) {
                     activatedWaveIsOnlyFodder = false;
                     break;
@@ -266,15 +266,14 @@ public class WaveSpawnerManager : MonoBehaviour {
         if (hasDefeatedActiveWave) return;
         bool waveComplete = true;
         if (activatedWaveIsOnlyFodder) {
-            if (counts[(int)EnemyType.CanonFodder] > 0)
+            if (counts[0] > 0)
                 waveComplete = false;
         } else {
-            for (int i = ((int)EnemyType.CanonFodder) + 1; i < (int)EnemyType.COUNT; i++) // Start at enemy right after canon fodder
+            for (int i = 1; i < (int)EnemyType.COUNT; i++) // Start at enemy right after canon fodder
                 if (counts[i] > 0) {
                     waveComplete = false;
                     break;
                 }
-                
         }
         if (waveComplete) {
             hasDefeatedActiveWave = true;
