@@ -8,11 +8,13 @@ public class UIGamePanel : UIPanel {
     public Slider FuelSlider;
     public Animator FuelOutlineAnimator;
     public Animator FuelFillAnimator;
+    public Image FuelSlider2;
     
     [Header("Healthbar")]
     public Slider HealthSlider;
     public TMP_Text HealthText;
     public Animator HealthFillAnimator;
+    public Image HealthSlider2;
     
     [Header("Crosshairs")]
     public RectTransform MainVacuumCrosshair;
@@ -109,6 +111,9 @@ public class UIGamePanel : UIPanel {
     
     public void OnFuelAdded(float changeAmnt, float perc) {
         FuelSlider.value = perc;
+        // TODO
+        FuelSlider2.fillAmount = perc * 0.2f;
+        
         if (!gameObject.activeSelf) return;
         if (perc == 1f || true) FuelOutlineAnimator.SetTrigger("RefillFuel");
         
@@ -122,6 +127,9 @@ public class UIGamePanel : UIPanel {
             HealthFillAnimator.SetTrigger("HealthAsFuel");
         else
             FuelFillAnimator.SetTrigger("SpendFuel");
+        
+        // TODO
+        FuelSlider2.fillAmount = perc * 0.2f;
     }
     
     public void OnDamageTaken(float amnt) {
@@ -178,6 +186,9 @@ public class UIGamePanel : UIPanel {
     void updateHealthUI(float currH, float maxH) {
         HealthSlider.value = currH / maxH;
         HealthText.text = Mathf.CeilToInt(currH).ToString();
+        
+        // TODO
+        HealthSlider2.fillAmount = currH / maxH * 0.2f;
     }
     
     public void OnOutOfFuel() {
@@ -258,6 +269,8 @@ public class UIGamePanel : UIPanel {
         OnFireCanon(false);
         HealthSlider.value = 100;
         HealthText.text = "100";
+        // TODO
+        HealthSlider2.fillAmount = 0.2f;
         resetSpinTileColors();
         setSpinCounterText(plr.currentBikeSpins);
         if (gameObject.activeSelf) FuelOutlineAnimator.SetTrigger("Reset");
