@@ -9,25 +9,26 @@ public class SceneRunner : MonoBehaviour {
     public Transform playerSpawnPoint;
     public Lava lava;
     
-    [HideInInspector]
-    public List<EnemyBase> SpawnedEnemies;
+    // [HideInInspector]
+    public List<EnemyBase> EnemiesForRicochet;
+    
+    LayerMask ricochetLOSMask;
     
     
     
-    void Awake() {
-        SpawnedEnemies = new List<EnemyBase>();
-        if (SceneManager.GetSceneByName("CoreScene").IsValid()) {
-            startScene();
-        } else {
-            SceneManager.sceneLoaded += OnSceneLoaded;
-            SceneManager.LoadScene("CoreScene", LoadSceneMode.Additive);
-        }
-    }
-
     /// <summary>
     /// This method begins the logic and gameplay loop for the current scene. To change what
-    /// happens at the beginning, create a new child class of SceneRunner and override this method.
-    /// By default, this method spawns the player.
+    /// happens at the beginning, create a new child class of SceneRunner and override this method.<br/>
+    /// <br/>
+    /// By default, this method spawns the player.<br/>
+    /// <br/>
+    /// <example>
+    /// In an overridden function, you can call the original function by doing:<code>
+    ///     override MyCoolFunction(int paramA) {
+    ///         // code...
+    ///         base.MyCoolFunction(paramA);
+    ///         // code...
+    ///     }</code></example>
     /// </summary>
     public virtual void BeginScene() {
         GameManager.A_PlayerSpawned += _onPlayerSpawned;
@@ -35,9 +36,33 @@ public class SceneRunner : MonoBehaviour {
     }
     
     protected virtual void OnPlayerDied() {
-        // GameManager.Instance.SpawnPlayer();
         GameManager.Instance.DestroyPlayer();
         StartCoroutine(delayedRespawn());
+    }
+    
+    protected virtual void onSceneAboutToUnload() {
+        GameManager.A_PlayerSpawned -= _onPlayerSpawned;
+    }
+    
+    public virtual void AddEnemyToList(EnemyBase en) {
+        EnemiesForRicochet.Add(en);
+    }
+    
+    public virtual void RemoveEnemyFromList(EnemyBase en) {
+        EnemiesForRicochet.Remove(en);
+    }
+    
+    
+    
+    void Awake() {
+        ricochetLOSMask = 1 << LayerMask.NameToLayer("Default");
+        EnemiesForRicochet = new List<EnemyBase>();
+        if (SceneManager.GetSceneByName("CoreScene").IsValid()) {
+            startScene();
+        } else {
+            SceneManager.sceneLoaded += OnSceneLoaded;
+            SceneManager.LoadScene("CoreScene", LoadSceneMode.Additive);
+        }
     }
     
     public void SwitchToScene(string sceneName) {
@@ -51,29 +76,33 @@ public class SceneRunner : MonoBehaviour {
         SwitchToScene(SceneManager.GetActiveScene().name);
     }
     
-    public void AddEnemyToList(EnemyBase en) {
-        SpawnedEnemies.Add(en);
-    }
-    
-    public void RemoveEnemyFromList(EnemyBase en) {
-        SpawnedEnemies.Remove(en);
-    }
-    
     public EnemyBase GetClosestEnemy(Vector3 pos, EnemyBase ignore) {
-        int c = SpawnedEnemies.Count;
+        int c = EnemiesForRicochet.Count;
         if (c == 0) return null;
         EnemyBase closestEn = null;
         float closestSqrd = 9999999f;
         for (int i = 0; i < c; i++) {
-            EnemyBase en = SpawnedEnemies[i];
+            EnemyBase en = EnemiesForRicochet[i];
             if (!en.gameObject.activeSelf || !en.ConsiderForRicochet || en == ignore) continue;
             float distSqrd = (pos - en.TransformForRicochetToAimAt.position).sqrMagnitude;
             if (distSqrd < closestSqrd) {
+                if (!checkEnLOS(pos, en.TransformForRicochetToAimAt.position, distSqrd))
+                    continue;
                 closestSqrd = distSqrd;
                 closestEn = en;
             }
         }
         return closestEn;
+    }
+    
+    bool checkEnLOS(Vector3 pos, Vector3 enPos, float maxDstSqrd) {
+        // If raycasting for walls is a success, then no LOS
+        return !Physics.Raycast(
+            origin: pos,
+            direction: enPos - pos,
+            maxDistance: Mathf.Sqrt(maxDstSqrd),
+            layerMask: ricochetLOSMask
+        );
     }
     
     void startScene() {
@@ -94,10 +123,6 @@ public class SceneRunner : MonoBehaviour {
             SceneManager.sceneLoaded -= OnSceneLoaded;
             startScene();
         }
-    }
-    
-    protected virtual void onSceneAboutToUnload() {
-        GameManager.A_PlayerSpawned -= _onPlayerSpawned;
     }
     
     void _onPlayerSpawned(PlayerCharacterCtrlr plr) {

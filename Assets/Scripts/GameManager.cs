@@ -5,19 +5,6 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour {
     
-    /// <summary>
-    /// Strings representing enemies. In the future, using a different
-    /// method of identification may be better.
-    /// </summary>
-    public static readonly string[] EnemyStrs = { // ENSURE THE WAVE SPREADSHEET COLUMNS AND THIS ARRAY LINE UP
-        "EnemyBase",
-        "CanonFodder",
-        "Hunter",
-        "Laser",
-        "Lava",
-        "Centipede"
-    };
-    
     public static GameManager Instance;
     public static PlayerCharacterCtrlr CurrentPlayer;
     
@@ -71,12 +58,14 @@ public class GameManager : MonoBehaviour {
     PlayerCharacterCtrlr playerPrefab;
     [SerializeField]
     EnemyBase enemyPrefab;
-    // [SerializeField]
-    // Transform enemySpawnPoint;
     public Camera rearCamera;
     
     [HideInInspector]
     public bool gameIsPaused = false;
+    [HideInInspector]
+    public float gameTimeScale = 1;
+    
+    
     
     void Awake() {
         if (Instance != null) {
@@ -111,7 +100,7 @@ public class GameManager : MonoBehaviour {
         }
 #endif
     }
-
+    
     void initializeUI() {
         SettingsPanel = MainCanvas.SettingsPanel;
         MainCanvas.GamePanel.Init();
@@ -160,11 +149,22 @@ public class GameManager : MonoBehaviour {
             A_EnemyKilled?.Invoke();
             switch (damageType) {
             case EDamageType.Projectile:
-                Audio2D.PlayClipSFX(AudioPlayer2D.EClipSFX.Kill_DirectHit);
+                MainCanvas.GamePanel.OnPlayerKilledEnemy(enemy, true);
+                Audio2D.PlayClipSFX(AudioPlayer2D.EClipSFX.Canon_Kill);
+                break;
+            case EDamageType.Vacuum:
+                MainCanvas.GamePanel.OnPlayerKilledEnemy(enemy, false);
+                Audio2D.PlayClipSFX(AudioPlayer2D.EClipSFX.Vacuum_Kill);
+                break;
+            }
+        } else {
+            switch (damageType) {
+            case EDamageType.Projectile:
+                MainCanvas.GamePanel.OnPlayerDamagedEnemy(enemy);
+                Audio2D.PlayClipSFX(AudioPlayer2D.EClipSFX.Canon_Hit);
                 break;
             }
         }
-        MainCanvas.GamePanel.OnPlayerDamagedEnemy(enemy);
     }
     
     public void PauseGame() {
@@ -172,6 +172,7 @@ public class GameManager : MonoBehaviour {
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
         A_GamePaused?.Invoke();
+        gameTimeScale = Time.timeScale;
         Time.timeScale = 0;
     }
     
@@ -180,9 +181,9 @@ public class GameManager : MonoBehaviour {
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
         A_GameResumed?.Invoke();
-        Time.timeScale = 1;
+        Time.timeScale = gameTimeScale;
     }
-
+    
     public void PauseInputPressed(InputAction.CallbackContext context) {
         if (SceneManager.GetActiveScene() == SceneManager.GetSceneByName("MainMenuScene")) {
             if (MainCanvas.CurrentCanvasState == UIMainCanvas.ECanvasState.Settings)
@@ -217,7 +218,7 @@ public class GameManager : MonoBehaviour {
             // Camera.main.fieldOfView = _currentFOV;
         }
     }
-
+    
     public void SetPauseInputActionsEnabled(bool newEnabled) {
         if (newEnabled) {
             PauseInputActions.Escape.Enable();
@@ -250,11 +251,10 @@ public class GameManager : MonoBehaviour {
             if (Cursor.lockState == CursorLockMode.None) {
                 Cursor.lockState = CursorLockMode.Locked;
                 Cursor.visible = false;
-                // UIDEBUGPanel.inst.F1Hint.SetActive(true);
             } else {
                 Cursor.lockState = CursorLockMode.None;
                 Cursor.visible = true;
-                UIDEBUGPanel.inst.F1Hint.SetActive(false);
+                // UIDEBUGPanel.inst.F1Hint.SetActive(false);
             }
         };
         DebugActions.KillPlayer.Enable();
@@ -264,6 +264,13 @@ public class GameManager : MonoBehaviour {
                 CurrentPlayer.TakeDamage(CurrentPlayer.MaxHealth, EDamageType.Any);
             }
         };
+    }
+    
+    public void SetPreferredTimeScale(float scale) {
+        gameTimeScale = scale;
+        if (!gameIsPaused) {
+            Time.timeScale = gameTimeScale;
+        }
     }
     
     public static void D_DrawPoint(Vector3 position, Color c) {
@@ -297,12 +304,18 @@ public enum EDamageType {
 /// Enum representing an enemy type.
 /// </summary>
 public enum EnemyType {
-    EnemyBase,
     CanonFodder,
+    HunterBasic,
     Hunter,
-    Laser,
-    Lava,
-    Centipede
+    CrabBasic,
+    Crab,
+    Turtle,
+    Centipede,
+    COUNT, // ALWAYS HAVE THIS BE LAST. Meant to be used for the number of EnemyTypes via (int)EnemyType.COUNT
+    // ANY TYPES AFTER COUNT ARE EXTRANEOUS TYPES NOT MEANT TO BE CONSIDERED BY MOST SCRIPTS
+    EnemyBase,
+    Weakpoint,
+    CentipedeMissile
 }
 
 
@@ -315,7 +328,7 @@ class ProgrammerPreferences {
     public bool UsePreferences;
     public float MouseSensitivity;
     public float MasterVolume = 100;
-
+    
     internal void SetPreferences() {
         if (!UsePreferences) return;
         GameManager.Instance.CurrentMouseSensitivity = MouseSensitivity;
@@ -323,6 +336,7 @@ class ProgrammerPreferences {
         float lowSens = GameManager.Instance.LowestSensitivity;
         GameManager.Instance.SettingsPanel.MouseSenseSlider.value = (GameManager.Instance.CurrentMouseSensitivity - lowSens) / (highSens - lowSens);
         if (MasterVolume == 1f) Debug.LogWarning(">> Programmer preferences file has MasterVolume set to 1. Did you mean 100? Currently, volume is on a scale from 0 to 100 rather than 0 to 1.");
+        else if (MasterVolume < 1f && MasterVolume > 0f) Debug.LogWarning(">> Programmer preferences file has MasterVolume between 0 and 1. Make sure you set the volume to be between 0 and 100--volume is on a scale from 0 to 100 rather than 0 to 1.");
         GameManager.Instance.Audio2D.SetMasterVolume(MasterVolume);
     }
 }

@@ -1,0 +1,90 @@
+using UnityEngine;
+
+public class CrabBasicEnemy : EnemyBase {
+    
+    [Header("Crab Basic Enemy Config")]
+    public CrabBasicEnemySO CrabBasicConfig;
+    [SerializeField]
+    [Tooltip("Reference to the transform the turret will revolve (yaw) around.")]
+    Transform revolvePivot;
+    [SerializeField]
+    [Tooltip("Reference to the transform the turret's barrel will rotate (pitch) around.")]
+    Transform barrelPivot;
+    [SerializeField]
+    [Tooltip("Reference to the transform the projectile will spawn from.")]
+    Transform BarrelEndpoint;
+    [Tooltip("Reference to the gameObject holding firing VFX.")]
+    [SerializeField]
+    GameObject FireGunVFX;
+    ParticleSystem[] fireGunParticles;
+    
+    [Header("FOR TESTING")]
+    [SerializeField]
+    bool predictiveFiring = true;
+    [SerializeField]
+    float maxPredictTime = 0.15f;
+    
+    EnemyProjectile pooledProj;
+    
+    
+    
+    protected override void Init() {
+        FireGunVFX.SetActive(false);
+        fireGunParticles = FireGunVFX.GetComponentsInChildren<ParticleSystem>();
+    }
+    
+    protected override void LateInit() {
+        base.LateInit();
+        lastAttackTime = Time.fixedTime;
+        poolProjectile();
+    }
+    
+    protected override void onFixedUpdate() {
+        if (!GameManager.CurrentPlayer) return;
+        if (Time.fixedTime - lastAttackTime >= EnConfig.AttackDelay) {
+            lastAttackTime += EnConfig.AttackDelay;
+            Attack();
+        }
+        base.onFixedUpdate();
+    }
+    
+    public override void Attack() {
+        Vector3 toPlr = calcVToPlr();
+        pooledProj.transform.SetPositionAndRotation(BarrelEndpoint.position, Quaternion.LookRotation(toPlr));
+        pooledProj.rb.velocity = toPlr.normalized * CrabBasicConfig.ProjectileSpeed;
+        pooledProj.gameObject.SetActive(true);
+        if (FireGunVFX.activeSelf)
+            foreach (ParticleSystem ps in fireGunParticles)
+                ps.Play();
+        else
+            FireGunVFX.SetActive(true);
+        poolProjectile();
+    }
+    
+    Vector3 calcVToPlr() {
+        return (predictiveFiring ? predictPlrPos() : GameManager.CurrentPlayer.transform.position) - BarrelEndpoint.position;
+    }
+    
+    Vector3 predictPlrPos() {
+        Vector3 ppos = GameManager.CurrentPlayer.transform.position;
+        Vector3 pvel = GameManager.CurrentPlayer.rb.velocity;
+        // Solve for t in the following: ppos + pspeed * t == cpos + cspeed * t
+        float predictTime = (ppos - BarrelEndpoint.position).magnitude / Mathf.Abs(pvel.magnitude - CrabBasicConfig.ProjectileSpeed);
+        return ppos + pvel * Mathf.Min(predictTime, maxPredictTime);
+    }
+    
+    void poolProjectile() {
+        pooledProj = Instantiate(CrabBasicConfig.CrabProjectilePrefab);
+        pooledProj.gameObject.SetActive(false);
+        pooledProj.Damage = EnConfig.Damage;
+    }
+    
+    protected override void OnDestroying() {
+        if (pooledProj) {
+            Destroy(pooledProj);
+            pooledProj = null;
+        }
+        base.OnDestroying();
+    }
+    
+}

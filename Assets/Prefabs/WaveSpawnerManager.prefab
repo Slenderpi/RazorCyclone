@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &6752230685355176640
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6752230685355176646}
+  - component: {fileID: 6752230685355176647}
+  m_Layer: 0
+  m_Name: WaveSpawnerManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6752230685355176646
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6752230685355176640}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6752230685355176647
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6752230685355176640}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 286aa498e89c9e745a10858c9e29ee23, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  WaveTableFile: {fileID: 4900000, guid: 467018a3a90fed349afc0c27f0abe8f3, type: 3}
+  EnemyPrefabs:
+  - {fileID: 382276047645554307, guid: 5b34ab184a92c73468f3bb15ecb48d83, type: 3}
+  - {fileID: 4816123422733018461, guid: b04a73bcae0268344a3cd7dd7c165b2d, type: 3}
+  - {fileID: -1261992107006566908, guid: ab9d84da55653417b91ae48fcd2a9ca5, type: 3}
+  - {fileID: 2609697409460950332, guid: 4683ff3bc2ad6674490dbb553e4b6e3e, type: 3}
+  - {fileID: 5207972207715144811, guid: 80d58e45e87d74c40b38558360b6a028, type: 3}
+  - {fileID: 2896034069588207541, guid: 3ae622869f136174bb01b27a4b2a5191, type: 3}
+  - {fileID: 2445692176423822423, guid: 46d12bfbb5907754c99c404dde16b028, type: 3}
+  OwningEndlessMode: {fileID: 0}
+  CurrentWaveNumber: -1
+  CurrentPreloadedWaveNumber: -1

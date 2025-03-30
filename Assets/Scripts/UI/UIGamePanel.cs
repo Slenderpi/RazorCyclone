@@ -1,9 +1,5 @@
-
-using System;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Analytics;
 using UnityEngine.UI;
 
 public class UIGamePanel : UIPanel {
@@ -12,19 +8,34 @@ public class UIGamePanel : UIPanel {
     public Slider FuelSlider;
     public Animator FuelOutlineAnimator;
     public Animator FuelFillAnimator;
+    public Image FuelSlider2;
     
     [Header("Healthbar")]
     public Slider HealthSlider;
     public TMP_Text HealthText;
     public Animator HealthFillAnimator;
+    public Image HealthSlider2;
     
     [Header("Crosshairs")]
     public RectTransform MainVacuumCrosshair;
     public RectTransform MainCanonCrosshair;
-    public Animator HitmarkerAnimator;
+    public Animator CanonHitmarkerAnim;
+    public Animator VacuumHitmarkerAnim;
+    
+    [Header("Bike Spinning")]
+    public Material SpinTileMatDefault;
+    public Material SpinTileMatRecent;
+    public Material SpinTileMatProgress;
+    // public Material SpinTileMat;
+    public MeshRenderer TileRendW;
+    public MeshRenderer TileRendA;
+    public MeshRenderer TileRendS;
+    public MeshRenderer TileRendD;
+    public TMP_Text SpinCounterText;
+    public TMP_Text SpinCounterText_1;
     
     [Header("Misc.")]
-    public TMP_Text Speedometer;
+    public TMP_Text RoundLabel;
     
     [Header("Input Overlay")]
     public GameObject InputOverlay;
@@ -39,10 +50,6 @@ public class UIGamePanel : UIPanel {
     
     
     
-    public void SetSpeedText(float speed) {
-        Speedometer.text = string.Format("{0:0.0}", speed) + "";
-    }
-    
     public void OnFireCanon(bool started) {
         KeyImageM2.color = started ? Color.white : Color.gray;
     }
@@ -50,7 +57,7 @@ public class UIGamePanel : UIPanel {
     public void OnFireVacuum(bool started) {
         KeyImageM1.color = started ? Color.white : Color.gray;
     }
-
+    
     public void UpdateCrosshairPositions(Vector3 screenPointVacuum, Vector3 screenPointCanon) {
         if (screenPointVacuum.z > 0.01f) {
             if (!MainVacuumCrosshair.gameObject.activeSelf) MainVacuumCrosshair.gameObject.SetActive(true);
@@ -104,19 +111,25 @@ public class UIGamePanel : UIPanel {
     
     public void OnFuelAdded(float changeAmnt, float perc) {
         FuelSlider.value = perc;
+        // TODO
+        FuelSlider2.fillAmount = perc * 0.2f;
+        
         if (!gameObject.activeSelf) return;
         if (perc == 1f || true) FuelOutlineAnimator.SetTrigger("RefillFuel");
         
         // Temporary?
         GameManager.Instance.Audio2D.PlayClipSFX(AudioPlayer2D.EClipSFX.Plr_PickupFuel);
     }
-
+    
     public void OnFuelSpent(float amnt, float perc, bool spentAsHealth) {
         FuelSlider.value = perc;
         if (spentAsHealth)
             HealthFillAnimator.SetTrigger("HealthAsFuel");
         else
             FuelFillAnimator.SetTrigger("SpendFuel");
+        
+        // TODO
+        FuelSlider2.fillAmount = perc * 0.2f;
     }
     
     public void OnDamageTaken(float amnt) {
@@ -129,9 +142,53 @@ public class UIGamePanel : UIPanel {
         updateHealthUI(plr.CurrentHealth, plr.MaxHealth);
     }
     
+    void onSpinProgressed(int progress) {
+        switch (progress) {
+        case 1:
+            TileRendD.material = SpinTileMatRecent;
+            break;
+        case 2:
+            TileRendS.material = SpinTileMatRecent;
+            TileRendD.material = SpinTileMatProgress;
+            break;
+        case 3:
+            TileRendA.material = SpinTileMatRecent;
+            TileRendS.material = SpinTileMatProgress;
+            break;
+        case -1:
+            TileRendA.material = SpinTileMatRecent;
+            break;
+        case -2:
+            TileRendS.material = SpinTileMatRecent;
+            TileRendA.material = SpinTileMatProgress;
+            break;
+        case -3:
+            TileRendD.material = SpinTileMatRecent;
+            TileRendS.material = SpinTileMatProgress;
+            break;
+        }
+    }
+    
+    void onSpinProgressReset(int progressBeforeReset) {
+        resetSpinTileColors();
+    }
+    
+    void onSpinCompleted(int newSpinCount) {
+        resetSpinTileColors();
+        // TileRendW.material = SpinTileMatProgress;
+        setSpinCounterText(newSpinCount);
+    }
+    
+    void onSpinsSpent(int prevSpinCount, int newSpinCount) {
+        setSpinCounterText(newSpinCount);
+    }
+    
     void updateHealthUI(float currH, float maxH) {
         HealthSlider.value = currH / maxH;
         HealthText.text = Mathf.CeilToInt(currH).ToString();
+        
+        // TODO
+        HealthSlider2.fillAmount = currH / maxH * 0.2f;
     }
     
     public void OnOutOfFuel() {
@@ -141,7 +198,15 @@ public class UIGamePanel : UIPanel {
     }
     
     public void OnPlayerDamagedEnemy(EnemyBase enemy) {
-        HitmarkerAnimator.SetTrigger("Show");
+        CanonHitmarkerAnim.SetTrigger("Hit");
+    }
+    
+    public void OnPlayerKilledEnemy(EnemyBase enemy, bool wasCanon) {
+        if (wasCanon) {
+            CanonHitmarkerAnim.SetTrigger("Kill");
+        } else {
+            VacuumHitmarkerAnim.SetTrigger("Kill");
+        }
     }
     
     // public void SetReadTimerOn(bool setReadOn) {
@@ -151,11 +216,23 @@ public class UIGamePanel : UIPanel {
             
     //     }
     // }
-
+    
+    void resetSpinTileColors() {
+        TileRendW.material = SpinTileMatDefault;
+        TileRendA.material = SpinTileMatDefault;
+        TileRendS.material = SpinTileMatDefault;
+        TileRendD.material = SpinTileMatDefault;
+    }
+    
+    void setSpinCounterText(int spins) {
+        SpinCounterText.text = spins.ToString();
+        SpinCounterText_1.text = SpinCounterText.text;
+    }
+    
     public override void OnGameResumed() {
         // SetActive(true);
     }
-
+    
     public override void OnGamePaused() {
         // SetActive(false);
     }
@@ -165,17 +242,26 @@ public class UIGamePanel : UIPanel {
         plr.A_FuelSpent += OnFuelSpent;
         plr.A_PlayerTakenDamage += OnDamageTaken;
         plr.A_PlayerHealed += OnPlayerHealed;
-        ResetUIElements();
+        plr.A_SpinProgressed += onSpinProgressed;
+        plr.A_SpinProgressReset += onSpinProgressReset;
+        plr.A_SpinCompleted += onSpinCompleted;
+        plr.A_SpinsSpent += onSpinsSpent;
+        ResetUIElements(plr);
     }
-
+    
     public override void OnPlayerDestroying(PlayerCharacterCtrlr plr) {
+        // NOTE: Not sure if these unsubscriptions are necessary since the player's getting destroyed anyway
         plr.A_FuelAdded -= OnFuelAdded;
         plr.A_FuelSpent -= OnFuelSpent;
         plr.A_PlayerTakenDamage -= OnDamageTaken;
         plr.A_PlayerHealed -= OnPlayerHealed;
+        plr.A_SpinProgressed -= onSpinProgressed;
+        plr.A_SpinProgressReset -= onSpinProgressReset;
+        plr.A_SpinCompleted -= onSpinCompleted;
+        plr.A_SpinsSpent -= onSpinsSpent;
     }
     
-    public void ResetUIElements() {
+    public void ResetUIElements(PlayerCharacterCtrlr plr) {
         OnFuelAdded(0, 1);
         OnTurnInputChanged(Vector2.zero);
         OnVertInputChanged(0);
@@ -183,6 +269,10 @@ public class UIGamePanel : UIPanel {
         OnFireCanon(false);
         HealthSlider.value = 100;
         HealthText.text = "100";
+        // TODO
+        HealthSlider2.fillAmount = 0.2f;
+        resetSpinTileColors();
+        setSpinCounterText(plr.currentBikeSpins);
         if (gameObject.activeSelf) FuelOutlineAnimator.SetTrigger("Reset");
     }
 

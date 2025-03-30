@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7dd6169fe95d598479d7af5198c96001, type: 3}
+  m_Name: HunterEnemyData
+  m_EditorClassIdentifier: 
+  StunDuration: 5
+  ShieldDrag: 0.2
+  StunDrag: 0.8
+  ShieldActiveMaterial: {fileID: 2100000, guid: ccf05311b2a0b0948adaf93a7a252a7b, type: 2}
+  ShieldInactiveMaterial: {fileID: 2100000, guid: 4ff15476d7f6fd54798d5a02b6e723d0, type: 2}

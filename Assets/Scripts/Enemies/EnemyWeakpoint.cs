@@ -7,25 +7,22 @@ public class EnemyWeakpoint : EnemyBase {
     
     
     protected override void Init() {
-        DealDamageOnTouch = false;
-        CanGetVacuumSucked = false;
+        // DealDamageOnTouch = false;
     }
     
-    public override void TakeDamage(float amnt, EDamageType damageType) {
-        if (invincible) return;
-        if (health <= 0) return;
+    protected override void OnTakeDamage(float amnt, EDamageType damageType) {
         health -= amnt;
         if (health <= 0) {
             OnDefeated(damageType);
         } else {
-            GameManager.Instance.OnEnemyTookDamage(this, damageType, false);
+            // GameManager.Instance.OnEnemyTookDamage(this, damageType, false);
         }
     }
     
     protected override void OnDefeated(EDamageType damageType) {
         if (damageType == EDamageType.Vacuum) {
             // Give player fuel immediately if killed by vacuum
-            GameManager.CurrentPlayer.AddFuel(FuelAmount);
+            GameManager.CurrentPlayer.AddFuel(100);
         } else {
             DropFuel();
         }

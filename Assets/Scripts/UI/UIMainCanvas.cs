@@ -1,6 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class UIMainCanvas : UIPanel {
@@ -77,15 +75,15 @@ public class UIMainCanvas : UIPanel {
     public override void OnGamePaused() {
         SetCanvasState(ECanvasState.Paused);
     }
-
+    
     public override void OnGameResumed() {
         SetCanvasState(ECanvasState.Gameplay);
     }
-
+    
     public override void OnPlayerDestroying(PlayerCharacterCtrlr plr) {
         SetCanvasState(ECanvasState.None);
     }
-
+    
     public override void OnPlayerSpawned(PlayerCharacterCtrlr plr) {
         SetCanvasState(ECanvasState.Gameplay);
     }

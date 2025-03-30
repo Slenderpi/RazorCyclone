@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.PlayerLoop;
 
 /// <summary>
 /// This class handles the framework for the movement and rotation of a Boid. Indpendent boid objects should
@@ -8,8 +7,10 @@ using UnityEngine.PlayerLoop;
 public abstract class BoidMover : MonoBehaviour {
     
     [Header("General BoidMover parameters")]
-    [Tooltip("Reference to the model to be rotated.\n\nIf none set, BoidMover will NOT apply any rotations.")]
+    [Tooltip("Reference to the model to be rotated.\n\nIf none set, BoidMover will choose the transform this script is on.")]
     public Transform ModelToRotate;
+    [Tooltip("If enabled, BoidMover will also handle the rotation of the object based on calculated steering forces.")]
+    public bool handleRotation = true;
     public float rotationPerFrameLerpAlpha = 0.1f;
     
     // Should be set by child classes in Init()
@@ -27,10 +28,13 @@ public abstract class BoidMover : MonoBehaviour {
     
     void Awake() {
         rb = GetComponent<Rigidbody>();
-        if (ModelToRotate)
-            ResetWanderPoint(1);
-        else
-            wanderPoint = transform.forward;
+        // if (ModelToRotate)
+        //     ResetWanderPoint(1);
+        // else
+        //     wanderPoint = transform.forward;
+        if (!ModelToRotate)
+            ModelToRotate = transform;
+        ResetWanderPoint(1);
         Init();
     }
     
@@ -45,8 +49,8 @@ public abstract class BoidMover : MonoBehaviour {
         PlayerCharacterCtrlr plr = GameManager.CurrentPlayer;
         if (!plr) return;
         Vector3 steer = CalculateSteering();
-        if (ModelToRotate)
-            calculatedRotation = _calcRotation(rb.velocity, steer);
+        // if (ModelToRotate)
+        calculatedRotation = _calcRotation(rb.velocity, steer);
         if (enableAvoidanceTest)
             steer += testAvoidance();
         rb.AddForce(steer, ForceMode.Acceleration);

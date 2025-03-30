@@ -1,11 +1,10 @@
+using System.Collections;
 using UnityEngine;
 
 public class LavaWeakpoint : EnemyWeakpoint {
     
     [Header("Lava Weakpoint Config")]
-    [Tooltip("The weakpoint's height will be at the lava's max height + this amount.")]
-    public float WeakpointHeightAboveLava = 2;
-    public float AnimationDuration = 1;
+    public LavaWPEnemySO LavaWPConfig;
     
     public Transform weakpointTransform;
     
@@ -29,15 +28,15 @@ public class LavaWeakpoint : EnemyWeakpoint {
         weakpointTransform.gameObject.SetActive(false);
         startY = weakpointTransform.localPosition.y;
     }
-
+    
     protected override void LateInit() {
         base.LateInit();
         ConsiderForRicochet = false;
     }
-
+    
     void Update() {
         if (shouldAnimate) {
-            float t = (Time.time - lastBeginTime) / AnimationDuration;
+            float t = (Time.time - lastBeginTime) / LavaWPConfig.AnimationDuration;
             if (isExposed) {
                 if (t >= 1) {
                     t = 1;
@@ -60,7 +59,7 @@ public class LavaWeakpoint : EnemyWeakpoint {
         } else if (isExposed) {
             weakpointTransform.position = new(
                 weakpointTransform.position.x,
-                lava.MaxLavaHeight + WeakpointHeightAboveLava,
+                lava.MaxLavaHeight + LavaWPConfig.WeakpointHeightAboveLava,
                 weakpointTransform.position.z
             );
             updateLine();
@@ -75,7 +74,7 @@ public class LavaWeakpoint : EnemyWeakpoint {
     protected override void OnDefeated(EDamageType damageType) {
         // Same logic as normal OnDeafeated(), but drop fuel at actual weakpoint position
         if (damageType == EDamageType.Vacuum) {
-            GameManager.CurrentPlayer.AddFuel(FuelAmount);
+            GameManager.CurrentPlayer.AddFuel(100);
         } else {
             DropFuel(weakpointTransform.position);
         }
@@ -87,8 +86,14 @@ public class LavaWeakpoint : EnemyWeakpoint {
         lastBeginTime = Time.time;
         isExposed = true;
         shouldAnimate = true;
-        ConsiderForRicochet = true;
+        StartCoroutine(enableRicochetConsider());
         weakpointTransform.gameObject.SetActive(true);
+    }
+    
+    IEnumerator enableRicochetConsider() {
+        yield return new WaitForSeconds(0.17f);
+        if (!Dead && isExposed)
+            ConsiderForRicochet = true;
     }
     
     public void BeginHide() {
@@ -100,7 +105,7 @@ public class LavaWeakpoint : EnemyWeakpoint {
     float interpHeight(float t) {    
         return Mathf.Lerp(
             transform.position.y + startY,
-            lava.MaxLavaHeight + WeakpointHeightAboveLava,
+            lava.MaxLavaHeight + LavaWPConfig.WeakpointHeightAboveLava,
             smoothstep4(t)
         );
     }

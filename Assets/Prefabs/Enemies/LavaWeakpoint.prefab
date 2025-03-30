@@ -43,7 +43,6 @@ GameObject:
   - component: {fileID: 3289913355028547861}
   - component: {fileID: 5757610291886797753}
   - component: {fileID: 5096058422318345473}
-  - component: {fileID: 3343353016252601316}
   m_Layer: 7
   m_Name: Weakpoint
   m_TagString: Enemy
@@ -62,7 +61,9 @@ Transform:
   m_LocalPosition: {x: 0, y: 0.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 1697971442969073693}
+  - {fileID: 2128063871310386290}
   m_Father: {fileID: 2511934953390636211}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -116,19 +117,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!135 &3343353016252601316
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2124225236483108557}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.5
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &6599918015942626513
 GameObject:
   m_ObjectHideFlags: 0
@@ -153,13 +141,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6599918015942626513}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: -0.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 2511934953390636211}
-  m_RootOrder: 2
+  m_Father: {fileID: 3289913355028547861}
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!120 &2491242878235509558
 LineRenderer:
@@ -260,6 +248,51 @@ LineRenderer:
     generateLightingData: 0
   m_UseWorldSpace: 1
   m_Loop: 0
+--- !u!1 &7009838678611554412
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1697971442969073693}
+  - component: {fileID: 816338427547072726}
+  m_Layer: 7
+  m_Name: Hitbox
+  m_TagString: Enemy
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1697971442969073693
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7009838678611554412}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3289913355028547861}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!135 &816338427547072726
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7009838678611554412}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.5
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &7236243536134578558
 GameObject:
   m_ObjectHideFlags: 0
@@ -291,7 +324,6 @@ Transform:
   m_Children:
   - {fileID: 3289913355028547861}
   - {fileID: 6342812463714376095}
-  - {fileID: 2128063871310386290}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -307,26 +339,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8abbf1eea188fd54f8f92d8cc64f9c48, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  etypeid: 9
+  EnConfig: {fileID: 11400000, guid: 0a5df4f4d36a7e849a03cade23c1e52d, type: 2}
+  Hitboxes: {fileID: 7009838678611554412}
+  EnemyTrigger: {fileID: 0}
+  Model: {fileID: 0}
+  TransformForRicochetToAimAt: {fileID: 3289913355028547861}
+  AmbientAudio: {fileID: 0}
+  DeathAudio: {fileID: 0}
+  Dead: 0
   MaxHealth: 50
   health: 0
-  Damage: 0
-  AttackDelay: 1
-  DealDamageOnTouch: 0
-  lastVacuumHitTime: 0
-  CanGetVacuumSucked: 0
-  CanGetVacuumKilled: 1
-  AffectedByLava: 0
-  RicochetCanon: 0
-  ConsiderForRicochet: 1
-  TransformForRicochetToAimAt: {fileID: 3289913355028547861}
-  LavaSubmergeOffset: 1
-  FuelAmount: 50
   rb: {fileID: 0}
   boid: {fileID: 0}
-  fuelPickupPrefab: {fileID: 5163220815717078053, guid: bb72521b10fb34d7bbbed5f6f77687b4, type: 3}
+  suckable: {fileID: 0}
+  RicochetCanon: 1
+  ConsiderForRicochet: 1
   invincible: 0
-  WeakpointHeightAboveLava: 4
-  AnimationDuration: 1
+  LavaWPConfig: {fileID: 11400000, guid: 27a1abab9e777ee4a9c42e202e30763a, type: 2}
   weakpointTransform: {fileID: 3289913355028547861}
   lid: {fileID: 6342812463714376095}
   line: {fileID: 2491242878235509558}

@@ -1,8 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class ExplosionBase : MonoBehaviour {
     
@@ -33,7 +29,7 @@ public class ExplosionBase : MonoBehaviour {
                 if (!Physics.Raycast(transform.position, (co.transform.position - transform.position).normalized, dist, ~ExplosionLayerMask)) {
                     rb.AddExplosionForce(ExplosionForce, transform.position, ExplosionRadius + 0.5f);
                     rb.AddForce(Vector3.up * AdditionalUpwardForce, ForceMode.Impulse);
-                    if (co.TryGetComponent(out EnemyBase en)) {
+                    if (co.CompareTag("EnemyHitbox") && co.transform.parent.parent.TryGetComponent(out EnemyBase en)) {
                         if (damage > 0) en.TakeDamage(damage, EDamageType.ProjectileExplosion);
                     }
                 }

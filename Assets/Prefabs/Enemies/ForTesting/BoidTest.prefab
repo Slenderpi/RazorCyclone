@@ -214,17 +214,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 09129ffe74e62e343a7c6ef35ff55517, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  etypeid: 8
+  EnConfig: {fileID: 0}
+  Hitboxes: {fileID: 0}
+  EnemyTrigger: {fileID: 0}
+  Model: {fileID: 0}
+  TransformForRicochetToAimAt: {fileID: 0}
+  AmbientAudio: {fileID: 0}
+  DeathAudio: {fileID: 0}
+  Dead: 0
   MaxHealth: 50
   health: 0
-  Damage: 10
-  AttackDelay: 1
-  DealDamageOnTouch: 0
-  lastVacuumHitTime: 0
-  CanGetVacuumSucked: 0
-  FuelAmount: 50
   rb: {fileID: 9113617427949065013}
   boid: {fileID: 0}
-  fuelPickupPrefab: {fileID: 5163220815717078053, guid: bb72521b10fb34d7bbbed5f6f77687b4, type: 3}
+  suckable: {fileID: 0}
+  RicochetCanon: 1
+  ConsiderForRicochet: 1
   invincible: 1
 --- !u!114 &5321480378842491107
 MonoBehaviour:
@@ -239,6 +244,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ModelToRotate: {fileID: 7802558663474256315}
+  handleRotation: 1
   rotationPerFrameLerpAlpha: 0.1
   BoidData: {fileID: 11400000, guid: 15745e73f992e264f9b8a509b53a4c06, type: 2}
   USE_OVERRIDES: 0
@@ -253,7 +259,8 @@ MonoBehaviour:
   WanderMinimumDelay: 0
   AvoidanceMaxLookDist: 4
   AvoidanceWhiskerAngle: 30
-  AvoidanceIntensity: 7
+  AvoidanceMinIntensity: 1
+  AvoidanceMaxIntensity: 7
   AvoidanceMaxSteeringForce: 10
 --- !u!54 &9113617427949065013
 Rigidbody:

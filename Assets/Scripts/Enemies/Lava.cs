@@ -24,58 +24,30 @@ public class Lava : MonoBehaviour {
     int livingLavaEnemies = 0;
     float startY;
     
-    int PICKUP_LAYER;
-
-
-
+    
+    
     void Awake() {
 #if UNITY_EDITOR
         if (ForceDisable)
             gameObject.SetActive(false); 
 #endif
     }
-
+    
     void Start() {
-        PICKUP_LAYER = LayerMask.NameToLayer("Pickup");
         startY = transform.position.y;
         currentHeight = startY;
     }
     
     void FixedUpdate() {
-        // Vector3 newPosition = transform.position;
         currentHeight += Time.fixedDeltaTime * currRiseRate;
-        // newPosition.y += Time.fixedDeltaTime * currRiseRate;
         if (currentHeight > MaxLavaHeight) {
             currentHeight = MaxLavaHeight;
             currRiseRate = 0;
         } else if (livingLavaEnemies == 0 && currentHeight <= startY) {
             currRiseRate = 0;
             currentHeight = startY;
-            // gameObject.SetActive(false);
         }
         transform.position = new(transform.position.x, currentHeight, transform.position.y);
-    }
-    
-    void OnObjectEnteredLava(Collider collider) {
-        // if (collider.gameObject.layer == PICKUP_LAYER) {
-        //     FuelPickup fp = collider.gameObject.GetComponent<FuelPickup>();
-        //     print("Pickup landed in! PICKUP_LAYER: " + PICKUP_LAYER + "; layer: " + collider.gameObject.layer);
-        // } else {
-        //     print("Lava collision: " + collider.gameObject.name);
-        // }
-        // // if (collision.gameObject.CompareTag("Player")) {
-        // //     GameManager.CurrentPlayer.TakeDamage(LavaDamage);
-        // // }
-    }
-    
-    void OnEnable() {
-        // LavaHitboxNotifier.A_TriggerEntered += OnObjectEnteredLava;
-        // LavaHitboxCollider.A_CollisionExited += OnLavaCollisionExit;
-    }
-    
-    void OnDisable() {
-        // LavaHitboxNotifier.A_TriggerEntered -= OnObjectEnteredLava;
-        // LavaHitboxCollider.A_CollisionExited -= OnLavaCollisionExit;
     }
     
     public void OnLavaEnemySpawned() {
@@ -83,13 +55,9 @@ public class Lava : MonoBehaviour {
         if (ForceDisable) return;
 #endif
         if (++livingLavaEnemies == 1) {
-            // gameObject.SetActive(true);
             if (currentHeight < MaxLavaHeight) {
                 currRiseRate = LavaRiseSpeed;
             }
-            // if (transform.position.y < MaxLavaHeight) {
-            //     riseRate = LavaRiseSpeed;
-            // }
         }
     }
     

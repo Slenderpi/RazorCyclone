@@ -5,13 +5,13 @@ public class BM_Hunter : BoidMover {
     public SO_Hunter HunterData;
     
     float lastRunawayTime = -1000;
-
-
-
+    
+    
+    
     protected override void Init() {
         generalBoidData = HunterData;
     }
-
+    
     public override Vector3 CalculateSteering() {
         Vector3 ret = Vector3.zero;
         Transform plrTrans = GameManager.CurrentPlayer.transform;
@@ -30,7 +30,6 @@ public class BM_Hunter : BoidMover {
             if (rb.velocity.sqrMagnitude > HunterData.RunAwayRequiredSpeed * HunterData.RunAwayRequiredSpeed &&
                 toPlrMag <= HunterData.RunAwayRequiredDist * HunterData.RunAwayRequiredDist &&
                 Vector3.Dot(toPlayer, rb.velocity) <= 0) {
-                // print("FLEEING");
                 lastRunawayTime = Time.fixedTime;
                 ret += hunterFlee(plrTrans.position);
             } else {
@@ -53,7 +52,7 @@ public class BM_Hunter : BoidMover {
         );
         // return BoidSteer.Evade(transform.position, playerPos, rb.velocity, GameManager.CurrentPlayer.rb.velocity, HunterData);
     }
-
+    
     public override Quaternion CalculateRotation(Vector3 forward, Vector3 steer) {
         return BoidRotator.Airplane(forward, steer);
     }

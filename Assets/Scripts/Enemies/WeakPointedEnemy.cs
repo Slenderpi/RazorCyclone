@@ -9,8 +9,7 @@ public class WeakpointedEnemy : EnemyBase {
     
     
     protected override void Init() {
-        CanGetVacuumSucked = false;
-        CanGetVacuumKilled = false;
+        // CanGetVacuumKilled = false;
         MaxHealth = weakpoints.Length;
         health = MaxHealth;
         foreach (EnemyWeakpoint wkp in weakpoints) {
@@ -25,6 +24,8 @@ public class WeakpointedEnemy : EnemyBase {
         if (--health <= 0) {
             GameManager.Instance.OnEnemyTookDamage(this, damageType, true);
             OnDefeated(EDamageType.Any);
+        } else {
+            GameManager.Instance.OnEnemyTookDamage(this, damageType, false);
         }
     }
 

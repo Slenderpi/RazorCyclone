@@ -2,34 +2,49 @@ using System.Collections;
 using UnityEngine;
 
 public class CentipedeEnemy : EnemyBase {
+
+    enum MissileAction {
+        Waiting,
+        OpeningDoor,
+        FiringMissile,
+        LeaveOpen,
+        ClosingDoor
+    }
     
     [Header("Centipede Config")]
+    public CentipedeEnemySO CentConfig;
     [Tooltip("Set this to true in the inspector.\nWhen the head spawns centipede body pieces, it will automatically make sure those pieces have this value set to false.")]
     public bool SpawnAsHead = false;
     [Tooltip("Number of body segments to spawn.\nA value of 1 means there will be 1 body segment and 1 head (this object), resulting in a total length of 2.")]
     public int BodyLength = 10; // Only matters if this piece is spawned as a head. A value of 1 means there will be a head (this obj) and 1 body piece.
     // public int SamplingFrequency = 1; // Number of times to sample per second
-    [Tooltip("Movement speed the head will move at.")]
-    public float MoveSpeed = 5;
-    [Tooltip("Distance the body segments will maintain from the previous segment.")]
-    public float FollowOffset = 1; // Distance to keep from previous
-    [Tooltip("The time between each missile firing.")]
-    public float MissileFireDelay = 5;
-    [Tooltip("Additional time to prevent the entire centipede from firing at once.\nExample: using 0.1, the head will fire after MissileFireDelay, the first body will fire after MissileFireDelay + 0.1, the next at MissileFireDelay + 0.2, etc.")]
-    public float MissileFireDelayOffset = 0.1f;
-    [SerializeField]
-    [Tooltip("Prefab of missile. Needs to be of type CentipedeMissile.")]
-    CentipedeMissile missilePrefab;
-    [SerializeField]
-    [Tooltip("VFX to use when a missile gets launched.")]
-    GameObject missileFireEffectPrefab;
+    // [Tooltip("Movement speed the head will move at.")]
+    // public float MoveSpeed = 5;
+    // [Tooltip("Distance the body segments will maintain from the previous segment.")]
+    // public float FollowOffset = 1; // Distance to keep from previous
+    // [Tooltip("The time between each missile firing.")]
+    // public float MissileFireDelay = 5;
+    // [Tooltip("Additional time to prevent the entire centipede from firing at once.\nExample: using 0.1, the head will fire after MissileFireDelay, the first body will fire after MissileFireDelay + 0.1, the next at MissileFireDelay + 0.2, etc.")]
+    // public float MissileFireDelayOffset = 0.1f;
+    // [Tooltip("The length of time the missile door animates opening for.\nDoes not affect MissileFireDelay.")]
+    // public float MissileDoorAnimTime = 0.2f;
+    // [Tooltip("The length of the time the missile door stays open right after firing the missile.\nDoes not affect MissileFireDelay.")]
+    // public float MissileDoorLeaveOpenTime = 0.2f;
+    // [SerializeField]
+    // [Tooltip("Prefab of missile. Needs to be of type CentipedeMissile.")]
+    // CentipedeMissile missilePrefab;
+    // [SerializeField]
+    // [Tooltip("VFX to use when a missile gets launched.")]
+    // GameObject missileFireEffectPrefab;
     [SerializeField]
     [Tooltip("Transform that the missile will be launched form. Make sure the forward (-z) direction of this transform is set correctly, because missiles will spawn with this orientation.")]
     Transform missileLaunchPoint;
     [SerializeField]
-    MeshRenderer modelMeshRenderer;
+    Transform doorHinge;
     [SerializeField]
-    Material headMaterial;
+    MeshRenderer modelMeshRenderer;
+    // [SerializeField]
+    // Material headMaterial;
     
     Vector3[] sampledPositions;
     Quaternion[] sampledRots;
@@ -44,20 +59,18 @@ public class CentipedeEnemy : EnemyBase {
     float lastSampleTime;
     WaitForSeconds sampleWaiter;
     WaitForSeconds missileWaiter;
+    float lastMissileActionTime;
+    MissileAction currMissileAction;
     CentipedeMissile pooledMissile;
     GameObject pooledFireEffect;
     
     
     
     protected override void Init() {
-        base.Init();
-        ConsiderForRicochet = false;
-        if (!SpawnAsHead) {
-            // poolMissile();
-            return;
-        }
+        // ConsiderForRicochet = true;
+        if (!SpawnAsHead) return;
         SpawnAsHead = false;
-        samplingDelay = FollowOffset / MoveSpeed;
+        samplingDelay = CentConfig.FollowOffset / CentConfig.MoveSpeed;
         samplingLength = BodyLength + 1;
         Vector3[] samposs = new Vector3[samplingLength];
         samposs[BodyLength] = transform.position;
@@ -73,17 +86,16 @@ public class CentipedeEnemy : EnemyBase {
             prev.ceAft = ce;
             ce.bodyIndex = i + 1; // First body piece is at 1. I'm considering the head as 0
             ce.sampleWaiter = new WaitForSeconds(samplingDelay);
-            ce.missileWaiter = new WaitForSeconds(MissileFireDelay);
+            ce.missileWaiter = new WaitForSeconds(CentConfig.MissileFireDelay);
             ce.samplingDelay = samplingDelay;
             prev = ce;
         }
         prev.ceAft = null; // Make sure the last segment has an aft of null
         sampleWaiter = new WaitForSeconds(samplingDelay);
-        missileWaiter = new WaitForSeconds(MissileFireDelay);
+        missileWaiter = new WaitForSeconds(CentConfig.MissileFireDelay);
         sampledPositions = samposs;
         sampledRots = samrots;
-        modelMeshRenderer.material = headMaterial;
-        // poolMissile();
+        modelMeshRenderer.material = CentConfig.HeadMaterial;
         SpawnAsHead = true;
     }
     
@@ -94,7 +106,9 @@ public class CentipedeEnemy : EnemyBase {
             lastSampleTime = Time.time;
             StartCoroutine(sampleTransform());
         }
-        StartCoroutine(offsetMissileFiring());
+        poolMissile();
+        lastMissileActionTime = Time.time + CentConfig.MissileFireDelayOffset * bodyIndex;
+        currMissileAction = MissileAction.Waiting;
     }
     
     void Update() {
@@ -102,18 +116,19 @@ public class CentipedeEnemy : EnemyBase {
             if (!GameManager.CurrentPlayer) return;
             Vector3 toplr = GameManager.CurrentPlayer.transform.position - transform.position;
             transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(toplr), 60 * Time.deltaTime);
-            transform.position += MoveSpeed * Time.deltaTime * transform.forward;
+            transform.position += CentConfig.MoveSpeed * Time.deltaTime * transform.forward;
         } else {
             transform.SetPositionAndRotation(
                 head.getLerpedPosition(bodyIndex),
                 head.getLerpedRotation(bodyIndex)
             );
         }
+        handleMissileActionState();
     }
     
     protected override void OnDefeated(EDamageType damageType) {
         if (damageType == EDamageType.Vacuum) {
-            GameManager.CurrentPlayer.AddFuel(FuelAmount);
+            GameManager.CurrentPlayer.AddFuel(100);
         } else {
             DropFuel();
         }
@@ -131,8 +146,6 @@ public class CentipedeEnemy : EnemyBase {
         base.OnDestroying();
         if (pooledMissile)
             Destroy(pooledMissile.gameObject);
-        // if (pooledFireEffect)
-        //     Destroy(pooledFireEffect);
     }
 
     void updateHeadAboutDefeat(int index) {
@@ -172,34 +185,66 @@ public class CentipedeEnemy : EnemyBase {
             sampledRots[i] = headRef.sampledRots[ind];
         }
         bodyIndex = 0;
-        modelMeshRenderer.material = headMaterial;
+        modelMeshRenderer.material = CentConfig.HeadMaterial;
         if (ceAft)
             ceAft.onNewHeadWasCreated(this, 1);
         StartCoroutine(sampleTransform());
     }
     
-    IEnumerator offsetMissileFiring() {
-        yield return new WaitForSeconds(MissileFireDelayOffset * bodyIndex);
-        StartCoroutine(fireMissile());
+    void handleMissileActionState() {
+        switch (currMissileAction) {
+        case MissileAction.Waiting:
+            if (Time.time - lastMissileActionTime >= CentConfig.MissileFireDelay - CentConfig.MissileDoorAnimTime * 2 - CentConfig.MissileDoorLeaveOpenTime) {
+                lastMissileActionTime += CentConfig.MissileFireDelay - CentConfig.MissileDoorAnimTime * 2 - CentConfig.MissileDoorLeaveOpenTime;
+                currMissileAction = MissileAction.OpeningDoor;
+            }
+            break;
+        case MissileAction.OpeningDoor:
+            float alpha = (Time.time - lastMissileActionTime) / CentConfig.MissileDoorAnimTime;
+            if (alpha >= 1) {
+                animateDoors(1);
+                lastMissileActionTime += CentConfig.MissileDoorAnimTime;
+                currMissileAction = MissileAction.FiringMissile;
+            } else {
+                animateDoors(alpha);
+            }
+            break;
+        case MissileAction.FiringMissile:
+            pooledMissile.transform.SetPositionAndRotation(missileLaunchPoint.position, missileLaunchPoint.rotation);
+            pooledMissile.gameObject.SetActive(true);
+            pooledFireEffect.SetActive(true);
+            currMissileAction = MissileAction.LeaveOpen;
+            break;
+        case MissileAction.LeaveOpen:
+            if (Time.time - lastMissileActionTime >= CentConfig.MissileDoorLeaveOpenTime) {
+                lastMissileActionTime += CentConfig.MissileDoorLeaveOpenTime;
+                currMissileAction = MissileAction.ClosingDoor;
+            }
+            break;
+        case MissileAction.ClosingDoor:
+            alpha = (Time.time - lastMissileActionTime) / CentConfig.MissileDoorAnimTime;
+            if (alpha >= 1) {
+                animateDoors(0);
+                lastMissileActionTime += CentConfig.MissileDoorAnimTime;
+                poolMissile();
+                currMissileAction = MissileAction.Waiting;
+            } else {
+                animateDoors(1 - alpha);
+            }
+            break;
+        }
     }
     
-    IEnumerator fireMissile() {
-        poolMissile();
-        yield return missileWaiter;
-        pooledMissile.transform.position = missileLaunchPoint.position;
-        pooledMissile.transform.rotation = missileLaunchPoint.rotation;
-        // pooledFireEffect.transform.position = missileLaunchPoint.position;
-        // pooledFireEffect.transform.rotation = missileLaunchPoint.rotation;
-        pooledMissile.gameObject.SetActive(true);
-        pooledFireEffect.gameObject.SetActive(true);
-        StartCoroutine(fireMissile());
+    void animateDoors(float alpha) {
+        float angle = Mathf.Lerp(0, -120, alpha * (2 - alpha));
+        doorHinge.localRotation = Quaternion.AngleAxis(angle, Vector3.right);
     }
     
     void poolMissile() {
-        pooledMissile = Instantiate(missilePrefab, transform.position, transform.rotation);
+        pooledMissile = Instantiate(CentConfig.MissilePrefab, transform.position, transform.rotation);
         pooledMissile.gameObject.SetActive(false);
-        pooledFireEffect = Instantiate(missileFireEffectPrefab, missileLaunchPoint.transform);
-        pooledFireEffect.gameObject.SetActive(false);
+        pooledFireEffect = Instantiate(CentConfig.MissileFireEffectPrefab, missileLaunchPoint.transform);
+        pooledFireEffect.SetActive(false);
     }
     
     Vector3 getLerpedPosition(int index) {

@@ -175,12 +175,12 @@ public class UISettingsPanel : UIPanel {
     public void SetMouseSenseText(float sens) {
         MouseSenseLabel.text = "Mouse Sensitivity: " + sens.ToString("0.00");
     }
-
+    
     public override void Init() {
         base.Init();
         SetSettingsCategory(EActiveCategory.Controls);
     }
-
+    
     void setAllCategoriesInactive() {
         CategoryControls.SetActive(false);
         CategoryVideo.SetActive(false);

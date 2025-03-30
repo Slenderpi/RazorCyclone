@@ -49,12 +49,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 37a1e3093b1dcfb47ae9b8341447edd6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ProjConfig: {fileID: 11400000, guid: b0a2b28711645b6438abc21f436e6359, type: 2}
   damage: 100
-  ProjectileRadius: 0.2
-  MaxLifetime: 10
-  MaxRicochet: 1
-  ImpactEffect: {fileID: 3002241975603437205, guid: 80374ef7d0b981b4cbffdeb0ebf79bc9, type: 3}
-  RicochetEffect: {fileID: 3002241975603437205, guid: e79ef6db1d7da914b931e1ea966ac2f6, type: 3}
+  MaxRicochet: 2
   rb: {fileID: 0}
 --- !u!54 &456872262032847242
 Rigidbody:

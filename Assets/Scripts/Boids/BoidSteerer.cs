@@ -1,8 +1,6 @@
 // UNCOMMENT THE BELOW LINE TO DRAW DEBUG RAYS
 // #define DEBUG_RAYS
 
-using System.Runtime.CompilerServices;
-using Unity.VisualScripting;
 using UnityEngine;
 
 /// <summary>
@@ -10,8 +8,10 @@ using UnityEngine;
 /// </summary>
 public class BoidSteerer {
     
-    static LayerMask AVOIDANCE_LAYER_MASK = (1 << LayerMask.NameToLayer("Default")); // | (1 << LayerMask.NameToLayer("Enemy"));
+    static LayerMask AVOIDANCE_LAYER_MASK = (1 << LayerMask.NameToLayer("Default")); // | (1 << LayerMask.NameToLayer("EnemyHitbox"));
     static LayerMask AVOID_MASK_WITH_INVIS = AVOIDANCE_LAYER_MASK | (1 << LayerMask.NameToLayer("InvisBoidWall"));
+    
+    
     
     public static Vector3 Seek(Vector3 pos, Vector3 targetPos, Vector3 velocity, float maxSteeringVelocity, float maxSteeringForce) {
         // Find desired velocity via |targ - pos| * maxSteerVel
@@ -66,8 +66,8 @@ public class BoidSteerer {
     /// <param name="wanderLimitRadius"></param>
     /// <param name="wanderLimitDist"></param>
     /// <returns></returns>
-    public static Vector3 Wander(Vector3 pos, Vector3 velocity, Vector3 wanderPoint, float wanderLimitDist, float maxSteeringVelocity, float maxSteeringForce) {
-        return Seek(pos, pos + wanderLimitDist * velocity.normalized + wanderPoint, velocity, maxSteeringVelocity, maxSteeringForce);
+    public static Vector3 Wander(Vector3 pos, Vector3 velocity, Vector3 wanderPoint, float wanderLimitDist, float maxSteeringVelocity, float maxWanderForce) {
+        return Seek(pos, pos + wanderLimitDist * velocity.normalized + wanderPoint, velocity, maxSteeringVelocity, maxWanderForce);
     }
     
     public static Vector3 Wander(Vector3 pos, Vector3 velocity, Vector3 wanderPoint, GeneralBoidSO boidData) {
@@ -75,7 +75,7 @@ public class BoidSteerer {
             pos, velocity, wanderPoint,
             boidData.WanderLimitDist,
             boidData.MaxSteeringVelocity,
-            boidData.MaxSteeringForce
+            boidData.MaxWanderForce
         );
     }
     
