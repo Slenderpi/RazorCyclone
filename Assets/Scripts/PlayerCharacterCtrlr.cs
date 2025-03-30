@@ -151,13 +151,8 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         
         vacuumHitbox.SetActive(false);
         
-        // ~(layers to ignore)
-        AimRayLayerMask = ~(
-            (1 << LayerMask.NameToLayer("Player")) |
-            (1 << LayerMask.NameToLayer("Projectile")) |
-            (1 << LayerMask.NameToLayer("Weapon")) |
-            (1 << LayerMask.NameToLayer("Pickup"))
-        );
+        // 1 is for layers to include in raycast
+        AimRayLayerMask = (1 << LayerMask.NameToLayer("Default")) | (1 << LayerMask.NameToLayer("EnemyHitbox"));
         
         AddFuel(MaxFuel);
         vacuumFuelCost = MaxFuel / VacuumFuelTime * Time.fixedDeltaTime;
