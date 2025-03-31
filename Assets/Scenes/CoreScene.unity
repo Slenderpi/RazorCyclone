@@ -3217,15 +3217,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   swf: 2
-  swz: 0.666
+  swz: 0.6
   swr: 2
+  maxLookDelta: 7
   maxSwayDist: 30
   swayYExaggerateFactor: 2
   scf: 3
   scz: 1
   scr: 1
-  speedScaleRange: 0.17
-  maxSpeedScale: 70
+  AdditionalScale: 0.17
+  HighAdditionalScaleSpeed: 50
   FuelSlider: {fileID: 125639532}
   FuelOutlineAnimator: {fileID: 701307696}
   FuelFillAnimator: {fileID: 81388969}

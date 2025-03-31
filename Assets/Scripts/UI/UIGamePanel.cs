@@ -9,10 +9,12 @@ public class UIGamePanel : UIPanel {
     [Range(0.01f, 10)]
     public float swf = 2;
     [Range(0, 1)]
-    public float swz = 0.666f;
+    public float swz = 0.6f;
     [Range(-2, 2)]
     public float swr = 2;
-    float maxLookDelta = 15;
+    [SerializeField]
+    [Range(5, 25)]
+    float maxLookDelta = 7;
     [Range(5, 50)]
     [SerializeField]
     float maxSwayDist = 30;
@@ -25,9 +27,9 @@ public class UIGamePanel : UIPanel {
     [Range(-2, 2)]
     public float scr = 1;
     [SerializeField]
-    float speedScaleRange = 0.17f;
+    float AdditionalScale = 0.17f; // The scale will reach this amount at a speed of HighAdditionalScaleSpeed
     [SerializeField]
-    float maxSpeedScale = 70;
+    float HighAdditionalScaleSpeed = 50; // The scale will reach AdditionalScale at this speed
     SecondOrderDynamicsF sodLookX;
     SecondOrderDynamicsF sodLookY;
     SecondOrderDynamicsF sodSpeed;
@@ -111,7 +113,7 @@ public class UIGamePanel : UIPanel {
         sodSpeed.SetDynamics(scf, scz, scr);
 #endif
         float speed = GameManager.CurrentPlayer.rb.velocity.magnitude;
-        float newScale = Mathf.Lerp(1, 1 - speedScaleRange, sodSpeed.Update(speed, Time.deltaTime) / maxSpeedScale);
+        float newScale = Mathf.LerpUnclamped(1, 1 - AdditionalScale, sodSpeed.Update(speed, Time.deltaTime) / HighAdditionalScaleSpeed);
         MomentumPanel.localScale = new Vector3(newScale, newScale, 1);
     }
     
