@@ -1,8 +1,6 @@
 using System;
-using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.UI;
 
 public class PlayerCharacterCtrlr : MonoBehaviour {
     
@@ -109,6 +107,8 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     
     [HideInInspector]
     public Rigidbody rb;
+    [HideInInspector]
+    public Vector2 lookDelta;
     float lookVertRot = 0;
     Vector3 aimPoint = Vector3.zero;
     float AimRayMaxDist = 1000f;
@@ -176,7 +176,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     
     void Update() {
         // Rotate camera and character based on mouse input
-        Vector2 lookDelta = inputActions.Look.ReadValue<Vector2>() * mouseSensitivity;
+        lookDelta = inputActions.Look.ReadValue<Vector2>() * mouseSensitivity;
         lookVertRot = Mathf.Clamp(lookVertRot - lookDelta.y, -90f, 90f);
         camtrans.localEulerAngles = new Vector3(lookVertRot, camtrans.localEulerAngles.y + lookDelta.x, 0);
         charModel.localEulerAngles = new Vector3(0, camtrans.localEulerAngles.y, 0);

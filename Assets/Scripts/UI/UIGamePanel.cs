@@ -1,8 +1,36 @@
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class UIGamePanel : UIPanel {
+    
+    [Header("Parameters")]
+    [Range(0.01f, 10)]
+    public float swf = 2;
+    [Range(0, 1)]
+    public float swz = 0.666f;
+    [Range(-2, 2)]
+    public float swr = 2;
+    float maxLookDelta = 15;
+    [Range(5, 50)]
+    [SerializeField]
+    float maxSwayDist = 30;
+    [SerializeField]
+    float swayYExaggerateFactor = 2f;
+    [Range(0.01f, 10)]
+    public float scf = 3;
+    [Range(0, 1)]
+    public float scz = 1;
+    [Range(-2, 2)]
+    public float scr = 1;
+    [SerializeField]
+    float speedScaleRange = 0.17f;
+    [SerializeField]
+    float maxSpeedScale = 70;
+    SecondOrderDynamicsF sodLookX;
+    SecondOrderDynamicsF sodLookY;
+    SecondOrderDynamicsF sodSpeed;
     
     [Header("Fuel Gauge")]
     public Slider FuelSlider;
@@ -36,6 +64,7 @@ public class UIGamePanel : UIPanel {
     
     [Header("Misc.")]
     public TMP_Text RoundLabel;
+    public RectTransform MomentumPanel;
     
     [Header("Input Overlay")]
     public GameObject InputOverlay;
@@ -49,6 +78,42 @@ public class UIGamePanel : UIPanel {
     public Image KeyImageShift;
     
     
+    
+    public override void Init() {
+        base.Init();
+        sodLookX = new SecondOrderDynamicsF(swf, swz, swr, 0);
+        sodLookY = new SecondOrderDynamicsF(swf, swz, swr, 0);
+        sodSpeed = new SecondOrderDynamicsF(scf, scz, scr, 0);
+    }
+    
+    void LateUpdate() {
+        if (!GameManager.CurrentPlayer) return;
+        if (Time.deltaTime > 0) {
+            lerpSway();
+            lerpSpeed();
+        }
+    }
+    
+    void lerpSway() {
+#if UNITY_EDITOR
+        sodLookX.SetDynamics(swf, swz, swr);
+        sodLookY.SetDynamics(swf, swz, swr);
+#endif
+        Vector2 newPos = new Vector2(
+            sodLookX.Update(Mathf.Clamp(-GameManager.CurrentPlayer.lookDelta.x / maxLookDelta, -1, 1), Time.deltaTime),
+            sodLookY.Update(Mathf.Clamp(-GameManager.CurrentPlayer.lookDelta.y / maxLookDelta, -1, 1), Time.deltaTime) * swayYExaggerateFactor
+        );
+        MomentumPanel.anchoredPosition = newPos * maxSwayDist;
+    }
+    
+    void lerpSpeed() {
+#if UNITY_EDITOR
+        sodSpeed.SetDynamics(scf, scz, scr);
+#endif
+        float speed = GameManager.CurrentPlayer.rb.velocity.magnitude;
+        float newScale = Mathf.Lerp(1, 1 - speedScaleRange, sodSpeed.Update(speed, Time.deltaTime) / maxSpeedScale);
+        MomentumPanel.localScale = new Vector3(newScale, newScale, 1);
+    }
     
     public void OnFireCanon(bool started) {
         KeyImageM2.color = started ? Color.white : Color.gray;

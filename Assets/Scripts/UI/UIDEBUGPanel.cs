@@ -1,5 +1,6 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class UIDEBUGPanel : UIPanel {
     
@@ -22,6 +23,16 @@ public class UIDEBUGPanel : UIPanel {
     public TMP_Text SpawnWaveButtonText;
     public TMP_InputField FieldWaveNum;
     
+    SecondOrderDynamicsF sod;
+    public Slider MasterSlider;
+    public Slider SlaveSlider;
+    [Range(0, 5)]
+    public float f = 1;
+    [Range(0, 1)]
+    public float z = 1;
+    [Range(-2, 2)]
+    public float r = 1;
+    
     WaveSpawnerManager wsm = null;
     
     int desiredWaveToSpawn = 1;
@@ -42,7 +53,18 @@ public class UIDEBUGPanel : UIPanel {
             setWSM();
         };
         inst = this;
+        
+        sod = new SecondOrderDynamicsF(f, z, r, MasterSlider.value);
 #endif
+    }
+    
+    void Update() {
+        sod.SetDynamics(f, z, r);
+        if (Time.deltaTime > 0) SlaveSlider.value = sod.Update(MasterSlider.value, Time.deltaTime);
+    }
+    
+    float lerp(float a, float b, float dt) {
+        return Mathf.Lerp(a, b, Mathf.Min(1, dt / 0.1f));
     }
     
     void LateUpdate() {
