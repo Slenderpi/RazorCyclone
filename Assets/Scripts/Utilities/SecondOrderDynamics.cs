@@ -14,16 +14,12 @@ public class SecondOrderDynamicsF {
     
     public SecondOrderDynamicsF(float x0) {
         SetDynamics(1, 0, 0);
-        px = x0;
-        y = x0;
-        dy = 0;
+        Reset(x0);
     }
     
     public SecondOrderDynamicsF(float f, float z, float r, float x0) {
         SetDynamics(f, z, r);
-        px = x0;
-        y = x0;
-        dy = 0;
+        Reset(x0);
     }
     
     public float Update(float x, float dt) {
@@ -33,6 +29,12 @@ public class SecondOrderDynamicsF {
         y += dt * dy; // Integrate position by velocity
         dy += dt * (x + k3 * dx - y - k1 * dy) / k2Stable; // Integrate velocity by acceleration
         return y;
+    }
+    
+    public void Reset(float x0) {
+        px = x0;
+        y = x0;
+        dy = 0;
     }
     
     public void SetDynamics(float f, float z, float r) {

@@ -113,10 +113,12 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     Vector3 aimPoint = Vector3.zero;
     float AimRayMaxDist = 1000f;
     int AimRayLayerMask;
-    float desiredRotationUpdateTime = 0;
     Quaternion rotBeforeInputUpdate = Quaternion.identity;
-    float pivotRotLerpPower = 3;
-    float pivotRotLerpTime = 0.16f;
+    Quaternion rotAfterInputUpdate = Quaternion.identity;
+    float pivotRotF = 2.8f;
+    float pivotRotZ = 0.81f;
+    float pivotRotR = 0.7f;
+    SecondOrderDynamicsF sodPivotRotAlpha;
     Lava lava;
     
     
@@ -158,6 +160,8 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         vacuumFuelCost = MaxFuel / VacuumFuelTime * Time.fixedDeltaTime;
         CurrentHealth = MaxHealth;
         
+        sodPivotRotAlpha = new SecondOrderDynamicsF(pivotRotF, pivotRotZ, pivotRotR, 0);
+        
         /** Temp stuff **/
         rearMirrorModel.SetActive(mirrorModelEnabled);
     }
@@ -181,7 +185,13 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         camtrans.localEulerAngles = new Vector3(lookVertRot, camtrans.localEulerAngles.y + lookDelta.x, 0);
         charModel.localEulerAngles = new Vector3(0, camtrans.localEulerAngles.y, 0);
         
-        interpRotPivot();
+        if (Time.deltaTime > 0) {
+            charPivot.localRotation = Quaternion.LerpUnclamped(
+                rotBeforeInputUpdate,
+                rotAfterInputUpdate,
+                sodPivotRotAlpha.Update(1, Time.deltaTime)
+            );
+        }
     }
     
     void FixedUpdate() {
@@ -260,23 +270,27 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     
     private void TurnInputChanged(InputAction.CallbackContext context) {
         Vector2 v = context.ReadValue<Vector2>();
-        updateBikeTurning(v.x, desiredRotation.y, v.y);
+        setDesiredAndWepRelRots(v.x, desiredRotation.y, v.y);
         
         // Auto mirror
         if (mirrorModelEnabled) {
             updateMirrorActive();
         }
-        
+
+#if UNITY_EDITOR || KEEP_DEBUG
         /** Input overlay stuff **/
         _gamePanel.OnTurnInputChanged(v);
+#endif
     }
     
     private void VertInputChanged(InputAction.CallbackContext context) {
         if(spaceInput){
-            updateBikeTurning(desiredRotation.x, context.ReadValue<float>(), desiredRotation.z);
+            setDesiredAndWepRelRots(desiredRotation.x, context.ReadValue<float>(), desiredRotation.z);
             
+#if UNITY_EDITOR || KEEP_DEBUG
             /** Input overlay stuff **/
             _gamePanel.OnVertInputChanged(context.ReadValue<float>());
+#endif
         }
     }
     
@@ -341,12 +355,6 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         rearCamera.transform.SetPositionAndRotation(rearCamPos.position, Quaternion.LookRotation(flatBackCamTrans));
     }
     
-    void updateBikeTurning(float x, float y, float z) {
-        desiredRotationUpdateTime = Time.time;
-        rotBeforeInputUpdate = charPivot.localRotation;
-        setDesiredAndWepRelRots(x, y, z);
-    }
-    
     void setDesiredAndWepRelRots(float x, float y, float z) {
         prevWeaponRelRot = weaponRelativeRot;
         desiredRotation.x = x;
@@ -355,6 +363,9 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         if (desiredRotation.sqrMagnitude > 0.0001f) {
             weaponRelativeRot = desiredRotation.normalized;
             if (prevWeaponRelRot != weaponRelativeRot) {
+                sodPivotRotAlpha.Reset(0);
+                rotBeforeInputUpdate = charPivot.localRotation;
+                rotAfterInputUpdate = Quaternion.LookRotation(weaponRelativeRot);
                 checkBikeSpinning();
                 // updateSpecialShotBonus();
                 AudioPlayer2D.Instance.PlayClipSFX(AudioPlayer2D.EClipSFX.Plr_RotateWoosh);
@@ -489,20 +500,6 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         if (Physics.Raycast(ray: ray, maxDistance: AimRayMaxDist, layerMask: AimRayLayerMask, hitInfo: out hit)) {
             aimPoint = hit.point;
         }
-    }
-    
-    void interpRotPivot() {
-        Quaternion rot = Quaternion.LookRotation(weaponRelativeRot);
-        /* This alpha calculation forms a curve with a steep start (f'(0) > 0) and a flat end (f'(1) = 0), creating a snappy feel
-         * To increase snappiness, increase pivotRotLerpPower. If lowered to a power of 1, the curve is linear. If below 1, it
-         *     creates a sense of lag by delaying the rotation, so it's better to keep the power above 1.
-         * To increase/decrease the speed of the animation, decrease/increase pivotRotLerpTime. This variable determines the
-         *     amount of time the animation takes (a time of 0.6 means it takes of 0.6 seconds to make the rotation).
-         * The equation for alpha is alpha = -(-alphaX + 1)^lerpPowewr + 1
-         */
-        float alphaX = Mathf.Min((Time.time - desiredRotationUpdateTime) / pivotRotLerpTime, 1f);
-        float alpha = -Mathf.Pow(-alphaX + 1, pivotRotLerpPower) + 1f;
-        charPivot.localRotation = Quaternion.Lerp(rotBeforeInputUpdate, rot, alpha);
     }
     
     void updateCrosshairPositions() {
