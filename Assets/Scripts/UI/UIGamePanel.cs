@@ -30,9 +30,18 @@ public class UIGamePanel : UIPanel {
     float AdditionalScale = 0.17f; // The scale will reach this amount at a speed of HighAdditionalScaleSpeed
     [SerializeField]
     float HighAdditionalScaleSpeed = 50; // The scale will reach AdditionalScale at this speed
+    [Range(0.01f, 10)]
+    public float fillf = 5;
+    [Range(0, 1)]
+    public float fillz = 1;
+    [Range(0, 1)]
+    public float fillr = 1;
     SecondOrderDynamicsF sodLookX;
     SecondOrderDynamicsF sodLookY;
     SecondOrderDynamicsF sodSpeed;
+    SecondOrderDynamicsF sodFuelFill;
+    SecondOrderDynamicsF sodHealthFill;
+    const float BENT_BAR_MAX_FILL = 0.2f;
     
     [Header("Fuel Gauge")]
     public Slider FuelSlider;
@@ -79,6 +88,9 @@ public class UIGamePanel : UIPanel {
     public Image KeyImageSpace;
     public Image KeyImageShift;
     
+    float currFuel = 1;
+    float currHlth = 1;
+    
     
     
     public override void Init() {
@@ -86,8 +98,18 @@ public class UIGamePanel : UIPanel {
         sodLookX = new SecondOrderDynamicsF(swf, swz, swr, 0);
         sodLookY = new SecondOrderDynamicsF(swf, swz, swr, 0);
         sodSpeed = new SecondOrderDynamicsF(scf, scz, scr, 0);
+        sodFuelFill = new SecondOrderDynamicsF(fillf, fillz, fillr, 1 * BENT_BAR_MAX_FILL);
+        sodHealthFill = new SecondOrderDynamicsF(fillf, fillz, fillr, 1 * BENT_BAR_MAX_FILL);
     }
-    
+
+    void Update() {
+        if (!GameManager.CurrentPlayer) return;
+        if (Time.deltaTime > 0) {
+            FuelSlider2.fillAmount = sodFuelFill.Update(currFuel * BENT_BAR_MAX_FILL, Time.deltaTime);
+            HealthSlider2.fillAmount = sodHealthFill.Update(currHlth * BENT_BAR_MAX_FILL, Time.deltaTime);
+        }
+    }
+
     void LateUpdate() {
         if (!GameManager.CurrentPlayer) return;
         if (Time.deltaTime > 0) {
@@ -177,26 +199,26 @@ public class UIGamePanel : UIPanel {
     }
     
     public void OnFuelAdded(float changeAmnt, float perc) {
-        FuelSlider.value = perc;
+        // FuelSlider.value = perc;
         // TODO
-        FuelSlider2.fillAmount = perc * 0.2f;
+        currFuel = perc;
         
         if (!gameObject.activeSelf) return;
-        if (perc == 1f || true) FuelOutlineAnimator.SetTrigger("RefillFuel");
+        // if (perc == 1f || true) FuelOutlineAnimator.SetTrigger("RefillFuel");
         
         // Temporary?
         GameManager.Instance.Audio2D.PlayClipSFX(AudioPlayer2D.EClipSFX.Plr_PickupFuel);
     }
     
     public void OnFuelSpent(float amnt, float perc, bool spentAsHealth) {
-        FuelSlider.value = perc;
-        if (spentAsHealth)
-            HealthFillAnimator.SetTrigger("HealthAsFuel");
-        else
-            FuelFillAnimator.SetTrigger("SpendFuel");
+        // FuelSlider.value = perc;
+        // if (spentAsHealth)
+        //     HealthFillAnimator.SetTrigger("HealthAsFuel");
+        // else
+        //     FuelFillAnimator.SetTrigger("SpendFuel");
         
         // TODO
-        FuelSlider2.fillAmount = perc * 0.2f;
+        currFuel = perc;
     }
     
     public void OnDamageTaken(float amnt) {
@@ -251,11 +273,11 @@ public class UIGamePanel : UIPanel {
     }
     
     void updateHealthUI(float currH, float maxH) {
-        HealthSlider.value = currH / maxH;
-        HealthText.text = Mathf.CeilToInt(currH).ToString();
+        // HealthSlider.value = currH / maxH;
+        // HealthText.text = Mathf.CeilToInt(currH).ToString();
         
         // TODO
-        HealthSlider2.fillAmount = currH / maxH * 0.2f;
+        currHlth = currH / maxH;
     }
     
     public void OnOutOfFuel() {
@@ -334,10 +356,7 @@ public class UIGamePanel : UIPanel {
         OnVertInputChanged(0);
         OnFireVacuum(false);
         OnFireCanon(false);
-        HealthSlider.value = 100;
-        HealthText.text = "100";
-        // TODO
-        HealthSlider2.fillAmount = 0.2f;
+        updateHealthUI(100, 100);
         resetSpinTileColors();
         setSpinCounterText(plr.currentBikeSpins);
         if (gameObject.activeSelf) FuelOutlineAnimator.SetTrigger("Reset");

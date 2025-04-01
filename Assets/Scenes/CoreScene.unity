@@ -1122,7 +1122,7 @@ RectTransform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 0.725, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -1522,7 +1522,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &102897745
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1926,7 +1926,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &125639532
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3191,10 +3191,10 @@ RectTransform:
   - {fileID: 553877717}
   - {fileID: 816770531}
   - {fileID: 1745153568}
-  - {fileID: 1833976310}
   - {fileID: 1382042752}
   - {fileID: 1945086431}
   - {fileID: 882446386}
+  - {fileID: 1833976310}
   - {fileID: 1842679347}
   m_Father: {fileID: 416360039}
   m_RootOrder: 1
@@ -3225,8 +3225,11 @@ MonoBehaviour:
   scf: 3
   scz: 1
   scr: 1
-  AdditionalScale: 0.17
+  AdditionalScale: 0.15
   HighAdditionalScaleSpeed: 50
+  fillf: 5
+  fillz: 1
+  fillr: 1
   FuelSlider: {fileID: 125639532}
   FuelOutlineAnimator: {fileID: 701307696}
   FuelFillAnimator: {fileID: 81388969}
@@ -9503,7 +9506,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 270301659}
-  m_RootOrder: 7
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -16767,7 +16770,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 270301659}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -20688,7 +20691,7 @@ RectTransform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -23059,7 +23062,7 @@ RectTransform:
   - {fileID: 1323420858}
   - {fileID: 492382957}
   m_Father: {fileID: 270301659}
-  m_RootOrder: 4
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
@@ -23453,6 +23456,7 @@ GameObject:
   - component: {fileID: 1857089173}
   - component: {fileID: 1857089175}
   - component: {fileID: 1857089174}
+  - component: {fileID: 1857089176}
   m_Layer: 6
   m_Name: FuelSlider2
   m_TagString: Untagged
@@ -23519,6 +23523,26 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1857089172}
   m_CullTransparentMesh: 1
+--- !u!95 &1857089176
+Animator:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1857089172}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 0}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &1869185341
 GameObject:
   m_ObjectHideFlags: 0
@@ -23921,8 +23945,8 @@ RectTransform:
   m_Father: {fileID: 903107657}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMin: {x: 0.725, y: 0}
+  m_AnchorMax: {x: 0.725, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -24075,7 +24099,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 270301659}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
