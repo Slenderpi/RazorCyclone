@@ -309,6 +309,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: FodderLights
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 34d10ed6806fba54092473c45f74f8ef, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 34d10ed6806fba54092473c45f74f8ef, type: 3}
 --- !u!4 &1400803899081399305 stripped
@@ -370,7 +374,7 @@ PrefabInstance:
     - target: {fileID: -7635826562936255635, guid: d46cceb283ece41eebf110d59ed61c70, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: 7feaf3223dcd3d145a18464189b2ad7b, type: 2}
+      objectReference: {fileID: 2100000, guid: 220bea3e98ab446009ae804be20f0c65, type: 2}
     - target: {fileID: 919132149155446097, guid: d46cceb283ece41eebf110d59ed61c70, type: 3}
       propertyPath: m_Name
       value: Fodder2
