@@ -92,9 +92,7 @@ public class LaserEnemy : EnemyBase {
     // // Tracks the time the current state was entered. This same variable can be used for all the states
     // float lastStateEnterTime = -1000;
     // float currRotRate;
-    
-    //ADAM CODE
-    [SerializeField] Transform crabBody;
+
     
     protected override void Init() {
         laserPointParticles = LaserEndpoint.GetComponentsInChildren<ParticleSystem>();
@@ -313,8 +311,6 @@ public class LaserEnemy : EnemyBase {
         LaserEndpoint.position = isPlayerInLOS ? toPlayer.normalized * (toPlayer.magnitude - 0.5f) + barrelPivot.position : laserHitPos;
         LaserLineRenderer.SetPosition(1, LaserEndpoint.position);
 
-        //ADAM CODE
-        crabBody.rotation = Quaternion.LookRotation(new Vector3(toPlayer.x, crabBody.position.y, toPlayer.z));
     }
     
     void slerpToPlayer() {
