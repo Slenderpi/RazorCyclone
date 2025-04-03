@@ -356,6 +356,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8544814408766231890}
   - component: {fileID: 7311695562399942849}
+  - component: {fileID: 8066566110179430181}
   m_Layer: 7
   m_Name: Hitboxes
   m_TagString: Enemy
@@ -389,8 +390,21 @@ SphereCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.66
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Radius: 0.7175489
+  m_Center: {x: 0, y: -0.11, z: -0.09}
+--- !u!65 &8066566110179430181
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4109619154667978623}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 2.5763178, y: 0.775614, z: 2.056862}
+  m_Center: {x: 0, y: -0.39722395, z: -0.06974155}
 --- !u!1 &4272552222902198248
 GameObject:
   m_ObjectHideFlags: 0
