@@ -115,6 +115,10 @@ public class UIDEBUGPanel : UIPanel {
     }
     
     public void OnButton_SpawnWaveNumber() {
+        if (!wsm.activateWaveFinished) {
+            Debug.LogWarning("Warning: a wave is currently being activated. To avoid issues, please wait until the current wave has finished activating.");
+            return;
+        }
         wsm.UnloadWave();
         wsm.PreloadWave(desiredWaveToSpawn);
         wsm.ActivateWave();
