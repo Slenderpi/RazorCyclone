@@ -235,7 +235,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7161423610750410142}
-  - component: {fileID: 4816123422733018461}
+  - component: {fileID: 6680550526590891698}
   - component: {fileID: 7510554508798159381}
   - component: {fileID: 6776544896198288600}
   - component: {fileID: 9113617427949065013}
@@ -265,7 +265,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4816123422733018461
+--- !u!114 &6680550526590891698
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -274,7 +274,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 3890492832594851018}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 09129ffe74e62e343a7c6ef35ff55517, type: 3}
+  m_Script: {fileID: 11500000, guid: 94e745d792f6c454680d138109e63211, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   etypeid: 1
@@ -294,6 +294,7 @@ MonoBehaviour:
   RicochetCanon: 1
   ConsiderForRicochet: 1
   invincible: 0
+  CanGetVacuumKilled: 1
 --- !u!114 &7510554508798159381
 MonoBehaviour:
   m_ObjectHideFlags: 0
