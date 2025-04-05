@@ -135,7 +135,6 @@ public class WaveSpawnerManager : MonoBehaviour {
 #if DEBUG_WAVE_STRS && UNITY_EDITOR
         PrintWaveEntries();
 #endif
-        Debug.LogWarning("Beginning the game!");
         CurrentWaveNumber = 0;
         StartCoroutine(delaySpawnNextWave());
     }
@@ -354,7 +353,9 @@ public class WaveSpawnerManager : MonoBehaviour {
         }
         if (waveComplete) {
             hasDefeatedActiveWave = true;
-            Debug.LogWarning("Wave completed!");
+            // Debug.LogWarning("Wave completed!");
+            GameManager.Instance.MainCanvas.GamePanel.OnRoundCompleted();
+            GameManager.CurrentPlayer.HealHealth(GameManager.CurrentPlayer.MaxHealth);
             StartCoroutine(delaySpawnNextWave());
         }
     }
@@ -362,11 +363,7 @@ public class WaveSpawnerManager : MonoBehaviour {
     IEnumerator delaySpawnNextWave() {
         PreloadWave(CurrentWaveNumber + 1);
         yield return new WaitForSeconds(2);
-        GameManager.CurrentPlayer.HealHealth(GameManager.CurrentPlayer.MaxHealth);
-        Debug.LogWarning("Get ready for round " + CurrentPreloadedWaveNumber + "...");
-        yield return new WaitForSeconds(0.1f); //Adam changed this value
-        Debug.LogWarning("Go!");
-        GameManager.Instance.MainCanvas.GamePanel.RoundLabel.text = "Round: " + CurrentPreloadedWaveNumber;
+        GameManager.Instance.MainCanvas.GamePanel.OnUpdateRoundNumber(CurrentPreloadedWaveNumber);
         ActivateWave();
     }
     

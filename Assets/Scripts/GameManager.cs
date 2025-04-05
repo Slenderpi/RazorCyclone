@@ -341,5 +341,6 @@ class ProgrammerPreferences {
         GameManager.Instance.Audio2D.SetMasterVolume(MasterVolume);
         GameManager.Instance.Audio2D.SetMusicVolume(EnableMusic ? 100 : 0);
     }
+    
 }
 #endif

@@ -75,9 +75,11 @@ public class UIGamePanel : UIPanel {
     public MeshRenderer TileRendS;
     public MeshRenderer TileRendD;
     public TMP_Text SpinCounterText;
+    public GameObject SpinCounterBG;
     
     [Header("Misc.")]
     public TMP_Text RoundLabel;
+    public Animator RoundLabelAnimator;
     public RectTransform MomentumPanel;
     
     [Header("Input Overlay")]
@@ -292,11 +294,14 @@ public class UIGamePanel : UIPanel {
     void onSpinCompleted(int newSpinCount) {
         resetSpinTileColors();
         // TileRendW.material = SpinTileMatProgress;
+        if (newSpinCount == 1)
+            SpinCounterBG.SetActive(true);
         setSpinCounterText(newSpinCount);
     }
     
     void onSpinsSpent(int prevSpinCount, int newSpinCount) {
         setSpinCounterText(newSpinCount);
+        SpinCounterBG.SetActive(false);
     }
     
     void updateHealthUI(float currH, float maxH) {
@@ -323,6 +328,15 @@ public class UIGamePanel : UIPanel {
         } else {
             VacuumHitmarkerAnim.SetTrigger("Kill");
         }
+    }
+    
+    public void OnRoundCompleted() {
+        RoundLabelAnimator.SetTrigger("Completed");
+    }
+    
+    public void OnUpdateRoundNumber(int newRound) {
+        RoundLabel.text = "Round: " + newRound;
+        RoundLabelAnimator.SetTrigger("NewRound");
     }
     
     // public void SetReadTimerOn(bool setReadOn) {
@@ -385,6 +399,9 @@ public class UIGamePanel : UIPanel {
         updateHealthUI(100, 100);
         resetSpinTileColors();
         setSpinCounterText(plr.currentBikeSpins);
+        RoundLabel.text = "Round: --";
+        if (plr.currentBikeSpins == 0)
+            SpinCounterBG.SetActive(false);
         if (gameObject.activeSelf) FuelOutlineAnimator.SetTrigger("Reset");
     }
 
