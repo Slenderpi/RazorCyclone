@@ -328,6 +328,7 @@ class ProgrammerPreferences {
     public bool UsePreferences;
     public float MouseSensitivity;
     public float MasterVolume = 100;
+    public bool EnableMusic = true;
     
     internal void SetPreferences() {
         if (!UsePreferences) return;
@@ -338,6 +339,7 @@ class ProgrammerPreferences {
         if (MasterVolume == 1f) Debug.LogWarning(">> Programmer preferences file has MasterVolume set to 1. Did you mean 100? Currently, volume is on a scale from 0 to 100 rather than 0 to 1.");
         else if (MasterVolume < 1f && MasterVolume > 0f) Debug.LogWarning(">> Programmer preferences file has MasterVolume between 0 and 1. Make sure you set the volume to be between 0 and 100--volume is on a scale from 0 to 100 rather than 0 to 1.");
         GameManager.Instance.Audio2D.SetMasterVolume(MasterVolume);
+        GameManager.Instance.Audio2D.SetMusicVolume(EnableMusic ? 100 : 0);
     }
 }
 #endif
