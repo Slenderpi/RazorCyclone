@@ -16,7 +16,7 @@ MonoBehaviour:
   FollowOffset: 1.5
   MissileFireDelay: 10
   MissileFireDelayOffset: 0.1
-  MissileDoorAnimTime: 0.2
+  MissileDoorAnimTime: 1
   MissileDoorLeaveOpenTime: 0.2
   MissilePrefab: {fileID: 6751577663681668669, guid: 9228885265ca714478c763de6e658fd9, type: 3}
   MissileFireEffectPrefab: {fileID: 6498789483473948991, guid: ef11bc4966759d743b0d851211ffeaf8, type: 3}

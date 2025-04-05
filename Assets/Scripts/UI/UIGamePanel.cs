@@ -71,7 +71,6 @@ public class UIGamePanel : UIPanel {
     public MeshRenderer TileRendS;
     public MeshRenderer TileRendD;
     public TMP_Text SpinCounterText;
-    public TMP_Text SpinCounterText_1;
     
     [Header("Misc.")]
     public TMP_Text RoundLabel;
@@ -315,7 +314,6 @@ public class UIGamePanel : UIPanel {
     
     void setSpinCounterText(int spins) {
         SpinCounterText.text = spins.ToString();
-        SpinCounterText_1.text = SpinCounterText.text;
     }
     
     public override void OnGameResumed() {
