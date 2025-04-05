@@ -165,7 +165,9 @@ public class ProjectileBase : MonoBehaviour {
         closestHitSqrd = float.MaxValue;
         EnemyBase closestEn = GameManager.Instance.currentSceneRunner.GetClosestEnemy(transform.position, enemyToIgnore);
         Vector3 ricVel = closestEn ?
-                         (closestEn.TransformForRicochetToAimAt.position - transform.position).normalized * rb.velocity.magnitude :
+                         (BoidSteerer.PredictPosition(
+                            transform.position, closestEn.TransformForRicochetToAimAt.position, rb.velocity, closestEn.rb.velocity
+                          ) - transform.position).normalized * rb.velocity.magnitude :
                          Vector3.Reflect(rb.velocity, closestHitNorm);
         rb.velocity *= 0;
         StartCoroutine(ricochetVelNextFrame(ricVel));

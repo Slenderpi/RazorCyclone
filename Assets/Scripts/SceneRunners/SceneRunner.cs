@@ -24,11 +24,11 @@ public class SceneRunner : MonoBehaviour {
     /// <br/>
     /// <example>
     /// In an overridden function, you can call the original function by doing:<code>
-    ///     override MyCoolFunction(int paramA) {
-    ///         // code...
-    ///         base.MyCoolFunction(paramA);
-    ///         // code...
-    ///     }</code></example>
+    /// override MyCoolFunction(int paramA) {
+    ///     // code...
+    ///     base.MyCoolFunction(paramA);
+    ///     // code...
+    /// }</code></example>
     /// </summary>
     public virtual void BeginScene() {
         GameManager.A_PlayerSpawned += _onPlayerSpawned;

@@ -54,7 +54,10 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     [SerializeField]
     float CanonForce;
     [SerializeField]
-    float CanonProjSpeed = 100f;
+    float CanonBaseProjSpeed = 125;
+    [SerializeField]
+    [Tooltip("When a projectile is fired, its velocity will include the player's velocity by a factor.\nA value of 0 would mean player velocity has no effect on the projectile's veloctiy.\nA value of 0.5 would mean the projectile would add half of the player's velocity.")]
+    float InheritedVelocityFactor = 0.7f;
     
     [Header("Fuel Settings")]
     [SerializeField]
@@ -471,7 +474,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     void fireCanon() {
         updateRayCastedAimPoint();
         rb.AddForce((charModel.rotation * weaponRelativeRot).normalized * CanonForce * 100000);
-        Vector3 projVel = (aimPoint - canonProjSpawnTrans.position).normalized * CanonProjSpeed + rb.velocity;
+        Vector3 projVel = (aimPoint - canonProjSpawnTrans.position).normalized * CanonBaseProjSpeed + rb.velocity * InheritedVelocityFactor;
         // if (ricochetBaseVal > 0) { // Only spend spins of base val is non-zero
         //     projectilePrefab.MaxRicochet = ricochetBaseVal * currentBikeSpins;
         //     print($"Ricochets: {projectilePrefab.MaxRicochet} ({ricochetBaseVal} * {currentBikeSpins})");
@@ -503,7 +506,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     }
     
     void updateCrosshairPositions() {
-        Vector3 rbVelocityCompensation = rb.velocity.magnitude > 0.001f ? rb.velocity / CanonProjSpeed : Vector3.zero;
+        Vector3 rbVelocityCompensation = rb.velocity.magnitude > 0.001f ? rb.velocity * InheritedVelocityFactor / CanonBaseProjSpeed : Vector3.zero;
         // The vacuum does not account for the player's velocity
         Vector3 screenPointVacuum;
         if (!isInThirdPerson) {

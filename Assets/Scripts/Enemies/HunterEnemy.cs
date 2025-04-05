@@ -25,11 +25,6 @@ public class HunterEnemy : EnemyBase {
         SetEffectState(isStunned);
     }
     
-    protected override void LateInit() {
-        base.LateInit();
-        AmbientAudio.Play();
-    }
-    
     protected override void OnTakeDamage(float amnt, EDamageType damageType) {
         if (!isStunned) {
             if (damageType == EDamageType.Projectile) {
