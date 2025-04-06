@@ -23,6 +23,24 @@ public class GameManager : MonoBehaviour {
     PlayerInputActions.PauseMenuActions PauseInputActions;
 #if UNITY_EDITOR || KEEP_DEBUG
     PlayerInputActions.DEBUGActions DebugActions;
+    bool _plrInv = false;
+    public bool plrInvincible {
+        get { return _plrInv; }
+        set {
+            _plrInv = value;
+            MainCanvas.DebugPanel.TogIndInvincibility.SetActive(_plrInv);
+            if (CurrentPlayer) CurrentPlayer.IsInvincible = _plrInv;
+        }
+    }
+    bool _plrNFC = false;
+    public bool plrNoFuelCost {
+        get { return _plrNFC; }
+        set {
+            _plrNFC = value;
+            MainCanvas.DebugPanel.TogIndInfFuel.SetActive(_plrNFC);
+            if (CurrentPlayer) CurrentPlayer.NoFuelCost = _plrNFC;
+        }
+    }
 #endif
     
     [Header("Core References")]
@@ -126,7 +144,13 @@ public class GameManager : MonoBehaviour {
             playerPrefab,
             currentSceneRunner.playerSpawnPoint != null ? currentSceneRunner.playerSpawnPoint.position : Vector3.zero,
             currentSceneRunner.playerSpawnPoint != null ? currentSceneRunner.playerSpawnPoint.rotation : Quaternion.identity
-        ).GetComponent<PlayerCharacterCtrlr>();
+        );
+#if UNITY_EDITOR || KEEP_DEBUG
+        CurrentPlayer.IsInvincible = plrInvincible;
+        CurrentPlayer.NoFuelCost = plrNoFuelCost;
+        MainCanvas.DebugPanel.TogIndInvincibility.SetActive(plrInvincible);
+        MainCanvas.DebugPanel.TogIndInfFuel.SetActive(plrNoFuelCost);
+#endif
         CurrentPlayer.A_PlayerDied += onPlayerDied;
         A_PlayerSpawned?.Invoke(CurrentPlayer);
     }
@@ -328,11 +352,13 @@ public enum EnemyType {
 [Serializable]
 class ProgrammerPreferences {
     
-    public bool UsePreferences;
-    public float MouseSensitivity;
-    public float MasterVolume = 100;
-    public bool EnableMusic = true;
-    
+    public bool UsePreferences; // If false, all these preferences will be ignored
+    public float MouseSensitivity; // The sensitivity that you, the developer, prefers
+    public float MasterVolume = 100; // Value between 0 and 100
+    public bool EnableMusic = true; // If false, music volume will be set to 0
+    public bool PlayerInvincible = false; // If true, the player will spawn with invincibility on
+    public bool PlayerNoFuelCost = false; // If true, the player will spawn with no fuel cost
+        
     internal void SetPreferences() {
         if (!UsePreferences) return;
         GameManager.Instance.CurrentMouseSensitivity = MouseSensitivity;
@@ -343,6 +369,8 @@ class ProgrammerPreferences {
         else if (MasterVolume < 1f && MasterVolume > 0f) Debug.LogWarning(">> Programmer preferences file has MasterVolume between 0 and 1. Make sure you set the volume to be between 0 and 100--volume is on a scale from 0 to 100 rather than 0 to 1.");
         GameManager.Instance.Audio2D.SetMasterVolume(MasterVolume);
         GameManager.Instance.Audio2D.SetMusicVolume(EnableMusic ? 100 : 0);
+        GameManager.Instance.plrInvincible = PlayerInvincible;
+        GameManager.Instance.plrNoFuelCost = PlayerNoFuelCost;
     }
     
 }
