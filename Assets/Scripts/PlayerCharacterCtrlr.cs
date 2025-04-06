@@ -93,7 +93,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     [SerializeField]
     Transform charPivot;
     [SerializeField]
-    GameObject vacuumHitbox;
+    VacuumScript Vacuum;
     [SerializeField]
     [Tooltip("Transform indicating where the projectile will spawn from.")]
     Transform canonProjSpawnTrans;
@@ -154,7 +154,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         rearCamera = GameManager.Instance.rearCamera;
         rb = GetComponent<Rigidbody>();
         
-        vacuumHitbox.SetActive(false);
+        // Vacuum.SetActive(false);
         
         // 1 is for layers to include in raycast
         AimRayLayerMask = (1 << LayerMask.NameToLayer("Default")) | (1 << LayerMask.NameToLayer("EnemyHitbox"));
@@ -198,14 +198,23 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     }
     
     void FixedUpdate() {
+        // if (isVacuumOn && vacEnableddd) {
+        //     if (CurrentHealth <= 0) {
+        //         isVacuumOn = false;
+        //         vacuumHitbox.SetActive(false);
+        //         // signifyOutOfFuel();
+        //     } else {
+        //         SpendFuel(vacuumFuelCost);
+        //         rb.AddForce(charPivot.forward * (rb.velocity.magnitude <= VacuumForceNormalSpeed ? VacuumForceLowSpeed : VacuumForce), ForceMode.Acceleration);
+        //     }
+        // }
         if (isVacuumOn && vacEnableddd) {
-            if (CurrentHealth <= 0) {
-                isVacuumOn = false;
-                vacuumHitbox.SetActive(false);
-                // signifyOutOfFuel();
-            } else {
+            if (CurrentHealth > 0) {
                 SpendFuel(vacuumFuelCost);
                 rb.AddForce(charPivot.forward * (rb.velocity.magnitude <= VacuumForceNormalSpeed ? VacuumForceLowSpeed : VacuumForce), ForceMode.Acceleration);
+            } else {
+                isVacuumOn = false;
+                Vacuum.DisableVacuum();
             }
         }
         handleHealthRegen();
@@ -307,13 +316,13 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
             return;
         }
         isVacuumOn = true;
-        vacuumHitbox.SetActive(true);
+        Vacuum.EnableVacuum();
         
     }
     
     private void FireVacuumCanceled(InputAction.CallbackContext context) {
         isVacuumOn = false;
-        vacuumHitbox.SetActive(false);
+        Vacuum.DisableVacuum();
         
         _gamePanel.OnFireVacuum(false);
     }
