@@ -33,11 +33,12 @@ public class UIDEBUGPanel : UIPanel {
     [Range(-2, 2)]
     public float r = 1;
     
+#if UNITY_EDITOR || KEEP_DEBUG
     WaveSpawnerManager wsm = null;
-    
     int desiredWaveToSpawn = 1;
+#endif
     
-    
+#if UNITY_EDITOR || KEEP_DEBUG
     
     void Start() {
 #if !UNITY_EDITOR && KEEP_DEBUG
@@ -173,5 +174,6 @@ public class UIDEBUGPanel : UIPanel {
         if (!wsm) return;
         SpawnWaveButtonText.text = "Spawn Wave (1-" + wsm.waveEntries.Length + "):";
     }
+#endif
     
 }

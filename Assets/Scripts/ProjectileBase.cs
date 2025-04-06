@@ -164,11 +164,16 @@ public class ProjectileBase : MonoBehaviour {
         closestHit = null;
         closestHitSqrd = float.MaxValue;
         EnemyBase closestEn = GameManager.Instance.currentSceneRunner.GetClosestEnemy(transform.position, enemyToIgnore);
-        Vector3 ricVel = closestEn ?
-                         (BoidSteerer.PredictPosition(
+        Vector3 ricVel;
+        if (closestEn) {
+            if (closestEn.rb) // If has enemy has an rb, use predictive aiming
+                ricVel = (BoidSteerer.PredictPosition(
                             transform.position, closestEn.TransformForRicochetToAimAt.position, rb.velocity, closestEn.rb.velocity
-                          ) - transform.position).normalized * rb.velocity.magnitude :
-                         Vector3.Reflect(rb.velocity, closestHitNorm);
+                        ) - transform.position).normalized * rb.velocity.magnitude;
+            else // Enemy has no rb, so use their current position
+                ricVel = (closestEn.TransformForRicochetToAimAt.position - transform.position).normalized * rb.velocity.magnitude;
+        } else // No valid enemy to ricochet to. Reflect physically
+            ricVel = Vector3.Reflect(rb.velocity, closestHitNorm);
         rb.velocity *= 0;
         StartCoroutine(ricochetVelNextFrame(ricVel));
         enemy.TakeDamage(100, EDamageType.Projectile);

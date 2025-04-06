@@ -243,6 +243,13 @@ public class GameManager : MonoBehaviour {
     
     /******  DEBUGGING  ******/
     
+    public void SetPreferredTimeScale(float scale) {
+        gameTimeScale = scale;
+        if (!gameIsPaused) {
+            Time.timeScale = gameTimeScale;
+        }
+    }
+    
 #if UNITY_EDITOR || KEEP_DEBUG
     void setupDebugActions() {
         DebugActions = new PlayerInputActions().DEBUG;
@@ -264,13 +271,6 @@ public class GameManager : MonoBehaviour {
                 CurrentPlayer.TakeDamage(CurrentPlayer.MaxHealth, EDamageType.Any);
             }
         };
-    }
-    
-    public void SetPreferredTimeScale(float scale) {
-        gameTimeScale = scale;
-        if (!gameIsPaused) {
-            Time.timeScale = gameTimeScale;
-        }
     }
     
     public static void D_DrawPoint(Vector3 position, Color c) {

@@ -24,7 +24,7 @@ public class Spawner : MonoBehaviour {
         if (!plr) return;
         Transform plrTrans = plr.transform;
         
-        canSpawn = (plrTrans.position - transform.position).magnitude > playerDetectionRange;
+        canSpawn = (plrTrans.position - transform.position).sqrMagnitude > playerDetectionRange * playerDetectionRange;
     }
     
     public bool AcceptsEnemy(EnemyType etype) {
