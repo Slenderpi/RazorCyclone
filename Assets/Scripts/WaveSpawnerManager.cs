@@ -276,8 +276,7 @@ public class WaveSpawnerManager : MonoBehaviour {
         List<Spawner>[] availableSpawners = new List<Spawner>[numETypes];
         for (int i = 0; i < numETypes; i++) availableSpawners[i] = new List<Spawner>(); // Initialize lists
         foreach (Spawner sp in spawners) {
-            sp.ValidateSpawnerSpecificCriteria();
-            if (!sp.canSpawn) continue;
+            if (!sp.ValidateSpawnerSpecificCriteria()) continue;
             for (int ti = 0; ti < numETypes; ti++) { // type i
                 if (wave.enemyCounts[ti] == 0) continue;
                 if (sp.AcceptsEnemy((EnemyType)ti)) {

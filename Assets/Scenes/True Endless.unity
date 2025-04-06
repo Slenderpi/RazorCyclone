@@ -785,7 +785,7 @@ GameObject:
   - component: {fileID: 252836618}
   m_Layer: 12
   m_Name: FodderBirdSpawn_4
-  m_TagString: EditorOnly
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -819,7 +819,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   EnemyTypes: 010000000200000000000000
   UseTypesAsInclude: 1
-  canSpawn: 1
   playerDetectionRange: 15
   enemyDetectionRange: 5
 --- !u!23 &252836620
@@ -886,7 +885,7 @@ GameObject:
   - component: {fileID: 272298970}
   m_Layer: 12
   m_Name: CrabSpawner_6
-  m_TagString: EditorOnly
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -920,7 +919,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   EnemyTypes: 0400000003000000
   UseTypesAsInclude: 1
-  canSpawn: 1
   playerDetectionRange: 15
   enemyDetectionRange: 5
 --- !u!23 &272298972
@@ -1154,7 +1152,7 @@ GameObject:
   - component: {fileID: 341329090}
   m_Layer: 12
   m_Name: CrabSpawner_8
-  m_TagString: EditorOnly
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1188,7 +1186,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   EnemyTypes: 0400000003000000
   UseTypesAsInclude: 1
-  canSpawn: 1
   playerDetectionRange: 15
   enemyDetectionRange: 5
 --- !u!23 &341329092
@@ -1449,7 +1446,7 @@ GameObject:
   - component: {fileID: 356140129}
   m_Layer: 12
   m_Name: FodderBirdSpawn_2
-  m_TagString: EditorOnly
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1483,7 +1480,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   EnemyTypes: 010000000200000000000000
   UseTypesAsInclude: 1
-  canSpawn: 1
   playerDetectionRange: 15
   enemyDetectionRange: 5
 --- !u!23 &356140131
@@ -1993,7 +1989,7 @@ GameObject:
   - component: {fileID: 480110173}
   m_Layer: 12
   m_Name: Turtle_3
-  m_TagString: EditorOnly
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2027,7 +2023,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   EnemyTypes: 05000000
   UseTypesAsInclude: 1
-  canSpawn: 1
   playerDetectionRange: 15
   enemyDetectionRange: 5
 --- !u!23 &480110175
@@ -2748,7 +2743,7 @@ GameObject:
   - component: {fileID: 829516932}
   m_Layer: 12
   m_Name: CrabSpawner_5
-  m_TagString: EditorOnly
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2782,7 +2777,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   EnemyTypes: 0400000003000000
   UseTypesAsInclude: 1
-  canSpawn: 1
   playerDetectionRange: 15
   enemyDetectionRange: 5
 --- !u!23 &829516934
@@ -2849,7 +2843,7 @@ GameObject:
   - component: {fileID: 829562231}
   m_Layer: 12
   m_Name: CrabSpawner_3
-  m_TagString: EditorOnly
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2883,7 +2877,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   EnemyTypes: 0400000003000000
   UseTypesAsInclude: 1
-  canSpawn: 1
   playerDetectionRange: 15
   enemyDetectionRange: 5
 --- !u!23 &829562233
@@ -3015,7 +3008,7 @@ GameObject:
   - component: {fileID: 843942539}
   m_Layer: 12
   m_Name: FodderBirdSpawn_6
-  m_TagString: EditorOnly
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3049,7 +3042,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   EnemyTypes: 010000000200000000000000
   UseTypesAsInclude: 1
-  canSpawn: 1
   playerDetectionRange: 15
   enemyDetectionRange: 5
 --- !u!23 &843942541
@@ -3261,7 +3253,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   EnemyTypes: 00000000
   UseTypesAsInclude: 1
-  canSpawn: 1
   playerDetectionRange: 15
   enemyDetectionRange: 5
 --- !u!23 &860810457
@@ -3411,7 +3402,7 @@ GameObject:
   - component: {fileID: 871988431}
   m_Layer: 12
   m_Name: Turtle_2
-  m_TagString: EditorOnly
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3445,7 +3436,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   EnemyTypes: 05000000
   UseTypesAsInclude: 1
-  canSpawn: 1
   playerDetectionRange: 15
   enemyDetectionRange: 5
 --- !u!23 &871988433
@@ -4116,7 +4106,7 @@ GameObject:
   - component: {fileID: 958266380}
   m_Layer: 12
   m_Name: CrabSpawner_7
-  m_TagString: EditorOnly
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -4150,7 +4140,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   EnemyTypes: 0400000003000000
   UseTypesAsInclude: 1
-  canSpawn: 1
   playerDetectionRange: 15
   enemyDetectionRange: 5
 --- !u!23 &958266382
@@ -4640,7 +4629,7 @@ GameObject:
   - component: {fileID: 1012119356}
   m_Layer: 12
   m_Name: CrabSpawner_9
-  m_TagString: EditorOnly
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -4674,7 +4663,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   EnemyTypes: 0400000003000000
   UseTypesAsInclude: 1
-  canSpawn: 1
   playerDetectionRange: 15
   enemyDetectionRange: 5
 --- !u!23 &1012119358
@@ -4838,7 +4826,7 @@ GameObject:
   - component: {fileID: 1030354678}
   m_Layer: 12
   m_Name: FodderBirdSpawn_1
-  m_TagString: EditorOnly
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -4922,7 +4910,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   EnemyTypes: 010000000200000000000000
   UseTypesAsInclude: 1
-  canSpawn: 1
   playerDetectionRange: 15
   enemyDetectionRange: 5
 --- !u!1 &1038361702
@@ -5561,7 +5548,7 @@ GameObject:
   - component: {fileID: 1236507273}
   m_Layer: 12
   m_Name: FodderBirdSpawn_5
-  m_TagString: EditorOnly
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -5595,7 +5582,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   EnemyTypes: 010000000200000000000000
   UseTypesAsInclude: 1
-  canSpawn: 1
   playerDetectionRange: 15
   enemyDetectionRange: 5
 --- !u!23 &1236507275
@@ -5662,7 +5648,7 @@ GameObject:
   - component: {fileID: 1266517629}
   m_Layer: 12
   m_Name: FodderBirdSpawn_3
-  m_TagString: EditorOnly
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -5696,7 +5682,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   EnemyTypes: 010000000200000000000000
   UseTypesAsInclude: 1
-  canSpawn: 1
   playerDetectionRange: 15
   enemyDetectionRange: 5
 --- !u!23 &1266517631
@@ -5798,7 +5783,7 @@ GameObject:
   - component: {fileID: 1320111369}
   m_Layer: 12
   m_Name: CrabSpawner_1
-  m_TagString: EditorOnly
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -5832,7 +5817,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   EnemyTypes: 0400000003000000
   UseTypesAsInclude: 1
-  canSpawn: 1
   playerDetectionRange: 15
   enemyDetectionRange: 5
 --- !u!23 &1320111371
@@ -6641,7 +6625,7 @@ GameObject:
   - component: {fileID: 1600057257}
   m_Layer: 12
   m_Name: CrabSpawner_12
-  m_TagString: EditorOnly
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -6675,7 +6659,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   EnemyTypes: 0400000003000000
   UseTypesAsInclude: 1
-  canSpawn: 1
   playerDetectionRange: 15
   enemyDetectionRange: 5
 --- !u!23 &1600057259
@@ -6839,7 +6822,7 @@ GameObject:
   - component: {fileID: 1618554601}
   m_Layer: 12
   m_Name: CrabSpawner_10
-  m_TagString: EditorOnly
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -6873,7 +6856,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   EnemyTypes: 0400000003000000
   UseTypesAsInclude: 1
-  canSpawn: 1
   playerDetectionRange: 15
   enemyDetectionRange: 5
 --- !u!23 &1618554603
@@ -7072,7 +7054,7 @@ GameObject:
   - component: {fileID: 1742295082}
   m_Layer: 12
   m_Name: CrabSpawner_4
-  m_TagString: EditorOnly
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -7106,7 +7088,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   EnemyTypes: 0400000003000000
   UseTypesAsInclude: 1
-  canSpawn: 1
   playerDetectionRange: 15
   enemyDetectionRange: 5
 --- !u!23 &1742295084
@@ -7270,7 +7251,7 @@ GameObject:
   - component: {fileID: 1807272469}
   m_Layer: 12
   m_Name: CrabSpawner_11
-  m_TagString: EditorOnly
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -7304,7 +7285,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   EnemyTypes: 0400000003000000
   UseTypesAsInclude: 1
-  canSpawn: 1
   playerDetectionRange: 15
   enemyDetectionRange: 5
 --- !u!23 &1807272471
@@ -7468,7 +7448,7 @@ GameObject:
   - component: {fileID: 1852280092}
   m_Layer: 12
   m_Name: Turtle_1
-  m_TagString: EditorOnly
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -7502,7 +7482,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   EnemyTypes: 05000000
   UseTypesAsInclude: 1
-  canSpawn: 1
   playerDetectionRange: 15
   enemyDetectionRange: 5
 --- !u!23 &1852280094
@@ -8384,7 +8363,7 @@ GameObject:
   - component: {fileID: 1989254322}
   m_Layer: 12
   m_Name: CrabSpawner_2
-  m_TagString: EditorOnly
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -8418,7 +8397,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   EnemyTypes: 0400000003000000
   UseTypesAsInclude: 1
-  canSpawn: 1
   playerDetectionRange: 15
   enemyDetectionRange: 5
 --- !u!23 &1989254324
