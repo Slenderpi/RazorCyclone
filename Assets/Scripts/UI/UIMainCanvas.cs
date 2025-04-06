@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class UIMainCanvas : UIPanel {
     
@@ -38,10 +39,10 @@ public class UIMainCanvas : UIPanel {
                     GameManager.Instance.ResumeGame();
                 break;
             case ECanvasState.Settings:
-                if (GameManager.Instance.gameIsPaused) {
-                    SetCanvasState(ECanvasState.Paused);
-                } else {
+                if (SceneManager.GetActiveScene().name == "MainMenuScene") {
                     SetCanvasState(ECanvasState.MainMenu);
+                } else {
+                    SetCanvasState(ECanvasState.Paused);
                 }
                 break;
         }

@@ -61,6 +61,8 @@ public class GameManager : MonoBehaviour {
     public Camera rearCamera;
     
     [HideInInspector]
+    public GameCamera GCam = null;
+    [HideInInspector]
     public bool gameIsPaused = false;
     [HideInInspector]
     public float gameTimeScale = 1;
@@ -213,10 +215,11 @@ public class GameManager : MonoBehaviour {
     // }
     
     public void OnSceneLoaded(Scene scene, LoadSceneMode mode) {
-        if (scene.name != "CoreScene") {
-            SceneManager.SetActiveScene(scene);
-            // Camera.main.fieldOfView = _currentFOV;
-        }
+        if (scene.name == "CoreScene") return;
+        GCam = FindObjectOfType<GameCamera>();
+        GCam?.SetFOV(CurrentFOV);
+        SceneManager.SetActiveScene(scene);
+        // Camera.main.fieldOfView = _currentFOV;
     }
     
     public void SetPauseInputActionsEnabled(bool newEnabled) {
@@ -236,7 +239,7 @@ public class GameManager : MonoBehaviour {
     }
     
     void onFOVChanged(int value) {
-        Camera.main.fieldOfView = value;
+        GCam?.SetFOV(value);
     }
     
     

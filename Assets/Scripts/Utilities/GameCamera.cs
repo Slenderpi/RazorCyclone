@@ -1,9 +1,14 @@
 using UnityEngine;
 
-public class CameraInit : MonoBehaviour {
+public class GameCamera : MonoBehaviour {
     
     Camera c;
     SecondOrderDynamicsF sodFOV;
+    
+    [Header("References")]
+    [SerializeField]
+    Camera WeaponCamera;
+    
     [Header("Parameters")]
     [SerializeField]
     [Range(0.5f, 7)]
@@ -21,6 +26,8 @@ public class CameraInit : MonoBehaviour {
     [Range(10, 90)]
     float SpeedForMaxFOV = 40;
     
+    float currFOV = 90;
+    
     
     
     void Awake() {
@@ -36,8 +43,22 @@ public class CameraInit : MonoBehaviour {
 #if UNITY_EDITOR
             sodFOV.SetDynamics(f, z, r);
 #endif
-            c.fieldOfView = GameManager.Instance.CurrentFOV + sodFOV.Update(Mathf.Lerp(0, MaxAddFOV, GameManager.CurrentPlayer.rb.velocity.magnitude / SpeedForMaxFOV), Time.deltaTime);
+            updateFOV(sodFOV.Update(Mathf.Lerp(0, MaxAddFOV, GameManager.CurrentPlayer.rb.velocity.magnitude / SpeedForMaxFOV), Time.deltaTime));
         }
+    }
+    
+    public void SetFOV(float fov) {
+        currFOV = fov;
+        updateFOV(sodFOV.GetNoUpdate());
+    }
+    
+    void updateFOV(float addFOV) {
+        c.fieldOfView = currFOV + addFOV;
+        WeaponCamera.fieldOfView = c.fieldOfView;
+    }
+    
+    void OnDestroy() {
+        GameManager.Instance.GCam = null;
     }
     
 }
