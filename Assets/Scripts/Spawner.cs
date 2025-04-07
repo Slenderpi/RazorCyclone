@@ -7,8 +7,6 @@ public class Spawner : MonoBehaviour {
     public EnemyType[] EnemyTypes;
     [Tooltip("If set to true, then the EnemyTypes list now means the enemies that ARE ALLOWED to spawn at this spawner.")]
     public bool UseTypesAsInclude = false;
-    [HideInInspector]
-    public bool canSpawn = true;
     
     // public Transform[] enemies;
     public float playerDetectionRange = 15f;
@@ -19,12 +17,10 @@ public class Spawner : MonoBehaviour {
     /// <summary>
     /// Set canSpawn based on spawner-specific criteria, such as distance to player.
     /// </summary>
-    public void ValidateSpawnerSpecificCriteria() {
+    public bool ValidateSpawnerSpecificCriteria() {
         PlayerCharacterCtrlr plr = GameManager.CurrentPlayer;
-        if (!plr) return;
-        Transform plrTrans = plr.transform;
-        
-        canSpawn = (plrTrans.position - transform.position).magnitude > playerDetectionRange;
+        if (!plr) return false;
+        return (plr.transform.position - transform.position).sqrMagnitude > playerDetectionRange * playerDetectionRange;
     }
     
     public bool AcceptsEnemy(EnemyType etype) {

@@ -16,7 +16,9 @@ public class LaserEnemySO : ScriptableObject {
     public float StrongDamagePerSecond = 50;
     [Tooltip("Laser color when damage is weak.")]
     public Gradient WeakColor;
-    [Tooltip("Laser colro when damage is strong.")]
+    [Tooltip("Laser color when damage is strong.")]
     public Gradient StrongColor;
+    [Tooltip("Max rotation speed for the body of the crab.")]
+    public float MaxBodyRotPerSec = 35;
     
 }

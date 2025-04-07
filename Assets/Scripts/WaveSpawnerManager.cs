@@ -66,6 +66,12 @@ public class WaveSpawnerManager : MonoBehaviour {
     // [HideInInspector]
     // public float currentWaveSpawnTime = float.MaxValue;
     
+    const float MAX_WAIT_TIME_FOR_UNFINISHED_PRELOAD = 3;
+    const int PRELOAD_MAX_BATCH_SIZE = 100;
+    const int ACTIVATE_MAX_BATCH_SIZE = 10;
+    
+    bool preloadWaveFinished = true;
+    public bool activateWaveFinished = true;
     bool hasDefeatedActiveWave = false;
     bool activatedWaveIsOnlyFodder = false;
     
@@ -129,7 +135,6 @@ public class WaveSpawnerManager : MonoBehaviour {
 #if DEBUG_WAVE_STRS && UNITY_EDITOR
         PrintWaveEntries();
 #endif
-        Debug.LogWarning("Beginning the game!");
         CurrentWaveNumber = 0;
         StartCoroutine(delaySpawnNextWave());
     }
@@ -139,7 +144,6 @@ public class WaveSpawnerManager : MonoBehaviour {
     /// </summary>
     /// <param name="waveNumber">The first wave is 1, not 0.</param>
     public void PreloadWave(int waveNumber) {
-        // TODO: See if there's a way to use the Job system for this (and for UnloadWave() as well)
         if (waveNumber > waveEntries.Length || waveNumber <= 0) {
 #if DEBUG_WAVE_STRS && UNITY_EDITOR
             Debug.LogWarning($"WARN: Attempted to preload wave number ({waveNumber}) but there are only {waveEntries.Length} determined waves.");
@@ -148,34 +152,81 @@ public class WaveSpawnerManager : MonoBehaviour {
             // currentWaveSpawnTime = float.MaxValue;
             return;
         }
+        preloadWaveFinished = false;
         CurrentPreloadedWaveNumber = waveNumber;
-        // TimedWaveEntry wave = waveEntries[waveNumber - 1];
-        WaveEntry wave = waveEntries[waveNumber - 1];        
-#if DEBUG_WAVE_STRS && UNITY_EDITOR
-        Debug.Log("DEBUG: Preloading wave:\n" + wave);
-#endif
+        // TimedWaveEntry wave = waveEntries[waveNumber - 1];  
         // currentWaveSpawnTime = wave.spawnTime;
         // The loadedWave should already be cleared.
+        StartCoroutine(preloadWaveStaggered(waveNumber));
+    }
+    
+    IEnumerator preloadWaveStaggered(int waveNumber) { 
+        WaveEntry wave = waveEntries[waveNumber - 1];     
+#if DEBUG_WAVE_STRS && UNITY_EDITOR
+        Debug.Log("DEBUG: Preloading wave:\n" + wave);
+        float startTime = Time.time;
+#endif
+        int currBatchSize = 0;
         for (int i = 0; i < EnemyPrefabs.Length; i++) {
             int count = wave.enemyCounts[i];
             for (int c = 0; c < count; c++) {
                 EnemyBase en = Instantiate(EnemyPrefabs[i]);
                 en.gameObject.SetActive(false);
                 loadedWave.Add(en);
+                if (++currBatchSize >= PRELOAD_MAX_BATCH_SIZE) {
+                    currBatchSize = 0;   
+#if DEBUG_WAVE_STRS && UNITY_EDITOR
+                    Debug.Log($"DEBUG: Preload batch delay t = {Time.time - startTime}");
+#endif
+                    yield return null;
+                }
             }
         }
+        preloadWaveFinished = true;
+    }
+    
+#if UNITY_EDITOR || KEEP_DEBUG
+    IEnumerator delayUnloadWave() {
+        float startTime = Time.time;
+        do
+            yield return null;
+        while (!preloadWaveFinished && Time.time - startTime < MAX_WAIT_TIME_FOR_UNFINISHED_PRELOAD);
+        if (preloadWaveFinished) {
+            Debug.Log("DEBUG: Detected finished preload, allowing unloading of wave.");
+            UnloadWave();
+        } else
+            Debug.LogError($"ERROR: Wave {CurrentPreloadedWaveNumber} has taken longer than {MAX_WAIT_TIME_FOR_UNFINISHED_PRELOAD} seconds to load! Cancelling wave unloader.");
     }
     
     /// <summary>
     /// Destroy currently preloaded enemies.
     /// </summary>
     public void UnloadWave() {
+        if (!preloadWaveFinished) {
+            StartCoroutine(delayUnloadWave());
+            return;
+        }
         CurrentPreloadedWaveNumber = -1;
         // currentWaveSpawnTime = float.MaxValue;
         foreach (EnemyBase en in loadedWave) {
             Destroy(en);
         }
         loadedWave.Clear();
+    }
+#endif
+    
+    IEnumerator delayActivateWave() {
+        float startTime = Time.time;
+        do {
+            yield return null;
+        } while (!preloadWaveFinished && Time.time - startTime < MAX_WAIT_TIME_FOR_UNFINISHED_PRELOAD);
+        if (preloadWaveFinished) {
+#if DEBUG_WAVE_STRS && UNITY_EDITOR
+            Debug.Log("DEBUG: Detected finished preload, allowing wave activation.");
+#endif
+            ActivateWave();
+        } else
+            Debug.LogError($"ERROR: Wave {CurrentPreloadedWaveNumber} has taken longer than {MAX_WAIT_TIME_FOR_UNFINISHED_PRELOAD} seconds to load! Cancelling next wave activation.");
     }
     
     /// <summary>
@@ -184,6 +235,14 @@ public class WaveSpawnerManager : MonoBehaviour {
     public void ActivateWave() {
         if (CurrentPreloadedWaveNumber == -1 || loadedWave.Count == 0)
             return;
+        if (!preloadWaveFinished) {
+#if DEBUG_WAVE_STRS && UNITY_EDITOR
+            Debug.LogWarning("DEBUG: Next wave not yet done preloading! Delaying wave activation.");
+#endif
+            StartCoroutine(delayActivateWave());
+            return;
+        }
+        activateWaveFinished = false;
         CurrentWaveNumber = CurrentPreloadedWaveNumber;
         hasDefeatedActiveWave = false;
 #if DEBUG_WAVE_STRS && UNITY_EDITOR
@@ -217,8 +276,7 @@ public class WaveSpawnerManager : MonoBehaviour {
         List<Spawner>[] availableSpawners = new List<Spawner>[numETypes];
         for (int i = 0; i < numETypes; i++) availableSpawners[i] = new List<Spawner>(); // Initialize lists
         foreach (Spawner sp in spawners) {
-            sp.ValidateSpawnerSpecificCriteria();
-            if (!sp.canSpawn) continue;
+            if (!sp.ValidateSpawnerSpecificCriteria()) continue;
             for (int ti = 0; ti < numETypes; ti++) { // type i
                 if (wave.enemyCounts[ti] == 0) continue;
                 if (sp.AcceptsEnemy((EnemyType)ti)) {
@@ -230,6 +288,11 @@ public class WaveSpawnerManager : MonoBehaviour {
         for (int i = 0; i < numETypes; i++)
             if (availableSpawners[i].Count == 0)
                 availableSpawners[i].Add(spawners[rnd.Next(spawners.Count)]);
+        
+        StartCoroutine(activateWaveStaggered(numETypes, availableSpawners, wave, rnd));
+    }
+    
+    IEnumerator activateWaveStaggered(int numETypes, List<Spawner>[] availableSpawners, WaveEntry wave, Random rnd) {
         /* PSUEDOCODE for positioning and activating each enemy:
         // Now, for each enemy, choose a random valid spawner position and enable them
         // Since PreloadWave() preloads enemies in the order of WaveEntry.EnemyCounts, the order
@@ -247,6 +310,10 @@ public class WaveSpawnerManager : MonoBehaviour {
                 loadedWave[lei].SetEnabled(true)
                 lei++
         */
+        int currBatchSize = 0;
+#if DEBUG_WAVE_STRS && UNITY_EDITOR
+        float startTime = Time.time;
+#endif
         int lei = 0; // Loaded Enemy i
         for (int eti = 0; eti < numETypes; eti++) { // Enemy Type i
             List<Spawner> currSpList = availableSpawners[eti];
@@ -255,11 +322,19 @@ public class WaveSpawnerManager : MonoBehaviour {
                 Transform spawnTrans = currSpList[rnd.Next(currSpList.Count)].transform;
                 en.transform.SetPositionAndRotation(spawnTrans.position, spawnTrans.rotation);
                 en.gameObject.SetActive(true);
+                if (++currBatchSize > ACTIVATE_MAX_BATCH_SIZE) {
+#if DEBUG_WAVE_STRS && UNITY_EDITOR
+                    Debug.Log($"DEBUG: Activate batch delay t = {Time.time - startTime}");
+#endif
+                    currBatchSize = 0;
+                    yield return null;
+                }
             }
         }
         // Clear loadedWave so that if ActivateWave() is quickly called again (it shouldn't be) that we
         // don't perform uneccessary extra work.
         loadedWave.Clear();
+        activateWaveFinished = true;
     }
     
     public void OnEnemyCountDecreased(int[] counts) {
@@ -277,7 +352,9 @@ public class WaveSpawnerManager : MonoBehaviour {
         }
         if (waveComplete) {
             hasDefeatedActiveWave = true;
-            Debug.LogWarning("Wave completed!");
+            // Debug.LogWarning("Wave completed!");
+            GameManager.Instance.MainCanvas.GamePanel.OnRoundCompleted();
+            GameManager.CurrentPlayer.HealHealth(GameManager.CurrentPlayer.MaxHealth);
             StartCoroutine(delaySpawnNextWave());
         }
     }
@@ -285,11 +362,7 @@ public class WaveSpawnerManager : MonoBehaviour {
     IEnumerator delaySpawnNextWave() {
         PreloadWave(CurrentWaveNumber + 1);
         yield return new WaitForSeconds(2);
-        GameManager.CurrentPlayer.HealHealth(GameManager.CurrentPlayer.MaxHealth);
-        Debug.LogWarning("Get ready for round " + CurrentPreloadedWaveNumber + "...");
-        yield return new WaitForSeconds(0.1f); //Adam changed this value
-        Debug.LogWarning("Go!");
-        GameManager.Instance.MainCanvas.GamePanel.RoundLabel.text = "Round: " + CurrentPreloadedWaveNumber;
+        GameManager.Instance.MainCanvas.GamePanel.OnUpdateRoundNumber(CurrentPreloadedWaveNumber);
         ActivateWave();
     }
     

@@ -33,11 +33,12 @@ public class UIDEBUGPanel : UIPanel {
     [Range(-2, 2)]
     public float r = 1;
     
+#if UNITY_EDITOR || KEEP_DEBUG
     WaveSpawnerManager wsm = null;
-    
     int desiredWaveToSpawn = 1;
+#endif
     
-    
+#if UNITY_EDITOR || KEEP_DEBUG
     
     void Start() {
 #if !UNITY_EDITOR && KEEP_DEBUG
@@ -115,6 +116,10 @@ public class UIDEBUGPanel : UIPanel {
     }
     
     public void OnButton_SpawnWaveNumber() {
+        if (!wsm.activateWaveFinished) {
+            Debug.LogWarning("Warning: a wave is currently being activated. To avoid issues, please wait until the current wave has finished activating.");
+            return;
+        }
         wsm.UnloadWave();
         wsm.PreloadWave(desiredWaveToSpawn);
         wsm.ActivateWave();
@@ -169,5 +174,6 @@ public class UIDEBUGPanel : UIPanel {
         if (!wsm) return;
         SpawnWaveButtonText.text = "Spawn Wave (1-" + wsm.waveEntries.Length + "):";
     }
+#endif
     
 }

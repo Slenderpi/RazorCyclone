@@ -5,13 +5,18 @@ public class HunterEnemy : EnemyBase {
     
     [Header("Hunter Config")]
     public HunterEnemySO HunterConfig;
+    [SerializeField]
+    TrailRenderer[] trails;
+    [SerializeField]
+    LineRenderer[] lrenderers;
     // public float StunDuration = 5f;
     // [SerializeField] float shieldDrag = 0.2f;
     // [SerializeField] float stunDrag = 1f;
     bool isStunned = false;
     // public Material shieldActiveMaterial;
     // public Material shieldInactiveMaterial;
-    [SerializeField] MeshRenderer ModelMeshRenderer;
+    [SerializeField]
+    MeshRenderer ModelMeshRenderer;
     
     [Header("Hunter Audio")]
     [SerializeField]
@@ -23,11 +28,6 @@ public class HunterEnemy : EnemyBase {
         suckable.CanGetVacuumSucked = false;
         rb.drag = HunterConfig.ShieldDrag;
         SetEffectState(isStunned);
-    }
-    
-    protected override void LateInit() {
-        base.LateInit();
-        AmbientAudio.Play();
     }
     
     protected override void OnTakeDamage(float amnt, EDamageType damageType) {
@@ -86,8 +86,16 @@ public class HunterEnemy : EnemyBase {
         if (toStunned) {
             AmbientAudio.Stop();
             StunAudio.Play();
+            foreach (TrailRenderer t in trails)
+                t.emitting = false;
+            foreach (LineRenderer r in lrenderers)
+                r.enabled = false;
         } else {
             AmbientAudio.Play();
+            foreach (TrailRenderer t in trails)
+                t.emitting = true;
+            foreach (LineRenderer r in lrenderers)
+                r.enabled = true;
         }
     }
     

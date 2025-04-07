@@ -4,7 +4,7 @@ using UnityEngine;
 public class SO_CentipedeMissile : GeneralBoidSO {
     
     [Header("Centipede Missile Boid parameters")]
-    [Tooltip("If false, missiles will use Pursuit.")]
-    public bool UseSeek = true;
+    [Tooltip("The missile will use Pursuit at the start of its flight for a short duration, and this is that duration.\nAfterwards, it will travel in a straight line.")]
+    public float AimDuration = 0.5f;
     
 }
