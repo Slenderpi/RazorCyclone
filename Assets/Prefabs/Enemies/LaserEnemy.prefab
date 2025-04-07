@@ -10191,7 +10191,6 @@ MonoBehaviour:
   revolvePivot: {fileID: 3634931314128218591}
   barrelPivot: {fileID: 3649529104826026762}
   StunAudio: {fileID: 3597588743637917032}
-  crabBody: {fileID: 2774007177517141138}
 --- !u!114 &4101778514245048547
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10652,7 +10651,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8000886818281507407}
-  m_Mesh: {fileID: -2432090755550338912, guid: 234df5061ac462e47b9b80b9d8a815f2, type: 3}
+  m_Mesh: {fileID: -7920053014011642556, guid: f8e0972d52a81744aa03cec8dd392663, type: 3}
 --- !u!23 &597965175128671402
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -10673,7 +10672,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 7feaf3223dcd3d145a18464189b2ad7b, type: 2}
+  - {fileID: 2100000, guid: ada1d641645f4405ca3cdcd44659eb9f, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -15699,7 +15698,11 @@ PrefabInstance:
     - target: {fileID: -7635826562936255635, guid: 602afdb2ed3a74442bb72215a223ae55, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: 7feaf3223dcd3d145a18464189b2ad7b, type: 2}
+      objectReference: {fileID: 2100000, guid: ada1d641645f4405ca3cdcd44659eb9f, type: 2}
+    - target: {fileID: -6400281290468069383, guid: 602afdb2ed3a74442bb72215a223ae55, type: 3}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: -8927469475222801591, guid: f8e0972d52a81744aa03cec8dd392663, type: 3}
     - target: {fileID: 919132149155446097, guid: 602afdb2ed3a74442bb72215a223ae55, type: 3}
       propertyPath: m_Name
       value: crabBarrel
@@ -15777,7 +15780,11 @@ PrefabInstance:
     - target: {fileID: -7635826562936255635, guid: adae76a22a127e14d984a1da46aaafb7, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: 7feaf3223dcd3d145a18464189b2ad7b, type: 2}
+      objectReference: {fileID: 2100000, guid: ada1d641645f4405ca3cdcd44659eb9f, type: 2}
+    - target: {fileID: -6400281290468069383, guid: adae76a22a127e14d984a1da46aaafb7, type: 3}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: 6133602354682270253, guid: f8e0972d52a81744aa03cec8dd392663, type: 3}
     - target: {fileID: 919132149155446097, guid: adae76a22a127e14d984a1da46aaafb7, type: 3}
       propertyPath: m_Name
       value: crabTank
