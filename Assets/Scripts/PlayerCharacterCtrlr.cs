@@ -616,6 +616,8 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
             inputActions._TakeDamage.started += On_TakeDamage;
             inputActions._HealHealth.Enable();
             inputActions._HealHealth.started += On_HealHealth;
+            inputActions._AddRicCharges.Enable();
+            inputActions._AddRicCharges.started += On_AddRicCharges;
         } else {
             inputActions.Look.Disable();
             inputActions.TurnInputs.Disable();
@@ -648,6 +650,8 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
             inputActions._TakeDamage.started -= On_TakeDamage;
             inputActions._HealHealth.Disable();
             inputActions._HealHealth.started -= On_HealHealth;
+            inputActions._AddRicCharges.Disable();
+            inputActions._AddRicCharges.started -= On_AddRicCharges;
         }
     }
     
@@ -701,9 +705,16 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     }
     
     void On_HealHealth(InputAction.CallbackContext context) {
-        float HealAmount = 10;
+        float HealAmount = 50;
         print("Healing player for " + HealAmount + " health.");
         HealHealth(HealAmount);
+    }
+    
+    void On_AddRicCharges(InputAction.CallbackContext context) {
+        int numCharges = 5;
+        print($"Adding {numCharges} ricochet charges (from T key).");
+        currentBikeSpins += numCharges;
+        A_SpinCompleted?.Invoke(currentBikeSpins);
     }
     
 }

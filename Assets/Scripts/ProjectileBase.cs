@@ -265,7 +265,7 @@ public class ProjectileBase : MonoBehaviour {
     }
     
     IEnumerator ProjectileLifetime() {
-        yield return new WaitForSeconds(ProjConfig.MaxLifetime);
+        yield return new WaitForSeconds(Mathf.Min(ProjConfig.LifetimePerRicochetAdd1 * (MaxRicochet + 1), ProjConfig.MaxLifetime));
         OnProjectileLifetimeExpired();
     }
     
