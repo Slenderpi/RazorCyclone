@@ -14,6 +14,7 @@ public class ProjectileBase : MonoBehaviour {
     // public float MaxLifetime = 10f;
     [Tooltip("Maximum number of times this projectile can ricochet.\nA value of 0 means NO ricochet.")]
     public int MaxRicochet = 1;
+    bool hasHitEnemy = false;
     int ricRemain;
     // [Tooltip("VFX for projectile impact.")]
     // public GameObject ImpactEffect;
@@ -21,6 +22,12 @@ public class ProjectileBase : MonoBehaviour {
     // [Tooltip("VFX for ricochet.")]
     // public GameObject RicochetEffect;
     protected GameObject[] riceffects;
+    
+    [Header("References")]
+    [SerializeField]
+    TrailRenderer TrailRicochet;
+    [SerializeField]
+    TrailRenderer TrailNormal;
     
     [HideInInspector]
     public Rigidbody rb;
@@ -42,12 +49,18 @@ public class ProjectileBase : MonoBehaviour {
                     (1 << LayerMask.NameToLayer("EnemyHitbox")); // |
                     // (1 << LayerMask.NameToLayer("EnemyWeapon"));
         waitFixedUpdForRic = new WaitForFixedUpdate();
+        TrailNormal.emitting = false;
+        TrailRicochet.emitting = false;
         poolVFX();
         Init();
     }
     
     void Start() {
         ricRemain = MaxRicochet;
+        if (ricRemain > 0)
+            TrailRicochet.emitting = true;
+        else
+            TrailNormal.emitting = true;
         StartCoroutine(ProjectileLifetime());
     }
     
@@ -116,24 +129,43 @@ public class ProjectileBase : MonoBehaviour {
         if (!hitObject.CompareTag("Player") &&
             !hitObject.CompareTag("Projectile") &&
             !hitObject.CompareTag("Pickup")) {
+            EnemyBase enemy = null;
             if (hitObject.CompareTag("Enemy")) {
-                if (!hitObject.transform.parent.parent.TryGetComponent(out EnemyBase enemy)) {
-                    enemy = hitObject.GetComponentInParent<EnemyBase>();
-                }
+                enemy = hitObject.transform.parent.parent.GetComponent<EnemyBase>();
+                hasHitEnemy = true;
                 if (enemy == enemyToIgnore) return;
-                transform.position = closestHitPos;
-                if (enemy.RicochetCanon && ricRemain > 0)
-                    OnRicochetEnemy(enemy);
-                else {
-                    // if (!enemy.RicochetCanon) print("No ricochet for '" + enemy.gameObject.name + "'");
-                    OnHitEnemy(enemy);
-                    Destroy(gameObject);
-                }
-            } else {
-                transform.position = closestHitPos;
-                OnHitNonEnemy(hitObject);
-                Destroy(gameObject);
             }
+            transform.position = closestHitPos;
+            // Ricochet no matter what if possible
+            if (ricRemain > 0 && (hasHitEnemy || true)) {
+                OnRicochetEnemy(enemy);
+                return;
+            }
+            if (enemy) {
+                OnHitEnemy(enemy);
+            } else {
+                OnHitNonEnemy(hitObject);
+            }
+            Destroy(gameObject);
+            
+            // if (hitObject.CompareTag("Enemy")) {
+            //     if (!hitObject.transform.parent.parent.TryGetComponent(out EnemyBase enemy)) {
+            //         enemy = hitObject.GetComponentInParent<EnemyBase>();
+            //     }
+            //     if (enemy == enemyToIgnore) return;
+            //     transform.position = closestHitPos;
+            //     if (enemy.RicochetCanon && ricRemain > 0)
+            //         OnRicochetEnemy(enemy);
+            //     else {
+            //         // if (!enemy.RicochetCanon) print("No ricochet for '" + enemy.gameObject.name + "'");
+            //         OnHitEnemy(enemy);
+            //         Destroy(gameObject);
+            //     }
+            // } else {
+            //     transform.position = closestHitPos;
+            //     OnHitNonEnemy(hitObject);
+            //     Destroy(gameObject);
+            // }
         }
     }
     
@@ -175,8 +207,12 @@ public class ProjectileBase : MonoBehaviour {
         } else // No valid enemy to ricochet to. Reflect physically
             ricVel = Vector3.Reflect(rb.velocity, closestHitNorm);
         rb.velocity *= 0;
+        if (ricRemain == 0) {
+            TrailRicochet.emitting = false;
+            TrailNormal.emitting = true;
+        }
         StartCoroutine(ricochetVelNextFrame(ricVel));
-        enemy.TakeDamage(100, EDamageType.Projectile);
+        enemy?.TakeDamage(100, EDamageType.Projectile);
         showRicochetEffect();
     }
     
