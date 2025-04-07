@@ -8,5 +8,7 @@ public class CrabBasicEnemySO : ScriptableObject {
     public EnemyProjectile CrabProjectilePrefab;
     [Tooltip("Speed of the projectile.")]
     public float ProjectileSpeed = 25f;
+    [Tooltip("Max rotation speed for the body of the crab.")]
+    public float MaxBodyRotPerSec = 45;
     
 }

@@ -11,6 +11,8 @@ public class CrabBasicEnemy : EnemyBase {
     [Tooltip("Reference to the transform the turret's barrel will rotate (pitch) around.")]
     Transform barrelPivot;
     [SerializeField]
+    Transform bodyPivot;
+    [SerializeField]
     [Tooltip("Reference to the transform the projectile will spawn from.")]
     Transform BarrelEndpoint;
     [Tooltip("Reference to the gameObject holding firing VFX.")]
@@ -38,7 +40,20 @@ public class CrabBasicEnemy : EnemyBase {
         lastAttackTime = Time.fixedTime;
         poolProjectile();
     }
-    
+
+    void Update() {
+        Vector3 toPlr = predictPlrPos() - Model.transform.position;
+        Vector3 flat = new Vector3(toPlr.x, 0, toPlr.z);
+        revolvePivot.rotation = Quaternion.LookRotation(flat);
+        barrelPivot.rotation = Quaternion.LookRotation(toPlr);
+        bodyPivot.rotation = Quaternion.RotateTowards(
+            bodyPivot.rotation,
+            Quaternion.LookRotation(flat),
+            CrabBasicConfig.MaxBodyRotPerSec * Time.deltaTime
+        );
+        Hitboxes.transform.rotation = bodyPivot.rotation;
+    }
+
     protected override void onFixedUpdate() {
         if (!GameManager.CurrentPlayer) return;
         if (Time.fixedTime - lastAttackTime >= EnConfig.AttackDelay) {

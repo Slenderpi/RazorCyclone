@@ -10186,12 +10186,13 @@ MonoBehaviour:
   ConsiderForRicochet: 1
   invincible: 0
   LaserConfig: {fileID: 11400000, guid: 2f0ace4e5d7ff3e4e93c618659723785, type: 2}
+  MaxBodyRotPerSec: 30
   LaserLineRenderer: {fileID: 1566580697121567249}
   LaserEndpoint: {fileID: 8158616588436924260}
   revolvePivot: {fileID: 3634931314128218591}
   barrelPivot: {fileID: 3649529104826026762}
+  bodyPivot: {fileID: 2774007177517141138}
   StunAudio: {fileID: 3597588743637917032}
-  crabBody: {fileID: 2774007177517141138}
 --- !u!114 &4101778514245048547
 MonoBehaviour:
   m_ObjectHideFlags: 0
