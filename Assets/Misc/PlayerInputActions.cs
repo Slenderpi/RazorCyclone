@@ -125,6 +125,15 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""_AddRicCharges"",
+                    ""type"": ""Button"",
+                    ""id"": ""c632c9da-1e64-4e97-a4ff-819d63919d2d"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -516,7 +525,7 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""cf4274c0-d575-4d1c-9c4f-72a05b169e9c"",
-                    ""path"": ""<Keyboard>/g"",
+                    ""path"": ""<Keyboard>/j"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -532,6 +541,17 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""_HealHealth"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""941ece05-7365-43d5-86a7-f1ec2d022f68"",
+                    ""path"": ""<Keyboard>/t"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""_AddRicCharges"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -629,6 +649,7 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
         m_Player__ToggleMirror = m_Player.FindAction("_ToggleMirror", throwIfNotFound: true);
         m_Player__TakeDamage = m_Player.FindAction("_TakeDamage", throwIfNotFound: true);
         m_Player__HealHealth = m_Player.FindAction("_HealHealth", throwIfNotFound: true);
+        m_Player__AddRicCharges = m_Player.FindAction("_AddRicCharges", throwIfNotFound: true);
         // PauseMenu
         m_PauseMenu = asset.FindActionMap("PauseMenu", throwIfNotFound: true);
         m_PauseMenu_Escape = m_PauseMenu.FindAction("Escape", throwIfNotFound: true);
@@ -706,6 +727,7 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
     private readonly InputAction m_Player__ToggleMirror;
     private readonly InputAction m_Player__TakeDamage;
     private readonly InputAction m_Player__HealHealth;
+    private readonly InputAction m_Player__AddRicCharges;
     public struct PlayerActions
     {
         private @PlayerInputActions m_Wrapper;
@@ -721,6 +743,7 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
         public InputAction @_ToggleMirror => m_Wrapper.m_Player__ToggleMirror;
         public InputAction @_TakeDamage => m_Wrapper.m_Player__TakeDamage;
         public InputAction @_HealHealth => m_Wrapper.m_Player__HealHealth;
+        public InputAction @_AddRicCharges => m_Wrapper.m_Player__AddRicCharges;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -763,6 +786,9 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
                 @_HealHealth.started -= m_Wrapper.m_PlayerActionsCallbackInterface.On_HealHealth;
                 @_HealHealth.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.On_HealHealth;
                 @_HealHealth.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.On_HealHealth;
+                @_AddRicCharges.started -= m_Wrapper.m_PlayerActionsCallbackInterface.On_AddRicCharges;
+                @_AddRicCharges.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.On_AddRicCharges;
+                @_AddRicCharges.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.On_AddRicCharges;
             }
             m_Wrapper.m_PlayerActionsCallbackInterface = instance;
             if (instance != null)
@@ -800,6 +826,9 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
                 @_HealHealth.started += instance.On_HealHealth;
                 @_HealHealth.performed += instance.On_HealHealth;
                 @_HealHealth.canceled += instance.On_HealHealth;
+                @_AddRicCharges.started += instance.On_AddRicCharges;
+                @_AddRicCharges.performed += instance.On_AddRicCharges;
+                @_AddRicCharges.canceled += instance.On_AddRicCharges;
             }
         }
     }
@@ -891,6 +920,7 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
         void On_ToggleMirror(InputAction.CallbackContext context);
         void On_TakeDamage(InputAction.CallbackContext context);
         void On_HealHealth(InputAction.CallbackContext context);
+        void On_AddRicCharges(InputAction.CallbackContext context);
     }
     public interface IPauseMenuActions
     {

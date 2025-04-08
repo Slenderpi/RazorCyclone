@@ -294,7 +294,7 @@ public class UIGamePanel : UIPanel {
     void onSpinCompleted(int newSpinCount) {
         resetSpinTileColors();
         // TileRendW.material = SpinTileMatProgress;
-        if (newSpinCount == 1)
+        if (!SpinCounterBG.activeSelf)
             SpinCounterBG.SetActive(true);
         setSpinCounterText(newSpinCount);
     }

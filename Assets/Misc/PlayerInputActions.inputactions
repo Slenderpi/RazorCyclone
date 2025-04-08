@@ -103,6 +103,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "_AddRicCharges",
+                    "type": "Button",
+                    "id": "c632c9da-1e64-4e97-a4ff-819d63919d2d",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -494,7 +503,7 @@
                 {
                     "name": "",
                     "id": "cf4274c0-d575-4d1c-9c4f-72a05b169e9c",
-                    "path": "<Keyboard>/g",
+                    "path": "<Keyboard>/j",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -510,6 +519,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "_HealHealth",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "941ece05-7365-43d5-86a7-f1ec2d022f68",
+                    "path": "<Keyboard>/t",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "_AddRicCharges",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
