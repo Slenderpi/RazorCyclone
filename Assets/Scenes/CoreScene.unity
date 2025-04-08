@@ -8357,6 +8357,7 @@ MonoBehaviour:
   playerPrefab: {fileID: 2891318792771983367, guid: ebefb66ac461b4941a6d0863c3d1515d, type: 3}
   enemyPrefab: {fileID: 4682280902325755084, guid: 7cf1fba186346694eb69b97032290412, type: 3}
   rearCamera: {fileID: 1881141688}
+  GCam: {fileID: 0}
   gameIsPaused: 0
   gameTimeScale: 1
 --- !u!114 &646970581
@@ -24858,7 +24859,7 @@ Camera:
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 479
+    m_Bits: 329
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 8400000, guid: c7389f093480c4513b0c510e9a358151, type: 2}
   m_TargetDisplay: 0
