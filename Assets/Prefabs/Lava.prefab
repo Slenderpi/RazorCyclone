@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 3258954005348018360}
   - component: {fileID: 2373799848132920033}
   - component: {fileID: 5286866141740681498}
-  m_Layer: 0
+  m_Layer: 18
   m_Name: Lava
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -79,9 +79,9 @@ GameObject:
   - component: {fileID: 4702342051054304430}
   - component: {fileID: 7481095903117386306}
   - component: {fileID: 755357279955665116}
-  m_Layer: 0
+  m_Layer: 18
   m_Name: Mesh_1
-  m_TagString: Untagged
+  m_TagString: EditorOnly
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -162,7 +162,7 @@ GameObject:
   - component: {fileID: 6030334806361027157}
   - component: {fileID: 3233712507551175365}
   - component: {fileID: 6151041865402594072}
-  m_Layer: 0
+  m_Layer: 18
   m_Name: Mesh
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -212,7 +212,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 7b4b5f288ce256a47a9bef64163e213f, type: 2}
+  - {fileID: 2100000, guid: 964717e21eb580c4b9728a3743b6be4a, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

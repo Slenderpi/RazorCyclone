@@ -960,7 +960,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   EnemyTypes: 010000000200000000000000
   UseTypesAsInclude: 1
-  canSpawn: 1
   playerDetectionRange: 15
   enemyDetectionRange: 5
 --- !u!23 &252836620
@@ -1061,7 +1060,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   EnemyTypes: 0400000003000000
   UseTypesAsInclude: 1
-  canSpawn: 1
   playerDetectionRange: 15
   enemyDetectionRange: 5
 --- !u!23 &272298972
@@ -1450,7 +1448,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   EnemyTypes: 0400000003000000
   UseTypesAsInclude: 1
-  canSpawn: 1
   playerDetectionRange: 15
   enemyDetectionRange: 5
 --- !u!23 &341329092
@@ -1745,7 +1742,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   EnemyTypes: 010000000200000000000000
   UseTypesAsInclude: 1
-  canSpawn: 1
   playerDetectionRange: 15
   enemyDetectionRange: 5
 --- !u!23 &356140131
@@ -2380,7 +2376,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   EnemyTypes: 05000000
   UseTypesAsInclude: 1
-  canSpawn: 1
   playerDetectionRange: 15
   enemyDetectionRange: 5
 --- !u!23 &480110175
@@ -3185,7 +3180,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   EnemyTypes: 0400000003000000
   UseTypesAsInclude: 1
-  canSpawn: 1
   playerDetectionRange: 15
   enemyDetectionRange: 5
 --- !u!23 &829516934
@@ -3286,7 +3280,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   EnemyTypes: 0400000003000000
   UseTypesAsInclude: 1
-  canSpawn: 1
   playerDetectionRange: 15
   enemyDetectionRange: 5
 --- !u!23 &829562233
@@ -3452,7 +3445,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   EnemyTypes: 010000000200000000000000
   UseTypesAsInclude: 1
-  canSpawn: 1
   playerDetectionRange: 15
   enemyDetectionRange: 5
 --- !u!23 &843942541
@@ -3609,6 +3601,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: ROCKS10
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: da64615f8e3714225b677ad5d3153cf3, type: 3}
+      propertyPath: m_Layer
+      value: 18
+      objectReference: {fileID: 0}
     - target: {fileID: 8164078558771037576, guid: da64615f8e3714225b677ad5d3153cf3, type: 3}
       propertyPath: m_Layer
       value: 18
@@ -3668,7 +3664,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   EnemyTypes: 00000000
   UseTypesAsInclude: 1
-  canSpawn: 1
   playerDetectionRange: 15
   enemyDetectionRange: 5
 --- !u!23 &860810457
@@ -3852,7 +3847,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   EnemyTypes: 05000000
   UseTypesAsInclude: 1
-  canSpawn: 1
   playerDetectionRange: 15
   enemyDetectionRange: 5
 --- !u!23 &871988433
@@ -3980,10 +3974,6 @@ PrefabInstance:
       propertyPath: m_ConstrainProportionsScale
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 6151041865402594072, guid: 3673c5e01ef9a8a4cb02e0f60d7648cb, type: 3}
-      propertyPath: m_Materials.Array.data[0]
-      value: 
-      objectReference: {fileID: 2100000, guid: 964717e21eb580c4b9728a3743b6be4a, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3673c5e01ef9a8a4cb02e0f60d7648cb, type: 3}
 --- !u!1 &881919917
@@ -4557,7 +4547,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   EnemyTypes: 0400000003000000
   UseTypesAsInclude: 1
-  canSpawn: 1
   playerDetectionRange: 15
   enemyDetectionRange: 5
 --- !u!23 &958266382
@@ -5081,7 +5070,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   EnemyTypes: 0400000003000000
   UseTypesAsInclude: 1
-  canSpawn: 1
   playerDetectionRange: 15
   enemyDetectionRange: 5
 --- !u!23 &1012119358
@@ -5329,7 +5317,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   EnemyTypes: 010000000200000000000000
   UseTypesAsInclude: 1
-  canSpawn: 1
   playerDetectionRange: 15
   enemyDetectionRange: 5
 --- !u!1 &1038361702
@@ -6002,7 +5989,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   EnemyTypes: 010000000200000000000000
   UseTypesAsInclude: 1
-  canSpawn: 1
   playerDetectionRange: 15
   enemyDetectionRange: 5
 --- !u!23 &1236507275
@@ -6103,7 +6089,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   EnemyTypes: 010000000200000000000000
   UseTypesAsInclude: 1
-  canSpawn: 1
   playerDetectionRange: 15
   enemyDetectionRange: 5
 --- !u!23 &1266517631
@@ -6239,7 +6224,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   EnemyTypes: 0400000003000000
   UseTypesAsInclude: 1
-  canSpawn: 1
   playerDetectionRange: 15
   enemyDetectionRange: 5
 --- !u!23 &1320111371
@@ -6458,76 +6442,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1369355841}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!1 &1383296130 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 9213267263744958652, guid: a6a8bd0296f44eb4ba82a4f2dd71a33d, type: 3}
-  m_PrefabInstance: {fileID: 1994531340}
-  m_PrefabAsset: {fileID: 0}
---- !u!4 &1383296134 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 9213267263744958651, guid: a6a8bd0296f44eb4ba82a4f2dd71a33d, type: 3}
-  m_PrefabInstance: {fileID: 1994531340}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1383296135
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1383296130}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 948f4100a11a5c24981795d21301da5c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  volumeTrigger: {fileID: 1383296134}
-  volumeLayer:
-    serializedVersion: 2
-    m_Bits: 2147483647
-  stopNaNPropagation: 1
-  finalBlitToCameraTarget: 0
-  antialiasingMode: 0
-  temporalAntialiasing:
-    jitterSpread: 0.75
-    sharpness: 0.25
-    stationaryBlending: 0.95
-    motionBlending: 0.85
-  subpixelMorphologicalAntialiasing:
-    quality: 2
-  fastApproximateAntialiasing:
-    fastMode: 0
-    keepAlpha: 0
-  fog:
-    enabled: 1
-    excludeSkybox: 1
-  debugLayer:
-    lightMeter:
-      width: 512
-      height: 256
-      showCurves: 1
-    histogram:
-      width: 512
-      height: 256
-      channel: 3
-    waveform:
-      exposure: 0.12
-      height: 256
-    vectorscope:
-      size: 256
-      exposure: 0.12
-    overlaySettings:
-      linearDepth: 0
-      motionColorIntensity: 4
-      motionGridSize: 64
-      colorBlindnessType: 0
-      colorBlindnessStrength: 1
-  m_Resources: {fileID: 11400000, guid: d82512f9c8e5d4a4d938b575d47f88d4, type: 2}
-  m_ShowToolkit: 0
-  m_ShowCustomSorter: 0
-  breakBeforeColorGrading: 0
-  m_BeforeTransparentBundles: []
-  m_BeforeStackBundles: []
-  m_AfterStackBundles: []
 --- !u!1 &1414867355
 GameObject:
   m_ObjectHideFlags: 0
@@ -7152,7 +7066,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   EnemyTypes: 0400000003000000
   UseTypesAsInclude: 1
-  canSpawn: 1
   playerDetectionRange: 15
   enemyDetectionRange: 5
 --- !u!23 &1600057259
@@ -7350,7 +7263,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   EnemyTypes: 0400000003000000
   UseTypesAsInclude: 1
-  canSpawn: 1
   playerDetectionRange: 15
   enemyDetectionRange: 5
 --- !u!23 &1618554603
@@ -7583,7 +7495,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   EnemyTypes: 0400000003000000
   UseTypesAsInclude: 1
-  canSpawn: 1
   playerDetectionRange: 15
   enemyDetectionRange: 5
 --- !u!23 &1742295084
@@ -12593,7 +12504,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   EnemyTypes: 0400000003000000
   UseTypesAsInclude: 1
-  canSpawn: 1
   playerDetectionRange: 15
   enemyDetectionRange: 5
 --- !u!23 &1807272471
@@ -12791,7 +12701,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   EnemyTypes: 05000000
   UseTypesAsInclude: 1
-  canSpawn: 1
   playerDetectionRange: 15
   enemyDetectionRange: 5
 --- !u!23 &1852280094
@@ -13801,7 +13710,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   EnemyTypes: 0400000003000000
   UseTypesAsInclude: 1
-  canSpawn: 1
   playerDetectionRange: 15
   enemyDetectionRange: 5
 --- !u!23 &1989254324
@@ -13861,10 +13769,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 9213267263744958650, guid: a6a8bd0296f44eb4ba82a4f2dd71a33d, type: 3}
-      propertyPath: m_CullingMask.m_Bits
-      value: 444863
-      objectReference: {fileID: 0}
     - target: {fileID: 9213267263744958651, guid: a6a8bd0296f44eb4ba82a4f2dd71a33d, type: 3}
       propertyPath: m_RootOrder
       value: 1
