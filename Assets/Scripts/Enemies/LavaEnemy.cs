@@ -37,10 +37,10 @@ public class LavaEnemy : WeakpointedEnemy {
     }
     
     protected override void OnDefeated(EDamageType damageType) {
+        if (Dead) return;
         lava.OnLavaEnemyDefeated();
         // Lava enemy does not drop its own fuel cell. Instead, its weakpoint(s) will.
-        gameObject.SetActive(false);
-        Destroy(gameObject, 1);
+        ShowDeath();
     }
     
     protected override void OnTakeDamage(float amnt, EDamageType damageType) {

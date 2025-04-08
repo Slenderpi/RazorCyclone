@@ -54,7 +54,10 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     [SerializeField]
     float CanonForce;
     [SerializeField]
-    float CanonProjSpeed = 100f;
+    float CanonBaseProjSpeed = 125;
+    [SerializeField]
+    [Tooltip("When a projectile is fired, its velocity will include the player's velocity by a factor.\nA value of 0 would mean player velocity has no effect on the projectile's veloctiy.\nA value of 0.5 would mean the projectile would add half of the player's velocity.")]
+    float InheritedVelocityFactor = 0.7f;
     
     [Header("Fuel Settings")]
     [SerializeField]
@@ -90,7 +93,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     [SerializeField]
     Transform charPivot;
     [SerializeField]
-    GameObject vacuumHitbox;
+    VacuumScript Vacuum;
     [SerializeField]
     [Tooltip("Transform indicating where the projectile will spawn from.")]
     Transform canonProjSpawnTrans;
@@ -151,7 +154,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         rearCamera = GameManager.Instance.rearCamera;
         rb = GetComponent<Rigidbody>();
         
-        vacuumHitbox.SetActive(false);
+        // Vacuum.SetActive(false);
         
         // 1 is for layers to include in raycast
         AimRayLayerMask = (1 << LayerMask.NameToLayer("Default")) | (1 << LayerMask.NameToLayer("EnemyHitbox"));
@@ -195,14 +198,23 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     }
     
     void FixedUpdate() {
+        // if (isVacuumOn && vacEnableddd) {
+        //     if (CurrentHealth <= 0) {
+        //         isVacuumOn = false;
+        //         vacuumHitbox.SetActive(false);
+        //         // signifyOutOfFuel();
+        //     } else {
+        //         SpendFuel(vacuumFuelCost);
+        //         rb.AddForce(charPivot.forward * (rb.velocity.magnitude <= VacuumForceNormalSpeed ? VacuumForceLowSpeed : VacuumForce), ForceMode.Acceleration);
+        //     }
+        // }
         if (isVacuumOn && vacEnableddd) {
-            if (CurrentHealth <= 0) {
-                isVacuumOn = false;
-                vacuumHitbox.SetActive(false);
-                // signifyOutOfFuel();
-            } else {
+            if (CurrentHealth > 0) {
                 SpendFuel(vacuumFuelCost);
                 rb.AddForce(charPivot.forward * (rb.velocity.magnitude <= VacuumForceNormalSpeed ? VacuumForceLowSpeed : VacuumForce), ForceMode.Acceleration);
+            } else {
+                isVacuumOn = false;
+                Vacuum.DisableVacuum();
             }
         }
         handleHealthRegen();
@@ -304,13 +316,13 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
             return;
         }
         isVacuumOn = true;
-        vacuumHitbox.SetActive(true);
+        Vacuum.EnableVacuum();
         
     }
     
     private void FireVacuumCanceled(InputAction.CallbackContext context) {
         isVacuumOn = false;
-        vacuumHitbox.SetActive(false);
+        Vacuum.DisableVacuum();
         
         _gamePanel.OnFireVacuum(false);
     }
@@ -471,7 +483,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     void fireCanon() {
         updateRayCastedAimPoint();
         rb.AddForce((charModel.rotation * weaponRelativeRot).normalized * CanonForce * 100000);
-        Vector3 projVel = (aimPoint - canonProjSpawnTrans.position).normalized * CanonProjSpeed + rb.velocity;
+        Vector3 projVel = (aimPoint - canonProjSpawnTrans.position).normalized * CanonBaseProjSpeed + rb.velocity * InheritedVelocityFactor;
         // if (ricochetBaseVal > 0) { // Only spend spins of base val is non-zero
         //     projectilePrefab.MaxRicochet = ricochetBaseVal * currentBikeSpins;
         //     print($"Ricochets: {projectilePrefab.MaxRicochet} ({ricochetBaseVal} * {currentBikeSpins})");
@@ -503,7 +515,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     }
     
     void updateCrosshairPositions() {
-        Vector3 rbVelocityCompensation = rb.velocity.magnitude > 0.001f ? rb.velocity / CanonProjSpeed : Vector3.zero;
+        Vector3 rbVelocityCompensation = rb.velocity.magnitude > 0.001f ? rb.velocity * InheritedVelocityFactor / CanonBaseProjSpeed : Vector3.zero;
         // The vacuum does not account for the player's velocity
         Vector3 screenPointVacuum;
         if (!isInThirdPerson) {
@@ -604,6 +616,8 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
             inputActions._TakeDamage.started += On_TakeDamage;
             inputActions._HealHealth.Enable();
             inputActions._HealHealth.started += On_HealHealth;
+            inputActions._AddRicCharges.Enable();
+            inputActions._AddRicCharges.started += On_AddRicCharges;
         } else {
             inputActions.Look.Disable();
             inputActions.TurnInputs.Disable();
@@ -636,6 +650,8 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
             inputActions._TakeDamage.started -= On_TakeDamage;
             inputActions._HealHealth.Disable();
             inputActions._HealHealth.started -= On_HealHealth;
+            inputActions._AddRicCharges.Disable();
+            inputActions._AddRicCharges.started -= On_AddRicCharges;
         }
     }
     
@@ -689,9 +705,16 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     }
     
     void On_HealHealth(InputAction.CallbackContext context) {
-        float HealAmount = 10;
+        float HealAmount = 50;
         print("Healing player for " + HealAmount + " health.");
         HealHealth(HealAmount);
+    }
+    
+    void On_AddRicCharges(InputAction.CallbackContext context) {
+        int numCharges = 5;
+        print($"Adding {numCharges} ricochet charges (from T key).");
+        currentBikeSpins += numCharges;
+        A_SpinCompleted?.Invoke(currentBikeSpins);
     }
     
 }

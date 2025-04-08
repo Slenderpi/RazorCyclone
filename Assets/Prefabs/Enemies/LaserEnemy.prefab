@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2774007177517141138}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: bodyPivot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -63,7 +63,7 @@ Transform:
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 7381833553059979949}
-  m_RootOrder: 2
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!135 &4607363881427982453
 SphereCollider:
@@ -100,7 +100,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3634931314128218591}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: RevolvePivot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -135,7 +135,7 @@ GameObject:
   - component: {fileID: 739244240087989718}
   - component: {fileID: 2154363934298838627}
   - component: {fileID: 7243156887929196955}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: barrelMesh
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -364,7 +364,7 @@ GameObject:
   - component: {fileID: 351764605888601097}
   - component: {fileID: 6133777652503283501}
   - component: {fileID: 6131894230810191918}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Sparks
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5176,7 +5176,7 @@ GameObject:
   - component: {fileID: 1552170616038214415}
   - component: {fileID: 7626486058328884774}
   - component: {fileID: 122355587088550728}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: PointInner
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -10046,7 +10046,7 @@ GameObject:
   - component: {fileID: 8896050954541902306}
   - component: {fileID: 355625505514129947}
   - component: {fileID: 748225079143293865}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: revolveMesh
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -10131,7 +10131,7 @@ GameObject:
   - component: {fileID: 5207972207715144811}
   - component: {fileID: 4101778514245048547}
   - component: {fileID: 1745451246302694824}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: LaserEnemy
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -10190,8 +10190,8 @@ MonoBehaviour:
   LaserEndpoint: {fileID: 8158616588436924260}
   revolvePivot: {fileID: 3634931314128218591}
   barrelPivot: {fileID: 3649529104826026762}
+  bodyPivot: {fileID: 2774007177517141138}
   StunAudio: {fileID: 3597588743637917032}
-  crabBody: {fileID: 2774007177517141138}
 --- !u!114 &4101778514245048547
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10246,13 +10246,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4654923958444255433}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 2, y: 2, z: 2}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 7381833553059979949}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!135 &7874420546427118213
 SphereCollider:
@@ -10276,7 +10276,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3649529104826026762}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: BarrelPivot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -10310,7 +10310,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6004580173557492452}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Model
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -10332,7 +10332,7 @@ Transform:
   - {fileID: 3634931314128218591}
   - {fileID: 2774007177517141138}
   m_Father: {fileID: 7381833553059979949}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7825733041499343112
 GameObject:
@@ -10344,7 +10344,7 @@ GameObject:
   m_Component:
   - component: {fileID: 9139601731219526127}
   - component: {fileID: 1566580697121567249}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: LaserStartPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -10652,7 +10652,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8000886818281507407}
-  m_Mesh: {fileID: -2432090755550338912, guid: 234df5061ac462e47b9b80b9d8a815f2, type: 3}
+  m_Mesh: {fileID: -7920053014011642556, guid: f8e0972d52a81744aa03cec8dd392663, type: 3}
 --- !u!23 &597965175128671402
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -10673,7 +10673,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 7feaf3223dcd3d145a18464189b2ad7b, type: 2}
+  - {fileID: 2100000, guid: ada1d641645f4405ca3cdcd44659eb9f, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -10704,7 +10704,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8158616588436924260}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: LaserEndpoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -10740,7 +10740,7 @@ GameObject:
   - component: {fileID: 9083339550097625088}
   - component: {fileID: 7082963447459774655}
   - component: {fileID: 8676044883549985926}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: PointOuter
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -15608,7 +15608,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7381833553059979949}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Pivot
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -15627,9 +15627,9 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children:
+  - {fileID: 2529479156003064395}
   - {fileID: 7977003884603710379}
   - {fileID: 6004580173557492452}
-  - {fileID: 2529479156003064395}
   m_Father: {fileID: 1992487050733126193}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -15699,7 +15699,11 @@ PrefabInstance:
     - target: {fileID: -7635826562936255635, guid: 602afdb2ed3a74442bb72215a223ae55, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: 7feaf3223dcd3d145a18464189b2ad7b, type: 2}
+      objectReference: {fileID: 2100000, guid: ada1d641645f4405ca3cdcd44659eb9f, type: 2}
+    - target: {fileID: -6400281290468069383, guid: 602afdb2ed3a74442bb72215a223ae55, type: 3}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: -8927469475222801591, guid: f8e0972d52a81744aa03cec8dd392663, type: 3}
     - target: {fileID: 919132149155446097, guid: 602afdb2ed3a74442bb72215a223ae55, type: 3}
       propertyPath: m_Name
       value: crabBarrel
@@ -15777,7 +15781,11 @@ PrefabInstance:
     - target: {fileID: -7635826562936255635, guid: adae76a22a127e14d984a1da46aaafb7, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: 7feaf3223dcd3d145a18464189b2ad7b, type: 2}
+      objectReference: {fileID: 2100000, guid: ada1d641645f4405ca3cdcd44659eb9f, type: 2}
+    - target: {fileID: -6400281290468069383, guid: adae76a22a127e14d984a1da46aaafb7, type: 3}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: 6133602354682270253, guid: f8e0972d52a81744aa03cec8dd392663, type: 3}
     - target: {fileID: 919132149155446097, guid: adae76a22a127e14d984a1da46aaafb7, type: 3}
       propertyPath: m_Name
       value: crabTank

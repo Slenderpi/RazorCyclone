@@ -42,18 +42,22 @@ public class UIGamePanel : UIPanel {
     SecondOrderDynamicsF sodFuelFill;
     SecondOrderDynamicsF sodHealthFill;
     const float BENT_BAR_MAX_FILL = 0.2f;
+    // RAD = SLIDER_BG.Width / 2 * SLIDER_BG.Scale - SLIDER_LEVEL.Width / 2
+    const float BENT_BAR_CENTERED_RADIUS = 115f * 1.927799f - 22.16969f / 2f;
     
     [Header("Fuel Gauge")]
     public Slider FuelSlider;
     public Animator FuelOutlineAnimator;
     public Animator FuelFillAnimator;
     public Image FuelSlider2;
+    public RectTransform FuelSliderLevel;
     
     [Header("Healthbar")]
     public Slider HealthSlider;
     public TMP_Text HealthText;
     public Animator HealthFillAnimator;
     public Image HealthSlider2;
+    public RectTransform HealthSliderLevel;
     
     [Header("Crosshairs")]
     public RectTransform MainVacuumCrosshair;
@@ -71,9 +75,11 @@ public class UIGamePanel : UIPanel {
     public MeshRenderer TileRendS;
     public MeshRenderer TileRendD;
     public TMP_Text SpinCounterText;
+    public GameObject SpinCounterBG;
     
     [Header("Misc.")]
     public TMP_Text RoundLabel;
+    public Animator RoundLabelAnimator;
     public RectTransform MomentumPanel;
     
     [Header("Input Overlay")]
@@ -97,18 +103,42 @@ public class UIGamePanel : UIPanel {
         sodLookX = new SecondOrderDynamicsF(swf, swz, swr, 0);
         sodLookY = new SecondOrderDynamicsF(swf, swz, swr, 0);
         sodSpeed = new SecondOrderDynamicsF(scf, scz, scr, 0);
-        sodFuelFill = new SecondOrderDynamicsF(fillf, fillz, fillr, 1 * BENT_BAR_MAX_FILL);
-        sodHealthFill = new SecondOrderDynamicsF(fillf, fillz, fillr, 1 * BENT_BAR_MAX_FILL);
+        sodFuelFill = new SecondOrderDynamicsF(fillf, fillz, fillr, 1);
+        sodHealthFill = new SecondOrderDynamicsF(fillf, fillz, fillr, 1);
     }
-
+    
     void Update() {
         if (!GameManager.CurrentPlayer) return;
         if (Time.deltaTime > 0) {
-            FuelSlider2.fillAmount = sodFuelFill.Update(currFuel * BENT_BAR_MAX_FILL, Time.deltaTime);
-            HealthSlider2.fillAmount = sodHealthFill.Update(currHlth * BENT_BAR_MAX_FILL, Time.deltaTime);
+            setFuelSliderFill();
+            setHealthSliderFill();
         }
     }
-
+    
+    void setFuelSliderFill() {
+        float fill = sodFuelFill.Update(currFuel, Time.deltaTime);
+        FuelSlider2.fillAmount = fill * BENT_BAR_MAX_FILL;
+        float ang = (2 * fill - 1) * (180f * BENT_BAR_MAX_FILL);
+        FuelSliderLevel.localPosition = new Vector3(
+            BENT_BAR_CENTERED_RADIUS * Mathf.Cos(ang * Mathf.Deg2Rad),
+            BENT_BAR_CENTERED_RADIUS * Mathf.Sin(ang * Mathf.Deg2Rad),
+            0
+        );
+        FuelSliderLevel.localRotation = Quaternion.Euler(0, 0, ang);
+    }
+    
+    void setHealthSliderFill() {
+        float fill = sodHealthFill.Update(currHlth, Time.deltaTime);
+        HealthSlider2.fillAmount = fill * BENT_BAR_MAX_FILL;
+        float ang = 180 - (2 * fill - 1) * (180f * BENT_BAR_MAX_FILL);
+        HealthSliderLevel.localPosition = new Vector3(
+            BENT_BAR_CENTERED_RADIUS * Mathf.Cos(ang * Mathf.Deg2Rad),
+            BENT_BAR_CENTERED_RADIUS * Mathf.Sin(ang * Mathf.Deg2Rad),
+            0
+        );
+        HealthSliderLevel.localRotation = Quaternion.Euler(0, 0, ang);
+    }
+    
     void LateUpdate() {
         if (!GameManager.CurrentPlayer) return;
         if (Time.deltaTime > 0) {
@@ -264,11 +294,14 @@ public class UIGamePanel : UIPanel {
     void onSpinCompleted(int newSpinCount) {
         resetSpinTileColors();
         // TileRendW.material = SpinTileMatProgress;
+        if (!SpinCounterBG.activeSelf)
+            SpinCounterBG.SetActive(true);
         setSpinCounterText(newSpinCount);
     }
     
     void onSpinsSpent(int prevSpinCount, int newSpinCount) {
         setSpinCounterText(newSpinCount);
+        SpinCounterBG.SetActive(false);
     }
     
     void updateHealthUI(float currH, float maxH) {
@@ -295,6 +328,15 @@ public class UIGamePanel : UIPanel {
         } else {
             VacuumHitmarkerAnim.SetTrigger("Kill");
         }
+    }
+    
+    public void OnRoundCompleted() {
+        RoundLabelAnimator.SetTrigger("Completed");
+    }
+    
+    public void OnUpdateRoundNumber(int newRound) {
+        RoundLabel.text = "Round: " + newRound;
+        RoundLabelAnimator.SetTrigger("NewRound");
     }
     
     // public void SetReadTimerOn(bool setReadOn) {
@@ -357,6 +399,9 @@ public class UIGamePanel : UIPanel {
         updateHealthUI(100, 100);
         resetSpinTileColors();
         setSpinCounterText(plr.currentBikeSpins);
+        RoundLabel.text = "Round: --";
+        if (plr.currentBikeSpins == 0)
+            SpinCounterBG.SetActive(false);
         if (gameObject.activeSelf) FuelOutlineAnimator.SetTrigger("Reset");
     }
 

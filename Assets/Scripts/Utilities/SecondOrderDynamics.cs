@@ -31,6 +31,10 @@ public class SecondOrderDynamicsF {
         return y;
     }
     
+    public float GetNoUpdate() {
+        return y;
+    }
+    
     public void Reset(float x0) {
         px = x0;
         y = x0;
