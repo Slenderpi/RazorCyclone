@@ -15337,9 +15337,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a249a97d0395a2241b10436c43ff26ed, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  WaveReachedValue: {fileID: 0}
-  RecordWaveReachedValue: {fileID: 0}
-  RecordTimeSpentValue: {fileID: 0}
+  WaveReachedValue: {fileID: 1968631616}
+  RecordWaveReachedValue: {fileID: 1053673921}
+  RecordTimeSpentValue: {fileID: 2004273714}
 --- !u!224 &1197540383
 RectTransform:
   m_ObjectHideFlags: 0
