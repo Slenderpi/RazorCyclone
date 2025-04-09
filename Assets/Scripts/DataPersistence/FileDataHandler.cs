@@ -22,14 +22,14 @@ public class FileDataHandler {
         if (File.Exists(fullPath)) {
             try {
                 string dataToLoad = "";
-                using (FileStream stream = new FileStream(fullPath, FileMode.Open)) {
-                    using (StreamReader reader = new StreamReader(stream)) {
+                using (FileStream stream = new(fullPath, FileMode.Open)) {
+                    using (StreamReader reader = new(stream)) {
                         dataToLoad = reader.ReadToEnd();
                     }
                 }
                 loadedData = JsonUtility.FromJson<GameData>(dataToLoad);
             } catch (Exception e) {
-                    Debug.LogError("Error occured when trying to load file at path: " + fullPath + "\n" + e);
+                Debug.LogError("Error occured when trying to load file at path: " + fullPath + "\n" + e);
             }
         }
         return loadedData;

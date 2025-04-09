@@ -33,7 +33,7 @@ public class DataPersistenceManager : MonoBehaviour {
         Instance = this;
         
         if (disableDataPersistence) {
-            gameData = new GameData();
+            gameData = new();
         }
         
         dataHandler = new FileDataHandler(Application.persistentDataPath, fileName);
@@ -42,7 +42,7 @@ public class DataPersistenceManager : MonoBehaviour {
     public void NewGame() {
         if (disableDataPersistence) return;
         
-        gameData = new GameData();
+        gameData = new();
     }
     
     public void LoadGame() {

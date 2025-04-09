@@ -46,6 +46,18 @@ public struct WaveEntry {
 
 public class WaveSpawnerManager : MonoBehaviour {
     
+    /// <summary>
+    /// int: Activated wave number<br/>
+    /// float: Activation time (Time.time)
+    /// </summary>
+    public event Action<int, float> OnWaveActivated;
+    /// <summary>
+    /// Called when all enemies in the current wave have been killed.<br/>
+    /// int: Wave number of finished wave<br/>
+    /// float: Time the wave was finished (Time.time)
+    /// </summary>
+    public event Action<int, float> OnWaveFinished;
+    
     [Header("Wave Spawner Config")]
     public TextAsset WaveTableFile;
     [Tooltip("List of enemy prefab references.\n\nORDER MATTERS. ASK FOR PRESTON'S APPROVAL BEFORE TOUCHING.")]
@@ -248,8 +260,7 @@ public class WaveSpawnerManager : MonoBehaviour {
         }
         activateWaveFinished = false;
         CurrentWaveNumber = CurrentPreloadedWaveNumber;
-        if (CurrentWaveNumber == 1)
-            OwningEndlessMode.EndlessStartTime = Time.time;
+        OnWaveActivated?.Invoke(CurrentWaveNumber, Time.time);
         GameManager.Instance.MainCanvas.GamePanel.OnUpdateRoundNumber(CurrentWaveNumber);
         hasDefeatedActiveWave = false;
 #if DEBUG_WAVE_STRS && UNITY_EDITOR
@@ -359,9 +370,11 @@ public class WaveSpawnerManager : MonoBehaviour {
         }
         if (waveComplete) {
             hasDefeatedActiveWave = true;
+            OnWaveFinished?.Invoke(CurrentWaveNumber, Time.time);
             // Debug.LogWarning("Wave completed!");
             GameManager.Instance.MainCanvas.GamePanel.OnRoundCompleted();
             GameManager.CurrentPlayer.HealHealth(GameManager.CurrentPlayer.MaxHealth);
+            GameManager.CurrentPlayer.AddFuel(100);
             StartCoroutine(delaySpawnNextWave());
         }
     }

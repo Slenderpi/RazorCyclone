@@ -1,22 +1,21 @@
 [System.Serializable]
 public class GameData {
     
-    public int HighestWaveSurvived;
-    public float TimeSpent;
+    public int HighestWaveCompleted;
+    public float[] TimeSpentEachWave;
     
     
     
     public GameData() {
-        set(0, 0);
+        HighestWaveCompleted = 0;
+        TimeSpentEachWave = new float[HighestWaveCompleted];
     }
     
     public GameData(GameData d) {
-        set(d.HighestWaveSurvived, d.TimeSpent);
-    }
-    
-    void set(int hws, float ts) {
-        HighestWaveSurvived = hws;
-        TimeSpent = ts;
+        HighestWaveCompleted = d.HighestWaveCompleted;
+        TimeSpentEachWave = new float[d.TimeSpentEachWave.Length];
+        for (int i = 0; i < d.TimeSpentEachWave.Length; i++)
+            TimeSpentEachWave[i] = d.TimeSpentEachWave[i];
     }
     
 }

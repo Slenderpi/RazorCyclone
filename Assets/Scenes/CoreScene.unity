@@ -4126,7 +4126,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Highest Wave Ever:'
+  m_text: 'Most Waves Defeated:'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -12898,7 +12898,7 @@ GameObject:
   - component: {fileID: 1053673922}
   - component: {fileID: 1053673921}
   m_Layer: 6
-  m_Name: HighestWaveValue
+  m_Name: HighestDefeatedWaves
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -13238,7 +13238,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Wave Reached:'
+  m_text: 'Waves Defeated:'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -15337,8 +15337,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a249a97d0395a2241b10436c43ff26ed, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  WaveReachedValue: {fileID: 1968631616}
-  RecordWaveReachedValue: {fileID: 1053673921}
+  DefeatedWavesValue: {fileID: 1968631616}
+  RecordDefeatedWavesValue: {fileID: 1053673921}
   RecordTimeSpentValue: {fileID: 2004273714}
 --- !u!224 &1197540383
 RectTransform:
@@ -25748,7 +25748,7 @@ GameObject:
   - component: {fileID: 1968631615}
   - component: {fileID: 1968631616}
   m_Layer: 6
-  m_Name: WaveReachedValue
+  m_Name: DefeatedWavesValue
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

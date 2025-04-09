@@ -70,7 +70,7 @@ public class UIDEBUGPanel : UIPanel {
     
     void LateUpdate() {
         if (wsm) {
-            SurvivalTimerText.text = "Time Survived: " + wsm.OwningEndlessMode.TimeSurvived;
+            SurvivalTimerText.text = "Time Survived: " + wsm.OwningEndlessMode._TimeSinceSceneStarted;
         }
     }
     
