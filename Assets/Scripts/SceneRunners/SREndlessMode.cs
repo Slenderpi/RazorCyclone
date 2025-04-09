@@ -11,8 +11,7 @@ public class SREndlessMode : SceneRunner, IDataPersistence {
     public float TimeSurvived { get { return Time.time - EndlessStartTime; }}
     [HideInInspector]
     public int EnemiesKilled;
-    [HideInInspector]
-    public float HighestTimeSurvived;
+    GameData recordData;
     [HideInInspector]
     public int[] SpawnedEnemyCounts = new int[(int)EnemyType.COUNT];
     
@@ -23,32 +22,44 @@ public class SREndlessMode : SceneRunner, IDataPersistence {
     public override void BeginScene() {
         WaveSpawnManager.OwningEndlessMode = this;
         WaveSpawnManager.InitWaveSpawner();
-        EndlessStartTime = Time.time;
         mainCanvas = GameManager.Instance.MainCanvas;
         GameManager.A_EnemyKilled += () => { EnemiesKilled++; };
         base.BeginScene();
         // mainCanvas.GamePanel.SetReadTimerOn(true);
         mainCanvas.GamePanel.RoundLabel.gameObject.SetActive(true);
+#if UNITY_EDITOR
+        recordData = new GameData();
+#endif
     }
     
     protected override void OnPlayerDied() {
         GameManager.Instance.SetPauseInputActionsEnabled(false);
+        int survivedWave = WaveSpawnManager.CurrentWaveNumber;
+        bool isNewWaveRecord = false;
         bool isNewTimeRecord = false;
-        if (TimeSurvived > HighestTimeSurvived) {
+        if (survivedWave > recordData.HighestWaveSurvived) {
+            recordData.HighestWaveSurvived = survivedWave;
+            recordData.TimeSpent = TimeSurvived;
+            isNewWaveRecord = true;
             isNewTimeRecord = true;
-            HighestTimeSurvived = TimeSurvived;
+        } else if (survivedWave == recordData.HighestWaveSurvived) {
+            if (TimeSurvived < recordData.TimeSpent) { // Wave counts better if time spent was shorter
+                recordData.TimeSpent = TimeSurvived;
+                isNewTimeRecord = true;
+            }
         }
-        mainCanvas.DeathPanel.SetEndscreenInfo(TimeSurvived, HighestTimeSurvived, isNewTimeRecord, EnemiesKilled);
+        mainCanvas.DeathPanel.SetEndscreenInfo(recordData, survivedWave, isNewWaveRecord, isNewTimeRecord);
         mainCanvas.SetCanvasState(UIMainCanvas.ECanvasState.DiedEndless);
         DataPersistenceManager.Instance.SaveGame();
     }
     
     public void LoadData(GameData data) {
-        HighestTimeSurvived = data.HighestTimeSurvived;
+        recordData = new GameData(data);
     }
     
     public void SaveData(GameData data) {
-        data.HighestTimeSurvived = HighestTimeSurvived;
+        data.HighestWaveSurvived = recordData.HighestWaveSurvived;
+        data.TimeSpent = recordData.TimeSpent;
     }
 
     public override void AddEnemyToList(EnemyBase en) {

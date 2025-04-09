@@ -4126,7 +4126,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Survival Time Record:'
+  m_text: 'Highest Wave Ever:'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -8348,6 +8348,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentSceneRunner: {fileID: 0}
+  StartRound: 1
   MainCanvas: {fileID: 416360040}
   SettingsPanel: {fileID: 0}
   Audio2D: {fileID: 895608436}
@@ -12897,7 +12898,7 @@ GameObject:
   - component: {fileID: 1053673922}
   - component: {fileID: 1053673921}
   m_Layer: 6
-  m_Name: HighestTimeSurvivedValue
+  m_Name: HighestWaveValue
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -12923,7 +12924,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 0000000
+  m_text: 0000
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -13237,7 +13238,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Time Survived:'
+  m_text: 'Wave Reached:'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -15323,7 +15324,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1197540382
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15336,9 +15337,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a249a97d0395a2241b10436c43ff26ed, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TimeSurvivedValue: {fileID: 1968631616}
-  HighestTimeSurvivedValue: {fileID: 1053673921}
-  EnemiesKilledValue: {fileID: 2004273714}
+  WaveReachedValue: {fileID: 0}
+  RecordWaveReachedValue: {fileID: 0}
+  RecordTimeSpentValue: {fileID: 0}
 --- !u!224 &1197540383
 RectTransform:
   m_ObjectHideFlags: 0
@@ -17904,7 +17905,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Enemies Killed:'
+  m_text: 'Record Wave Time Spent:'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -24755,7 +24756,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1869185342
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -25747,7 +25748,7 @@ GameObject:
   - component: {fileID: 1968631615}
   - component: {fileID: 1968631616}
   m_Layer: 6
-  m_Name: TimeSurvivedValue
+  m_Name: WaveReachedValue
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -25801,7 +25802,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 0000000
+  m_text: 0000
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -26341,7 +26342,7 @@ GameObject:
   - component: {fileID: 2004273715}
   - component: {fileID: 2004273714}
   m_Layer: 6
-  m_Name: EnemiesKilledValue
+  m_Name: TimeSpentValue
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -26387,7 +26388,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 0000000
+  m_text: 00:00
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}

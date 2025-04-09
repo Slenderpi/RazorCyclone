@@ -135,7 +135,11 @@ public class WaveSpawnerManager : MonoBehaviour {
 #if DEBUG_WAVE_STRS && UNITY_EDITOR
         PrintWaveEntries();
 #endif
+#if UNITY_EDITOR
+        CurrentWaveNumber = GameManager.Instance.StartRound - 1;
+#else
         CurrentWaveNumber = 0;
+#endif
         StartCoroutine(delaySpawnNextWave());
     }
     
@@ -244,6 +248,9 @@ public class WaveSpawnerManager : MonoBehaviour {
         }
         activateWaveFinished = false;
         CurrentWaveNumber = CurrentPreloadedWaveNumber;
+        if (CurrentWaveNumber == 1)
+            OwningEndlessMode.EndlessStartTime = Time.time;
+        GameManager.Instance.MainCanvas.GamePanel.OnUpdateRoundNumber(CurrentWaveNumber);
         hasDefeatedActiveWave = false;
 #if DEBUG_WAVE_STRS && UNITY_EDITOR
         Debug.Log("DEBUG: Activating wave number: " + CurrentWaveNumber);
@@ -362,7 +369,6 @@ public class WaveSpawnerManager : MonoBehaviour {
     IEnumerator delaySpawnNextWave() {
         PreloadWave(CurrentWaveNumber + 1);
         yield return new WaitForSeconds(2);
-        GameManager.Instance.MainCanvas.GamePanel.OnUpdateRoundNumber(CurrentPreloadedWaveNumber);
         ActivateWave();
     }
     

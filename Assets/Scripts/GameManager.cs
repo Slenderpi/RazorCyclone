@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using System;
 using UnityEngine.SceneManagement;
+using Unity.VisualScripting;
 
 public class GameManager : MonoBehaviour {
     
@@ -41,6 +42,11 @@ public class GameManager : MonoBehaviour {
             if (CurrentPlayer) CurrentPlayer.NoFuelCost = _plrNFC;
         }
     }
+#endif
+#if UNITY_EDITOR
+    [HideInInspector]
+    public int StartRound = 1;
+    ProgrammerPreferences _prefs;
 #endif
     
     [Header("Core References")]
@@ -103,20 +109,25 @@ public class GameManager : MonoBehaviour {
 #if UNITY_EDITOR || KEEP_DEBUG
         setupDebugActions();
 #endif
-    }
-    
-    void Start() {
 #if UNITY_EDITOR
         /******  PROGRAMMER SPECIFIC  ******/
         TextAsset programmerPreferenceJson = Resources.Load<TextAsset>("ProgrammerPreferences");
         if (programmerPreferenceJson != null) {
-            ProgrammerPreferences _prefs = JsonUtility.FromJson<ProgrammerPreferences>(programmerPreferenceJson.text);
+            _prefs = JsonUtility.FromJson<ProgrammerPreferences>(programmerPreferenceJson.text);
             if (_prefs != null) {
-                _prefs.SetPreferences();
+                _prefs.SetPreferencesAwake();
                 // Debug.Log("Note: a 'ProgrammerPreferences' file was found in the Resources folder and will be loaded in.");
             } else Debug.LogWarning("Programmer preferences failed to load. Make sure your json file is written correctly.");
         } else {
             // Debug.Log("Note: no 'ProgrammerPreferences' file found in Resources folder, so no preferences were loaded.");
+        }
+#endif
+    }
+    
+    void Start() {
+#if UNITY_EDITOR
+        if (_prefs != null) {
+            _prefs.SetPreferencesStart();
         }
 #endif
     }
@@ -358,19 +369,25 @@ class ProgrammerPreferences {
     public bool EnableMusic = true; // If false, music volume will be set to 0
     public bool PlayerInvincible = false; // If true, the player will spawn with invincibility on
     public bool PlayerNoFuelCost = false; // If true, the player will spawn with no fuel cost
+    public int StartRound = 1;
         
-    internal void SetPreferences() {
+    internal void SetPreferencesAwake() {
         if (!UsePreferences) return;
         GameManager.Instance.CurrentMouseSensitivity = MouseSensitivity;
         float highSens = GameManager.Instance.HighestSensitivity;
         float lowSens = GameManager.Instance.LowestSensitivity;
         GameManager.Instance.SettingsPanel.MouseSenseSlider.value = (GameManager.Instance.CurrentMouseSensitivity - lowSens) / (highSens - lowSens);
+        GameManager.Instance.plrInvincible = PlayerInvincible;
+        GameManager.Instance.plrNoFuelCost = PlayerNoFuelCost;
+        GameManager.Instance.StartRound = StartRound;
+    }
+    
+    internal void SetPreferencesStart() {
+        if (!UsePreferences) return;
         if (MasterVolume == 1f) Debug.LogWarning(">> Programmer preferences file has MasterVolume set to 1. Did you mean 100? Currently, volume is on a scale from 0 to 100 rather than 0 to 1.");
         else if (MasterVolume < 1f && MasterVolume > 0f) Debug.LogWarning(">> Programmer preferences file has MasterVolume between 0 and 1. Make sure you set the volume to be between 0 and 100--volume is on a scale from 0 to 100 rather than 0 to 1.");
         GameManager.Instance.Audio2D.SetMasterVolume(MasterVolume);
         GameManager.Instance.Audio2D.SetMusicVolume(EnableMusic ? 100 : 0);
-        GameManager.Instance.plrInvincible = PlayerInvincible;
-        GameManager.Instance.plrNoFuelCost = PlayerNoFuelCost;
     }
     
 }
