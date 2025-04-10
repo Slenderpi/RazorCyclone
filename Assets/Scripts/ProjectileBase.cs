@@ -11,6 +11,7 @@ public class ProjectileBase : MonoBehaviour {
     [Tooltip("Maximum number of times this projectile can ricochet.\nA value of 0 means NO ricochet.")]
     public int MaxRicochet = 1;
     int ricRemain;
+    bool couldNotShowRicEffect = false; // Occurs when there is an extreme number of ricochets and a low framerate
     protected GameObject impeffect; // Pre-spawned impact effect
     protected GameObject[] riceffects;
     
@@ -44,7 +45,7 @@ public class ProjectileBase : MonoBehaviour {
         waitFixedUpdForRic = new WaitForFixedUpdate();
         TrailNormal.emitting = false;
         TrailRicochet.emitting = false;
-        poolVFX();
+        StartCoroutine(poolVFX());
         Init();
     }
     
@@ -248,8 +249,14 @@ public class ProjectileBase : MonoBehaviour {
     }
     
     void OnDestroy() {
-        for (int i = 0; i < ricRemain; i++) {
-            Destroy(riceffects[i]);
+        if (couldNotShowRicEffect) {
+            // Go through every single ric effect and try to delete it to assure complete deletion
+            for (int i = 0; i < MaxRicochet; i++)
+                if (riceffects[i])
+                    Destroy(riceffects[i]);
+        } else {
+            for (int i = MaxRicochet - ricRemain; i < MaxRicochet; i++)
+                Destroy(riceffects[i]);
         }
     }
     
@@ -259,7 +266,11 @@ public class ProjectileBase : MonoBehaviour {
     }
     
     void showRicochetEffect() {
-        GameObject re = riceffects[ricRemain];
+        GameObject re = riceffects[MaxRicochet - ricRemain - 1]; // ricRemain has already been reduced so treat as (ricRemain + 1)
+        if (!re) {
+            couldNotShowRicEffect = true;
+            return;
+        }
         re.transform.SetPositionAndRotation(transform.position, transform.rotation);
         re.SetActive(true);
     }
@@ -269,13 +280,18 @@ public class ProjectileBase : MonoBehaviour {
         OnProjectileLifetimeExpired();
     }
     
-    void poolVFX() {
+    IEnumerator poolVFX() {
         impeffect = Instantiate(ProjConfig.ImpactEffect);
         impeffect.SetActive(false);
         riceffects = new GameObject[MaxRicochet];
+        int counter = 0;
         for (int i = 0; i < MaxRicochet; i++) {
             riceffects[i] = Instantiate(ProjConfig.RicochetEffect);
             riceffects[i].SetActive(false);
+            if (++counter >= 10) {
+                counter = 0;
+                yield return null;
+            }
         }
     }
     

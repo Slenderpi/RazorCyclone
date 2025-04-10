@@ -143,9 +143,6 @@ public class GameManager : MonoBehaviour {
         SettingsPanel.Init();
         MainCanvas.MainMenuPanel.Init();
         MainCanvas.Init();
-        
-        // CurrentMouseSensitivity = DefaultMouseSensitivity;
-        // SettingsPanel.MouseSenseSlider.value = (CurrentMouseSensitivity - LowestSensitivity) / (HighestSensitivity - LowestSensitivity);
     }
     
     public void OnSceneStarted(SceneRunner sr) {
@@ -250,10 +247,11 @@ public class GameManager : MonoBehaviour {
     }
     
     public void OnSceneLoaded(Scene scene, LoadSceneMode mode) {
-        if (scene.name == "CoreScene") return;
         GCam = FindObjectOfType<GameCamera>();
         GCam?.SetFOV(CurrentFOV);
-        SceneManager.SetActiveScene(scene);
+        if (scene.name != "CoreScene") {
+            SceneManager.SetActiveScene(scene);
+        }
     }
     
     public void SetPauseInputActionsEnabled(bool newEnabled) {
