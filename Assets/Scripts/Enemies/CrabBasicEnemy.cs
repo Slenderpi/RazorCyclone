@@ -95,10 +95,8 @@ public class CrabBasicEnemy : EnemyBase {
     }
     
     protected override void OnDestroying() {
-        if (pooledProj) {
-            Destroy(pooledProj);
-            pooledProj = null;
-        }
+        if (pooledProj)
+            Destroy(pooledProj.gameObject);
         base.OnDestroying();
     }
     
