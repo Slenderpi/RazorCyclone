@@ -137,7 +137,7 @@ public class AudioPlayer2D : MonoBehaviour {
         MainAudioMixer.SetFloat("volMusic", calcLogarithmicVolume(volume));
     }
     
-    float calcLogarithmicVolume(float volume) {
+    float calcLogarithmicVolume(float volume) { // linear int (or float) to log
         volume /= 100f;
         return volume <= 0.01f ? -80 : 20 * Mathf.Log10(volume);
     }

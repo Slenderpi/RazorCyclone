@@ -2,7 +2,7 @@ using UnityEngine;
 using System;
 using System.IO;
 
-public class FileDataHandler {
+public class FileDataHandler<T> {
         
     string dataDirPath = "";
     string dataFileName = "";
@@ -17,8 +17,8 @@ public class FileDataHandler {
         fullPath = Path.Combine(dataDirPath, dataFileName) + extension;
     }
     
-    public GameData Load() {
-        GameData loadedData = null;
+    public T Load() {
+        T loadedData = default;
         if (File.Exists(fullPath)) {
             try {
                 string dataToLoad = "";
@@ -27,7 +27,7 @@ public class FileDataHandler {
                         dataToLoad = reader.ReadToEnd();
                     }
                 }
-                loadedData = JsonUtility.FromJson<GameData>(dataToLoad);
+                loadedData = JsonUtility.FromJson<T>(dataToLoad);
             } catch (Exception e) {
                 Debug.LogError("Error occured when trying to load file at path: " + fullPath + "\n" + e);
             }
@@ -35,7 +35,7 @@ public class FileDataHandler {
         return loadedData;
     }
     
-    public void Save(GameData data) {
+    public void Save(T data) {
         try {
             // Create the directory the file will be written to if it doesn't already exist
             Directory.CreateDirectory(Path.GetDirectoryName(fullPath));

@@ -39,6 +39,7 @@ public class UIMainCanvas : UIPanel {
                     GameManager.Instance.ResumeGame();
                 break;
             case ECanvasState.Settings:
+                DataPersistenceManager.Instance.SaveSettings();
                 if (SceneManager.GetActiveScene().name == "MainMenuScene") {
                     SetCanvasState(ECanvasState.MainMenu);
                 } else {

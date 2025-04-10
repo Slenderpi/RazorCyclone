@@ -92,22 +92,6 @@ public class SREndlessMode : SceneRunner, IDataPersistence {
         // Debug.LogWarning(s[..^2] + "]");
         
         mainCanvas.DeathPanel.SetEndScreenInfo(recordData, wavesCompleted, isNewWaveRecord, recordTimes);
-        
-        // bool isNewWaveRecord = false;
-        // bool isNewTimeRecord = false;
-        // if (waveCompleted > recordData.HighestWaveSurvived) {
-        //     recordData.HighestWaveSurvived = waveCompleted;
-        //     // recordData.TimeSpent = TimeSurvived;
-        //     isNewWaveRecord = true;
-        //     isNewTimeRecord = true;
-        // } else if (waveCompleted == recordData.HighestWaveSurvived) {
-        //     // if (TimeSurvived < recordData.TimeSpent) { // Wave counts better if time spent was shorter
-        //     //     recordData.TimeSpent = TimeSurvived;
-        //     //     isNewTimeRecord = true;
-        //     // }
-        // }
-        // mainCanvas.DeathPanel.SetEndScreenInfo(recordData, waveCompleted, isNewWaveRecord, isNewTimeRecord);
-        
         mainCanvas.SetCanvasState(UIMainCanvas.ECanvasState.DiedEndless);
         DataPersistenceManager.Instance.SaveGame();
     }
@@ -120,14 +104,14 @@ public class SREndlessMode : SceneRunner, IDataPersistence {
         data.HighestWaveCompleted = recordData.HighestWaveCompleted;
         data.TimeSpentEachWave = recordData.TimeSpentEachWave;
     }
-
+    
     public override void AddEnemyToList(EnemyBase en) {
         base.AddEnemyToList(en);
         int eti = (int)en.etypeid;
         if (eti >= (int)EnemyType.COUNT) return;
         SpawnedEnemyCounts[eti]++;
     }
-
+    
     public override void RemoveEnemyFromList(EnemyBase en) {
         base.RemoveEnemyFromList(en);
         int eti = (int)en.etypeid;

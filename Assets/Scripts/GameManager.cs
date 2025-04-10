@@ -2,7 +2,6 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using System;
 using UnityEngine.SceneManagement;
-using Unity.VisualScripting;
 
 public class GameManager : MonoBehaviour {
     
@@ -62,6 +61,7 @@ public class GameManager : MonoBehaviour {
             _currentMouseSensitivity = value;
             if (CurrentPlayer != null) CurrentPlayer.mouseSensitivity = _currentMouseSensitivity;
             SettingsPanel.SetMouseSenseText(_currentMouseSensitivity);
+            DataPersistenceManager.Instance.usettings.MouseSensitivity = _currentMouseSensitivity;
         }
     }
     int _currentFOV = 90;
@@ -73,7 +73,6 @@ public class GameManager : MonoBehaviour {
         }
     }
     [Header("Player Settings")]
-    public float DefaultMouseSensitivity = 0.7f;
     public float LowestSensitivity = 0.02f;
     public float HighestSensitivity = 1.2f;
     
@@ -126,10 +125,15 @@ public class GameManager : MonoBehaviour {
     
     void Start() {
 #if UNITY_EDITOR
-        if (_prefs != null) {
+        if (_prefs != null && _prefs.UsePreferences) {
             _prefs.SetPreferencesStart();
+        } else {
+            DataPersistenceManager.Instance.LoadSettings();
         }
+#else
+        DataPersistenceManager.Instance.LoadSettings();
 #endif
+        Audio2D.asMusic.Play();
     }
     
     void initializeUI() {
@@ -140,8 +144,8 @@ public class GameManager : MonoBehaviour {
         MainCanvas.MainMenuPanel.Init();
         MainCanvas.Init();
         
-        CurrentMouseSensitivity = DefaultMouseSensitivity;
-        SettingsPanel.MouseSenseSlider.value = (CurrentMouseSensitivity - LowestSensitivity) / (HighestSensitivity - LowestSensitivity);
+        // CurrentMouseSensitivity = DefaultMouseSensitivity;
+        // SettingsPanel.MouseSenseSlider.value = (CurrentMouseSensitivity - LowestSensitivity) / (HighestSensitivity - LowestSensitivity);
     }
     
     public void OnSceneStarted(SceneRunner sr) {
@@ -245,16 +249,11 @@ public class GameManager : MonoBehaviour {
         CurrentMouseSensitivity = Mathf.Lerp(LowestSensitivity, HighestSensitivity, SettingsPanel.MouseSenseSlider.value);
     }
     
-    // public void OnFOVChanged(int newfov) {
-    //     Camera.main.fieldOfView = newfov;
-    // }
-    
     public void OnSceneLoaded(Scene scene, LoadSceneMode mode) {
         if (scene.name == "CoreScene") return;
         GCam = FindObjectOfType<GameCamera>();
         GCam?.SetFOV(CurrentFOV);
         SceneManager.SetActiveScene(scene);
-        // Camera.main.fieldOfView = _currentFOV;
     }
     
     public void SetPauseInputActionsEnabled(bool newEnabled) {
@@ -275,6 +274,7 @@ public class GameManager : MonoBehaviour {
     
     void onFOVChanged(int value) {
         GCam?.SetFOV(value);
+        DataPersistenceManager.Instance.usettings.FOV = value;
     }
     
     
@@ -373,10 +373,6 @@ class ProgrammerPreferences {
         
     internal void SetPreferencesAwake() {
         if (!UsePreferences) return;
-        GameManager.Instance.CurrentMouseSensitivity = MouseSensitivity;
-        float highSens = GameManager.Instance.HighestSensitivity;
-        float lowSens = GameManager.Instance.LowestSensitivity;
-        GameManager.Instance.SettingsPanel.MouseSenseSlider.value = (GameManager.Instance.CurrentMouseSensitivity - lowSens) / (highSens - lowSens);
         GameManager.Instance.plrInvincible = PlayerInvincible;
         GameManager.Instance.plrNoFuelCost = PlayerNoFuelCost;
         GameManager.Instance.StartRound = StartRound;
@@ -384,6 +380,10 @@ class ProgrammerPreferences {
     
     internal void SetPreferencesStart() {
         if (!UsePreferences) return;
+        float highSens = GameManager.Instance.HighestSensitivity;
+        float lowSens = GameManager.Instance.LowestSensitivity;
+        GameManager.Instance.CurrentMouseSensitivity = Mathf.Clamp(MouseSensitivity, lowSens, highSens);
+        GameManager.Instance.SettingsPanel.MouseSenseSlider.value = (GameManager.Instance.CurrentMouseSensitivity - lowSens) / (highSens - lowSens);
         if (MasterVolume == 1f) Debug.LogWarning(">> Programmer preferences file has MasterVolume set to 1. Did you mean 100? Currently, volume is on a scale from 0 to 100 rather than 0 to 1.");
         else if (MasterVolume < 1f && MasterVolume > 0f) Debug.LogWarning(">> Programmer preferences file has MasterVolume between 0 and 1. Make sure you set the volume to be between 0 and 100--volume is on a scale from 0 to 100 rather than 0 to 1.");
         GameManager.Instance.Audio2D.SetMasterVolume(MasterVolume);
