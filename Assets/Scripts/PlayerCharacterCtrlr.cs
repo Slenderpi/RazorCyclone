@@ -515,7 +515,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     }
     
     void updateCrosshairPositions() {
-        Vector3 rbVelocityCompensation = rb.velocity.magnitude > 0.001f ? rb.velocity * InheritedVelocityFactor / CanonBaseProjSpeed : Vector3.zero;
+        Vector3 rbVelocityCompensation = rb.velocity.sqrMagnitude > 0.001f ? rb.velocity * InheritedVelocityFactor / CanonBaseProjSpeed : Vector3.zero;
         // The vacuum does not account for the player's velocity
         Vector3 screenPointVacuum;
         if (!isInThirdPerson) {

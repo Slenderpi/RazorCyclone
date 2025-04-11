@@ -727,7 +727,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1545043122}
-  - component: {fileID: 1545043121}
+  - component: {fileID: 1545043123}
   m_Layer: 0
   m_Name: SceneRunner
   m_TagString: Untagged
@@ -735,21 +735,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1545043121
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1545043120}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 58266dacf31768d42ad4d9eb6d8a5f68, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  playerSpawnPoint: {fileID: 1430545054}
-  lava: {fileID: 0}
-  SpawnedEnemies: []
 --- !u!4 &1545043122
 Transform:
   m_ObjectHideFlags: 0
@@ -765,6 +750,21 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1545043123
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1545043120}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8030f83b647cf094e8d2af649818c37f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerSpawnPoint: {fileID: 1430545054}
+  lava: {fileID: 0}
+  EnemiesForRicochet: []
 --- !u!1 &1702053129
 GameObject:
   m_ObjectHideFlags: 0

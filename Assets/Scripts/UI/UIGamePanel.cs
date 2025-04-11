@@ -116,7 +116,7 @@ public class UIGamePanel : UIPanel {
     }
     
     void setFuelSliderFill() {
-        float fill = sodFuelFill.Update(currFuel, Time.deltaTime);
+        float fill = Mathf.Clamp(sodFuelFill.Update(currFuel, Time.deltaTime), 0, 1);
         FuelSlider2.fillAmount = fill * BENT_BAR_MAX_FILL;
         float ang = (2 * fill - 1) * (180f * BENT_BAR_MAX_FILL);
         FuelSliderLevel.localPosition = new Vector3(
@@ -128,7 +128,7 @@ public class UIGamePanel : UIPanel {
     }
     
     void setHealthSliderFill() {
-        float fill = sodHealthFill.Update(currHlth, Time.deltaTime);
+        float fill = Mathf.Clamp(sodHealthFill.Update(currHlth, Time.deltaTime), 0, 1);
         HealthSlider2.fillAmount = fill * BENT_BAR_MAX_FILL;
         float ang = 180 - (2 * fill - 1) * (180f * BENT_BAR_MAX_FILL);
         HealthSliderLevel.localPosition = new Vector3(
