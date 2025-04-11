@@ -25,6 +25,7 @@ public class UIMainCanvas : UIPanel {
     public UISettingsPanel SettingsPanel;
     public UIMainMenuPanel MainMenuPanel;
     public UIDeathPanel DeathPanel;
+    public UITutorialPanel TutorialPanel;
     
     
     
