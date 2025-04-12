@@ -33,7 +33,13 @@ public class SRTutorial : SceneRunner {
     public override void BeginScene() {
         TutorialPanel = GameManager.Instance.MainCanvas.TutorialPanel;
         getAndSetSpawnGroups();
-        base.BeginScene();
+        SpawnPlayer();
+        StartCoroutine(delayedStartTutorial());
+    }
+    
+    IEnumerator delayedStartTutorial() {
+        GameManager.Instance.MainCanvas.FadeToClear();
+        yield return new WaitForSecondsRealtime(UIMainCanvas.FADER_FADE_DURATION + 1);
 #if UNITY_EDITOR
         GoToState(StartingState);
 #else

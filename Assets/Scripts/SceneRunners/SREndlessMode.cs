@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections;
 using System.Linq;
 using UnityEngine;
 
@@ -40,8 +41,15 @@ public class SREndlessMode : SceneRunner, IDataPersistence {
 #if UNITY_EDITOR || KEEP_DEBUG
         _SceneStartTime = Time.time;
 #endif
-        base.BeginScene();
         playerIsDead = false;
+        GameManager.Instance.MainCanvas.FadeToClear();
+        SpawnPlayer();
+        StartCoroutine(delayedBeginEndless());
+    }
+    
+    IEnumerator delayedBeginEndless() {
+        yield return new WaitForSecondsRealtime(UIMainCanvas.FADER_FADE_DURATION);
+        WaveSpawnManager.StartWaveSpawner();
     }
     
     protected override void OnPlayerDied() {
@@ -135,5 +143,5 @@ public class SREndlessMode : SceneRunner, IDataPersistence {
         // Use the stored activation time to calculate the spent duration
         TimesSpentEachWave[waveNum - 1] = Time.time - TimesSpentEachWave[waveNum - 1];
     }
-
+    
 }

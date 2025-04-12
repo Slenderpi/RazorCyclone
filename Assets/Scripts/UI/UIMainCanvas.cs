@@ -1,8 +1,12 @@
 using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class UIMainCanvas : UIPanel {
+    
+    public static readonly float FADER_FADE_DURATION = 0.6f;
     
     public enum ECanvasState {
         None,
@@ -18,7 +22,7 @@ public class UIMainCanvas : UIPanel {
     
     public event Action<ECanvasState> CanvasStateChanged;
     
-    [Header("References")]
+    [Header("Panels")]
     public UIDEBUGPanel DebugPanel;
     public UIGamePanel GamePanel;
     public UIPausePanel PausePanel;
@@ -26,6 +30,9 @@ public class UIMainCanvas : UIPanel {
     public UIMainMenuPanel MainMenuPanel;
     public UIDeathPanel DeathPanel;
     public UITutorialPanel TutorialPanel;
+    
+    [Header("Other")]
+    public RawImage Fader;
     
     
     
@@ -96,6 +103,7 @@ public class UIMainCanvas : UIPanel {
 #if UNITY_EDITOR || KEEP_DEBUG
         DebugPanel.SetActive(true);
 #endif
+        Fader.gameObject.SetActive(false);
         SetCanvasState(ECanvasState.None);
     }
     
@@ -105,6 +113,35 @@ public class UIMainCanvas : UIPanel {
         SettingsPanel.SetActive(false);
         MainMenuPanel.SetActive(false);
         DeathPanel.SetActive(false);
+    }
+    
+    public void FadeToBlack() {
+        StartCoroutine(animateFader(0, 1));
+    }
+    
+    public void FadeToClear() {
+        StartCoroutine(animateFader(1, 0));
+    }
+    
+    IEnumerator animateFader(float startAlpha, float endAlpha) {
+        GameManager.Instance.SetPauseInputActionsEnabled(false);
+        Color c = Fader.color;
+        c.a = startAlpha;
+        Fader.color = c;
+        Fader.gameObject.SetActive(true);
+        float time = 0;
+        while (time < FADER_FADE_DURATION) {
+            time += Time.unscaledDeltaTime;
+            c.a = Mathf.Lerp(startAlpha, endAlpha, time / FADER_FADE_DURATION);
+            Fader.color = c;
+            yield return null;
+        }
+        c.a = endAlpha;
+        Fader.color = c;
+        if (endAlpha < 0.5f) { // Fading to clear
+            Fader.gameObject.SetActive(false);
+            GameManager.Instance.SetPauseInputActionsEnabled(true);
+        }
     }
     
 }

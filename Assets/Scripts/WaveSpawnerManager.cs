@@ -66,7 +66,7 @@ public class WaveSpawnerManager : MonoBehaviour {
     [HideInInspector]
     public SREndlessMode OwningEndlessMode;
     [HideInInspector]
-    public int CurrentWaveNumber = -1;
+    public int CurrentWaveNumber = 0;
     [HideInInspector]
     public int CurrentPreloadedWaveNumber = -1;
     
@@ -149,9 +149,11 @@ public class WaveSpawnerManager : MonoBehaviour {
 #endif
 #if UNITY_EDITOR
         CurrentWaveNumber = GameManager.Instance.StartRound - 1;
-#else
-        CurrentWaveNumber = 0;
 #endif
+        PreloadWave(CurrentWaveNumber + 1);
+    }
+    
+    public void StartWaveSpawner() {
         StartCoroutine(delaySpawnNextWave());
     }
     
@@ -353,6 +355,7 @@ public class WaveSpawnerManager : MonoBehaviour {
         // don't perform uneccessary extra work.
         loadedWave.Clear();
         activateWaveFinished = true;
+        PreloadWave(CurrentWaveNumber + 1);
     }
     
     public void OnEnemyCountDecreased(int[] counts) {
@@ -380,7 +383,6 @@ public class WaveSpawnerManager : MonoBehaviour {
     }
     
     IEnumerator delaySpawnNextWave() {
-        PreloadWave(CurrentWaveNumber + 1);
         yield return new WaitForSeconds(2);
         ActivateWave();
     }

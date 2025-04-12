@@ -1,3 +1,4 @@
+using System.Collections;
 using TMPro;
 using UnityEngine;
 
@@ -11,13 +12,11 @@ public class UIDeathPanel : UIPanel {
     
     
     public void OnButton_Retry() {
-        GameManager.Instance.SetPauseInputActionsEnabled(true);
-        GameManager.Instance.currentSceneRunner.ReloadCurrentScene();
+        StartCoroutine(delayLoadScene(true));
     }
     
     public void OnButton_ReturnMain() {
-        GameManager.Instance.SetPauseInputActionsEnabled(true);
-        GameManager.Instance.currentSceneRunner.SwitchToScene("MainMenuScene");
+        StartCoroutine(delayLoadScene(false));
     }
     
     public void SetEndScreenInfo(GameData recordData, int wavesCompleted, bool isNewWaveRecord, bool[] recordTimes) {
@@ -36,6 +35,17 @@ public class UIDeathPanel : UIPanel {
     //     // WaveReachedValue.text = (isNewTimeRecord ? "! " : "") + textifyTime(highestTimeSurvived);
     //     // EnemiesKilledValue.text = enemiesKilled.ToString();
     // }
+    
+    IEnumerator delayLoadScene(bool isRetrying) {
+        GameManager.Instance.MainCanvas.FadeToBlack();
+        yield return new WaitForSecondsRealtime(UIMainCanvas.FADER_FADE_DURATION + 0.05f);
+        if (isRetrying)
+            GameManager.Instance.currentSceneRunner.ReloadCurrentScene();
+        else {
+            GameManager.Instance.MainCanvas.FadeToClear();
+            GameManager.Instance.currentSceneRunner.SwitchToScene("MainMenuScene");
+        }
+    }
     
     string textifyTime(float time) {
         float rounded = Mathf.Round(time);

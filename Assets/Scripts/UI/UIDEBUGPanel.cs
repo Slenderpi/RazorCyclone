@@ -77,7 +77,7 @@ public class UIDEBUGPanel : UIPanel {
     public void OnButton_ToggleDebugPanel() {
         ShowPanel = !ShowPanel;
         DebugPanelContainer.SetActive(ShowPanel);
-        ShowHideButtonText.text = (ShowPanel ? "HIDE" : "SHOW") + "\nDebug Panel";
+        ShowHideButtonText.text = (ShowPanel ? "HIDE" : "SHOW") + "\nDev Panel";
     }
     
     public void OnButton_ToggleInputOverlay() {
