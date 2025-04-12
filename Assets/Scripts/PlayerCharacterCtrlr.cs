@@ -526,7 +526,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         // The canon does account for the player's velocity
         Vector3 screenPointCanon;
         if (!isInThirdPerson) {
-            screenPointCanon = mainCamera.WorldToScreenPoint(camtrans.position + charPivot.forward + -rbVelocityCompensation);
+            screenPointCanon = mainCamera.WorldToScreenPoint(camtrans.position - charPivot.forward + rbVelocityCompensation);
         } else {
             updateRayCastedAimPoint();
             screenPointCanon = mainCamera.WorldToScreenPoint(

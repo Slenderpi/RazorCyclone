@@ -183,7 +183,7 @@ public class UIGamePanel : UIPanel {
         } else {
             if (MainVacuumCrosshair.gameObject.activeSelf) MainVacuumCrosshair.gameObject.SetActive(false);
         }
-        if (screenPointCanon.z < 0.01f) {
+        if (screenPointCanon.z > 0.01f) {
             if (!MainCanonCrosshair.gameObject.activeSelf) MainCanonCrosshair.gameObject.SetActive(true);
             MainCanonCrosshair.position = screenPointCanon;
         } else {
