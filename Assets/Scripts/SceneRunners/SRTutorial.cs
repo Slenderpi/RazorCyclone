@@ -12,6 +12,9 @@ public class SRTutorial : SceneRunner {
     [SerializeField]
     GameObject canonSpawnGroup;
     TUT_EnemySpawner[] canonOnlySpawners;
+    [SerializeField]
+    GameObject killAllSpawnGroup;
+    TUT_EnemySpawner[] killAllSpawners;
     
     [HideInInspector]
     public EDamageType requiredDamageType = EDamageType.Enemy; // Initialize to impossible type
@@ -20,7 +23,10 @@ public class SRTutorial : SceneRunner {
     
     UITutorialPanel TutorialPanel;
     
-    ETutorialState currState;
+    [SerializeField]
+    [Tooltip("For use in testing the tutorial.")]
+    ETutorialState StartingState = ETutorialState.IntroduceVacuum;
+    ETutorialState currState = ETutorialState.NONE;
     
     
     
@@ -28,7 +34,11 @@ public class SRTutorial : SceneRunner {
         TutorialPanel = GameManager.Instance.MainCanvas.TutorialPanel;
         getAndSetSpawnGroups();
         base.BeginScene();
-        GoToState(ETutorialState.IntroduceVacuum);
+#if UNITY_EDITOR
+        GoToState(StartingState);
+#else
+        GoToState((ETutorialState)1); // Go to first state in build version
+#endif
     }
     
     public void OnEnemyKilled(bool wasByCorrectType) {
@@ -52,6 +62,10 @@ public class SRTutorial : SceneRunner {
             WaitAndCall(AnnounceCanonIntro, 1);
             break;
         case ETutorialState.KillTheWave:
+            WaitAndCall(AnnounceKillAllIntro, 1);
+            break;
+        case ETutorialState.FINISHED:
+            WaitAndCall(AnnounceCongrats, 0.5f);
             break;
         }
         currState = nextState;
@@ -66,6 +80,7 @@ public class SRTutorial : SceneRunner {
             GoToState(ETutorialState.KillTheWave);
             break;
         case ETutorialState.KillTheWave:
+            GoToState(ETutorialState.FINISHED);
             break;
         }
     }
@@ -88,9 +103,28 @@ public class SRTutorial : SceneRunner {
             es.SpawnEnemy();
     }
     
+    public void AnnounceKillAllIntro() {
+        requiredDamageType = EDamageType.Any;
+        enemiesRequiredThisState = killAllSpawners.Length;
+        enemiesKilled = 0;
+        print($"OBJECTIVE: Kill {enemiesRequiredThisState} Bugs using any weapon.");
+        foreach (TUT_EnemySpawner es in killAllSpawners)
+            es.SpawnEnemy();
+    }
+    
+    public void AnnounceCongrats() {
+        print($"Congratulations! You have completed the tutorial. Now loading the endless level (in 3 seconds).");
+        WaitAndCall(goToEndless, 3);
+    }
+    
+    void goToEndless() {
+        SwitchToScene("True Endless");
+    }
+    
     void getAndSetSpawnGroups() {
         vacuumOnlySpawners = vacuumSpawnGroup.GetComponentsInChildren<TUT_EnemySpawner>();
         canonOnlySpawners = canonSpawnGroup.GetComponentsInChildren<TUT_EnemySpawner>();
+        killAllSpawners = killAllSpawnGroup.GetComponentsInChildren<TUT_EnemySpawner>();
     }
     
     /// <summary>
@@ -111,7 +145,9 @@ public class SRTutorial : SceneRunner {
 }
 
 public enum ETutorialState {
+    NONE,
     IntroduceVacuum,
     IntroduceCanon,
-    KillTheWave
+    KillTheWave,
+    FINISHED
 }
