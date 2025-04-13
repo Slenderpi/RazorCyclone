@@ -36,7 +36,6 @@ public class UITutorialPanel : UIPanel {
     }
     
     public void OnTutorialStateChanged(ETutorialState state) {
-        SetAllPanelsInactive();
         switch (state) {
         case ETutorialState.NONE:
             SetAllPanelsInactive();
@@ -45,15 +44,19 @@ public class UITutorialPanel : UIPanel {
             doControlsIntro();
             break;
         case ETutorialState.IntroduceVacuum:
+            SetAllPanelsInactive(true);
             doVacuumIntro();
             break;
         case ETutorialState.IntroduceCannon:
+            SetAllPanelsInactive(true);
             doCannonIntro();
             break;
         case ETutorialState.KillTheWave:
+            SetAllPanelsInactive(true);
             doKillAllIntro();
             break;
         case ETutorialState.FINISHED:
+            SetAllPanelsInactive(true);
             doCongrats();
             break;
         }
@@ -61,7 +64,7 @@ public class UITutorialPanel : UIPanel {
     }
     
     void doControlsIntro() {
-        controlsPanel.SetActive(true);
+        SetAllPanelsInactive(true);
     }
     
     void doVacuumIntro() {
@@ -96,8 +99,8 @@ public class UITutorialPanel : UIPanel {
         }
     }
     
-    public void SetAllPanelsInactive() {
-        controlsPanel.SetActive(false);
+    public void SetAllPanelsInactive(bool skipControls = false) {
+        controlsPanel.SetActive(skipControls);
         vacuumPanel.SetActive(false);
         cannonPanel.SetActive(false);
         killAllPanel.SetActive(false);
