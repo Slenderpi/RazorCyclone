@@ -49,7 +49,6 @@ public class SREndlessMode : SceneRunner, IDataPersistence {
     
     IEnumerator delayedBeginEndless() {
         yield return new WaitForSecondsRealtime(UIMainCanvas.FADER_FADE_DURATION);
-        Debug.LogError("Start wave");
         WaveSpawnManager.StartWaveSpawner();
     }
     

@@ -18,8 +18,10 @@ public class SRTutorial : SceneRunner {
     
     [HideInInspector]
     public EDamageType requiredDamageType = EDamageType.Enemy; // Initialize to impossible type
-    int enemiesRequiredThisState;
-    int enemiesKilled;
+    [HideInInspector]
+    public int enemiesRequiredThisState;
+    [HideInInspector]
+    public int enemiesKilled;
     
     UITutorialPanel TutorialPanel;
 
@@ -32,6 +34,7 @@ public class SRTutorial : SceneRunner {
     
     public override void BeginScene() {
         TutorialPanel = GameManager.Instance.MainCanvas.TutorialPanel;
+        TutorialPanel.srt = this;
         TutorialPanel.SetAllPanelsInactive();
         TutorialPanel.SetActive(true);
         getAndSetSpawnGroups();
@@ -52,12 +55,14 @@ public class SRTutorial : SceneRunner {
     public void OnEnemyKilled(bool wasByCorrectType) {
         if (wasByCorrectType) {
             enemiesKilled++;
-            print($"Correct damage type! Enemies killed: {enemiesKilled} / {enemiesRequiredThisState}");
+            // print($"Correct damage type! Enemies killed: {enemiesKilled} / {enemiesRequiredThisState}");
+            TutorialPanel.PlayerKilledEnemy(true);
             if (enemiesKilled < enemiesRequiredThisState) return;
             print(" -- Objective complete! --");
             WaitAndCall(OnKilledAllEnemies, 0.5f);
         } else {
-            Debug.LogWarning("Wrong damage type, try again.");
+            TutorialPanel.PlayerKilledEnemy(false);
+            // Debug.LogWarning("Wrong damage type, try again.");
         }
     }
     

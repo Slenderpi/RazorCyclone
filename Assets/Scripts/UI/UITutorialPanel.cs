@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 
 public class UITutorialPanel : UIPanel {
@@ -13,6 +14,19 @@ public class UITutorialPanel : UIPanel {
     GameObject killAllPanel;
     [SerializeField]
     GameObject finalPanel;
+    
+    [Header("Other references")]
+    [SerializeField]
+    TMP_Text vacuumText;
+    [SerializeField]
+    TMP_Text cannonText;
+    [SerializeField]
+    TMP_Text killAllText;
+    
+    [HideInInspector]
+    public SRTutorial srt;
+    
+    ETutorialState currState;
     
     
     
@@ -43,6 +57,7 @@ public class UITutorialPanel : UIPanel {
             doCongrats();
             break;
         }
+        currState = state;
     }
     
     void doControlsIntro() {
@@ -50,6 +65,7 @@ public class UITutorialPanel : UIPanel {
     }
     
     void doVacuumIntro() {
+        vacuumText.text = $"Kill Bugs with the Vacuum {srt.enemiesKilled} / {srt.enemiesRequiredThisState}";
         vacuumPanel.SetActive(true);
     }
     
@@ -63,6 +79,21 @@ public class UITutorialPanel : UIPanel {
     
     void doCongrats() {
         finalPanel.SetActive(true);
+    }
+    
+    public void PlayerKilledEnemy(bool wasCorrectWeapon) {
+        string s = $"{srt.enemiesKilled} / {srt.enemiesRequiredThisState}";
+        switch (currState) {
+        case ETutorialState.IntroduceVacuum:
+            vacuumText.text = "Kill Bugs with the Vacuum " + s + (wasCorrectWeapon ? "" : "\nincorrect weapon");
+            break;
+        case ETutorialState.IntroduceCannon:
+            cannonText.text = "Kill Bugs with the Cannon " + s + (wasCorrectWeapon ? "" : "\nincorrect weapon");
+            break;
+        case ETutorialState.KillTheWave:
+            killAllText.text = "Kill Bugs with any weapon " + s;
+            break;
+        }
     }
     
     public void SetAllPanelsInactive() {

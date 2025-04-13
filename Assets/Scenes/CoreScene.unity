@@ -3806,6 +3806,10 @@ MonoBehaviour:
   cannonPanel: {fileID: 1840194191}
   killAllPanel: {fileID: 450137293}
   finalPanel: {fileID: 210824660}
+  vacuumText: {fileID: 1573503314}
+  cannonText: {fileID: 2075002356}
+  killAllText: {fileID: 1594846008}
+  srt: {fileID: 0}
 --- !u!1 &273255371
 GameObject:
   m_ObjectHideFlags: 0
