@@ -1725,11 +1725,11 @@ MonoBehaviour:
   VacuumForceLowSpeed: 25
   VacuumForceNormalSpeed: 8
   VacuumSuckForce: 8500
-  CanonForce: 8
-  CanonBaseProjSpeed: 125
+  CannonForce: 8
+  CannonBaseProjSpeed: 125
   InheritedVelocityFactor: 0.7
   MaxFuel: 100
-  CanonFuelCost: 12
+  CannonFuelCost: 12
   VacuumFuelTime: 10
   MaxHealth: 100
   CurrentHealth: 0
@@ -1740,8 +1740,8 @@ MonoBehaviour:
   charModel: {fileID: 8629852985814836286}
   charPivot: {fileID: 647242247470878322}
   Vacuum: {fileID: 6250770712706610529}
-  canonProjSpawnTrans: {fileID: 1158141871152860794}
-  canonMuzzleTrans: {fileID: 6440768663712675171}
+  cannonProjSpawnTrans: {fileID: 1158141871152860794}
+  cannonMuzzleTrans: {fileID: 6440768663712675171}
   projectilePrefab: {fileID: 926027913916158325, guid: b847a6b45c135a4409f379593532cfce, type: 3}
   muzzleFlashEffect: {fileID: 1468955641749855403, guid: 52ed0e933e8fd8f44a05f09d3a08c76a, type: 3}
   rearCamPos: {fileID: 4826576570863280527}
@@ -4294,7 +4294,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1158141871152860794}
   m_Layer: 6
-  m_Name: CanonProjectileTransform
+  m_Name: CannonProjectileTransform
   m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

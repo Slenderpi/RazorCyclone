@@ -104,6 +104,7 @@ public class UIMainCanvas : UIPanel {
         DebugPanel.SetActive(true);
 #endif
         Fader.gameObject.SetActive(false);
+        TutorialPanel.SetActive(false);
         SetCanvasState(ECanvasState.None);
     }
     

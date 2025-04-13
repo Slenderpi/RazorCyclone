@@ -160,10 +160,10 @@ public class ProjectileBase : MonoBehaviour {
             //     }
             //     if (enemy == enemyToIgnore) return;
             //     transform.position = closestHitPos;
-            //     if (enemy.RicochetCanon && ricRemain > 0)
+            //     if (enemy.RicochetCannon && ricRemain > 0)
             //         OnRicochetEnemy(enemy);
             //     else {
-            //         // if (!enemy.RicochetCanon) print("No ricochet for '" + enemy.gameObject.name + "'");
+            //         // if (!enemy.RicochetCannon) print("No ricochet for '" + enemy.gameObject.name + "'");
             //         OnHitEnemy(enemy);
             //         Destroy(gameObject);
             //     }

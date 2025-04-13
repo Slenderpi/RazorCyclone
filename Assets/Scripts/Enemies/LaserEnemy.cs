@@ -30,7 +30,7 @@ public class LaserEnemy : EnemyBase {
     // [Tooltip("Duration the Laser enemy will be in its weak damage state with damage set to WeakDamagePerSecond.\nAfter this duration, its damage will increase to StrongDamagePerSecond.")]
     // float WeakDamageDuration = 5;
     // [SerializeField]
-    // [Tooltip("Duration the Laser enemy will be stunned for after getting hit by a canon shot. Once the stun is over, it will attack the player with weak damage.")]
+    // [Tooltip("Duration the Laser enemy will be stunned for after getting hit by a cannon shot. Once the stun is over, it will attack the player with weak damage.")]
     // float StunDuration = 3;
     // [SerializeField]
     // [Tooltip("Before the end of the stun, the Laser enemy will animate itself rotating towards the player. This value determines the length of the animation, but does not affect the stun duration.\nThis means that if StunDuration = 3 and ReArmDuration = 1, the re-arm phase will start 2 seconds into the stun.")]

@@ -3699,13 +3699,12 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7161423610750410142}
-  - component: {fileID: 2965279310892185994}
+  - component: {fileID: 382276047645554307}
   - component: {fileID: 8082838698744000531}
   - component: {fileID: -671571568929607629}
   - component: {fileID: 9113617427949065013}
-  - component: {fileID: 4748833800465546559}
   m_Layer: 0
-  m_Name: TUT_CanonFodder
+  m_Name: CannonFodder
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3727,7 +3726,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2965279310892185994
+--- !u!114 &382276047645554307
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -3736,7 +3735,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 3890492832594851018}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 018a94ca25a90e14d8c0a5330427576d, type: 3}
+  m_Script: {fileID: 11500000, guid: ab6f7e57fa0e5e24aa0bea1e56b0abc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   etypeid: 0
@@ -3753,10 +3752,9 @@ MonoBehaviour:
   rb: {fileID: 0}
   boid: {fileID: 0}
   suckable: {fileID: 0}
-  RicochetCanon: 1
+  RicochetCannon: 1
   ConsiderForRicochet: 1
   invincible: 0
-  edd: {fileID: 4748833800465546559}
 --- !u!114 &8082838698744000531
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3772,7 +3770,7 @@ MonoBehaviour:
   ModelToRotate: {fileID: 2039270182480673860}
   handleRotation: 1
   rotationPerFrameLerpAlpha: 0.1
-  CanonFodderData: {fileID: 11400000, guid: ecc3839188a02c94d9336aaa5c36ab9b, type: 2}
+  CannonFodderData: {fileID: 11400000, guid: ecc3839188a02c94d9336aaa5c36ab9b, type: 2}
 --- !u!114 &-671571568929607629
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3803,18 +3801,6 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 80
   m_CollisionDetection: 0
---- !u!114 &4748833800465546559
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3890492832594851018}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 868aaf53d0aa66c459194da30ee48bc4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &3899128485669630883
 GameObject:
   m_ObjectHideFlags: 0

@@ -10,8 +10,8 @@ public class SRTutorial : SceneRunner {
     GameObject vacuumSpawnGroup;
     TUT_EnemySpawner[] vacuumOnlySpawners;
     [SerializeField]
-    GameObject canonSpawnGroup;
-    TUT_EnemySpawner[] canonOnlySpawners;
+    GameObject cannonSpawnGroup;
+    TUT_EnemySpawner[] cannonOnlySpawners;
     [SerializeField]
     GameObject killAllSpawnGroup;
     TUT_EnemySpawner[] killAllSpawners;
@@ -22,16 +22,18 @@ public class SRTutorial : SceneRunner {
     int enemiesKilled;
     
     UITutorialPanel TutorialPanel;
-    
+
     [SerializeField]
     [Tooltip("For use in testing the tutorial.")]
-    ETutorialState StartingState = ETutorialState.IntroduceVacuum;
+    ETutorialState StartingState = ETutorialState.IntroduceControls;
     ETutorialState currState = ETutorialState.NONE;
     
     
     
     public override void BeginScene() {
         TutorialPanel = GameManager.Instance.MainCanvas.TutorialPanel;
+        TutorialPanel.SetAllPanelsInactive();
+        TutorialPanel.SetActive(true);
         getAndSetSpawnGroups();
         SpawnPlayer();
         StartCoroutine(delayedStartTutorial());
@@ -39,7 +41,7 @@ public class SRTutorial : SceneRunner {
     
     IEnumerator delayedStartTutorial() {
         GameManager.Instance.MainCanvas.FadeToClear();
-        yield return new WaitForSecondsRealtime(UIMainCanvas.FADER_FADE_DURATION + 1);
+        yield return new WaitForSecondsRealtime(UIMainCanvas.FADER_FADE_DURATION + 0.5f);
 #if UNITY_EDITOR
         GoToState(StartingState);
 #else
@@ -53,7 +55,7 @@ public class SRTutorial : SceneRunner {
             print($"Correct damage type! Enemies killed: {enemiesKilled} / {enemiesRequiredThisState}");
             if (enemiesKilled < enemiesRequiredThisState) return;
             print(" -- Objective complete! --");
-            OnKilledAllEnemies();
+            WaitAndCall(OnKilledAllEnemies, 0.5f);
         } else {
             Debug.LogWarning("Wrong damage type, try again.");
         }
@@ -61,28 +63,37 @@ public class SRTutorial : SceneRunner {
     
     public void GoToState(ETutorialState nextState) {
         switch(nextState) {
-        case ETutorialState.IntroduceVacuum:
-            WaitAndCall(AnnounceVacuumIntro, 1);
+        case ETutorialState.NONE:
             break;
-        case ETutorialState.IntroduceCanon:
-            WaitAndCall(AnnounceCanonIntro, 1);
+        case ETutorialState.IntroduceControls:
+            StartCoroutine(AnnounceControlsIntro());
+            break;
+        case ETutorialState.IntroduceVacuum:
+            // WaitAndCall(AnnounceVacuumIntro, 1);
+            AnnounceVacuumIntro();
+            break;
+        case ETutorialState.IntroduceCannon:
+            // WaitAndCall(AnnounceCannonIntro, 1);
+            AnnounceCannonIntro();
             break;
         case ETutorialState.KillTheWave:
-            WaitAndCall(AnnounceKillAllIntro, 1);
+            // WaitAndCall(AnnounceKillAllIntro, 1);
+            AnnounceKillAllIntro();
             break;
         case ETutorialState.FINISHED:
-            WaitAndCall(AnnounceCongrats, 0.5f);
+            StartCoroutine(onTutorialCompleted());
             break;
         }
+        TutorialPanel.OnTutorialStateChanged(nextState);
         currState = nextState;
     }
     
     public void OnKilledAllEnemies() {
         switch (currState) {
         case ETutorialState.IntroduceVacuum:
-            GoToState(ETutorialState.IntroduceCanon);
+            GoToState(ETutorialState.IntroduceCannon);
             break;
-        case ETutorialState.IntroduceCanon:
+        case ETutorialState.IntroduceCannon:
             GoToState(ETutorialState.KillTheWave);
             break;
         case ETutorialState.KillTheWave:
@@ -91,7 +102,13 @@ public class SRTutorial : SceneRunner {
         }
     }
     
+    IEnumerator AnnounceControlsIntro() {
+        yield return new WaitForSeconds(3);
+        GoToState(ETutorialState.IntroduceVacuum);
+    }
+    
     public void AnnounceVacuumIntro() {
+        // TutorialPanel.OnTutorialStateChanged(ETutorialState.IntroduceVacuum);
         requiredDamageType = EDamageType.Vacuum;
         enemiesRequiredThisState = vacuumOnlySpawners.Length;
         enemiesKilled = 0;
@@ -100,16 +117,18 @@ public class SRTutorial : SceneRunner {
             es.SpawnEnemy();
     }
     
-    public void AnnounceCanonIntro() {
+    public void AnnounceCannonIntro() {
+        // TutorialPanel.OnTutorialStateChanged(ETutorialState.IntroduceCannon);
         requiredDamageType = EDamageType.Projectile;
-        enemiesRequiredThisState = canonOnlySpawners.Length;
+        enemiesRequiredThisState = cannonOnlySpawners.Length;
         enemiesKilled = 0;
-        print($"OBJECTIVE: Kill {enemiesRequiredThisState} Bugs using the CANON");
-        foreach (TUT_EnemySpawner es in canonOnlySpawners)
+        print($"OBJECTIVE: Kill {enemiesRequiredThisState} Bugs using the CANNON");
+        foreach (TUT_EnemySpawner es in cannonOnlySpawners)
             es.SpawnEnemy();
     }
     
     public void AnnounceKillAllIntro() {
+        // TutorialPanel.OnTutorialStateChanged(ETutorialState.KillTheWave);
         requiredDamageType = EDamageType.Any;
         enemiesRequiredThisState = killAllSpawners.Length;
         enemiesKilled = 0;
@@ -118,18 +137,19 @@ public class SRTutorial : SceneRunner {
             es.SpawnEnemy();
     }
     
-    public void AnnounceCongrats() {
+    IEnumerator onTutorialCompleted() {
+        // TutorialPanel.OnTutorialStateChanged(ETutorialState.FINISHED);
         print($"Congratulations! You have completed the tutorial. Now loading the endless level (in 3 seconds).");
-        WaitAndCall(goToEndless, 3);
-    }
-    
-    void goToEndless() {
+        yield return new WaitForSeconds(3);
+        GameManager.Instance.MainCanvas.FadeToBlack();
+        yield return new WaitForSecondsRealtime(UIMainCanvas.FADER_FADE_DURATION);
+        TutorialPanel.SetActive(false);
         SwitchToScene("True Endless");
     }
     
     void getAndSetSpawnGroups() {
         vacuumOnlySpawners = vacuumSpawnGroup.GetComponentsInChildren<TUT_EnemySpawner>();
-        canonOnlySpawners = canonSpawnGroup.GetComponentsInChildren<TUT_EnemySpawner>();
+        cannonOnlySpawners = cannonSpawnGroup.GetComponentsInChildren<TUT_EnemySpawner>();
         killAllSpawners = killAllSpawnGroup.GetComponentsInChildren<TUT_EnemySpawner>();
     }
     
@@ -152,8 +172,9 @@ public class SRTutorial : SceneRunner {
 
 public enum ETutorialState {
     NONE,
+    IntroduceControls,
     IntroduceVacuum,
-    IntroduceCanon,
+    IntroduceCannon,
     KillTheWave,
     FINISHED
 }

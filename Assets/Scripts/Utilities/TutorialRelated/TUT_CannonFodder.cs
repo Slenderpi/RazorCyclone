@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [RequireComponent(typeof(TUT_EnemyDefeatedDetector))]
-public class TUT_CanonFodder : CanonFodderEnemy {
+public class TUT_CannonFodder : CannonFodderEnemy {
     
     [SerializeField]
     TUT_EnemyDefeatedDetector edd;

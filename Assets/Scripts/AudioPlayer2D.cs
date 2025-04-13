@@ -6,10 +6,10 @@ public class AudioPlayer2D : MonoBehaviour {
     public static AudioPlayer2D Instance;
     
     public enum EClipSFX {
-        Canon_Kill,
-        Canon_Hit,
+        Cannon_Kill,
+        Cannon_Hit,
         Vacuum_Kill,
-        Weapon_CanonShot,
+        Weapon_CannonShot,
         Plr_OutOfFuel,
         Plr_PickupFuel,
         Plr_RotateWoosh
@@ -26,17 +26,17 @@ public class AudioPlayer2D : MonoBehaviour {
     public AudioSource asGeneralSFX;
     public AudioSource asMotorcycleDriving;
     public AudioSource asMotorcycleRotating;
-    public AudioSource asCanon;
+    public AudioSource asCannon;
     
     [Header("Sound Effect References")]
     [SerializeField]
-    AudioClip sfx_Canon_Kill;
+    AudioClip sfx_Cannon_Kill;
     [SerializeField]
-    AudioClip sfx_Canon_Hit;
+    AudioClip sfx_Cannon_Hit;
     [SerializeField]
     AudioClip sfx_Vacuum_Kill;
     [SerializeField]
-    AudioClip sfx_Weapon_CanonShot;
+    AudioClip sfx_Weapon_CannonShot;
     [SerializeField]
     AudioClip sfx_Plr_OutOfFuel;
     [SerializeField]
@@ -74,17 +74,17 @@ public class AudioPlayer2D : MonoBehaviour {
 
     public void PlayClipSFX(EClipSFX clip) {
         switch (clip) {
-        case EClipSFX.Canon_Kill:
-            asGeneralSFX.PlayOneShot(sfx_Canon_Kill);
+        case EClipSFX.Cannon_Kill:
+            asGeneralSFX.PlayOneShot(sfx_Cannon_Kill);
             break;
-        case EClipSFX.Canon_Hit:
-            asGeneralSFX.PlayOneShot(sfx_Canon_Hit);
+        case EClipSFX.Cannon_Hit:
+            asGeneralSFX.PlayOneShot(sfx_Cannon_Hit);
             break;
         case EClipSFX.Vacuum_Kill:
             asGeneralSFX.PlayOneShot(sfx_Vacuum_Kill);
             break;
-        case EClipSFX.Weapon_CanonShot:
-            asCanon.Play();
+        case EClipSFX.Weapon_CannonShot:
+            asCannon.Play();
             break;
         case EClipSFX.Plr_OutOfFuel:
             // asSFX.PlayOneShot(sfx_Plr_OutOfFuel);

@@ -8,12 +8,6 @@ public class SREndlessMode : SceneRunner, IDataPersistence {
     [Header("References")]
     public WaveSpawnerManager WaveSpawnManager;
     
-#if UNITY_EDITOR || KEEP_DEBUG
-    [HideInInspector]
-    public float _SceneStartTime;
-    [HideInInspector]
-    public float _TimeSinceSceneStarted { get { return Time.time - _SceneStartTime; }}
-#endif
     [HideInInspector]
     public int EnemiesKilled;
     [HideInInspector]
@@ -25,6 +19,12 @@ public class SREndlessMode : SceneRunner, IDataPersistence {
     // bool currWaveIsActive = false;
     bool playerIsDead = true;
     List<float> TimesSpentEachWave;
+    
+    // Likely temp
+    [HideInInspector]
+    public float _SceneStartTime;
+    [HideInInspector]
+    public float _TimeSinceSceneStarted { get { return Time.time - _SceneStartTime; }}
     
     
     
@@ -49,6 +49,7 @@ public class SREndlessMode : SceneRunner, IDataPersistence {
     
     IEnumerator delayedBeginEndless() {
         yield return new WaitForSecondsRealtime(UIMainCanvas.FADER_FADE_DURATION);
+        Debug.LogError("Start wave");
         WaveSpawnManager.StartWaveSpawner();
     }
     

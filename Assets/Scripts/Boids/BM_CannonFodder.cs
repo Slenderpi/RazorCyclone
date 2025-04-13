@@ -1,27 +1,27 @@
 using UnityEngine;
 
-public class BM_CanonFodder : BoidMover {
+public class BM_CannonFodder : BoidMover {
     
-    public SO_CanonFodder CanonFodderData;
+    public SO_CannonFodder CannonFodderData;
     
     
     
     protected override void Init() {
-        generalBoidData = CanonFodderData;
+        generalBoidData = CannonFodderData;
     }
     
     public override Vector3 CalculateSteering() {
         Vector3 plrPos = GameManager.CurrentPlayer.transform.position;
-        if ((plrPos - transform.position).sqrMagnitude <= CanonFodderData.FleeTriggerDistance * CanonFodderData.FleeTriggerDistance) {
-            Vector3 steer = BoidSteerer.Flee(transform.position, plrPos, rb.velocity, CanonFodderData);
+        if ((plrPos - transform.position).sqrMagnitude <= CannonFodderData.FleeTriggerDistance * CannonFodderData.FleeTriggerDistance) {
+            Vector3 steer = BoidSteerer.Flee(transform.position, plrPos, rb.velocity, CannonFodderData);
             steer.y = 0;
-            ResetWanderPoint(CanonFodderData.WanderLimitRadius);
+            ResetWanderPoint(CannonFodderData.WanderLimitRadius);
             return steer;
         } else {
-            StepWanderPoint2D(CanonFodderData);
+            StepWanderPoint2D(CannonFodderData);
             return BoidSteerer.Wander(
                 transform.position, rb.velocity, wanderPoint,
-                CanonFodderData
+                CannonFodderData
             );
         }
     }

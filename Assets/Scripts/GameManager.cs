@@ -188,7 +188,7 @@ public class GameManager : MonoBehaviour {
             switch (damageType) {
             case EDamageType.Projectile:
                 MainCanvas.GamePanel.OnPlayerKilledEnemy(enemy, true);
-                Audio2D.PlayClipSFX(AudioPlayer2D.EClipSFX.Canon_Kill);
+                Audio2D.PlayClipSFX(AudioPlayer2D.EClipSFX.Cannon_Kill);
                 break;
             case EDamageType.Vacuum:
                 MainCanvas.GamePanel.OnPlayerKilledEnemy(enemy, false);
@@ -199,7 +199,7 @@ public class GameManager : MonoBehaviour {
             switch (damageType) {
             case EDamageType.Projectile:
                 MainCanvas.GamePanel.OnPlayerDamagedEnemy(enemy);
-                Audio2D.PlayClipSFX(AudioPlayer2D.EClipSFX.Canon_Hit);
+                Audio2D.PlayClipSFX(AudioPlayer2D.EClipSFX.Cannon_Hit);
                 break;
             }
         }
@@ -340,7 +340,7 @@ public enum EDamageType {
 /// Enum representing an enemy type.
 /// </summary>
 public enum EnemyType {
-    CanonFodder,
+    CannonFodder,
     HunterBasic,
     Hunter,
     CrabBasic,

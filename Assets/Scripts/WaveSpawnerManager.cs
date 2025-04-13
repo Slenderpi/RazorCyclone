@@ -68,7 +68,7 @@ public class WaveSpawnerManager : MonoBehaviour {
     [HideInInspector]
     public int CurrentWaveNumber = 0;
     [HideInInspector]
-    public int CurrentPreloadedWaveNumber = -1;
+    public int CurrentPreloadedWaveNumber = 0;
     
     [HideInInspector]
     public WaveEntry[] waveEntries;
@@ -365,7 +365,7 @@ public class WaveSpawnerManager : MonoBehaviour {
             if (counts[0] > 0)
                 waveComplete = false;
         } else {
-            for (int i = 1; i < (int)EnemyType.COUNT; i++) // Start at enemy right after canon fodder
+            for (int i = 1; i < (int)EnemyType.COUNT; i++) // Start at enemy right after cannon fodder
                 if (counts[i] > 0) {
                     waveComplete = false;
                     break;

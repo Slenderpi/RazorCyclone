@@ -4711,7 +4711,7 @@ MonoBehaviour:
   lava: {fileID: 33201336}
   EnemiesForRicochet: []
   vacuumSpawnGroup: {fileID: 1336527050}
-  canonSpawnGroup: {fileID: 2054321915}
+  cannonSpawnGroup: {fileID: 2054321915}
   killAllSpawnGroup: {fileID: 143813434}
   requiredDamageType: 2
   StartingState: 1
@@ -5958,7 +5958,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2054321916}
   m_Layer: 0
-  m_Name: CanonSpawnGroup
+  m_Name: CannonSpawnGroup
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

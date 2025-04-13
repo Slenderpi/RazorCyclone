@@ -52,9 +52,9 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     public float VacuumSuckRate { private set; get; } = 0.1f; // per second
     public float VacuumDamage {private set; get; } = 7f;
     [SerializeField]
-    float CanonForce;
+    float CannonForce = 8;
     [SerializeField]
-    float CanonBaseProjSpeed = 125;
+    float CannonBaseProjSpeed = 125;
     [SerializeField]
     [Tooltip("When a projectile is fired, its velocity will include the player's velocity by a factor.\nA value of 0 would mean player velocity has no effect on the projectile's veloctiy.\nA value of 0.5 would mean the projectile would add half of the player's velocity.")]
     float InheritedVelocityFactor = 0.7f;
@@ -62,10 +62,8 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     [Header("Fuel Settings")]
     [SerializeField]
     float MaxFuel = 100f;
-    // [SerializeField]
-    // float FuelRefillDelay = 3;
     [SerializeField]
-    float CanonFuelCost = 6f;
+    float CannonFuelCost = 12;
     [SerializeField]
     [Tooltip("The amount of seconds to spend 100 fuel")]
     float VacuumFuelTime = 8f; // The amount of seconds to spend 100 fuel
@@ -96,10 +94,10 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     VacuumScript Vacuum;
     [SerializeField]
     [Tooltip("Transform indicating where the projectile will spawn from.")]
-    Transform canonProjSpawnTrans;
+    Transform cannonProjSpawnTrans;
     [SerializeField]
     [Tooltip("Transform for spawning muzzle flash VFX.")]
-    Transform canonMuzzleTrans;
+    Transform cannonMuzzleTrans;
     [SerializeField]
     ProjectileBase projectilePrefab;
     [SerializeField]
@@ -173,7 +171,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
         
-        currentMuzzleFlashEffect = Instantiate(muzzleFlashEffect, canonMuzzleTrans);
+        currentMuzzleFlashEffect = Instantiate(muzzleFlashEffect, cannonMuzzleTrans);
         currentMuzzleFlashEffect.SetActive(false);
         
         lava = GameManager.Instance.currentSceneRunner.lava;
@@ -308,9 +306,9 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     
     private void FireVacuumStarted(InputAction.CallbackContext context) {
         if (!vacEnableddd) return;
-        
+#if UNITY_EDITOR || KEEP_DEBUG
         _gamePanel.OnFireVacuum(true);
-        
+#endif
         if (CurrentHealth <= 0) {
             // signifyOutOfFuel();
             return;
@@ -323,25 +321,29 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     private void FireVacuumCanceled(InputAction.CallbackContext context) {
         isVacuumOn = false;
         Vacuum.DisableVacuum();
-        
+#if UNITY_EDITOR || KEEP_DEBUG
         _gamePanel.OnFireVacuum(false);
+#endif
     }
     
-    private void FireCanonStarted(InputAction.CallbackContext context) {
-        _gamePanel.OnFireCanon(true);
-        
+    private void FireCannonStarted(InputAction.CallbackContext context) {
+#if UNITY_EDITOR || KEEP_DEBUG
+        _gamePanel.OnFireCannon(true);
+#endif
         if (CurrentHealth <= 0) {
             // signifyOutOfFuel();
             return;
         }
         if(cannonEnabled){
-            fireCanon();
+            fireCannon();
         }
         
     }
     
-    private void FireCanonCanceled(InputAction.CallbackContext context) {
-        _gamePanel.OnFireCanon(false);
+    private void FireCannonCanceled(InputAction.CallbackContext context) {
+#if UNITY_EDITOR || KEEP_DEBUG
+        _gamePanel.OnFireCannon(false);
+#endif
     }
     
     public void OnPauseGame() {
@@ -480,10 +482,10 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         // }
     }
     
-    void fireCanon() {
+    void fireCannon() {
         updateRayCastedAimPoint();
-        rb.AddForce((charModel.rotation * weaponRelativeRot).normalized * CanonForce * 100000);
-        Vector3 projVel = (aimPoint - canonProjSpawnTrans.position).normalized * CanonBaseProjSpeed + rb.velocity * InheritedVelocityFactor;
+        rb.AddForce((charModel.rotation * weaponRelativeRot).normalized * CannonForce * 100000);
+        Vector3 projVel = (aimPoint - cannonProjSpawnTrans.position).normalized * CannonBaseProjSpeed + rb.velocity * InheritedVelocityFactor;
         // if (ricochetBaseVal > 0) { // Only spend spins of base val is non-zero
         //     projectilePrefab.MaxRicochet = ricochetBaseVal * currentBikeSpins;
         //     print($"Ricochets: {projectilePrefab.MaxRicochet} ({ricochetBaseVal} * {currentBikeSpins})");
@@ -498,10 +500,10 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
             A_SpinsSpent?.Invoke(currentBikeSpins, 0);
             currentBikeSpins = 0;
         }
-        ProjectileBase proj = Instantiate(projectilePrefab, canonProjSpawnTrans.position, Quaternion.LookRotation(projVel));
+        ProjectileBase proj = Instantiate(projectilePrefab, cannonProjSpawnTrans.position, Quaternion.LookRotation(projVel));
         proj.rb.velocity = projVel;
-        SpendFuel(CanonFuelCost);
-        GameManager.Instance.Audio2D.PlayClipSFX(AudioPlayer2D.EClipSFX.Weapon_CanonShot);
+        SpendFuel(CannonFuelCost);
+        GameManager.Instance.Audio2D.PlayClipSFX(AudioPlayer2D.EClipSFX.Weapon_CannonShot);
         playMuzzleFlashEffect();
     }
     
@@ -515,7 +517,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     }
     
     void updateCrosshairPositions() {
-        Vector3 rbVelocityCompensation = rb.velocity.sqrMagnitude > 0.001f ? rb.velocity * InheritedVelocityFactor / CanonBaseProjSpeed : Vector3.zero;
+        Vector3 rbVelocityCompensation = rb.velocity.sqrMagnitude > 0.001f ? rb.velocity * InheritedVelocityFactor / CannonBaseProjSpeed : Vector3.zero;
         // The vacuum does not account for the player's velocity
         Vector3 screenPointVacuum;
         if (!isInThirdPerson) {
@@ -523,19 +525,19 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         } else {
             screenPointVacuum = mainCamera.WorldToScreenPoint(charModel.position + charPivot.forward * 1.5f);
         }
-        // The canon does account for the player's velocity
-        Vector3 screenPointCanon;
+        // The cannon does account for the player's velocity
+        Vector3 screenPointCannon;
         if (!isInThirdPerson) {
-            screenPointCanon = mainCamera.WorldToScreenPoint(camtrans.position - charPivot.forward + rbVelocityCompensation);
+            screenPointCannon = mainCamera.WorldToScreenPoint(camtrans.position - charPivot.forward + rbVelocityCompensation);
         } else {
             updateRayCastedAimPoint();
-            screenPointCanon = mainCamera.WorldToScreenPoint(
+            screenPointCannon = mainCamera.WorldToScreenPoint(
                 aimPoint + rbVelocityCompensation * (aimPoint - mainCamera.transform.position).magnitude
             );
-            screenPointCanon.z *= -1;
+            screenPointCannon.z *= -1;
         }
         
-        _gamePanel.UpdateCrosshairPositions(screenPointVacuum, screenPointCanon);
+        _gamePanel.UpdateCrosshairPositions(screenPointVacuum, screenPointCannon);
     }
     
     void handleHealthRegen() {
@@ -558,7 +560,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     void playMuzzleFlashEffect() {
         currentMuzzleFlashEffect.SetActive(true);
         Destroy(currentMuzzleFlashEffect, 1);
-        currentMuzzleFlashEffect = Instantiate(muzzleFlashEffect, canonMuzzleTrans);
+        currentMuzzleFlashEffect = Instantiate(muzzleFlashEffect, cannonMuzzleTrans);
         currentMuzzleFlashEffect.SetActive(false);
     }
     
@@ -589,7 +591,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
             inputActions.TurnInputs.Enable();
             inputActions.VertInputs.Enable();
             inputActions.Vacuum.Enable();
-            inputActions.Canon.Enable();
+            inputActions.Cannon.Enable();
             
             inputActions.TurnInputs.performed += TurnInputChanged;
             inputActions.TurnInputs.canceled += TurnInputChanged;
@@ -598,8 +600,8 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
             
             inputActions.Vacuum.started += FireVacuumStarted;
             inputActions.Vacuum.canceled += FireVacuumCanceled;
-            inputActions.Canon.started += FireCanonStarted;
-            inputActions.Canon.canceled += FireCanonCanceled;
+            inputActions.Cannon.started += FireCannonStarted;
+            inputActions.Cannon.canceled += FireCannonCanceled;
             
             
             /** Features not necessarily meant for final gameplay **/
@@ -623,7 +625,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
             inputActions.TurnInputs.Disable();
             inputActions.VertInputs.Disable();
             inputActions.Vacuum.Disable();
-            inputActions.Canon.Disable();
+            inputActions.Cannon.Disable();
             
             inputActions.TurnInputs.performed -= TurnInputChanged;
             inputActions.TurnInputs.canceled -= TurnInputChanged;
@@ -632,8 +634,8 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
             
             inputActions.Vacuum.started -= FireVacuumStarted;
             inputActions.Vacuum.canceled -= FireVacuumCanceled;
-            inputActions.Canon.started -= FireCanonStarted;
-            inputActions.Canon.canceled -= FireCanonCanceled;
+            inputActions.Cannon.started -= FireCannonStarted;
+            inputActions.Cannon.canceled -= FireCannonCanceled;
             
             
             /** Features not necessarily meant for final gameplay **/

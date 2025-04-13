@@ -61,8 +61,8 @@ public class UIGamePanel : UIPanel {
     
     [Header("Crosshairs")]
     public RectTransform MainVacuumCrosshair;
-    public RectTransform MainCanonCrosshair;
-    public Animator CanonHitmarkerAnim;
+    public RectTransform MainCannonCrosshair;
+    public Animator CannonHitmarkerAnim;
     public Animator VacuumHitmarkerAnim;
     
     [Header("Bike Spinning")]
@@ -105,6 +105,9 @@ public class UIGamePanel : UIPanel {
         sodSpeed = new SecondOrderDynamicsF(scf, scz, scr, 0);
         sodFuelFill = new SecondOrderDynamicsF(fillf, fillz, fillr, 1);
         sodHealthFill = new SecondOrderDynamicsF(fillf, fillz, fillr, 1);
+#if !UNITY_EDITOR && !KEEP_DEBUG
+        Destroy(InputOverlay);
+#endif
     }
     
     void Update() {
@@ -168,29 +171,32 @@ public class UIGamePanel : UIPanel {
         MomentumPanel.localScale = new Vector3(newScale, newScale, 1);
     }
     
-    public void OnFireCanon(bool started) {
+#if UNITY_EDITOR || KEEP_DEBUG
+    public void OnFireCannon(bool started) {
         KeyImageM2.color = started ? Color.white : Color.gray;
     }
     
     public void OnFireVacuum(bool started) {
         KeyImageM1.color = started ? Color.white : Color.gray;
     }
+#endif
     
-    public void UpdateCrosshairPositions(Vector3 screenPointVacuum, Vector3 screenPointCanon) {
+    public void UpdateCrosshairPositions(Vector3 screenPointVacuum, Vector3 screenPointCannon) {
         if (screenPointVacuum.z > 0.01f) {
             if (!MainVacuumCrosshair.gameObject.activeSelf) MainVacuumCrosshair.gameObject.SetActive(true);
             MainVacuumCrosshair.position = screenPointVacuum;
         } else {
             if (MainVacuumCrosshair.gameObject.activeSelf) MainVacuumCrosshair.gameObject.SetActive(false);
         }
-        if (screenPointCanon.z > 0.01f) {
-            if (!MainCanonCrosshair.gameObject.activeSelf) MainCanonCrosshair.gameObject.SetActive(true);
-            MainCanonCrosshair.position = screenPointCanon;
+        if (screenPointCannon.z > 0.01f) {
+            if (!MainCannonCrosshair.gameObject.activeSelf) MainCannonCrosshair.gameObject.SetActive(true);
+            MainCannonCrosshair.position = screenPointCannon;
         } else {
-            if (MainCanonCrosshair.gameObject.activeSelf) MainCanonCrosshair.gameObject.SetActive(false);
+            if (MainCannonCrosshair.gameObject.activeSelf) MainCannonCrosshair.gameObject.SetActive(false);
         }
     }
     
+#if UNITY_EDITOR || KEEP_DEBUG
     public void OnTurnInputChanged(Vector2 v) {
         if (v.y > 0.001f) { // Forward/backward
             KeyImageW.color = Color.white;
@@ -226,6 +232,7 @@ public class UIGamePanel : UIPanel {
             KeyImageShift.color = Color.gray;
         }
     }
+#endif
     
     public void OnFuelAdded(float changeAmnt, float perc) {
         // FuelSlider.value = perc;
@@ -319,12 +326,12 @@ public class UIGamePanel : UIPanel {
     }
     
     public void OnPlayerDamagedEnemy(EnemyBase enemy) {
-        CanonHitmarkerAnim.SetTrigger("Hit");
+        CannonHitmarkerAnim.SetTrigger("Hit");
     }
     
-    public void OnPlayerKilledEnemy(EnemyBase enemy, bool wasCanon) {
-        if (wasCanon) {
-            CanonHitmarkerAnim.SetTrigger("Kill");
+    public void OnPlayerKilledEnemy(EnemyBase enemy, bool wasCannon) {
+        if (wasCannon) {
+            CannonHitmarkerAnim.SetTrigger("Kill");
         } else {
             VacuumHitmarkerAnim.SetTrigger("Kill");
         }
@@ -392,10 +399,6 @@ public class UIGamePanel : UIPanel {
     
     public void ResetUIElements(PlayerCharacterCtrlr plr) {
         OnFuelAdded(0, 1);
-        OnTurnInputChanged(Vector2.zero);
-        OnVertInputChanged(0);
-        OnFireVacuum(false);
-        OnFireCanon(false);
         updateHealthUI(100, 100);
         resetSpinTileColors();
         setSpinCounterText(plr.currentBikeSpins);
@@ -403,6 +406,12 @@ public class UIGamePanel : UIPanel {
         if (plr.currentBikeSpins == 0)
             SpinCounterBG.SetActive(false);
         if (gameObject.activeSelf) FuelOutlineAnimator.SetTrigger("Reset");
+#if UNITY_EDITOR || KEEP_DEBUG
+        OnTurnInputChanged(Vector2.zero);
+        OnVertInputChanged(0);
+        OnFireVacuum(false);
+        OnFireCannon(false);
+#endif
     }
 
 }

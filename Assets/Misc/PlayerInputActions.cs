@@ -64,7 +64,7 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""Canon"",
+                    ""name"": ""Cannon"",
                     ""type"": ""Button"",
                     ""id"": ""be2569c7-1106-4074-902a-f9247744bdcd"",
                     ""expectedControlType"": ""Button"",
@@ -144,7 +144,7 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Canon"",
+                    ""action"": ""Cannon"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -155,7 +155,7 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Canon"",
+                    ""action"": ""Cannon"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -166,7 +166,7 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Canon"",
+                    ""action"": ""Cannon"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -642,7 +642,7 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
         m_Player_TurnInputs = m_Player.FindAction("TurnInputs", throwIfNotFound: true);
         m_Player_VertInputs = m_Player.FindAction("VertInputs", throwIfNotFound: true);
         m_Player_Vacuum = m_Player.FindAction("Vacuum", throwIfNotFound: true);
-        m_Player_Canon = m_Player.FindAction("Canon", throwIfNotFound: true);
+        m_Player_Cannon = m_Player.FindAction("Cannon", throwIfNotFound: true);
         m_Player_SlowTime = m_Player.FindAction("SlowTime", throwIfNotFound: true);
         m_Player__ToggleTP = m_Player.FindAction("_ToggleTP", throwIfNotFound: true);
         m_Player__AddFuel = m_Player.FindAction("_AddFuel", throwIfNotFound: true);
@@ -720,7 +720,7 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_TurnInputs;
     private readonly InputAction m_Player_VertInputs;
     private readonly InputAction m_Player_Vacuum;
-    private readonly InputAction m_Player_Canon;
+    private readonly InputAction m_Player_Cannon;
     private readonly InputAction m_Player_SlowTime;
     private readonly InputAction m_Player__ToggleTP;
     private readonly InputAction m_Player__AddFuel;
@@ -736,7 +736,7 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
         public InputAction @TurnInputs => m_Wrapper.m_Player_TurnInputs;
         public InputAction @VertInputs => m_Wrapper.m_Player_VertInputs;
         public InputAction @Vacuum => m_Wrapper.m_Player_Vacuum;
-        public InputAction @Canon => m_Wrapper.m_Player_Canon;
+        public InputAction @Cannon => m_Wrapper.m_Player_Cannon;
         public InputAction @SlowTime => m_Wrapper.m_Player_SlowTime;
         public InputAction @_ToggleTP => m_Wrapper.m_Player__ToggleTP;
         public InputAction @_AddFuel => m_Wrapper.m_Player__AddFuel;
@@ -765,9 +765,9 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
                 @Vacuum.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnVacuum;
                 @Vacuum.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnVacuum;
                 @Vacuum.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnVacuum;
-                @Canon.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCanon;
-                @Canon.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCanon;
-                @Canon.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCanon;
+                @Cannon.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCannon;
+                @Cannon.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCannon;
+                @Cannon.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCannon;
                 @SlowTime.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSlowTime;
                 @SlowTime.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSlowTime;
                 @SlowTime.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSlowTime;
@@ -805,9 +805,9 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
                 @Vacuum.started += instance.OnVacuum;
                 @Vacuum.performed += instance.OnVacuum;
                 @Vacuum.canceled += instance.OnVacuum;
-                @Canon.started += instance.OnCanon;
-                @Canon.performed += instance.OnCanon;
-                @Canon.canceled += instance.OnCanon;
+                @Cannon.started += instance.OnCannon;
+                @Cannon.performed += instance.OnCannon;
+                @Cannon.canceled += instance.OnCannon;
                 @SlowTime.started += instance.OnSlowTime;
                 @SlowTime.performed += instance.OnSlowTime;
                 @SlowTime.canceled += instance.OnSlowTime;
@@ -913,7 +913,7 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
         void OnTurnInputs(InputAction.CallbackContext context);
         void OnVertInputs(InputAction.CallbackContext context);
         void OnVacuum(InputAction.CallbackContext context);
-        void OnCanon(InputAction.CallbackContext context);
+        void OnCannon(InputAction.CallbackContext context);
         void OnSlowTime(InputAction.CallbackContext context);
         void On_ToggleTP(InputAction.CallbackContext context);
         void On_AddFuel(InputAction.CallbackContext context);
