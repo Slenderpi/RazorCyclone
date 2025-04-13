@@ -148,7 +148,6 @@ public class SRTutorial : SceneRunner {
         yield return new WaitForSeconds(3);
         GameManager.Instance.MainCanvas.FadeToBlack();
         yield return new WaitForSecondsRealtime(UIMainCanvas.FADER_FADE_DURATION);
-        TutorialPanel.SetActive(false);
         SwitchToScene("True Endless");
     }
     

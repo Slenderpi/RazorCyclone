@@ -19,9 +19,10 @@ public class UIDeathPanel : UIPanel {
         StartCoroutine(delayLoadScene(false));
     }
     
-    public void SetEndScreenInfo(GameData recordData, int wavesCompleted, bool isNewWaveRecord, bool[] recordTimes) {
+    public void SetEndScreenInfo(GameData recordData, int wavesCompleted, bool isNewWaveRecord, float timeSpent) {
         DefeatedWavesValue.text = isNewWaveRecord ? $"! {wavesCompleted}" : $"{wavesCompleted}";
         RecordDefeatedWavesValue.text = isNewWaveRecord ? $"! {recordData.HighestWaveCompleted}" : $"{recordData.HighestWaveCompleted}";
+        RecordTimeSpentValue.text = textifyTime(timeSpent);
     }
     
     // public void SetEndScreenInfo(GameData data, int waveReached, bool isNewWaveRecord, bool isNewTimeRecord) {

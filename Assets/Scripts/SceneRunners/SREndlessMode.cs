@@ -29,6 +29,7 @@ public class SREndlessMode : SceneRunner, IDataPersistence {
     
     
     public override void BeginScene() {
+        GameManager.Instance.MainCanvas.TutorialPanel.SetActive(false);
         WaveSpawnManager.OwningEndlessMode = this;
         WaveSpawnManager.OnWaveActivated += OnWaveActivated;
         WaveSpawnManager.OnWaveFinished += OnWaveFinished;
@@ -57,49 +58,15 @@ public class SREndlessMode : SceneRunner, IDataPersistence {
         GameManager.Instance.SetPauseInputActionsEnabled(false);
         
         bool isNewWaveRecord = false;
-        bool[] recordTimes; // Determines if a time is a new record
+        // bool[] recordTimes; // Determines if a time is a new record
         if (wavesCompleted > recordData.HighestWaveCompleted) { // Completed more waves than before
             recordData.HighestWaveCompleted = wavesCompleted;
-            // Update any improved wave times
             isNewWaveRecord = true;
-            recordTimes = new bool[wavesCompleted];
-            float[] newTimeSpentEachWave = new float[wavesCompleted];
-            for (int i = 0; i < wavesCompleted; i++) {
-                if (i < recordData.TimeSpentEachWave.Length) {
-                    if (TimesSpentEachWave[i] < recordData.TimeSpentEachWave[i]) {
-                        recordTimes[i] = true;
-                        newTimeSpentEachWave[i] = TimesSpentEachWave[i];
-                    } else {
-                        newTimeSpentEachWave[i] = recordData.TimeSpentEachWave[i];
-                    }
-                } else {
-                    recordTimes[i] = true;
-                    newTimeSpentEachWave[i] = TimesSpentEachWave[i];
-                }
-            }
-            recordData.TimeSpentEachWave = newTimeSpentEachWave.ToArray();
-        } else { // Did not complete more waves than before
-            // Update any improved wave times
-            int prevTimeCount = recordData.TimeSpentEachWave.Length;
-            recordTimes = new bool[prevTimeCount];
-            for (int i = 0; i < wavesCompleted; i++) {
-                if (TimesSpentEachWave[i] < recordData.TimeSpentEachWave[i]) {
-                    recordTimes[i] = true;
-                    recordData.TimeSpentEachWave[i] = TimesSpentEachWave[i];
-                }
-            }
         }
-        
-        // string s = "[";
-        // foreach (float f in recordData.TimeSpentEachWave)
-        //     s += $"{f:f2}, ";
-        // Debug.LogWarning(s[0..^2] + "]");
-        // s = "[";
-        // foreach (bool b in recordTimes)
-        //     s += b ? "!, " : "-, ";
-        // Debug.LogWarning(s[..^2] + "]");
-        
-        mainCanvas.DeathPanel.SetEndScreenInfo(recordData, wavesCompleted, isNewWaveRecord, recordTimes);
+        float totalTimeSpent = 0;
+        for (int i = 0; i < wavesCompleted; i++)
+            totalTimeSpent += TimesSpentEachWave[i];
+        mainCanvas.DeathPanel.SetEndScreenInfo(recordData, wavesCompleted, isNewWaveRecord, totalTimeSpent);
         mainCanvas.SetCanvasState(UIMainCanvas.ECanvasState.DiedEndless);
         DataPersistenceManager.Instance.SaveGame();
     }
