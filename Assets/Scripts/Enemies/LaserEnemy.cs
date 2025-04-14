@@ -69,6 +69,8 @@ public class LaserEnemy : EnemyBase {
     [Tooltip("Reference to the transform the turret's barrel will rotate (pitch) around.")]
     [SerializeField]
     Transform barrelPivot;
+    [SerializeField]
+    Transform bodyPivot;
     
     [Header("Crab Audio")]
     [SerializeField]
@@ -93,8 +95,7 @@ public class LaserEnemy : EnemyBase {
     // float lastStateEnterTime = -1000;
     // float currRotRate;
     
-    //ADAM CODE
-    [SerializeField] Transform crabBody;
+    
     
     protected override void Init() {
         laserPointParticles = LaserEndpoint.GetComponentsInChildren<ParticleSystem>();
@@ -113,9 +114,11 @@ public class LaserEnemy : EnemyBase {
     void Update() {
         if (GameManager.CurrentPlayer) {
             // rotateTowardsPlayer(GameManager.CurrentPlayer.transform.position, currRotRate);
+            Vector3 toPlayer = GameManager.CurrentPlayer.transform.position - barrelPivot.position;
             switch (state) {
             case 0: // Weak damage
-                pointAtPlayer();
+                pointAtPlayer(toPlayer);
+                pointBodyAtPlayer(toPlayer);
                 if (!LaserLineRenderer.enabled) {
                     if (fireLaser())
                         setLaserAll(true);
@@ -128,7 +131,8 @@ public class LaserEnemy : EnemyBase {
                 }
                 break;
             case 1: // Strong damage
-                pointAtPlayer();
+                pointAtPlayer(toPlayer);
+                pointBodyAtPlayer(toPlayer);
                 break;
             case 2: // Stunned
                 if (Time.time - lastStateChangeTime >= LaserConfig.StunDuration - LaserConfig.ReArmDuration) {
@@ -142,7 +146,8 @@ public class LaserEnemy : EnemyBase {
                     lastStateChangeTime += LaserConfig.ReArmDuration;
                     currDmg = LaserConfig.WeakDamagePerSecond;
                     LaserLineRenderer.colorGradient = LaserConfig.WeakColor;
-                    pointAtPlayer();
+                    pointAtPlayer(toPlayer);
+                    pointBodyAtPlayer(toPlayer);
                 } else {
                     // Slerp rot to player
                     slerpToPlayer();
@@ -303,8 +308,7 @@ public class LaserEnemy : EnemyBase {
         lastStateChangeTime = Time.time;
     }
     
-    void pointAtPlayer() {
-        Vector3 toPlayer = GameManager.CurrentPlayer.transform.position - barrelPivot.position;
+    void pointAtPlayer(Vector3 toPlayer) {
         Vector3 flat = toPlayer;
         flat.y = 0;
         revolvePivot.rotation = Quaternion.LookRotation(flat);
@@ -312,9 +316,16 @@ public class LaserEnemy : EnemyBase {
         LaserLineRenderer.SetPosition(0, LaserLineRenderer.transform.position);
         LaserEndpoint.position = isPlayerInLOS ? toPlayer.normalized * (toPlayer.magnitude - 0.5f) + barrelPivot.position : laserHitPos;
         LaserLineRenderer.SetPosition(1, LaserEndpoint.position);
-
-        //ADAM CODE
-        crabBody.rotation = Quaternion.LookRotation(new Vector3(toPlayer.x, crabBody.position.y, toPlayer.z));
+    }
+    
+    void pointBodyAtPlayer(Vector3 toPlayer) {
+        toPlayer.y = 0;
+        bodyPivot.rotation = Quaternion.RotateTowards(
+            bodyPivot.rotation,
+            Quaternion.LookRotation(toPlayer),
+            LaserConfig.MaxBodyRotPerSec * Time.deltaTime
+        );
+        Hitboxes.transform.rotation = bodyPivot.rotation;
     }
     
     void slerpToPlayer() {

@@ -53,6 +53,20 @@ public class BoidSteerer {
         return Evade(pos, targetPos, velocity, targetVel, boidData.MaxSteeringVelocity, boidData.MaxSteeringForce);
     }
     
+    /// <summary>
+    /// Predict the position of a target given its current position and velocity and the Boid's current position and velocity.<br/>
+    /// <br/>
+    /// This function is not used by Pursuit or Evade because premature optimization choices.
+    /// </summary>
+    /// <param name="pos"></param>
+    /// <param name="targetPos"></param>
+    /// <param name="velocity"></param>
+    /// <param name="targetVel"></param>
+    /// <returns></returns>
+    public static Vector3 PredictPosition(Vector3 pos, Vector3 targetPos, Vector3 velocity, Vector3 targetVel) {
+        return targetPos + targetVel * calculatePredictTime(pos, targetPos, velocity, targetVel);
+    }
+    
     static float calculatePredictTime(Vector3 pos, Vector3 targetPos, Vector3 velocity, Vector3 targetVel) {
         return Mathf.Sqrt((targetPos - pos).sqrMagnitude / (velocity - targetVel).sqrMagnitude);
     }
