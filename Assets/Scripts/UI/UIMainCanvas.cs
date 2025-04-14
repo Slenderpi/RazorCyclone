@@ -23,7 +23,7 @@ public class UIMainCanvas : UIPanel {
     public event Action<ECanvasState> CanvasStateChanged;
     
     [Header("Panels")]
-    public UIDEBUGPanel DebugPanel;
+    public UIDEVPanel DebugPanel;
     public UIGamePanel GamePanel;
     public UIPausePanel PausePanel;
     public UISettingsPanel SettingsPanel;

@@ -11,8 +11,8 @@ GameObject:
   - component: {fileID: 2270565935625957240}
   - component: {fileID: 8271683393624485035}
   - component: {fileID: 3002155336526666685}
-  m_Layer: 7
-  m_Name: Capsule
+  m_Layer: 0
+  m_Name: Model
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -31,7 +31,7 @@ Transform:
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 7802558663474256315}
-  m_RootOrder: 0
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &8271683393624485035
 MeshFilter:
@@ -83,6 +83,52 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!1 &3559814968171620904
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 540870078190867087}
+  - component: {fileID: 8781154521666942266}
+  m_Layer: 14
+  m_Name: EnemyToWorld
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &540870078190867087
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3559814968171620904}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7802558663474256315}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!136 &8781154521666942266
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3559814968171620904}
+  m_Material: {fileID: 13400000, guid: 7e240f9fbfb932d4387f9e8ea1dd65d6, type: 2}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  m_Radius: 0.25
+  m_Height: 1
+  m_Direction: 1
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &3890492832594851018
 GameObject:
   m_ObjectHideFlags: 0
@@ -94,9 +140,8 @@ GameObject:
   - component: {fileID: 7161423610750410142}
   - component: {fileID: 4682280902325755084}
   - component: {fileID: 1555793103505475768}
-  - component: {fileID: 1988783225518556781}
   - component: {fileID: 9113617427949065013}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Enemy
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -132,10 +177,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   etypeid: 8
-  EnConfig: {fileID: 0}
-  Hitboxes: {fileID: 0}
+  EnConfig: {fileID: 11400000, guid: 7348d0f3816587f4ea15008cd4fdd309, type: 2}
+  Hitboxes: {fileID: 4656805027386732201}
   EnemyTrigger: {fileID: 0}
-  Model: {fileID: 0}
+  Model: {fileID: 3207651069297992179}
   TransformForRicochetToAimAt: {fileID: 0}
   AmbientAudio: {fileID: 0}
   DeathAudio: {fileID: 0}
@@ -145,7 +190,7 @@ MonoBehaviour:
   rb: {fileID: 9113617427949065013}
   boid: {fileID: 0}
   suckable: {fileID: 0}
-  RicochetCanon: 1
+  RicochetCannon: 1
   ConsiderForRicochet: 1
   invincible: 0
 --- !u!114 &1555793103505475768
@@ -162,20 +207,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   CanGetVacuumSucked: 1
   rb: {fileID: 0}
---- !u!136 &1988783225518556781
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3890492832594851018}
-  m_Material: {fileID: 13400000, guid: 7e240f9fbfb932d4387f9e8ea1dd65d6, type: 2}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  m_Radius: 0.25
-  m_Height: 1
-  m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!54 &9113617427949065013
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -192,6 +223,52 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 80
   m_CollisionDetection: 0
+--- !u!1 &4656805027386732201
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6859828696822623745}
+  - component: {fileID: 2939771049854564017}
+  m_Layer: 7
+  m_Name: Hitboxes
+  m_TagString: Enemy
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6859828696822623745
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4656805027386732201}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7802558663474256315}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!136 &2939771049854564017
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4656805027386732201}
+  m_Material: {fileID: 13400000, guid: 7e240f9fbfb932d4387f9e8ea1dd65d6, type: 2}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  m_Radius: 0.25
+  m_Height: 1
+  m_Direction: 1
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &5564464974830452845
 GameObject:
   m_ObjectHideFlags: 0
@@ -201,8 +278,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7802558663474256315}
-  m_Layer: 7
-  m_Name: Model
+  m_Layer: 0
+  m_Name: Pivot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -220,6 +297,8 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 6859828696822623745}
+  - {fileID: 540870078190867087}
   - {fileID: 2270565935625957240}
   m_Father: {fileID: 7161423610750410142}
   m_RootOrder: 0

@@ -162,6 +162,9 @@ public class EnemyBase : MonoBehaviour {
         if (AmbientAudio && AmbientAudio.isPlaying)
             AmbientAudio.Stop();
         
+        if (EnConfig.EnemyDeathVFX)
+            Instantiate(EnConfig.EnemyDeathVFX).transform.position = transform.position;
+        
         enabled = false;
         Destroy(gameObject, EnConfig.DestroyDelay);
     }

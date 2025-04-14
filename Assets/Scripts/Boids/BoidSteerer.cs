@@ -64,6 +64,7 @@ public class BoidSteerer {
     /// <param name="targetVel"></param>
     /// <returns></returns>
     public static Vector3 PredictPosition(Vector3 pos, Vector3 targetPos, Vector3 velocity, Vector3 targetVel) {
+        if (targetVel.sqrMagnitude == 0) return targetPos;
         return targetPos + targetVel * calculatePredictTime(pos, targetPos, velocity, targetVel);
     }
     

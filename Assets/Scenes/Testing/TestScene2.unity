@@ -209,10 +209,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Enemy_3
       objectReference: {fileID: 0}
-    - target: {fileID: 4682280902325755084, guid: 7cf1fba186346694eb69b97032290412, type: 3}
-      propertyPath: invincible
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 7161423610750410142, guid: 7cf1fba186346694eb69b97032290412, type: 3}
       propertyPath: m_RootOrder
       value: 2
@@ -340,14 +336,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Enemy_1
       objectReference: {fileID: 0}
-    - target: {fileID: 4682280902325755084, guid: 7cf1fba186346694eb69b97032290412, type: 3}
-      propertyPath: invincible
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4682280902325755084, guid: 7cf1fba186346694eb69b97032290412, type: 3}
-      propertyPath: CanGetVacuumKilled
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 7161423610750410142, guid: 7cf1fba186346694eb69b97032290412, type: 3}
       propertyPath: m_RootOrder
       value: 1
@@ -404,14 +392,6 @@ PrefabInstance:
     - target: {fileID: 3890492832594851018, guid: 7cf1fba186346694eb69b97032290412, type: 3}
       propertyPath: m_Name
       value: Enemy_8
-      objectReference: {fileID: 0}
-    - target: {fileID: 4682280902325755084, guid: 7cf1fba186346694eb69b97032290412, type: 3}
-      propertyPath: invincible
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4682280902325755084, guid: 7cf1fba186346694eb69b97032290412, type: 3}
-      propertyPath: CanGetVacuumKilled
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7161423610750410142, guid: 7cf1fba186346694eb69b97032290412, type: 3}
       propertyPath: m_RootOrder
@@ -531,14 +511,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Enemy_6
       objectReference: {fileID: 0}
-    - target: {fileID: 4682280902325755084, guid: 7cf1fba186346694eb69b97032290412, type: 3}
-      propertyPath: invincible
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4682280902325755084, guid: 7cf1fba186346694eb69b97032290412, type: 3}
-      propertyPath: CanGetVacuumKilled
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 7161423610750410142, guid: 7cf1fba186346694eb69b97032290412, type: 3}
       propertyPath: m_RootOrder
       value: 6
@@ -595,10 +567,6 @@ PrefabInstance:
     - target: {fileID: 3890492832594851018, guid: 7cf1fba186346694eb69b97032290412, type: 3}
       propertyPath: m_Name
       value: Enemy_2
-      objectReference: {fileID: 0}
-    - target: {fileID: 4682280902325755084, guid: 7cf1fba186346694eb69b97032290412, type: 3}
-      propertyPath: invincible
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7161423610750410142, guid: 7cf1fba186346694eb69b97032290412, type: 3}
       propertyPath: m_RootOrder
@@ -1210,14 +1178,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Enemy_9
       objectReference: {fileID: 0}
-    - target: {fileID: 4682280902325755084, guid: 7cf1fba186346694eb69b97032290412, type: 3}
-      propertyPath: invincible
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4682280902325755084, guid: 7cf1fba186346694eb69b97032290412, type: 3}
-      propertyPath: CanGetVacuumKilled
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 7161423610750410142, guid: 7cf1fba186346694eb69b97032290412, type: 3}
       propertyPath: m_RootOrder
       value: 9
@@ -1274,14 +1234,6 @@ PrefabInstance:
     - target: {fileID: 3890492832594851018, guid: 7cf1fba186346694eb69b97032290412, type: 3}
       propertyPath: m_Name
       value: Enemy_10
-      objectReference: {fileID: 0}
-    - target: {fileID: 3890492832594851018, guid: 7cf1fba186346694eb69b97032290412, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4682280902325755084, guid: 7cf1fba186346694eb69b97032290412, type: 3}
-      propertyPath: invincible
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7161423610750410142, guid: 7cf1fba186346694eb69b97032290412, type: 3}
       propertyPath: m_RootOrder
@@ -2118,14 +2070,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Enemy_12
       objectReference: {fileID: 0}
-    - target: {fileID: 3890492832594851018, guid: 7cf1fba186346694eb69b97032290412, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4682280902325755084, guid: 7cf1fba186346694eb69b97032290412, type: 3}
-      propertyPath: invincible
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 7161423610750410142, guid: 7cf1fba186346694eb69b97032290412, type: 3}
       propertyPath: m_RootOrder
       value: 12
@@ -2554,14 +2498,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Enemy_7
       objectReference: {fileID: 0}
-    - target: {fileID: 4682280902325755084, guid: 7cf1fba186346694eb69b97032290412, type: 3}
-      propertyPath: invincible
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4682280902325755084, guid: 7cf1fba186346694eb69b97032290412, type: 3}
-      propertyPath: CanGetVacuumKilled
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 7161423610750410142, guid: 7cf1fba186346694eb69b97032290412, type: 3}
       propertyPath: m_RootOrder
       value: 7
@@ -2665,7 +2601,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &888131711
 Transform:
   m_ObjectHideFlags: 0
@@ -2679,7 +2615,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1860576689}
-  m_RootOrder: 4
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &888131712
 BoxCollider:
@@ -2950,10 +2886,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Enemy
       objectReference: {fileID: 0}
-    - target: {fileID: 4682280902325755084, guid: 7cf1fba186346694eb69b97032290412, type: 3}
-      propertyPath: invincible
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 7161423610750410142, guid: 7cf1fba186346694eb69b97032290412, type: 3}
       propertyPath: m_RootOrder
       value: 0
@@ -3010,10 +2942,6 @@ PrefabInstance:
     - target: {fileID: 3890492832594851018, guid: 7cf1fba186346694eb69b97032290412, type: 3}
       propertyPath: m_Name
       value: Enemy_4
-      objectReference: {fileID: 0}
-    - target: {fileID: 4682280902325755084, guid: 7cf1fba186346694eb69b97032290412, type: 3}
-      propertyPath: invincible
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7161423610750410142, guid: 7cf1fba186346694eb69b97032290412, type: 3}
       propertyPath: m_RootOrder
@@ -4117,14 +4045,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Enemy_11
       objectReference: {fileID: 0}
-    - target: {fileID: 3890492832594851018, guid: 7cf1fba186346694eb69b97032290412, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4682280902325755084, guid: 7cf1fba186346694eb69b97032290412, type: 3}
-      propertyPath: invincible
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 7161423610750410142, guid: 7cf1fba186346694eb69b97032290412, type: 3}
       propertyPath: m_RootOrder
       value: 11
@@ -4371,7 +4291,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1860576689}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 45, z: 0}
 --- !u!65 &1625703908
 BoxCollider:
@@ -4446,10 +4366,6 @@ PrefabInstance:
     - target: {fileID: 3890492832594851018, guid: 7cf1fba186346694eb69b97032290412, type: 3}
       propertyPath: m_Name
       value: Enemy_5
-      objectReference: {fileID: 0}
-    - target: {fileID: 4682280902325755084, guid: 7cf1fba186346694eb69b97032290412, type: 3}
-      propertyPath: invincible
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7161423610750410142, guid: 7cf1fba186346694eb69b97032290412, type: 3}
       propertyPath: m_RootOrder
@@ -4612,7 +4528,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1634698812
 Transform:
   m_ObjectHideFlags: 0
@@ -5655,9 +5571,9 @@ Transform:
   m_Children:
   - {fileID: 1824162186}
   - {fileID: 1634698812}
+  - {fileID: 888131711}
   - {fileID: 2001620341}
   - {fileID: 1625703907}
-  - {fileID: 888131711}
   - {fileID: 1258884686}
   - {fileID: 433400385}
   - {fileID: 1774730565}
@@ -6075,7 +5991,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1860576689}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: -45, z: 0}
 --- !u!65 &2001620342
 BoxCollider:

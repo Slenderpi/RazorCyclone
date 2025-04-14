@@ -3174,7 +3174,7 @@ GameObject:
   - component: {fileID: 212526885}
   - component: {fileID: 212526884}
   m_Layer: 6
-  m_Name: CloseGameButton
+  m_Name: ResumeGameButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3194,7 +3194,7 @@ RectTransform:
   m_Children:
   - {fileID: 2083360982}
   m_Father: {fileID: 1437502728}
-  m_RootOrder: 6
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
@@ -3247,7 +3247,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1437502731}
         m_TargetAssemblyTypeName: UIPausePanel, Assembly-CSharp
-        m_MethodName: OnCloseGameButtonClicked
+        m_MethodName: OnButton_ResumeGame
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -3643,7 +3643,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!222 &270301658
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -7449,12 +7449,12 @@ GameObject:
   - component: {fileID: 509403911}
   - component: {fileID: 509403910}
   m_Layer: 6
-  m_Name: DEBUGPanel
+  m_Name: DEVPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &509403909
 RectTransform:
   m_ObjectHideFlags: 0
@@ -8382,7 +8382,7 @@ RectTransform:
   m_Children:
   - {fileID: 381022751}
   m_Father: {fileID: 686301540}
-  m_RootOrder: 10
+  m_RootOrder: 12
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -9250,6 +9250,8 @@ RectTransform:
   - {fileID: 1380442891}
   - {fileID: 1945280529}
   - {fileID: 893581840}
+  - {fileID: 1788702923}
+  - {fileID: 2135753800}
   - {fileID: 871131663}
   - {fileID: 624090732}
   m_Father: {fileID: 509403909}
@@ -10974,7 +10976,7 @@ RectTransform:
   m_Children:
   - {fileID: 73334155}
   m_Father: {fileID: 686301540}
-  m_RootOrder: 9
+  m_RootOrder: 11
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -18256,13 +18258,13 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 20
-  m_fontSizeBase: 20
+  m_fontSize: 11
+  m_fontSizeBase: 11
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 0
+  m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
@@ -19048,13 +19050,13 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 20
-  m_fontSizeBase: 20
+  m_fontSize: 11
+  m_fontSizeBase: 11
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 0
+  m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
@@ -19348,7 +19350,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1437502728
 RectTransform:
   m_ObjectHideFlags: 0
@@ -19365,8 +19367,6 @@ RectTransform:
   - {fileID: 988245876}
   - {fileID: 1025564601}
   - {fileID: 641747204}
-  - {fileID: 2135753800}
-  - {fileID: 1788702923}
   - {fileID: 212526883}
   m_Father: {fileID: 416360039}
   m_RootOrder: 3
@@ -25230,20 +25230,20 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1788702922}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1363304314}
-  m_Father: {fileID: 1437502728}
-  m_RootOrder: 5
+  m_Father: {fileID: 686301540}
+  m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 100, y: -500}
-  m_SizeDelta: {x: 200, y: 30}
-  m_Pivot: {x: 0, y: 1}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 10, y: 95}
+  m_SizeDelta: {x: 135, y: 25}
+  m_Pivot: {x: 0, y: 0}
 --- !u!114 &1788702924
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -25288,8 +25288,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1437502731}
-        m_TargetAssemblyTypeName: UIPausePanel, Assembly-CSharp
+      - m_Target: {fileID: 509403910}
+        m_TargetAssemblyTypeName: UIDEBUGPanel, Assembly-CSharp
         m_MethodName: OnButton_ResetPlayer
         m_Mode: 1
         m_Arguments:
@@ -29706,7 +29706,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Close Game
+  m_text: Resume
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -30349,20 +30349,20 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2135753799}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1420603528}
-  m_Father: {fileID: 1437502728}
-  m_RootOrder: 4
+  m_Father: {fileID: 686301540}
+  m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 100, y: -450}
-  m_SizeDelta: {x: 200, y: 30}
-  m_Pivot: {x: 0, y: 1}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 10, y: 65}
+  m_SizeDelta: {x: 135, y: 25}
+  m_Pivot: {x: 0, y: 0}
 --- !u!114 &2135753801
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -30407,8 +30407,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1437502731}
-        m_TargetAssemblyTypeName: UIPausePanel, Assembly-CSharp
+      - m_Target: {fileID: 509403910}
+        m_TargetAssemblyTypeName: UIDEBUGPanel, Assembly-CSharp
         m_MethodName: OnButton_ReloadLevel
         m_Mode: 1
         m_Arguments:

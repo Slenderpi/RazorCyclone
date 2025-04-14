@@ -20,18 +20,8 @@ public class UIPausePanel : UIPanel {
         GameManager.Instance.currentSceneRunner.SwitchToScene("MainMenuScene");
     }
     
-    public void OnButton_ReloadLevel() {
-        GameManager.Instance.currentSceneRunner.ReloadCurrentScene();
-    }
-    
-    public void OnButton_ResetPlayer() {
-        if (!GameManager.CurrentPlayer) return;
+    public void OnButton_ResumeGame() {
         GameManager.Instance.ResumeGame();
-        GameManager.CurrentPlayer.TakeDamage(9999, EDamageType.Any);
-    }
-    
-    public void OnCloseGameButtonClicked() {
-        Application.Quit();
     }
     
     public override void OnGameResumed() {

@@ -3,7 +3,9 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "GeneralEnemyData", menuName = "ScriptableObjects/Enemies/GeneralEnemy", order = 1)]
 public class GeneralEnemySO : ScriptableObject {
     
+    [Header("Consistent")]
     public FuelPickup FuelPickupPrefab;
+    public GameObject EnemyDeathVFX;
     
     [Header("Enemy Configuration")]
     public float Damage = 10;

@@ -127,19 +127,13 @@ public class CentipedeEnemy : EnemyBase {
     }
     
     protected override void OnDefeated(EDamageType damageType) {
-        if (damageType == EDamageType.Vacuum) {
-            GameManager.CurrentPlayer.AddFuel(100);
-        } else {
-            DropFuel();
-        }
         if (ceAft)
             ceAft.becomeNewHead(head? head : this);
         if (head != null) {
             cePre.ceAft = null;
             head.updateHeadAboutDefeat(bodyIndex);
         }
-        gameObject.SetActive(false);
-        Destroy(gameObject, 1);
+        base.OnDefeated(damageType);
     }
 
     protected override void OnDestroying() {

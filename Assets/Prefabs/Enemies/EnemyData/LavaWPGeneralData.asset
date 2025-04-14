@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: LavaWPGeneralData
   m_EditorClassIdentifier: 
   FuelPickupPrefab: {fileID: 5163220815717078053, guid: bb72521b10fb34d7bbbed5f6f77687b4, type: 3}
+  EnemyDeathVFX: {fileID: 4047081791222228257, guid: 3d3b9bcee6d616a479b7520de6c873b7, type: 3}
   Damage: 0
   AttackDelay: 1
   DealDamageOnTouch: 0

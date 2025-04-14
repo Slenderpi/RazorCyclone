@@ -2,9 +2,9 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class UIDEBUGPanel : UIPanel {
+public class UIDEVPanel : UIPanel {
     
-    public static UIDEBUGPanel inst;
+    public static UIDEVPanel inst;
     
     public bool ShowPanel = false;
     
@@ -34,11 +34,11 @@ public class UIDEBUGPanel : UIPanel {
     public float r = 1;
     
 #if UNITY_EDITOR || KEEP_DEBUG
+    
     WaveSpawnerManager wsm = null;
     int desiredWaveToSpawn = 1;
-#endif
     
-#if UNITY_EDITOR || KEEP_DEBUG
+    
     
     void Start() {
 #if !UNITY_EDITOR && KEEP_DEBUG
@@ -70,7 +70,7 @@ public class UIDEBUGPanel : UIPanel {
     
     void LateUpdate() {
         if (wsm) {
-            SurvivalTimerText.text = "Time Survived: " + wsm.OwningEndlessMode._TimeSinceSceneStarted;
+            SurvivalTimerText.text = "Scene runtime: " + wsm.OwningEndlessMode._TimeSinceSceneStarted;
         }
     }
     
@@ -157,6 +157,16 @@ public class UIDEBUGPanel : UIPanel {
         // FieldTimeScale.SetTextWithoutNotify(scalestr);
         TimeScaleTitleText.SetText($"Time Scale ({scalestr})");
         GameManager.Instance.SetPreferredTimeScale(scale);
+    }
+    
+    public void OnButton_ReloadLevel() {
+        GameManager.Instance.currentSceneRunner.ReloadCurrentScene();
+    }
+    
+    public void OnButton_ResetPlayer() {
+        if (!GameManager.CurrentPlayer) return;
+        GameManager.Instance.ResumeGame();
+        GameManager.CurrentPlayer.TakeDamage(9999, EDamageType.Any);
     }
     
     void setWSM() {

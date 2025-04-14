@@ -490,7 +490,7 @@ MonoBehaviour:
   Hitboxes: {fileID: 4109619154667978623}
   EnemyTrigger: {fileID: 0}
   Model: {fileID: 7188337209219841351}
-  TransformForRicochetToAimAt: {fileID: 0}
+  TransformForRicochetToAimAt: {fileID: 3634931314128218591}
   AmbientAudio: {fileID: 0}
   DeathAudio: {fileID: 4616840251091339629}
   Dead: 0
@@ -499,7 +499,7 @@ MonoBehaviour:
   rb: {fileID: 0}
   boid: {fileID: 0}
   suckable: {fileID: 0}
-  RicochetCanon: 1
+  RicochetCannon: 1
   ConsiderForRicochet: 1
   invincible: 0
   CrabBasicConfig: {fileID: 11400000, guid: 0542956ea33e3e14d986be1b369b9c1d, type: 2}
