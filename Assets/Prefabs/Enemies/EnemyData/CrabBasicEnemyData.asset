@@ -13,4 +13,6 @@ MonoBehaviour:
   m_Name: CrabBasicEnemyData
   m_EditorClassIdentifier: 
   CrabProjectilePrefab: {fileID: 5177018065492443330, guid: 339f2303429fa00418ba7b16b9cc744a, type: 3}
-  ProjectileSpeed: 50
+  ProjectileSpeed: 40
+  MaxBodyRotPerSec: 45
+  AttackTimeOffset: 0.3

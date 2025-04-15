@@ -10,5 +10,7 @@ public class CrabBasicEnemySO : ScriptableObject {
     public float ProjectileSpeed = 25f;
     [Tooltip("Max rotation speed for the body of the crab.")]
     public float MaxBodyRotPerSec = 45;
+    [Tooltip("The attack cooldown for the basic crab will be AttackDelay +- AttackTimeOffset, randomly determined on spawn.")]
+    public float AttackTimeOffset = 0.3f;
     
 }
