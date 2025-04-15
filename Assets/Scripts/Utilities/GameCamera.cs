@@ -12,6 +12,7 @@ public class GameCamera : MonoBehaviour {
     [Header("References")]
     [SerializeField]
     Camera WeaponCamera;
+    public Camera RearCam;
     
     [Header("Parameters")]
     [SerializeField]

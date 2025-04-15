@@ -81,6 +81,7 @@ public class GameManager : MonoBehaviour {
     PlayerCharacterCtrlr playerPrefab;
     [SerializeField]
     EnemyBase enemyPrefab;
+    [HideInInspector]
     public Camera rearCamera;
     
     [HideInInspector]
@@ -248,7 +249,10 @@ public class GameManager : MonoBehaviour {
     
     public void OnSceneLoaded(Scene scene, LoadSceneMode mode) {
         GCam = FindObjectOfType<GameCamera>();
-        GCam?.SetFOV(CurrentFOV);
+        if (GCam) {
+            GCam.SetFOV(CurrentFOV);
+            rearCamera = GCam.RearCam;
+        }
         if (scene.name != "CoreScene") {
             SceneManager.SetActiveScene(scene);
         }

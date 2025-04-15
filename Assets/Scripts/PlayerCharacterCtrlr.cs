@@ -149,7 +149,6 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         mouseSensitivity = GameManager.Instance.CurrentMouseSensitivity;
         
         mainCamera = Camera.main;
-        rearCamera = GameManager.Instance.rearCamera;
         rb = GetComponent<Rigidbody>();
         
         // Vacuum.SetActive(false);
@@ -175,6 +174,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         currentMuzzleFlashEffect.SetActive(false);
         
         lava = GameManager.Instance.currentSceneRunner.lava;
+        rearCamera = GameManager.Instance.rearCamera;
         
         updateCameraTransform();
     }
@@ -361,12 +361,14 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
             mainCamera.transform.position = camtrans.position - camtrans.forward * thirdPersonDist;
         }
         mainCamera.transform.rotation = camtrans.rotation;
-        Vector3 flatBackCamTrans = -camtrans.forward;
-        if (flatBackCamTrans.x * flatBackCamTrans.x + flatBackCamTrans.z * flatBackCamTrans.z <= 0.00002f) {
-            flatBackCamTrans -= camtrans.up * Mathf.Sign(flatBackCamTrans.y);
+        if (mirrorModelEnabled) {
+            Vector3 flatBackCamTrans = -camtrans.forward;
+            if (flatBackCamTrans.x * flatBackCamTrans.x + flatBackCamTrans.z * flatBackCamTrans.z <= 0.00002f) {
+                flatBackCamTrans -= camtrans.up * Mathf.Sign(flatBackCamTrans.y);
+            }
+            flatBackCamTrans.y = 0;
+            rearCamera.transform.SetPositionAndRotation(rearCamPos.position, Quaternion.LookRotation(flatBackCamTrans));
         }
-        flatBackCamTrans.y = 0;
-        rearCamera.transform.SetPositionAndRotation(rearCamPos.position, Quaternion.LookRotation(flatBackCamTrans));
     }
     
     void setDesiredAndWepRelRots(float x, float y, float z) {
@@ -692,10 +694,13 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     
     void On_ToggleMirrorInput(InputAction.CallbackContext context) {
         mirrorModelEnabled = !mirrorModelEnabled;
-        if (!mirrorModelEnabled)
+        if (!mirrorModelEnabled) {
             rearMirrorModel.SetActive(false);
-        else
+            rearCamera.gameObject.SetActive(false);
+        } else {
+            rearCamera.gameObject.SetActive(true);
             updateMirrorActive();
+        }
     }
     
     void updateMirrorActive() {

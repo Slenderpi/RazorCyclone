@@ -50,6 +50,7 @@ public class SRTutorial : SceneRunner {
     
     UITutorialPanel TutorialPanel;
     
+    [Header("For Testing")]
     [Tooltip("For use in testing the tutorial.")]
     public ETutorialState StartingState = ETutorialState.VacuumMovement1;
     ETutorialState currState = ETutorialState.NONE;
