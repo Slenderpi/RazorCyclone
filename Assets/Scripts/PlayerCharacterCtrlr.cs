@@ -637,6 +637,14 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
             inputActions.Cannon.started -= FireCannonStarted;
             inputActions.Cannon.canceled -= FireCannonCanceled;
             
+            if (isVacuumOn) {
+                isVacuumOn = false;
+                Vacuum.DisableVacuum();
+#if UNITY_EDITOR || KEEP_DEBUG
+                _gamePanel.OnFireVacuum(false);
+#endif
+            }
+            
             
             /** Features not necessarily meant for final gameplay **/
             inputActions.SlowTime.Disable();

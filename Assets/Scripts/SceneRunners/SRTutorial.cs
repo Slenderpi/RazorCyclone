@@ -5,16 +5,41 @@ public class SRTutorial : SceneRunner {
     
     public delegate void CallbackFunc();
     
+    [Header("Triggers")]
+    [SerializeField]
+    TriggerNotifier vacuumMovement1Finished;
+    [SerializeField]
+    TriggerNotifier vacuumMovement2Finished;
+    [SerializeField]
+    TriggerNotifier cannonMovement1Finished;
+    [SerializeField]
+    TriggerNotifier cannonMovement2Finished;
+    
+    [Header("Player Spawnpoints")]
+    [SerializeField]
+    Transform spawnForVacMove1;
+    [SerializeField]
+    Transform spawnForVacMove2;
+    [SerializeField]
+    Transform spawnForCanMove1;
+    [SerializeField]
+    Transform spawnForCanMove2;
+    [SerializeField]
+    Transform spawnForKillPractice;
+    
     [Header("Enemy Spawners")]
     [SerializeField]
     GameObject vacuumSpawnGroup;
     TUT_EnemySpawner[] vacuumOnlySpawners;
     [SerializeField]
-    GameObject cannonSpawnGroup;
-    TUT_EnemySpawner[] cannonOnlySpawners;
+    GameObject cannonSpawnGroup1;
+    TUT_EnemySpawner[] cannonOnlySpawners1;
     [SerializeField]
-    GameObject killAllSpawnGroup;
-    TUT_EnemySpawner[] killAllSpawners;
+    GameObject cannonSpawnGroup2;
+    TUT_EnemySpawner[] cannonOnlySpawners2;
+    [SerializeField]
+    GameObject practiceKillSpawnGroup;
+    TUT_EnemySpawner[] practiceKillSpawners;
     
     [HideInInspector]
     public EDamageType requiredDamageType = EDamageType.Enemy; // Initialize to impossible type
@@ -24,10 +49,9 @@ public class SRTutorial : SceneRunner {
     public int enemiesKilled;
     
     UITutorialPanel TutorialPanel;
-
-    [SerializeField]
+    
     [Tooltip("For use in testing the tutorial.")]
-    ETutorialState StartingState = ETutorialState.IntroduceControls;
+    public ETutorialState StartingState = ETutorialState.VacuumMovement1;
     ETutorialState currState = ETutorialState.NONE;
     
     
@@ -35,34 +59,43 @@ public class SRTutorial : SceneRunner {
     public override void BeginScene() {
         TutorialPanel = GameManager.Instance.MainCanvas.TutorialPanel;
         TutorialPanel.srt = this;
-        TutorialPanel.SetAllPanelsInactive();
-        TutorialPanel.SetActive(true);
         getAndSetSpawnGroups();
+        setupTriggers();
+#if UNITY_EDITOR
+        playerSpawnPoint = StartingState switch {
+            ETutorialState.VacuumMovement1 => spawnForVacMove1,
+            ETutorialState.VacuumMovement2 => spawnForVacMove2,
+            ETutorialState.CannonMovement1 => spawnForCanMove1,
+            ETutorialState.CannonMovement2 => spawnForCanMove2,
+            _ => spawnForKillPractice
+        };
+#else
+        playerSpawnPoint = spawnForVacMove1;
+#endif
+        TutorialPanel.OnBeginScene();
+        TutorialPanel.SetActive(true);
         SpawnPlayer();
         StartCoroutine(delayedStartTutorial());
     }
     
     IEnumerator delayedStartTutorial() {
         GameManager.Instance.MainCanvas.FadeToClear();
-        yield return new WaitForSecondsRealtime(UIMainCanvas.FADER_FADE_DURATION + 0.5f);
+        yield return new WaitForSecondsRealtime(UIMainCanvas.FADER_FADE_DURATION + 0.1f);
 #if UNITY_EDITOR
         GoToState(StartingState);
 #else
         GoToState((ETutorialState)1); // Go to first state in build version
 #endif
     }
-    
+     
     public void OnEnemyKilled(bool wasByCorrectType) {
         if (wasByCorrectType) {
             enemiesKilled++;
-            // print($"Correct damage type! Enemies killed: {enemiesKilled} / {enemiesRequiredThisState}");
-            TutorialPanel.PlayerKilledEnemy(true);
+            TutorialPanel.PlayerKilledEnemy(true, currState);
             if (enemiesKilled < enemiesRequiredThisState) return;
-            print(" -- Objective complete! --");
-            WaitAndCall(OnKilledAllEnemies, 0.5f);
+            WaitAndCall(OnKilledAllEnemies, 1.5f);
         } else {
-            TutorialPanel.PlayerKilledEnemy(false);
-            // Debug.LogWarning("Wrong damage type, try again.");
+            TutorialPanel.PlayerKilledEnemy(false, currState);
         }
     }
     
@@ -70,76 +103,121 @@ public class SRTutorial : SceneRunner {
         switch(nextState) {
         case ETutorialState.NONE:
             break;
-        case ETutorialState.IntroduceControls:
-            StartCoroutine(AnnounceControlsIntro());
+        case ETutorialState.VacuumMovement1:
+            TutorialPanel.VacuumMovement1();
             break;
-        case ETutorialState.IntroduceVacuum:
-            // WaitAndCall(AnnounceVacuumIntro, 1);
-            AnnounceVacuumIntro();
+        case ETutorialState.VacuumMovement2:
+            TutorialPanel.VacuumMovement2();
             break;
-        case ETutorialState.IntroduceCannon:
-            // WaitAndCall(AnnounceCannonIntro, 1);
-            AnnounceCannonIntro();
+        case ETutorialState.CannonMovement1:
+            TutorialPanel.CannonMovement1();
             break;
-        case ETutorialState.KillTheWave:
-            // WaitAndCall(AnnounceKillAllIntro, 1);
-            AnnounceKillAllIntro();
+        case ETutorialState.CannonMovement2:
+            TutorialPanel.CannonMovement2();
+            break;
+        case ETutorialState.VacuumKill:
+            TutorialPanel.VacuumKill();
+            break;
+        case ETutorialState.CannonKill1:
+            TutorialPanel.CannonKill1();
+            break;
+        case ETutorialState.CannonKill2:
+            TutorialPanel.CannonKill2();
+            break;
+        case ETutorialState.PracticeKill:
+            SpawnEnemies_PracticeKill();
+            TutorialPanel.PracticeKill_Task();
+            break;
+        case ETutorialState.FINISHED:
+            TutorialPanel.CongradulatePlayer();
+            StartCoroutine(onTutorialCompleted());
+            break;
+        }
+        // TutorialPanel.OnTutorialStateChanged(nextState);
+        currState = nextState;
+    }
+    
+    public void OnDemoDoneShowing() {
+        switch(currState) {
+        case ETutorialState.NONE:
+            break;
+        case ETutorialState.VacuumMovement1:
+            TutorialPanel.VacuumMovement1_Task();
+            break;
+        case ETutorialState.VacuumMovement2:
+            TutorialPanel.VacuumMovement2_Task();
+            break;
+        case ETutorialState.CannonMovement1:
+            TutorialPanel.CannonMovement1_Task();
+            break;
+        case ETutorialState.CannonMovement2:
+            TutorialPanel.CannonMovement2_Task();
+            break;
+        case ETutorialState.VacuumKill:
+            spawnEnemies_VacuumKill();
+            TutorialPanel.VacuumKill_Task();
+            break;
+        case ETutorialState.CannonKill1:
+            spawnEnemies_CannonKill1();
+            TutorialPanel.CannonKill1_Task();
+            break;
+        case ETutorialState.CannonKill2:
+            spawnEnemies_CannonKill2();
+            TutorialPanel.CannonKill2_Task();
             break;
         case ETutorialState.FINISHED:
             StartCoroutine(onTutorialCompleted());
             break;
         }
-        TutorialPanel.OnTutorialStateChanged(nextState);
-        currState = nextState;
     }
     
-    public void OnKilledAllEnemies() {
-        switch (currState) {
-        case ETutorialState.IntroduceVacuum:
-            GoToState(ETutorialState.IntroduceCannon);
-            break;
-        case ETutorialState.IntroduceCannon:
-            GoToState(ETutorialState.KillTheWave);
-            break;
-        case ETutorialState.KillTheWave:
-            GoToState(ETutorialState.FINISHED);
-            break;
-        }
-    }
-    
-    IEnumerator AnnounceControlsIntro() {
-        yield return new WaitForSeconds(3);
-        GoToState(ETutorialState.IntroduceVacuum);
-    }
-    
-    public void AnnounceVacuumIntro() {
-        // TutorialPanel.OnTutorialStateChanged(ETutorialState.IntroduceVacuum);
+    void spawnEnemies_VacuumKill() {
         requiredDamageType = EDamageType.Vacuum;
         enemiesRequiredThisState = vacuumOnlySpawners.Length;
         enemiesKilled = 0;
-        print($"OBJECTIVE: Kill {enemiesRequiredThisState} Bugs using the VACUUM");
         foreach (TUT_EnemySpawner es in vacuumOnlySpawners)
             es.SpawnEnemy();
     }
     
-    public void AnnounceCannonIntro() {
-        // TutorialPanel.OnTutorialStateChanged(ETutorialState.IntroduceCannon);
+    void spawnEnemies_CannonKill1() {
         requiredDamageType = EDamageType.Projectile;
-        enemiesRequiredThisState = cannonOnlySpawners.Length;
+        enemiesRequiredThisState = cannonOnlySpawners1.Length;
         enemiesKilled = 0;
-        print($"OBJECTIVE: Kill {enemiesRequiredThisState} Bugs using the CANNON");
-        foreach (TUT_EnemySpawner es in cannonOnlySpawners)
+        foreach (TUT_EnemySpawner es in cannonOnlySpawners1)
             es.SpawnEnemy();
     }
     
-    public void AnnounceKillAllIntro() {
-        // TutorialPanel.OnTutorialStateChanged(ETutorialState.KillTheWave);
-        requiredDamageType = EDamageType.Any;
-        enemiesRequiredThisState = killAllSpawners.Length;
+    void spawnEnemies_CannonKill2() {
+        requiredDamageType = EDamageType.Projectile;
+        enemiesRequiredThisState = cannonOnlySpawners2.Length;
         enemiesKilled = 0;
-        print($"OBJECTIVE: Kill {enemiesRequiredThisState} Bugs using any weapon.");
-        foreach (TUT_EnemySpawner es in killAllSpawners)
+        foreach (TUT_EnemySpawner es in cannonOnlySpawners2)
             es.SpawnEnemy();
+    }
+    
+    void SpawnEnemies_PracticeKill() {
+        requiredDamageType = EDamageType.Any;
+        enemiesRequiredThisState = practiceKillSpawners.Length;
+        enemiesKilled = 0;
+        foreach (TUT_EnemySpawner es in practiceKillSpawners)
+            es.SpawnEnemy();
+    }
+    
+    public void OnKilledAllEnemies() {
+        switch (currState) {
+        case ETutorialState.VacuumKill:
+            GoToState(ETutorialState.CannonKill1);
+            break;
+        case ETutorialState.CannonKill1:
+            GoToState(ETutorialState.CannonKill2);
+            break;
+        case ETutorialState.CannonKill2:
+            GoToState(ETutorialState.PracticeKill);
+            break;
+        case ETutorialState.PracticeKill:
+            GoToState(ETutorialState.FINISHED);
+            break;
+        }
     }
     
     IEnumerator onTutorialCompleted() {
@@ -153,8 +231,44 @@ public class SRTutorial : SceneRunner {
     
     void getAndSetSpawnGroups() {
         vacuumOnlySpawners = vacuumSpawnGroup.GetComponentsInChildren<TUT_EnemySpawner>();
-        cannonOnlySpawners = cannonSpawnGroup.GetComponentsInChildren<TUT_EnemySpawner>();
-        killAllSpawners = killAllSpawnGroup.GetComponentsInChildren<TUT_EnemySpawner>();
+        cannonOnlySpawners1 = cannonSpawnGroup1.GetComponentsInChildren<TUT_EnemySpawner>();
+        cannonOnlySpawners2 = cannonSpawnGroup2.GetComponentsInChildren<TUT_EnemySpawner>();
+        practiceKillSpawners = practiceKillSpawnGroup.GetComponentsInChildren<TUT_EnemySpawner>();
+    }
+    
+    void setupTriggers() {
+        vacuumMovement1Finished.A_TriggerEntered += vacMove1Finished;
+        vacuumMovement2Finished.A_TriggerEntered += vacMove2Finished;
+        cannonMovement1Finished.A_TriggerEntered += canMove1Finished;
+        cannonMovement2Finished.A_TriggerEntered += canMove2Finished;
+    }
+    
+    void vacMove1Finished(Collider other) {
+        playerSpawnPoint = spawnForVacMove2;
+        vacuumMovement1Finished.A_TriggerEntered -= vacMove1Finished;
+        vacuumMovement1Finished.gameObject.SetActive(false);
+        GoToState(ETutorialState.VacuumMovement2);
+    }
+    
+    void vacMove2Finished(Collider other) {
+        playerSpawnPoint = spawnForCanMove1;
+        vacuumMovement2Finished.A_TriggerEntered -= vacMove2Finished;
+        vacuumMovement2Finished.gameObject.SetActive(false);
+        GoToState(ETutorialState.CannonMovement1);
+    }
+    
+    void canMove1Finished(Collider other) {
+        playerSpawnPoint = spawnForCanMove2;
+        cannonMovement1Finished.A_TriggerEntered -= canMove1Finished;
+        cannonMovement1Finished.gameObject.SetActive(false);
+        GoToState(ETutorialState.CannonMovement2);
+    }
+    
+    void canMove2Finished(Collider other) {
+        playerSpawnPoint = spawnForKillPractice;
+        cannonMovement2Finished.A_TriggerEntered -= canMove2Finished;
+        cannonMovement2Finished.gameObject.SetActive(false);
+        GoToState(ETutorialState.VacuumKill);
     }
     
     /// <summary>
@@ -171,14 +285,18 @@ public class SRTutorial : SceneRunner {
         yield return new WaitForSeconds(duration);
         funcToCall();
     }
-    
+
 }
 
 public enum ETutorialState {
     NONE,
-    IntroduceControls,
-    IntroduceVacuum,
-    IntroduceCannon,
-    KillTheWave,
+    VacuumMovement1,
+    VacuumMovement2,
+    CannonMovement1,
+    CannonMovement2,
+    VacuumKill,
+    CannonKill1,
+    CannonKill2,
+    PracticeKill,
     FINISHED
 }
