@@ -75,8 +75,19 @@ public class SRTutorial : SceneRunner {
 #endif
         TutorialPanel.OnBeginScene();
         TutorialPanel.SetActive(true);
-        SpawnPlayer();
+        SpawnPlayerAndConnect();
         StartCoroutine(delayedStartTutorial());
+    }
+
+    protected override void OnPlayerDied() {
+        GameManager.Instance.SetPauseInputActionsEnabled(false);
+        TutorialPanel.ShowDeathFuelUI();
+        // GameManager.Instance.DestroyPlayer();
+    }
+    
+    public void respawnPlayer() {
+        GameManager.Instance.SetPauseInputActionsEnabled(true);
+        GameManager.Instance.SpawnPlayer();
     }
     
     IEnumerator delayedStartTutorial() {
@@ -134,7 +145,6 @@ public class SRTutorial : SceneRunner {
             StartCoroutine(onTutorialCompleted());
             break;
         }
-        // TutorialPanel.OnTutorialStateChanged(nextState);
         currState = nextState;
     }
     

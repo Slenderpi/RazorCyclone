@@ -153,11 +153,12 @@ public class GameManager : MonoBehaviour {
     }
     
     public void SpawnPlayer() {
-        CurrentPlayer = Instantiate(
-            playerPrefab,
-            currentSceneRunner.playerSpawnPoint != null ? currentSceneRunner.playerSpawnPoint.position : Vector3.zero,
-            currentSceneRunner.playerSpawnPoint != null ? currentSceneRunner.playerSpawnPoint.rotation : Quaternion.identity
-        );
+        CurrentPlayer = Instantiate(playerPrefab);
+        if (currentSceneRunner.playerSpawnPoint)
+            CurrentPlayer.transform.SetPositionAndRotation(
+                currentSceneRunner.playerSpawnPoint.position,
+                currentSceneRunner.playerSpawnPoint.rotation
+            );
 #if UNITY_EDITOR || KEEP_DEBUG
         CurrentPlayer.IsInvincible = plrInvincible;
         CurrentPlayer.NoFuelCost = plrNoFuelCost;
