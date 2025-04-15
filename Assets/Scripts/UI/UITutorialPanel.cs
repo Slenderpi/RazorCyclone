@@ -26,6 +26,8 @@ public class UITutorialPanel : UIPanel {
     [SerializeField]
     Animator IncorrectWeaponAnimator;
     [SerializeField]
+    GameObject DeathFuelUI;
+    [SerializeField]
     GameObject controlsPanel;
     
     VideoClip prevVideoClip;
@@ -41,7 +43,7 @@ public class UITutorialPanel : UIPanel {
     }
     
     public void OnBeginScene() {
-        SetAllPanelsInactive();
+        SetUIInactive();
 #if UNITY_EDITOR
         nextVideoClip = srt.StartingState switch {
             ETutorialState.VacuumMovement1 => Resources.Load<VideoClip>("TutorialVideos/vacuum_movement_1"),
@@ -62,6 +64,15 @@ public class UITutorialPanel : UIPanel {
     public void OnButton_ConfirmVideo() {
         hideDemoUI();
         srt.OnDemoDoneShowing();
+    }
+    
+    public void OnButton_Respawn() {
+        DeathFuelUI.SetActive(false);
+        srt.respawnPlayer();
+    }
+    
+    public void ShowDeathFuelUI() {
+        DeathFuelUI.SetActive(true);
     }
     
     public void VacuumMovement1() {
@@ -200,10 +211,11 @@ public class UITutorialPanel : UIPanel {
         TaskProgressText.text = "";
     }
     
-    public void SetAllPanelsInactive() {
+    public void SetUIInactive() {
         controlsPanel.SetActive(false);
         taskUI.SetActive(false);
         demoUI.SetActive(false);
+        DeathFuelUI.SetActive(false);
     }
     
     void showDemoUI() {

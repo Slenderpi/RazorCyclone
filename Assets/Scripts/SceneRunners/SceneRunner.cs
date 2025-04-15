@@ -31,10 +31,10 @@ public class SceneRunner : MonoBehaviour {
     /// }</code></example>
     /// </summary>
     public virtual void BeginScene() {
-        SpawnPlayer();
+        SpawnPlayerAndConnect();
     }
     
-    protected void SpawnPlayer() {
+    protected void SpawnPlayerAndConnect() {
         GameManager.A_PlayerSpawned += _onPlayerSpawned;
         GameManager.Instance.SpawnPlayer();
     }

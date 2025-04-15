@@ -44,7 +44,7 @@ public class SREndlessMode : SceneRunner, IDataPersistence {
 #endif
         playerIsDead = false;
         GameManager.Instance.MainCanvas.FadeToClear();
-        SpawnPlayer();
+        SpawnPlayerAndConnect();
         StartCoroutine(delayedBeginEndless());
     }
     
