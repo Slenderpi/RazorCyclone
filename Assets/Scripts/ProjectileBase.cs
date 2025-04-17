@@ -17,6 +17,8 @@ public class ProjectileBase : MonoBehaviour {
     
     [Header("References")]
     [SerializeField]
+    GameObject ProjectileModel;
+    [SerializeField]
     TrailRenderer TrailRicochet;
     [SerializeField]
     TrailRenderer TrailNormal;
@@ -27,7 +29,9 @@ public class ProjectileBase : MonoBehaviour {
     Collider colliderToIgnore = null; // Most recent non-enemy collider that was hit for ricocheting
     LayerMask layerMask;
     
-    bool hitSomething = false;
+    bool projectileDead = false;
+    // bool hitSomething = false;
+    int hitCase = 0; // 0 nothing, 1 enemy, 2 non enemy
     protected RaycastHit closestHit;
     float closestHitSqrd = float.MaxValue;
     
@@ -62,6 +66,7 @@ public class ProjectileBase : MonoBehaviour {
     protected virtual void Init() {}
     
     void FixedUpdate() {
+        if (projectileDead) return;
         checkForCollisions();
     }
     
@@ -70,7 +75,8 @@ public class ProjectileBase : MonoBehaviour {
         GameManager.D_DrawPoint(transform.position, Color.green);
 #endif
         float dist = rb.velocity.magnitude * Time.fixedDeltaTime;
-        hitSomething = false;
+        // hitSomething = false;
+        hitCase = 0;
         closestHitSqrd = float.MaxValue;
         raycastCollision(Vector3.zero, dist);
         if (ProjConfig.ProjectileRadius >= 0.1f) {
@@ -79,7 +85,7 @@ public class ProjectileBase : MonoBehaviour {
             raycastCollision(transform.up * ProjConfig.ProjectileRadius, dist);
             raycastCollision(-transform.up * ProjConfig.ProjectileRadius, dist);
         }
-        if (hitSomething) {
+        if (hitCase > 0) {
             onHitSomething();
         }
     }
@@ -94,21 +100,19 @@ public class ProjectileBase : MonoBehaviour {
             maxDistance: dist,
             layerMask: layerMask,
             hitInfo: out RaycastHit hit)) {
-            hitSomething = true;
+            if (!hit.collider.CompareTag("Enemy")) {
+                // We've hit a non-enemy. If a previous cast hit an enemy, return early
+                if (hitCase == 1)
+                    return; // A previous cast hit an enemy and this one didn't. Prioritize enemy
+                else
+                    hitCase = 2; // We've hit a non-enemy
+            } else
+                hitCase = 1; // This was the first raycast to hit an enemy
+            // Check if the new hit is closer
             float hitDistSqrd = (hit.point - transform.position).sqrMagnitude;
             if (hitDistSqrd < closestHitSqrd) {
-                bool canCheck = !hit.collider.CompareTag("Enemy");
-                if (!canCheck) {
-                    // if (!hit.collider.TryGetComponent(out EnemyBase en)) {
-                    //     en = hit.collider.GetComponentInParent<EnemyBase>();
-                    // }
-                    // canCheck = en != enemyToIgnore;
-                    canCheck = enemyToIgnore != hit.collider.transform.parent.parent.GetComponent<EnemyBase>();
-                }
-                if (canCheck) {
-                    closestHitSqrd = hitDistSqrd;
-                    closestHit = hit;
-                }
+                closestHitSqrd = hitDistSqrd;
+                closestHit = hit;
             }
         }
     }
@@ -124,13 +128,12 @@ public class ProjectileBase : MonoBehaviour {
             !hitCollider.CompareTag("Projectile") &&
             !hitCollider.CompareTag("Pickup")) {
             EnemyBase enemy = null;
-            if (hitCollider.CompareTag("Enemy")) {
+            // if (hitCollider.CompareTag("Enemy")) {
+            if (hitCase == 1) { // Hit an enemy
                 enemy = hitCollider.transform.parent.parent.GetComponent<EnemyBase>();
-                if (enemy) {
-                    // Check if we hit the ignored enemy
-                    if (enemy == enemyToIgnore) return;
-                } else if (hitCollider == colliderToIgnore) // Check if we hit the ignored collider
-                    return;
+                if (enemy == enemyToIgnore) return;
+            } else {
+                if (hitCollider == colliderToIgnore) return;
             }
             transform.position += closestHit.distance * rb.velocity.normalized;
             if (ricRemain > 0) {
@@ -145,7 +148,7 @@ public class ProjectileBase : MonoBehaviour {
                     OnHitEnemy(enemy);
                 else
                     OnHitNonEnemy();
-                Destroy(gameObject);
+                endProjectile();
             }
         }
     }
@@ -176,6 +179,13 @@ public class ProjectileBase : MonoBehaviour {
         colliderToIgnore = null;
         EnemyBase closestEn = GameManager.Instance.currentSceneRunner.GetClosestEnemy(transform.position, enemyToIgnore);
         Vector3 ricVel;
+        if (closestEn && closestEn.rb) {
+            Vector3 predPos = BoidSteerer.PredictPosition(transform.position, closestEn.TransformForRicochetToAimAt.position, rb.velocity, closestEn.rb.velocity);
+            GameManager.D_DrawPoint(closestEn.TransformForRicochetToAimAt.position, Color.cyan, 1000);
+            // GameManager.D_DrawPoint(predPos, Color.green, 1000);
+            GameManager.D_DrawPoint(transform.position, Color.white, 1000);
+            Debug.DrawRay(transform.position, predPos - transform.position, Color.magenta, 1000, false);
+        }
         if (closestEn) {
             if (closestEn.rb) // If has enemy has an rb, use predictive aiming
                 ricVel = (BoidSteerer.PredictPosition(
@@ -219,8 +229,20 @@ public class ProjectileBase : MonoBehaviour {
     /// this method destroys the projectile.
     /// </summary>
     protected virtual void OnProjectileLifetimeExpired() {
+        if (projectileDead) return;
+        endProjectile();
+    }
+    
+    void endProjectile() {
+        projectileDead = true;
+        rb.velocity *= 0;
+        if (ricRemain > 0)
+            TrailRicochet.emitting = false;
+        else
+            TrailNormal.emitting = false;
+        ProjectileModel.SetActive(false);
         showImpactEffect();
-        Destroy(gameObject);
+        Destroy(gameObject, 4);
     }
     
     void OnDestroy() {

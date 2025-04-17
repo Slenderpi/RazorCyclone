@@ -38,6 +38,9 @@ public class SRTutorial : SceneRunner {
     GameObject cannonSpawnGroup2;
     TUT_EnemySpawner[] cannonOnlySpawners2;
     [SerializeField]
+    GameObject canRicSpawnGroup;
+    TUT_EnemySpawner[] canRicSpawners;
+    [SerializeField]
     GameObject practiceKillSpawnGroup;
     TUT_EnemySpawner[] practiceKillSpawners;
     
@@ -70,6 +73,8 @@ public class SRTutorial : SceneRunner {
             ETutorialState.CannonMovement2 => spawnForCanMove2,
             _ => spawnForKillPractice
         };
+        if (StartingState > ETutorialState.VacuumKill)
+            cannonMovement2Finished.gameObject.SetActive(false);
 #else
         playerSpawnPoint = spawnForVacMove1;
 #endif
@@ -136,8 +141,11 @@ public class SRTutorial : SceneRunner {
         case ETutorialState.CannonKill2:
             TutorialPanel.CannonKill2();
             break;
+        case ETutorialState.CannonRicochet:
+            TutorialPanel.CannonRico();
+            break;
         case ETutorialState.PracticeKill:
-            SpawnEnemies_PracticeKill();
+            spawnEnemies_PracticeKill();
             TutorialPanel.PracticeKill_Task();
             break;
         case ETutorialState.FINISHED:
@@ -176,6 +184,10 @@ public class SRTutorial : SceneRunner {
             spawnEnemies_CannonKill2();
             TutorialPanel.CannonKill2_Task();
             break;
+        case ETutorialState.CannonRicochet:
+            spawnEnemies_CannonRico();
+            TutorialPanel.CannonRico_Task();
+            break;
         case ETutorialState.FINISHED:
             StartCoroutine(onTutorialCompleted());
             break;
@@ -206,7 +218,15 @@ public class SRTutorial : SceneRunner {
             es.SpawnEnemy();
     }
     
-    void SpawnEnemies_PracticeKill() {
+    void spawnEnemies_CannonRico() {
+        requiredDamageType = EDamageType.Projectile;
+        enemiesRequiredThisState = canRicSpawners.Length;
+        enemiesKilled = 0;
+        foreach (TUT_EnemySpawner es in canRicSpawners)
+            es.SpawnEnemy();
+    }
+    
+    void spawnEnemies_PracticeKill() {
         requiredDamageType = EDamageType.Any;
         enemiesRequiredThisState = practiceKillSpawners.Length;
         enemiesKilled = 0;
@@ -223,6 +243,9 @@ public class SRTutorial : SceneRunner {
             GoToState(ETutorialState.CannonKill2);
             break;
         case ETutorialState.CannonKill2:
+            GoToState(ETutorialState.CannonRicochet);
+            break;
+        case ETutorialState.CannonRicochet:
             GoToState(ETutorialState.PracticeKill);
             break;
         case ETutorialState.PracticeKill:
@@ -244,6 +267,7 @@ public class SRTutorial : SceneRunner {
         vacuumOnlySpawners = vacuumSpawnGroup.GetComponentsInChildren<TUT_EnemySpawner>();
         cannonOnlySpawners1 = cannonSpawnGroup1.GetComponentsInChildren<TUT_EnemySpawner>();
         cannonOnlySpawners2 = cannonSpawnGroup2.GetComponentsInChildren<TUT_EnemySpawner>();
+        canRicSpawners = canRicSpawnGroup.GetComponentsInChildren<TUT_EnemySpawner>();
         practiceKillSpawners = practiceKillSpawnGroup.GetComponentsInChildren<TUT_EnemySpawner>();
     }
     
@@ -308,6 +332,7 @@ public enum ETutorialState {
     VacuumKill,
     CannonKill1,
     CannonKill2,
+    CannonRicochet,
     PracticeKill,
     FINISHED
 }

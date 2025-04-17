@@ -53,6 +53,7 @@ public class UITutorialPanel : UIPanel {
             ETutorialState.VacuumKill => Resources.Load<VideoClip>("TutorialVideos/vacuum_kill_1"),
             ETutorialState.CannonKill1 => Resources.Load<VideoClip>("TutorialVideos/cannon_kill_1"),
             ETutorialState.CannonKill2 => Resources.Load<VideoClip>("TutorialVideos/cannon_kill_2"),
+            ETutorialState.CannonRicochet => Resources.Load<VideoClip>("TutorialVideos/cannon_ricochet"),
             _ => Resources.Load<VideoClip>("TutorialVideos/vacuum_movement_1")
         };
 #else
@@ -142,6 +143,16 @@ public class UITutorialPanel : UIPanel {
         StartCoroutine(waitEnableConfirmButton(vidPlayer.length));
         showDemoUI();
         vidPlayer.Play();
+        StartCoroutine(loadNextVideoClipAsync("TutorialVideos/cannon_ricochet"));
+    }
+    
+    public void CannonRico() {
+        prevVideoClip = nextVideoClip;
+        vidPlayer.clip = prevVideoClip;
+        tutorialText.text = "Spin using W-A-S-D-W or W-D-S-A-W\nSpins give your Cannon ricochets";
+        StartCoroutine(waitEnableConfirmButton(vidPlayer.length));
+        showDemoUI();
+        vidPlayer.Play();
     }
     
     IEnumerator loadNextVideoClipAsync(string path) {
@@ -187,6 +198,13 @@ public class UITutorialPanel : UIPanel {
         controlsPanel.SetActive(true);
     }
     
+    public void CannonRico_Task() {
+        TaskText.text = "Use W-A-S-D-W or W-D-S-A-W to ricochet";
+        TaskProgressText.text = $"0 / {srt.enemiesRequiredThisState}";
+        IncorrectWeaponText.text = "Incorrect weapon!\nUse the Cannon";
+        controlsPanel.SetActive(true);
+    }
+    
     public void PracticeKill_Task() {
         TaskText.text = "Kill all Bugs with any weapon";
         TaskProgressText.text = $"0 / {srt.enemiesRequiredThisState}";
@@ -201,6 +219,7 @@ public class UITutorialPanel : UIPanel {
             ETutorialState.VacuumKill => s,
             ETutorialState.CannonKill1 => s,
             ETutorialState.CannonKill2 => s,
+            ETutorialState.CannonRicochet => s,
             ETutorialState.PracticeKill => s,
             _ => "",
         };
