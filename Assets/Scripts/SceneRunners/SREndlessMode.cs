@@ -31,8 +31,8 @@ public class SREndlessMode : SceneRunner, IDataPersistence {
     public override void BeginScene() {
         GameManager.Instance.MainCanvas.TutorialPanel.SetActive(false);
         WaveSpawnManager.OwningEndlessMode = this;
-        WaveSpawnManager.OnWaveActivated += OnWaveActivated;
-        WaveSpawnManager.OnWaveFinished += OnWaveFinished;
+        WaveSpawnManager.A_OnWaveActivated += OnWaveActivated;
+        WaveSpawnManager.A_OnWaveFinished += OnWaveFinished;
         WaveSpawnManager.InitWaveSpawner();
         mainCanvas = GameManager.Instance.MainCanvas;
         GameManager.A_EnemyKilled += () => { EnemiesKilled++; };
