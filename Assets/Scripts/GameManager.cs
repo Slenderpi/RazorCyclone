@@ -42,6 +42,11 @@ public class GameManager : MonoBehaviour {
         }
     }
 #endif
+#if UNITY_EDITOR
+    [HideInInspector]
+    public int StartRound = 1;
+    ProgrammerPreferences _prefs;
+#endif
     
     [Header("Core References")]
     public UIMainCanvas MainCanvas;
@@ -56,6 +61,7 @@ public class GameManager : MonoBehaviour {
             _currentMouseSensitivity = value;
             if (CurrentPlayer != null) CurrentPlayer.mouseSensitivity = _currentMouseSensitivity;
             SettingsPanel.SetMouseSenseText(_currentMouseSensitivity);
+            DataPersistenceManager.Instance.usettings.MouseSensitivity = _currentMouseSensitivity;
         }
     }
     int _currentFOV = 90;
@@ -67,7 +73,6 @@ public class GameManager : MonoBehaviour {
         }
     }
     [Header("Player Settings")]
-    public float DefaultMouseSensitivity = 0.7f;
     public float LowestSensitivity = 0.02f;
     public float HighestSensitivity = 1.2f;
     
@@ -76,6 +81,7 @@ public class GameManager : MonoBehaviour {
     PlayerCharacterCtrlr playerPrefab;
     [SerializeField]
     EnemyBase enemyPrefab;
+    [HideInInspector]
     public Camera rearCamera;
     
     [HideInInspector]
@@ -103,22 +109,32 @@ public class GameManager : MonoBehaviour {
 #if UNITY_EDITOR || KEEP_DEBUG
         setupDebugActions();
 #endif
-    }
-    
-    void Start() {
 #if UNITY_EDITOR
         /******  PROGRAMMER SPECIFIC  ******/
         TextAsset programmerPreferenceJson = Resources.Load<TextAsset>("ProgrammerPreferences");
         if (programmerPreferenceJson != null) {
-            ProgrammerPreferences _prefs = JsonUtility.FromJson<ProgrammerPreferences>(programmerPreferenceJson.text);
+            _prefs = JsonUtility.FromJson<ProgrammerPreferences>(programmerPreferenceJson.text);
             if (_prefs != null) {
-                _prefs.SetPreferences();
+                _prefs.SetPreferencesAwake();
                 // Debug.Log("Note: a 'ProgrammerPreferences' file was found in the Resources folder and will be loaded in.");
             } else Debug.LogWarning("Programmer preferences failed to load. Make sure your json file is written correctly.");
         } else {
             // Debug.Log("Note: no 'ProgrammerPreferences' file found in Resources folder, so no preferences were loaded.");
         }
 #endif
+    }
+    
+    void Start() {
+#if UNITY_EDITOR
+        if (_prefs != null && _prefs.UsePreferences) {
+            _prefs.SetPreferencesStart();
+        } else {
+            DataPersistenceManager.Instance.LoadSettings();
+        }
+#else
+        DataPersistenceManager.Instance.LoadSettings();
+#endif
+        Audio2D.asMusic.Play();
     }
     
     void initializeUI() {
@@ -128,9 +144,6 @@ public class GameManager : MonoBehaviour {
         SettingsPanel.Init();
         MainCanvas.MainMenuPanel.Init();
         MainCanvas.Init();
-        
-        CurrentMouseSensitivity = DefaultMouseSensitivity;
-        SettingsPanel.MouseSenseSlider.value = (CurrentMouseSensitivity - LowestSensitivity) / (HighestSensitivity - LowestSensitivity);
     }
     
     public void OnSceneStarted(SceneRunner sr) {
@@ -140,11 +153,12 @@ public class GameManager : MonoBehaviour {
     }
     
     public void SpawnPlayer() {
-        CurrentPlayer = Instantiate(
-            playerPrefab,
-            currentSceneRunner.playerSpawnPoint != null ? currentSceneRunner.playerSpawnPoint.position : Vector3.zero,
-            currentSceneRunner.playerSpawnPoint != null ? currentSceneRunner.playerSpawnPoint.rotation : Quaternion.identity
-        );
+        CurrentPlayer = Instantiate(playerPrefab);
+        if (currentSceneRunner.playerSpawnPoint)
+            CurrentPlayer.transform.SetPositionAndRotation(
+                currentSceneRunner.playerSpawnPoint.position,
+                currentSceneRunner.playerSpawnPoint.rotation
+            );
 #if UNITY_EDITOR || KEEP_DEBUG
         CurrentPlayer.IsInvincible = plrInvincible;
         CurrentPlayer.NoFuelCost = plrNoFuelCost;
@@ -176,7 +190,7 @@ public class GameManager : MonoBehaviour {
             switch (damageType) {
             case EDamageType.Projectile:
                 MainCanvas.GamePanel.OnPlayerKilledEnemy(enemy, true);
-                Audio2D.PlayClipSFX(AudioPlayer2D.EClipSFX.Canon_Kill);
+                Audio2D.PlayClipSFX(AudioPlayer2D.EClipSFX.Cannon_Kill);
                 break;
             case EDamageType.Vacuum:
                 MainCanvas.GamePanel.OnPlayerKilledEnemy(enemy, false);
@@ -187,7 +201,7 @@ public class GameManager : MonoBehaviour {
             switch (damageType) {
             case EDamageType.Projectile:
                 MainCanvas.GamePanel.OnPlayerDamagedEnemy(enemy);
-                Audio2D.PlayClipSFX(AudioPlayer2D.EClipSFX.Canon_Hit);
+                Audio2D.PlayClipSFX(AudioPlayer2D.EClipSFX.Cannon_Hit);
                 break;
             }
         }
@@ -234,16 +248,15 @@ public class GameManager : MonoBehaviour {
         CurrentMouseSensitivity = Mathf.Lerp(LowestSensitivity, HighestSensitivity, SettingsPanel.MouseSenseSlider.value);
     }
     
-    // public void OnFOVChanged(int newfov) {
-    //     Camera.main.fieldOfView = newfov;
-    // }
-    
     public void OnSceneLoaded(Scene scene, LoadSceneMode mode) {
-        if (scene.name == "CoreScene") return;
         GCam = FindObjectOfType<GameCamera>();
-        GCam?.SetFOV(CurrentFOV);
-        SceneManager.SetActiveScene(scene);
-        // Camera.main.fieldOfView = _currentFOV;
+        if (GCam) {
+            GCam.SetFOV(CurrentFOV);
+            rearCamera = GCam.RearCam;
+        }
+        if (scene.name != "CoreScene") {
+            SceneManager.SetActiveScene(scene);
+        }
     }
     
     public void SetPauseInputActionsEnabled(bool newEnabled) {
@@ -264,6 +277,7 @@ public class GameManager : MonoBehaviour {
     
     void onFOVChanged(int value) {
         GCam?.SetFOV(value);
+        DataPersistenceManager.Instance.usettings.FOV = value;
     }
     
     
@@ -331,7 +345,7 @@ public enum EDamageType {
 /// Enum representing an enemy type.
 /// </summary>
 public enum EnemyType {
-    CanonFodder,
+    CannonFodder,
     HunterBasic,
     Hunter,
     CrabBasic,
@@ -358,19 +372,25 @@ class ProgrammerPreferences {
     public bool EnableMusic = true; // If false, music volume will be set to 0
     public bool PlayerInvincible = false; // If true, the player will spawn with invincibility on
     public bool PlayerNoFuelCost = false; // If true, the player will spawn with no fuel cost
+    public int StartRound = 1;
         
-    internal void SetPreferences() {
+    internal void SetPreferencesAwake() {
         if (!UsePreferences) return;
-        GameManager.Instance.CurrentMouseSensitivity = MouseSensitivity;
+        GameManager.Instance.plrInvincible = PlayerInvincible;
+        GameManager.Instance.plrNoFuelCost = PlayerNoFuelCost;
+        GameManager.Instance.StartRound = StartRound;
+    }
+    
+    internal void SetPreferencesStart() {
+        if (!UsePreferences) return;
         float highSens = GameManager.Instance.HighestSensitivity;
         float lowSens = GameManager.Instance.LowestSensitivity;
+        GameManager.Instance.CurrentMouseSensitivity = Mathf.Clamp(MouseSensitivity, lowSens, highSens);
         GameManager.Instance.SettingsPanel.MouseSenseSlider.value = (GameManager.Instance.CurrentMouseSensitivity - lowSens) / (highSens - lowSens);
         if (MasterVolume == 1f) Debug.LogWarning(">> Programmer preferences file has MasterVolume set to 1. Did you mean 100? Currently, volume is on a scale from 0 to 100 rather than 0 to 1.");
         else if (MasterVolume < 1f && MasterVolume > 0f) Debug.LogWarning(">> Programmer preferences file has MasterVolume between 0 and 1. Make sure you set the volume to be between 0 and 100--volume is on a scale from 0 to 100 rather than 0 to 1.");
         GameManager.Instance.Audio2D.SetMasterVolume(MasterVolume);
         GameManager.Instance.Audio2D.SetMusicVolume(EnableMusic ? 100 : 0);
-        GameManager.Instance.plrInvincible = PlayerInvincible;
-        GameManager.Instance.plrNoFuelCost = PlayerNoFuelCost;
     }
     
 }

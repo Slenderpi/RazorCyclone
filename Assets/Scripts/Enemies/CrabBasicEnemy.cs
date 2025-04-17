@@ -24,15 +24,18 @@ public class CrabBasicEnemy : EnemyBase {
     [SerializeField]
     bool predictiveFiring = true;
     [SerializeField]
-    float maxPredictTime = 0.15f;
+    float maxPredictTime = 0.1f;
     
     EnemyProjectile pooledProj;
+    
+    float randomAtkDly;
     
     
     
     protected override void Init() {
         FireGunVFX.SetActive(false);
         fireGunParticles = FireGunVFX.GetComponentsInChildren<ParticleSystem>();
+        randomAtkDly = EnConfig.AttackDelay + Random.Range(-1f, 1f) * CrabBasicConfig.AttackTimeOffset;
     }
     
     protected override void LateInit() {
@@ -57,7 +60,7 @@ public class CrabBasicEnemy : EnemyBase {
     protected override void onFixedUpdate() {
         if (!GameManager.CurrentPlayer) return;
         if (Time.fixedTime - lastAttackTime >= EnConfig.AttackDelay) {
-            lastAttackTime += EnConfig.AttackDelay;
+            lastAttackTime += randomAtkDly;
             Attack();
         }
         base.onFixedUpdate();
@@ -95,10 +98,8 @@ public class CrabBasicEnemy : EnemyBase {
     }
     
     protected override void OnDestroying() {
-        if (pooledProj) {
-            Destroy(pooledProj);
-            pooledProj = null;
-        }
+        if (pooledProj)
+            Destroy(pooledProj.gameObject);
         base.OnDestroying();
     }
     

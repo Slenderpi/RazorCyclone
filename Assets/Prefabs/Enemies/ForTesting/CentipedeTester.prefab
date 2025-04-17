@@ -256,7 +256,7 @@ MonoBehaviour:
   rb: {fileID: 0}
   boid: {fileID: 0}
   suckable: {fileID: 0}
-  RicochetCanon: 1
+  RicochetCannon: 1
   ConsiderForRicochet: 1
   invincible: 0
   CentConfig: {fileID: 11400000, guid: fab2a043f3823964db3f4f7cb1b6a00b, type: 2}

@@ -1,29 +1,51 @@
+using System.Collections;
 using TMPro;
 using UnityEngine;
 
 public class UIDeathPanel : UIPanel {
     
     [Header("References")]
-    public TMP_Text TimeSurvivedValue;
-    public TMP_Text HighestTimeSurvivedValue;
-    public TMP_Text EnemiesKilledValue;
+    public TMP_Text DefeatedWavesValue;
+    public TMP_Text RecordDefeatedWavesValue;
+    public TMP_Text RecordTimeSpentValue;
     
     
     
     public void OnButton_Retry() {
-        GameManager.Instance.SetPauseInputActionsEnabled(true);
-        GameManager.Instance.currentSceneRunner.ReloadCurrentScene();
+        StartCoroutine(delayLoadScene(true));
     }
     
     public void OnButton_ReturnMain() {
-        GameManager.Instance.SetPauseInputActionsEnabled(true);
-        GameManager.Instance.currentSceneRunner.SwitchToScene("MainMenuScene");
+        StartCoroutine(delayLoadScene(false));
     }
     
-    public void SetEndscreenInfo(float timeSurvived, float highestTimeSurvived, bool isNewTimeRecord, int enemiesKilled) {
-        TimeSurvivedValue.text = textifyTime(timeSurvived);
-        HighestTimeSurvivedValue.text = (isNewTimeRecord ? "! " : "") + textifyTime(highestTimeSurvived);
-        EnemiesKilledValue.text = enemiesKilled.ToString();
+    public void SetEndScreenInfo(GameData recordData, int wavesCompleted, bool isNewWaveRecord, float timeSpent) {
+        DefeatedWavesValue.text = isNewWaveRecord ? $"! {wavesCompleted}" : $"{wavesCompleted}";
+        RecordDefeatedWavesValue.text = isNewWaveRecord ? $"! {recordData.HighestWaveCompleted}" : $"{recordData.HighestWaveCompleted}";
+        RecordTimeSpentValue.text = textifyTime(timeSpent);
+    }
+    
+    // public void SetEndScreenInfo(GameData data, int waveReached, bool isNewWaveRecord, bool isNewTimeRecord) {
+    //     DefeatedWavesValue.text = $"{waveReached}";
+    //     RecordDefeatedWavesValue.text = isNewWaveRecord ? $"! {data.HighestWaveSurvived}" : $"{data.HighestWaveSurvived}";
+    //     // RecordTimeSpentValue.text = isNewTimeRecord ? $"! {textifyTime(data.TimeSpent)}" : $"{textifyTime(data.TimeSpent)}";
+    // }
+    
+    // public void SetEndScreenInfo(float timeSurvived, float highestTimeSurvived, bool isNewTimeRecord, int enemiesKilled) {
+    //     // TimeSpentValue.text = textifyTime(timeSurvived);
+    //     // WaveReachedValue.text = (isNewTimeRecord ? "! " : "") + textifyTime(highestTimeSurvived);
+    //     // EnemiesKilledValue.text = enemiesKilled.ToString();
+    // }
+    
+    IEnumerator delayLoadScene(bool isRetrying) {
+        GameManager.Instance.MainCanvas.FadeToBlack();
+        yield return new WaitForSecondsRealtime(UIMainCanvas.FADER_FADE_DURATION + 0.05f);
+        if (isRetrying)
+            GameManager.Instance.currentSceneRunner.ReloadCurrentScene();
+        else {
+            GameManager.Instance.MainCanvas.FadeToClear();
+            GameManager.Instance.currentSceneRunner.SwitchToScene("MainMenuScene");
+        }
     }
     
     string textifyTime(float time) {

@@ -12,7 +12,7 @@ public class SRMainMenu : SceneRunner {
     }
     
     public void LoadLevel_Tutorial() {
-        SwitchToScene("TutroialAdam");
+        SwitchToScene("Tutorial 2");
     }
     
 }

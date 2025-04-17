@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3634931314128218591}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: RevolvePivot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -126,7 +126,7 @@ GameObject:
   m_Component:
   - component: {fileID: 609648572105866603}
   - component: {fileID: 4616840251091339629}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: DeathAudio
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -273,7 +273,7 @@ GameObject:
   - component: {fileID: 8896050954541902306}
   - component: {fileID: 355625505514129947}
   - component: {fileID: 748225079143293865}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: revolveMesh
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -355,7 +355,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6721453064086546325}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: BodyPivot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -449,7 +449,7 @@ GameObject:
   - component: {fileID: 2609697409460950332}
   - component: {fileID: 4101778514245048547}
   - component: {fileID: 1745451246302694824}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: LaserBasicEnemy
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -490,7 +490,7 @@ MonoBehaviour:
   Hitboxes: {fileID: 4109619154667978623}
   EnemyTrigger: {fileID: 0}
   Model: {fileID: 7188337209219841351}
-  TransformForRicochetToAimAt: {fileID: 0}
+  TransformForRicochetToAimAt: {fileID: 3634931314128218591}
   AmbientAudio: {fileID: 0}
   DeathAudio: {fileID: 4616840251091339629}
   Dead: 0
@@ -499,7 +499,7 @@ MonoBehaviour:
   rb: {fileID: 0}
   boid: {fileID: 0}
   suckable: {fileID: 0}
-  RicochetCanon: 1
+  RicochetCannon: 1
   ConsiderForRicochet: 1
   invincible: 0
   CrabBasicConfig: {fileID: 11400000, guid: 0542956ea33e3e14d986be1b369b9c1d, type: 2}
@@ -594,7 +594,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3649529104826026762}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: BarrelPivot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -627,7 +627,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2881485106052993911}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Model
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -660,7 +660,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 9139601731219526127}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: BarrelEndpoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -858,7 +858,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7381833553059979949}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Pivot
   m_TagString: Enemy
   m_Icon: {fileID: 0}

@@ -136,22 +136,27 @@ public class UISettingsPanel : UIPanel {
     /*****  CATEGORY BUTTONS  *****/
     
     public void OnButton_Controls() {
-        SetSettingsCategory(EActiveCategory.Controls);
+        setCategoryAndSave(EActiveCategory.Controls);
     }
     
     public void OnButton_Video() {
-        SetSettingsCategory(EActiveCategory.Video);
+        setCategoryAndSave(EActiveCategory.Video);
     }
     
     public void OnButton_Audio() {
-        SetSettingsCategory(EActiveCategory.Audio);
+        setCategoryAndSave(EActiveCategory.Audio);
     }
     
     
     
     /*****  OTHER  *****/
     
-    public void SetSettingsCategory(EActiveCategory newCategory) {
+    void setCategoryAndSave(EActiveCategory newCategory) {
+        setSettingsCategory(newCategory);
+        DataPersistenceManager.Instance.SaveSettings();
+    }
+    
+    void setSettingsCategory(EActiveCategory newCategory) {
         setAllCategoriesInactive();
         setAllButtonsInteractable();
         switch (newCategory) {
@@ -176,9 +181,8 @@ public class UISettingsPanel : UIPanel {
         MouseSenseLabel.text = "Mouse Sensitivity: " + sens.ToString("0.00");
     }
     
-    public override void Init() {
-        base.Init();
-        SetSettingsCategory(EActiveCategory.Controls);
+    void Start() {
+        setSettingsCategory(EActiveCategory.Controls);
     }
     
     void setAllCategoriesInactive() {
@@ -218,7 +222,7 @@ public class UISettingsPanel : UIPanel {
     }
     
     void setFOV(int val) {
-        val = Math.Clamp(val, 40, 130);
+        val = Math.Clamp(val, GameCamera.MIN_FOV, GameCamera.MAX_FOV);
         GameManager.Instance.CurrentFOV = val;
         fovInputField.SetTextWithoutNotify(val.ToString());
         fovSlider.SetValueWithoutNotify(val);
@@ -228,18 +232,21 @@ public class UISettingsPanel : UIPanel {
         masterVolSlider.SetValueWithoutNotify(val);
         masterVolInputField.SetTextWithoutNotify(val.ToString());
         AudioPlayer2D.Instance.SetMasterVolume(val);
+        DataPersistenceManager.Instance.usettings.MasterVolume = val;
     }
     
     void setVolumeSFX(int val) {
         sfxVolSlider.SetValueWithoutNotify(val);
         sfxVolInputField.SetTextWithoutNotify(val.ToString());
         AudioPlayer2D.Instance.SetSFXVolume(val);
+        DataPersistenceManager.Instance.usettings.SoundVolume = val;
     }
     
     void setVolumeMusic(int val) {
         musicVolSlider.SetValueWithoutNotify(val);
         musicVolInputField.SetTextWithoutNotify(val.ToString());
         AudioPlayer2D.Instance.SetMusicVolume(val);
+        DataPersistenceManager.Instance.usettings.MusicVolume = val;
     }
     
     void updateVideoOptions() {
@@ -259,8 +266,8 @@ public class UISettingsPanel : UIPanel {
         resolutionDropdown.SetValueWithoutNotify(resopi);
         vsyncToggle.SetIsOnWithoutNotify(QualitySettings.vSyncCount > 0);
         setFrameLimit(Application.targetFrameRate <= 0 ? 200 : Application.targetFrameRate);
-        float fov = Camera.main.fieldOfView;
-        fovInputField.SetTextWithoutNotify(Mathf.RoundToInt(fov).ToString());
+        int fov = GameManager.Instance.CurrentFOV;
+        fovInputField.SetTextWithoutNotify(fov.ToString());
         fovSlider.SetValueWithoutNotify(fov);
         int shadresopi = 0;
         switch (QualitySettings.shadowResolution) {
@@ -282,8 +289,7 @@ public class UISettingsPanel : UIPanel {
     
     void updateAudioOptions() {
         AudioMixer mam = AudioPlayer2D.Instance.MainAudioMixer;
-        float val;
-        mam.GetFloat("volMaster", out val);
+        mam.GetFloat("volMaster", out float val);
         setVolumeMaster(calcPowerVolume(val));
         mam.GetFloat("volSFX", out val);
         setVolumeSFX(calcPowerVolume(val));
@@ -291,7 +297,7 @@ public class UISettingsPanel : UIPanel {
         setVolumeMusic(calcPowerVolume(val));
     }
     
-    int calcPowerVolume(float volAsLog) {
+    int calcPowerVolume(float volAsLog) { // log to linear ints
         return Mathf.RoundToInt(100 * Mathf.Pow(10, volAsLog / 20f));
     }
     

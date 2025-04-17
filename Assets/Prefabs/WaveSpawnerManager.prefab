@@ -54,5 +54,5 @@ MonoBehaviour:
   - {fileID: 2896034069588207541, guid: 3ae622869f136174bb01b27a4b2a5191, type: 3}
   - {fileID: 2445692176423822423, guid: 46d12bfbb5907754c99c404dde16b028, type: 3}
   OwningEndlessMode: {fileID: 0}
-  CurrentWaveNumber: -1
-  CurrentPreloadedWaveNumber: -1
+  CurrentWaveNumber: 0
+  CurrentPreloadedWaveNumber: 0

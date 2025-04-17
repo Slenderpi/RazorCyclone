@@ -32,9 +32,9 @@ public class ExplosiveProjectile : ProjectileBase {
         base.OnHitEnemy(enemy);
     }
     
-    protected override void OnHitNonEnemy(GameObject other) {
+    protected override void OnHitNonEnemy() {
         explode();
-        base.OnHitNonEnemy(other);
+        base.OnHitNonEnemy();
     }
     
     protected override void OnProjectileLifetimeExpired() {

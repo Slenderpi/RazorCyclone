@@ -61,7 +61,7 @@ MonoBehaviour:
   rb: {fileID: 8116625089142116925}
   boid: {fileID: 0}
   suckable: {fileID: 0}
-  RicochetCanon: 1
+  RicochetCannon: 1
   ConsiderForRicochet: 1
   invincible: 0
   weakpoints:
@@ -295,7 +295,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2641803881502343745}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0.7, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -314,7 +314,7 @@ BoxCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 4, y: 1.4, z: 5.3462305}
-  m_Center: {x: 0, y: 0.7, z: 0.67311585}
+  m_Center: {x: 0, y: 0, z: 0.67311585}
 --- !u!1 &5423816317156839241
 GameObject:
   m_ObjectHideFlags: 0

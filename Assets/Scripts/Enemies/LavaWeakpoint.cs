@@ -80,6 +80,7 @@ public class LavaWeakpoint : EnemyWeakpoint {
         }
         gameObject.SetActive(false);
         A_WeakpointDefeated.Invoke(damageType);
+        Instantiate(EnConfig.EnemyDeathVFX).transform.position = weakpointTransform.position;
     }
     
     public void BeginExpose() {

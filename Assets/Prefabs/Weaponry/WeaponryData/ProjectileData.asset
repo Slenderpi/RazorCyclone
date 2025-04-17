@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: ProjectileData
   m_EditorClassIdentifier: 
   ProjectileRadius: 0.5
-  MaxLifetime: 10
+  LifetimePerRicochetAdd1: 3.2
+  MaxLifetime: 15
   ImpactEffect: {fileID: 3002241975603437205, guid: 80374ef7d0b981b4cbffdeb0ebf79bc9, type: 3}
   RicochetEffect: {fileID: 3002241975603437205, guid: e79ef6db1d7da914b931e1ea966ac2f6, type: 3}

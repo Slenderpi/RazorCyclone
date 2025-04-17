@@ -2,12 +2,17 @@ using UnityEngine;
 
 public class GameCamera : MonoBehaviour {
     
+    // NOTE: Updating these values will reqquire the FOV slider in the settings menu to have its min/max adjusted
+    public static readonly int MIN_FOV = 60;
+    public static readonly int MAX_FOV = 110;
+    
     Camera c;
     SecondOrderDynamicsF sodFOV;
     
     [Header("References")]
     [SerializeField]
     Camera WeaponCamera;
+    public Camera RearCam;
     
     [Header("Parameters")]
     [SerializeField]

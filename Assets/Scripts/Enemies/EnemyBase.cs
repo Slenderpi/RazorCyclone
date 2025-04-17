@@ -37,7 +37,7 @@ public class EnemyBase : MonoBehaviour {
     [HideInInspector]
     public Suckable suckable;
     [HideInInspector]
-    public bool RicochetCanon = true;
+    public bool RicochetCannon = true;
     [HideInInspector]
     // If enabled, ricochets can target this enemy. Note: if an enemy sets this value to false in its LateInit() override or earlier, the enemy will not be added to the SceneRunner's list.
     public bool ConsiderForRicochet = true;
@@ -161,6 +161,9 @@ public class EnemyBase : MonoBehaviour {
             DeathAudio.Play();
         if (AmbientAudio && AmbientAudio.isPlaying)
             AmbientAudio.Stop();
+        
+        if (EnConfig.EnemyDeathVFX)
+            Instantiate(EnConfig.EnemyDeathVFX).transform.position = transform.position;
         
         enabled = false;
         Destroy(gameObject, EnConfig.DestroyDelay);

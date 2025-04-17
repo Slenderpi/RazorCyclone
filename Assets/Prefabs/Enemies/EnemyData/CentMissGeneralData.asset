@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: CentMissGeneralData
   m_EditorClassIdentifier: 
   FuelPickupPrefab: {fileID: 5163220815717078053, guid: bb72521b10fb34d7bbbed5f6f77687b4, type: 3}
+  EnemyDeathVFX: {fileID: 0}
   Damage: 10
   AttackDelay: 1
   DealDamageOnTouch: 1

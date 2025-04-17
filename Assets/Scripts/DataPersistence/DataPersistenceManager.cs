@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using System;
 
 public class DataPersistenceManager : MonoBehaviour {
     
@@ -8,47 +9,50 @@ public class DataPersistenceManager : MonoBehaviour {
     
     [Header("Debugging")]
     [SerializeField]
-    bool disableDataPersistence = true;
+    bool disableGameData = true;
+    [SerializeField]
+    bool disableSaveSettings = true;
     [SerializeField]
     bool initializeDataIfNull = true;
     
     [Header("File Storage Config")]
-    [SerializeField] private string fileName;
+    [SerializeField]
+    string gameDataFileName = "rcGameData";
+    [SerializeField]
+    string userSettingsFileName = "rcUserSettings";
+    
     
     GameData gameData;
+    [HideInInspector]
+    public UserSettings usettings;
     List<IDataPersistence> dataPersistenceObjects;
-    FileDataHandler dataHandler;
+    FileDataHandler<GameData> gameDataHandler;
+    FileDataHandler<UserSettings> usettingsHandler;
     
     
     
     void Awake() {
 #if !UNITY_EDITOR
-        disableDataPersistence = false; // Force data if in build
+        disableGameData = false; // Force data if in build
+        disableSaveSettings = false; // Force settings if in build
 #endif
         if (Instance != null) {
-            Debug.Log("Found more than one Data Persistence Manager in the scene. Destroying the newest one.");
+            Debug.LogError("Found more than one Data Persistence Manager in the scene. Destroying the newest one.");
             Destroy(gameObject);
             return;
         }
         Instance = this;
         
-        if (disableDataPersistence) {
-            gameData = new GameData();
-        }
-        
-        dataHandler = new FileDataHandler(Application.persistentDataPath, fileName);
+        gameDataHandler = new FileDataHandler<GameData>(Application.persistentDataPath, gameDataFileName);
+        usettingsHandler = new FileDataHandler<UserSettings>(Application.persistentDataPath, userSettingsFileName);
     }
     
     public void NewGame() {
-        if (disableDataPersistence) return;
-        
-        gameData = new GameData();
+        gameData = new();
     }
     
-    public void LoadGame() {
-        if (disableDataPersistence) return;
-        
-        gameData = dataHandler.Load();
+    public void LoadGameData() {
+        gameData = gameDataHandler.Load();
         if (gameData == null && initializeDataIfNull) {
             NewGame();
         }
@@ -56,17 +60,30 @@ public class DataPersistenceManager : MonoBehaviour {
         foreach (IDataPersistence dataPersistenceObj in dataPersistenceObjects) {
             dataPersistenceObj.LoadData(gameData);
         }
-        // print("Game loaded!");
     }
     
     public void SaveGame() {
-        if (disableDataPersistence) return;
+        if (disableGameData) return;
         
         foreach (IDataPersistence dataPersistenceObj in dataPersistenceObjects) {
             dataPersistenceObj.SaveData(gameData);
         }
         
-        dataHandler.Save(gameData);
+        gameDataHandler.Save(gameData);
+    }
+    
+    public void LoadSettings() {
+        usettings = usettingsHandler.Load();
+        usettings ??= new(); // The ??= operator here means: IF usettings == null THEN usettings = new() END
+        
+        loadControlSettings();
+        loadVideoSettings();
+        loadAudioSettings();
+    }
+    
+    public void SaveSettings() {
+        if (disableSaveSettings) return;
+        usettingsHandler.Save(usettings);
     }
     
     private void OnApplicationQuit() {
@@ -79,7 +96,7 @@ public class DataPersistenceManager : MonoBehaviour {
     
     public void OnSceneLoaded() {
         dataPersistenceObjects = FindAllDataPersistenceObjects();
-        LoadGame();
+        LoadGameData();
     }
     
     List<IDataPersistence> FindAllDataPersistenceObjects() {
@@ -88,6 +105,25 @@ public class DataPersistenceManager : MonoBehaviour {
             .OfType<IDataPersistence>();
         
         return new List<IDataPersistence>(dataPersistenceObjects);
+    }
+    
+    void loadControlSettings() {
+        float highSens = GameManager.Instance.HighestSensitivity;
+        float lowSens = GameManager.Instance.LowestSensitivity;
+        usettings.MouseSensitivity = Mathf.Clamp(usettings.MouseSensitivity, lowSens, highSens);
+        GameManager.Instance.CurrentMouseSensitivity = usettings.MouseSensitivity;
+        GameManager.Instance.SettingsPanel.MouseSenseSlider.value = (GameManager.Instance.CurrentMouseSensitivity - lowSens) / (highSens - lowSens);
+    }
+    
+    void loadVideoSettings() {
+        GameManager.Instance.CurrentFOV = Math.Clamp(usettings.FOV, GameCamera.MIN_FOV, GameCamera.MAX_FOV);
+    }
+    
+    void loadAudioSettings() {
+        AudioPlayer2D aud = GameManager.Instance.Audio2D;
+        aud.SetMasterVolume(usettings.MasterVolume);
+        aud.SetSFXVolume(usettings.SoundVolume);
+        aud.SetMusicVolume(usettings.MusicVolume);
     }
     
 }

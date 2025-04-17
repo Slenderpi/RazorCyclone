@@ -8,22 +8,16 @@ public class ProjectileBase : MonoBehaviour {
     
     [Header("Projectile Config")]
     public ProjectileSO ProjConfig;
-    // [Tooltip("The radius to use when doing multiple raycasts for collision detection.\n\nNOTE: if set to a value less than 0.1, this projectile will only check directly in front of it once.")]
-    // public float ProjectileRadius = 0.2f;
-    // [Tooltip("Maximum lifetime in seconds of this projectile to prevent projectiles that go into the void from living too long.")]
-    // public float MaxLifetime = 10f;
     [Tooltip("Maximum number of times this projectile can ricochet.\nA value of 0 means NO ricochet.")]
     public int MaxRicochet = 1;
-    bool hasHitEnemy = false;
     int ricRemain;
-    // [Tooltip("VFX for projectile impact.")]
-    // public GameObject ImpactEffect;
+    bool couldNotShowRicEffect = false; // Occurs when there is an extreme number of ricochets and a low framerate
     protected GameObject impeffect; // Pre-spawned impact effect
-    // [Tooltip("VFX for ricochet.")]
-    // public GameObject RicochetEffect;
     protected GameObject[] riceffects;
     
     [Header("References")]
+    [SerializeField]
+    GameObject ProjectileModel;
     [SerializeField]
     TrailRenderer TrailRicochet;
     [SerializeField]
@@ -32,11 +26,13 @@ public class ProjectileBase : MonoBehaviour {
     [HideInInspector]
     public Rigidbody rb;
     EnemyBase enemyToIgnore = null; // Most recent enemy that was hit for ricocheting
+    Collider colliderToIgnore = null; // Most recent non-enemy collider that was hit for ricocheting
     LayerMask layerMask;
     
-    GameObject closestHit = null;
-    Vector3 closestHitPos;
-    Vector3 closestHitNorm;
+    bool projectileDead = false;
+    // bool hitSomething = false;
+    int hitCase = 0; // 0 nothing, 1 enemy, 2 non enemy
+    protected RaycastHit closestHit;
     float closestHitSqrd = float.MaxValue;
     
     WaitForFixedUpdate waitFixedUpdForRic;
@@ -51,7 +47,7 @@ public class ProjectileBase : MonoBehaviour {
         waitFixedUpdForRic = new WaitForFixedUpdate();
         TrailNormal.emitting = false;
         TrailRicochet.emitting = false;
-        poolVFX();
+        StartCoroutine(poolVFX());
         Init();
     }
     
@@ -70,6 +66,7 @@ public class ProjectileBase : MonoBehaviour {
     protected virtual void Init() {}
     
     void FixedUpdate() {
+        if (projectileDead) return;
         checkForCollisions();
     }
     
@@ -78,6 +75,9 @@ public class ProjectileBase : MonoBehaviour {
         GameManager.D_DrawPoint(transform.position, Color.green);
 #endif
         float dist = rb.velocity.magnitude * Time.fixedDeltaTime;
+        // hitSomething = false;
+        hitCase = 0;
+        closestHitSqrd = float.MaxValue;
         raycastCollision(Vector3.zero, dist);
         if (ProjConfig.ProjectileRadius >= 0.1f) {
             raycastCollision(transform.right * ProjConfig.ProjectileRadius, dist);
@@ -85,8 +85,8 @@ public class ProjectileBase : MonoBehaviour {
             raycastCollision(transform.up * ProjConfig.ProjectileRadius, dist);
             raycastCollision(-transform.up * ProjConfig.ProjectileRadius, dist);
         }
-        if (closestHit) {
-            onHitSomething(closestHit);
+        if (hitCase > 0) {
+            onHitSomething();
         }
     }
     
@@ -100,22 +100,19 @@ public class ProjectileBase : MonoBehaviour {
             maxDistance: dist,
             layerMask: layerMask,
             hitInfo: out RaycastHit hit)) {
+            if (!hit.collider.CompareTag("Enemy")) {
+                // We've hit a non-enemy. If a previous cast hit an enemy, return early
+                if (hitCase == 1)
+                    return; // A previous cast hit an enemy and this one didn't. Prioritize enemy
+                else
+                    hitCase = 2; // We've hit a non-enemy
+            } else
+                hitCase = 1; // This was the first raycast to hit an enemy
+            // Check if the new hit is closer
             float hitDistSqrd = (hit.point - transform.position).sqrMagnitude;
             if (hitDistSqrd < closestHitSqrd) {
-                bool canCheck = !hit.collider.CompareTag("Enemy");
-                if (!canCheck) {
-                    // if (!hit.collider.TryGetComponent(out EnemyBase en)) {
-                    //     en = hit.collider.GetComponentInParent<EnemyBase>();
-                    // }
-                    // canCheck = en != enemyToIgnore;
-                    canCheck = enemyToIgnore != hit.collider.transform.parent.parent.GetComponent<EnemyBase>();
-                }
-                if (canCheck) {
-                    closestHitSqrd = hitDistSqrd;
-                    closestHit = hit.collider.gameObject;
-                    closestHitPos = hit.point;
-                    closestHitNorm = hit.normal;
-                }
+                closestHitSqrd = hitDistSqrd;
+                closestHit = hit;
             }
         }
     }
@@ -125,47 +122,34 @@ public class ProjectileBase : MonoBehaviour {
     // }
     
     // This function allows for a projectile's hitbox to be either a collider or a trigger
-    void onHitSomething(GameObject hitObject) {
-        if (!hitObject.CompareTag("Player") &&
-            !hitObject.CompareTag("Projectile") &&
-            !hitObject.CompareTag("Pickup")) {
+    void onHitSomething() {
+        Collider hitCollider = closestHit.collider;
+        if (!hitCollider.CompareTag("Player") &&
+            !hitCollider.CompareTag("Projectile") &&
+            !hitCollider.CompareTag("Pickup")) {
             EnemyBase enemy = null;
-            if (hitObject.CompareTag("Enemy")) {
-                enemy = hitObject.transform.parent.parent.GetComponent<EnemyBase>();
-                hasHitEnemy = true;
+            // if (hitCollider.CompareTag("Enemy")) {
+            if (hitCase == 1) { // Hit an enemy
+                enemy = hitCollider.transform.parent.parent.GetComponent<EnemyBase>();
                 if (enemy == enemyToIgnore) return;
-            }
-            transform.position = closestHitPos;
-            // Ricochet no matter what if possible
-            if (ricRemain > 0 && (hasHitEnemy || true)) {
-                OnRicochetEnemy(enemy);
-                return;
-            }
-            if (enemy) {
-                OnHitEnemy(enemy);
             } else {
-                OnHitNonEnemy(hitObject);
+                if (hitCollider == colliderToIgnore) return;
             }
-            Destroy(gameObject);
-            
-            // if (hitObject.CompareTag("Enemy")) {
-            //     if (!hitObject.transform.parent.parent.TryGetComponent(out EnemyBase enemy)) {
-            //         enemy = hitObject.GetComponentInParent<EnemyBase>();
-            //     }
-            //     if (enemy == enemyToIgnore) return;
-            //     transform.position = closestHitPos;
-            //     if (enemy.RicochetCanon && ricRemain > 0)
-            //         OnRicochetEnemy(enemy);
-            //     else {
-            //         // if (!enemy.RicochetCanon) print("No ricochet for '" + enemy.gameObject.name + "'");
-            //         OnHitEnemy(enemy);
-            //         Destroy(gameObject);
-            //     }
-            // } else {
-            //     transform.position = closestHitPos;
-            //     OnHitNonEnemy(hitObject);
-            //     Destroy(gameObject);
-            // }
+            transform.position += closestHit.distance * rb.velocity.normalized;
+            if (ricRemain > 0) {
+                ricRemain--;
+                if (enemy)
+                    OnRicochetEnemy(enemy);
+                else
+                    OnRicochetNonEnemy();
+                // closestHitgobj = null;
+            } else {
+                if (enemy)
+                    OnHitEnemy(enemy);
+                else
+                    OnHitNonEnemy();
+                endProjectile();
+            }
         }
     }
     
@@ -186,17 +170,22 @@ public class ProjectileBase : MonoBehaviour {
     /// will be destroyed.
     /// </summary>
     /// <param name="other"></param>
-    protected virtual void OnHitNonEnemy(GameObject other) {
+    protected virtual void OnHitNonEnemy() {
         showImpactEffect();
     }
     
     protected virtual void OnRicochetEnemy(EnemyBase enemy) {
-        ricRemain--;
         enemyToIgnore = enemy;
-        closestHit = null;
-        closestHitSqrd = float.MaxValue;
+        colliderToIgnore = null;
         EnemyBase closestEn = GameManager.Instance.currentSceneRunner.GetClosestEnemy(transform.position, enemyToIgnore);
         Vector3 ricVel;
+        if (closestEn && closestEn.rb) {
+            Vector3 predPos = BoidSteerer.PredictPosition(transform.position, closestEn.TransformForRicochetToAimAt.position, rb.velocity, closestEn.rb.velocity);
+            GameManager.D_DrawPoint(closestEn.TransformForRicochetToAimAt.position, Color.cyan, 1000);
+            // GameManager.D_DrawPoint(predPos, Color.green, 1000);
+            GameManager.D_DrawPoint(transform.position, Color.white, 1000);
+            Debug.DrawRay(transform.position, predPos - transform.position, Color.magenta, 1000, false);
+        }
         if (closestEn) {
             if (closestEn.rb) // If has enemy has an rb, use predictive aiming
                 ricVel = (BoidSteerer.PredictPosition(
@@ -205,14 +194,27 @@ public class ProjectileBase : MonoBehaviour {
             else // Enemy has no rb, so use their current position
                 ricVel = (closestEn.TransformForRicochetToAimAt.position - transform.position).normalized * rb.velocity.magnitude;
         } else // No valid enemy to ricochet to. Reflect physically
-            ricVel = Vector3.Reflect(rb.velocity, closestHitNorm);
+            ricVel = Vector3.Reflect(rb.velocity, closestHit.normal);
         rb.velocity *= 0;
         if (ricRemain == 0) {
             TrailRicochet.emitting = false;
             TrailNormal.emitting = true;
         }
         StartCoroutine(ricochetVelNextFrame(ricVel));
-        enemy?.TakeDamage(100, EDamageType.Projectile);
+        enemy.TakeDamage(100, EDamageType.Projectile);
+        showRicochetEffect();
+    }
+    
+    protected void OnRicochetNonEnemy() {
+        colliderToIgnore = closestHit.collider;
+        enemyToIgnore = null;
+        Vector3 ricVel = Vector3.Reflect(rb.velocity, closestHit.normal);
+        rb.velocity *= 0;
+        if (ricRemain == 0) {
+            TrailRicochet.emitting = false;
+            TrailNormal.emitting = true;
+        }
+        StartCoroutine(ricochetVelNextFrame(ricVel));
         showRicochetEffect();
     }
     
@@ -227,13 +229,31 @@ public class ProjectileBase : MonoBehaviour {
     /// this method destroys the projectile.
     /// </summary>
     protected virtual void OnProjectileLifetimeExpired() {
+        if (projectileDead) return;
+        endProjectile();
+    }
+    
+    void endProjectile() {
+        projectileDead = true;
+        rb.velocity *= 0;
+        if (ricRemain > 0)
+            TrailRicochet.emitting = false;
+        else
+            TrailNormal.emitting = false;
+        ProjectileModel.SetActive(false);
         showImpactEffect();
-        Destroy(gameObject);
+        Destroy(gameObject, 4);
     }
     
     void OnDestroy() {
-        for (int i = 0; i < ricRemain; i++) {
-            Destroy(riceffects[i]);
+        if (couldNotShowRicEffect) {
+            // Go through every single ric effect and try to delete it to assure complete deletion
+            for (int i = 0; i < MaxRicochet; i++)
+                if (riceffects[i])
+                    Destroy(riceffects[i]);
+        } else {
+            for (int i = MaxRicochet - ricRemain; i < MaxRicochet; i++)
+                Destroy(riceffects[i]);
         }
     }
     
@@ -243,23 +263,32 @@ public class ProjectileBase : MonoBehaviour {
     }
     
     void showRicochetEffect() {
-        GameObject re = riceffects[ricRemain];
+        GameObject re = riceffects[MaxRicochet - ricRemain - 1]; // ricRemain has already been reduced so treat as (ricRemain + 1)
+        if (!re) {
+            couldNotShowRicEffect = true;
+            return;
+        }
         re.transform.SetPositionAndRotation(transform.position, transform.rotation);
         re.SetActive(true);
     }
     
     IEnumerator ProjectileLifetime() {
-        yield return new WaitForSeconds(ProjConfig.MaxLifetime);
+        yield return new WaitForSeconds(Mathf.Min(ProjConfig.LifetimePerRicochetAdd1 * (MaxRicochet + 1), ProjConfig.MaxLifetime));
         OnProjectileLifetimeExpired();
     }
     
-    void poolVFX() {
+    IEnumerator poolVFX() {
         impeffect = Instantiate(ProjConfig.ImpactEffect);
         impeffect.SetActive(false);
         riceffects = new GameObject[MaxRicochet];
+        int counter = 0;
         for (int i = 0; i < MaxRicochet; i++) {
             riceffects[i] = Instantiate(ProjConfig.RicochetEffect);
             riceffects[i].SetActive(false);
+            if (++counter >= 10) {
+                counter = 0;
+                yield return null;
+            }
         }
     }
     
