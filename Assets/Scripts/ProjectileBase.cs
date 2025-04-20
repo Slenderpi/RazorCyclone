@@ -30,7 +30,6 @@ public class ProjectileBase : MonoBehaviour {
     LayerMask layerMask;
     
     bool projectileDead = false;
-    // bool hitSomething = false;
     int hitCase = 0; // 0 nothing, 1 enemy, 2 non enemy
     protected RaycastHit closestHit;
     float closestHitSqrd = float.MaxValue;
@@ -42,8 +41,7 @@ public class ProjectileBase : MonoBehaviour {
     void Awake() {
         rb = GetComponent<Rigidbody>();
         layerMask = (1 << LayerMask.NameToLayer("Default")) |
-                    (1 << LayerMask.NameToLayer("EnemyHitbox")); // |
-                    // (1 << LayerMask.NameToLayer("EnemyWeapon"));
+                    (1 << LayerMask.NameToLayer("EnemyHitbox"));
         waitFixedUpdForRic = new WaitForFixedUpdate();
         TrailNormal.emitting = false;
         TrailRicochet.emitting = false;
@@ -75,7 +73,6 @@ public class ProjectileBase : MonoBehaviour {
         GameManager.D_DrawPoint(transform.position, Color.green);
 #endif
         float dist = rb.velocity.magnitude * Time.fixedDeltaTime;
-        // hitSomething = false;
         hitCase = 0;
         closestHitSqrd = float.MaxValue;
         raycastCollision(Vector3.zero, dist);
@@ -117,10 +114,6 @@ public class ProjectileBase : MonoBehaviour {
         }
     }
     
-    // void OnCollisionEnter(Collision collision) {
-    //     onHitSomething(collision.gameObject);
-    // }
-    
     // This function allows for a projectile's hitbox to be either a collider or a trigger
     void onHitSomething() {
         Collider hitCollider = closestHit.collider;
@@ -128,7 +121,6 @@ public class ProjectileBase : MonoBehaviour {
             !hitCollider.CompareTag("Projectile") &&
             !hitCollider.CompareTag("Pickup")) {
             EnemyBase enemy = null;
-            // if (hitCollider.CompareTag("Enemy")) {
             if (hitCase == 1) { // Hit an enemy
                 enemy = hitCollider.transform.parent.parent.GetComponent<EnemyBase>();
                 if (enemy == enemyToIgnore) return;
@@ -142,7 +134,6 @@ public class ProjectileBase : MonoBehaviour {
                     OnRicochetEnemy(enemy);
                 else
                     OnRicochetNonEnemy();
-                // closestHitgobj = null;
             } else {
                 if (enemy)
                     OnHitEnemy(enemy);
@@ -179,6 +170,7 @@ public class ProjectileBase : MonoBehaviour {
         colliderToIgnore = null;
         EnemyBase closestEn = GameManager.Instance.currentSceneRunner.GetClosestEnemy(transform.position, enemyToIgnore);
         Vector3 ricVel;
+#if DEBUG_RAYS
         if (closestEn && closestEn.rb) {
             Vector3 predPos = BoidSteerer.PredictPosition(transform.position, closestEn.TransformForRicochetToAimAt.position, rb.velocity, closestEn.rb.velocity);
             GameManager.D_DrawPoint(closestEn.TransformForRicochetToAimAt.position, Color.cyan, 1000);
@@ -186,6 +178,7 @@ public class ProjectileBase : MonoBehaviour {
             GameManager.D_DrawPoint(transform.position, Color.white, 1000);
             Debug.DrawRay(transform.position, predPos - transform.position, Color.magenta, 1000, false);
         }
+#endif
         if (closestEn) {
             if (closestEn.rb) // If has enemy has an rb, use predictive aiming
                 ricVel = (BoidSteerer.PredictPosition(

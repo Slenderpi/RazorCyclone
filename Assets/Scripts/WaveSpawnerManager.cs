@@ -162,18 +162,27 @@ public class WaveSpawnerManager : MonoBehaviour {
         int currBatchSize = 0;
         for (int i = 0; i < EnemyPrefabs.Length; i++) {
             int count = currPreloadedWave.enemyCounts[i];
-            for (int c = 0; c < count; c++) {
+            if (i == (int)EEnemyType.Centipede) {
+                if (count == 0) continue;
+                // Centipede count determines body length instead of count
                 EnemyBase en = Instantiate(EnemyPrefabs[i]);
                 en.gameObject.SetActive(false);
+                (en as CentipedeEnemy).BodyLength = count;
                 loadedWave.Add(en);
-                if (++currBatchSize >= PRELOAD_MAX_BATCH_SIZE) {
-                    currBatchSize = 0;   
+                currBatchSize++;
+            } else
+                for (int c = 0; c < count; c++) {
+                    EnemyBase en = Instantiate(EnemyPrefabs[i]);
+                    en.gameObject.SetActive(false);
+                    loadedWave.Add(en);
+                    if (++currBatchSize >= PRELOAD_MAX_BATCH_SIZE) {
+                        currBatchSize = 0;   
 #if DEBUG_WAVE_STRS && UNITY_EDITOR
-                    Debug.Log($"DEBUG: Preload batch delay t = {Time.time - startTime}");
+                        Debug.Log($"DEBUG: Preload batch delay t = {Time.time - startTime}");
 #endif
-                    yield return null;
+                        yield return null;
+                    }
                 }
-            }
         }
         preloadWaveFinished = true;
     }
@@ -320,7 +329,8 @@ public class WaveSpawnerManager : MonoBehaviour {
         int lei = 0; // Loaded Enemy i
         for (int eti = 0; eti < numETypes; eti++) { // Enemy Type i
             List<Spawner> currSpList = availableSpawners[eti];
-            for (int ci = 0; ci < currPreloadedWave.enemyCounts[eti]; ci++) { // (Enemy) Count i
+            int count = eti != (int)EEnemyType.Centipede ? currPreloadedWave.enemyCounts[eti] : 1;
+            for (int ci = 0; ci < count; ci++) { // (Enemy) Count i
                 EnemyBase en = loadedWave[lei++];
                 Transform spawnTrans = currSpList[rnd.Next(currSpList.Count)].transform;
                 en.transform.SetPositionAndRotation(spawnTrans.position, spawnTrans.rotation);

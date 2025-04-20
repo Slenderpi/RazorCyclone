@@ -2,7 +2,7 @@ using System.Collections;
 using UnityEngine;
 
 public class CentipedeEnemy : EnemyBase {
-
+    
     enum MissileAction {
         Waiting,
         OpeningDoor,
@@ -13,8 +13,8 @@ public class CentipedeEnemy : EnemyBase {
     
     [Header("Centipede Config")]
     public CentipedeEnemySO CentConfig;
-    [Tooltip("Set this to true in the inspector.\nWhen the head spawns centipede body pieces, it will automatically make sure those pieces have this value set to false.")]
-    public bool SpawnAsHead = false;
+    // [Tooltip("Set this to true in the inspector.\nWhen the head spawns centipede body pieces, it will automatically make sure those pieces have this value set to false.")]
+    // public bool SpawnAsHead = false;
     [Tooltip("Number of body segments to spawn.\nA value of 1 means there will be 1 body segment and 1 head (this object), resulting in a total length of 2.")]
     public int BodyLength = 10; // Only matters if this piece is spawned as a head. A value of 1 means there will be a head (this obj) and 1 body piece.
     [SerializeField]
@@ -24,8 +24,6 @@ public class CentipedeEnemy : EnemyBase {
     Transform doorHinge;
     [SerializeField]
     MeshRenderer modelMeshRenderer;
-    // [SerializeField]
-    // Material headMaterial;
     
     Vector3[] sampledPositions;
     Quaternion[] sampledRots;
@@ -44,16 +42,21 @@ public class CentipedeEnemy : EnemyBase {
     CentipedeMissile pooledMissile;
     GameObject pooledFireEffect;
     
+    Vector3 startPos;
+    Quaternion startRot;
+    
     protected bool headDoneInitializing = false;
     
     
     
     protected override void Init() {
-        if (!SpawnAsHead) return;
-        SpawnAsHead = false;
+        if (head) return;
+        // if (!SpawnAsHead) return;
+        // SpawnAsHead = false;
+        startPos = transform.position;
+        startRot = transform.rotation;
         samplingDelay = CentConfig.FollowOffset / CentConfig.MoveSpeed;
-        samplingLength = BodyLength + 1;
-        StartCoroutine(instantiateBodyAndHead());
+        // StartCoroutine(instantiateBodyAndHead());
     }
     
     IEnumerator instantiateBodyAndHead() {
@@ -85,22 +88,64 @@ public class CentipedeEnemy : EnemyBase {
         sampledPositions = samposs;
         sampledRots = samrots;
         modelMeshRenderer.material = CentConfig.HeadMaterial;
-        SpawnAsHead = true;
+        // SpawnAsHead = true;
+        print("Head done initializing");
         headDoneInitializing = true;
     }
     
     protected override void LateInit() {
         base.LateInit();
-        StartCoroutine(initCentipede());
+        // StartCoroutine(initCentipede());
+        samplingLength = BodyLength + 1;
+        if (head == null) {
+            StartCoroutine(staggerSpawnAndStartBody());
+        }
+        poolMissile();
+        lastMissileActionTime = Time.time + CentConfig.MissileFireDelayOffset * bodyIndex;
+        currMissileAction = MissileAction.Waiting;
+    }
+    
+    IEnumerator staggerSpawnAndStartBody() {
+        CentipedeEnemy prev = this;
+        int counter = 0;
+        for (int i = 0; i < BodyLength; i++) {
+            CentipedeEnemy ce = Instantiate(this);
+            ce.transform.SetPositionAndRotation(startPos, startRot);
+            ce.head = this;
+            ce.cePre = prev;
+            prev.ceAft = ce;
+            ce.bodyIndex = i + 1; // First body piece is at 1. I'm considering the head as 0
+            ce.samplingDelay = samplingDelay;
+            ce.sampleWaiter = new WaitForSeconds(samplingDelay);
+            ce.headDoneInitializing = true;
+            prev = ce;
+            if (++counter >= 1) {
+                counter = 0;
+                yield return null;
+            }
+        }
+        sampledPositions = new Vector3[samplingLength];
+        sampledPositions[BodyLength] = transform.position;
+        sampledRots = new Quaternion[samplingLength];
+        sampledRots[BodyLength] = transform.rotation;
+        sampleWaiter = new WaitForSeconds(samplingDelay);
+        setStartSamples();
+        lastSampleTime = Time.time;
+        headDoneInitializing = true;
+        StartCoroutine(sampleTransform());
+        modelMeshRenderer.material = CentConfig.HeadMaterial;
     }
     
     IEnumerator initCentipede() {
         if (head == null) {
+            print("Head trying to start");
             while (!headDoneInitializing)
                 yield return null;
+            print("Head starting!");
             setStartSamples();
             lastSampleTime = Time.time;
             StartCoroutine(sampleTransform());
+            print("Starting aft of head");
             ceAft.gameObject.SetActive(true);
         } else {
             headDoneInitializing = true;
@@ -113,11 +158,16 @@ public class CentipedeEnemy : EnemyBase {
     }
     
     IEnumerator staggerStartAft() {
+        string s = $"{gameObject.name} trying to start aft ";
         if (ceAft) {
+            s += " | can start ";
+            print(s);
             if (bodyIndex % 5 == 0)
                 yield return null;
             ceAft.gameObject.SetActive(true);
+            print($"{gameObject.name} started");
         }
+        else print(s);
     }
     
     void Update() {
