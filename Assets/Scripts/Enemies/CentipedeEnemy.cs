@@ -13,10 +13,10 @@ public class CentipedeEnemy : EnemyBase {
     
     [Header("Centipede Config")]
     public CentipedeEnemySO CentConfig;
-    // [Tooltip("Set this to true in the inspector.\nWhen the head spawns centipede body pieces, it will automatically make sure those pieces have this value set to false.")]
-    // public bool SpawnAsHead = false;
     [Tooltip("Number of body segments to spawn.\nA value of 1 means there will be 1 body segment and 1 head (this object), resulting in a total length of 2.")]
     public int BodyLength = 10; // Only matters if this piece is spawned as a head. A value of 1 means there will be a head (this obj) and 1 body piece.
+    protected int shrunkenLengthUse; // Length of a Centipede for when it's been divided. Used by rear half
+    protected int trackedShrunkenLength; // Length of Centipede for when it's been divided. Used by front half
     [SerializeField]
     [Tooltip("Transform that the missile will be launched form. Make sure the forward (-z) direction of this transform is set correctly, because missiles will spawn with this orientation.")]
     Transform missileLaunchPoint;
@@ -36,6 +36,7 @@ public class CentipedeEnemy : EnemyBase {
     int bodyIndex;
     float samplingDelay;
     float lastSampleTime;
+    float randRoamOffset;
     WaitForSeconds sampleWaiter;
     float lastMissileActionTime;
     MissileAction currMissileAction;
@@ -51,51 +52,17 @@ public class CentipedeEnemy : EnemyBase {
     
     protected override void Init() {
         if (head) return;
-        // if (!SpawnAsHead) return;
-        // SpawnAsHead = false;
         startPos = transform.position;
         startRot = transform.rotation;
         samplingDelay = CentConfig.FollowOffset / CentConfig.MoveSpeed;
-        // StartCoroutine(instantiateBodyAndHead());
-    }
-    
-    IEnumerator instantiateBodyAndHead() {
-        Vector3[] samposs = new Vector3[samplingLength];
-        samposs[BodyLength] = transform.position;
-        Quaternion[] samrots = new Quaternion[samplingLength];
-        samrots[BodyLength] = transform.rotation;
-        CentipedeEnemy prev = this;
-        int counter = 0;
-        for (int i = 0; i < BodyLength; i++) {
-            // samposs[i] = transform.position - transform.forward * FollowOffset * i;
-            // samrots[i] = transform.rotation;
-            CentipedeEnemy ce = Instantiate(this);
-            ce.gameObject.SetActive(false);
-            ce.head = this;
-            ce.cePre = prev;
-            prev.ceAft = ce;
-            ce.bodyIndex = i + 1; // First body piece is at 1. I'm considering the head as 0
-            ce.sampleWaiter = new WaitForSeconds(samplingDelay);
-            ce.samplingDelay = samplingDelay;
-            prev = ce;
-            if (++counter >= 5) {
-                counter = 0;
-                yield return null;
-            }
-        }
-        prev.ceAft = null; // Make sure the last segment has an aft of null
-        sampleWaiter = new WaitForSeconds(samplingDelay);
-        sampledPositions = samposs;
-        sampledRots = samrots;
-        modelMeshRenderer.material = CentConfig.HeadMaterial;
-        // SpawnAsHead = true;
-        print("Head done initializing");
-        headDoneInitializing = true;
+        shrunkenLengthUse = BodyLength;
+        trackedShrunkenLength = BodyLength;
     }
     
     protected override void LateInit() {
         base.LateInit();
         // StartCoroutine(initCentipede());
+        randRoamOffset = Random.Range(0, GameManager.Instance.currentSceneRunner.centipedeCircleCompleteTime);
         samplingLength = BodyLength + 1;
         if (head == null) {
             StartCoroutine(staggerSpawnAndStartBody());
@@ -136,46 +103,30 @@ public class CentipedeEnemy : EnemyBase {
         modelMeshRenderer.material = CentConfig.HeadMaterial;
     }
     
-    IEnumerator initCentipede() {
-        if (head == null) {
-            print("Head trying to start");
-            while (!headDoneInitializing)
-                yield return null;
-            print("Head starting!");
-            setStartSamples();
-            lastSampleTime = Time.time;
-            StartCoroutine(sampleTransform());
-            print("Starting aft of head");
-            ceAft.gameObject.SetActive(true);
-        } else {
-            headDoneInitializing = true;
-            if (ceAft) // Last body segment will have a bodyIndex of BodyLength
-                StartCoroutine(staggerStartAft());
-        }
-        poolMissile();
-        lastMissileActionTime = Time.time + CentConfig.MissileFireDelayOffset * bodyIndex;
-        currMissileAction = MissileAction.Waiting;
-    }
-    
-    IEnumerator staggerStartAft() {
-        string s = $"{gameObject.name} trying to start aft ";
-        if (ceAft) {
-            s += " | can start ";
-            print(s);
-            if (bodyIndex % 5 == 0)
-                yield return null;
-            ceAft.gameObject.SetActive(true);
-            print($"{gameObject.name} started");
-        }
-        else print(s);
-    }
-    
     void Update() {
         if (head == null) {
             if (!headDoneInitializing) return;
             if (!GameManager.CurrentPlayer) return;
-            Vector3 toplr = GameManager.CurrentPlayer.transform.position - transform.position;
-            transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(toplr), 60 * Time.deltaTime);
+            Vector3 roamPoint = GameManager.Instance.currentSceneRunner.mapCenter;
+            float rad = Mathf.LerpUnclamped(
+                GameManager.Instance.currentSceneRunner.minCentipedeRoamRadius,
+                GameManager.Instance.currentSceneRunner.maxCentipedeRoamRadius,
+                (float)shrunkenLengthUse / BodyLength
+            );
+            float height = Mathf.LerpUnclamped(
+                GameManager.Instance.currentSceneRunner.minCentipedeRoamHeightRange,
+                GameManager.Instance.currentSceneRunner.maxCentipedeRoamHeightRange,
+                (float)shrunkenLengthUse / BodyLength
+            );
+            float t = (Time.time + randRoamOffset) * 2f * Mathf.PI / GameManager.Instance.currentSceneRunner.centipedeCircleCompleteTime;
+            roamPoint.x += rad * Mathf.Cos(t);
+            roamPoint.z += rad * Mathf.Sin(t);
+            roamPoint.y += height * Mathf.Sin(Time.time * 2f * Mathf.PI / GameManager.Instance.currentSceneRunner.centipedeHeightCompletionTime);
+#if UNITY_EDITOR && true
+            GameManager.D_DrawPoint(roamPoint, Color.green, Time.deltaTime);
+            Debug.DrawRay(transform.position, roamPoint - transform.position, Color.cyan, Time.deltaTime);
+#endif
+            transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(roamPoint - transform.position), 60 * Time.deltaTime);
             transform.position += CentConfig.MoveSpeed * Time.deltaTime * transform.forward;
         } else {
             if (!head.headDoneInitializing) return;
@@ -204,6 +155,7 @@ public class CentipedeEnemy : EnemyBase {
     }
 
     void updateHeadAboutDefeat(int index) {
+        trackedShrunkenLength = index - 1;
         // When a segment is defeated, shrink the sampling arrays
         Vector3[] newPoss = new Vector3[index];
         Quaternion[] newRots = new Quaternion[index];
@@ -220,11 +172,12 @@ public class CentipedeEnemy : EnemyBase {
         samplingLength = index;
     }
     
-    void onNewHeadWasCreated(CentipedeEnemy newHead, int newIndex) {
+    void onNewHeadWasCreated(CentipedeEnemy newHead, int newIndex, int newCurrBodLen) {
         bodyIndex = newIndex;
         head = newHead;
+        trackedShrunkenLength = newCurrBodLen;
         if (ceAft)
-            ceAft.onNewHeadWasCreated(newHead, newIndex + 1);
+            ceAft.onNewHeadWasCreated(newHead, newIndex + 1, newCurrBodLen);
     }
     
     void becomeNewHead(CentipedeEnemy headRef) {
@@ -239,10 +192,13 @@ public class CentipedeEnemy : EnemyBase {
             sampledPositions[i] = headRef.sampledPositions[ind];
             sampledRots[i] = headRef.sampledRots[ind];
         }
+        shrunkenLengthUse = trackedShrunkenLength - bodyIndex;
+        trackedShrunkenLength = shrunkenLengthUse;
+        randRoamOffset = Random.Range(0, GameManager.Instance.currentSceneRunner.centipedeCircleCompleteTime);
         bodyIndex = 0;
         modelMeshRenderer.material = CentConfig.HeadMaterial;
         if (ceAft)
-            ceAft.onNewHeadWasCreated(this, 1);
+            ceAft.onNewHeadWasCreated(this, 1, shrunkenLengthUse);
         StartCoroutine(sampleTransform());
     }
     

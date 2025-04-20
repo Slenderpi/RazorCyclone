@@ -329,7 +329,7 @@ public class WaveSpawnerManager : MonoBehaviour {
         int lei = 0; // Loaded Enemy i
         for (int eti = 0; eti < numETypes; eti++) { // Enemy Type i
             List<Spawner> currSpList = availableSpawners[eti];
-            int count = eti != (int)EEnemyType.Centipede ? currPreloadedWave.enemyCounts[eti] : 1;
+            int count = eti != (int)EEnemyType.Centipede ? currPreloadedWave.enemyCounts[eti] : currPreloadedWave.enemyCounts[eti] > 0 ? 1 : 0;
             for (int ci = 0; ci < count; ci++) { // (Enemy) Count i
                 EnemyBase en = loadedWave[lei++];
                 Transform spawnTrans = currSpList[rnd.Next(currSpList.Count)].transform;

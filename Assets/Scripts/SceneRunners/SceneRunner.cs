@@ -1,3 +1,6 @@
+// UNCOMMENT THE LINE BELOW TO SEE THE PATH THE CENTIPEDE WILL ROAM TOWARDS
+#define DRAW_CENTIPEDE_PATH
+
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,6 +11,16 @@ public class SceneRunner : MonoBehaviour {
     [Header("Consistent References")] // References consistent for all SceneRunners
     public Transform playerSpawnPoint;
     public Lava lava;
+    [Tooltip("Center of the map the Centipede will roam around. Height matters.")]
+    public Vector3 mapCenter;
+    public float maxCentipedeRoamRadius = 50;
+    public float minCentipedeRoamRadius = 20;
+    public float maxCentipedeRoamHeightRange = 5;
+    public float minCentipedeRoamHeightRange = 1.5f;
+    [Tooltip("Amount of time it will take the Centipede's roam point to make one full circle.")]
+    public float centipedeCircleCompleteTime = 70;
+    [Tooltip("Amount of time for the Centipede's roam point to go both up and down once.")]
+    public float centipedeHeightCompletionTime = 7f;
     
     // [HideInInspector]
     public List<EnemyBase> EnemiesForRicochet;
@@ -33,7 +46,49 @@ public class SceneRunner : MonoBehaviour {
     public virtual void BeginScene() {
         SpawnPlayerAndConnect();
     }
-    
+
+#if UNITY_EDITOR && DRAW_CENTIPEDE_PATH
+    void FixedUpdate() {
+        int numPoints = 360;
+        float horiT = 0 * 2f * Mathf.PI;
+        float vertT = 0 * 2f * centipedeCircleCompleteTime * Mathf.PI / centipedeHeightCompletionTime; 
+        Vector3 point = mapCenter;
+        point.x += maxCentipedeRoamRadius * Mathf.Cos(horiT);
+        point.z += maxCentipedeRoamRadius * Mathf.Sin(horiT);
+        point.y += maxCentipedeRoamHeightRange * Mathf.Sin(vertT);
+        Vector3 prevP = point;
+        for (int i = 1; i <= numPoints; i++) {
+            horiT = (float)i / numPoints * 2f * Mathf.PI;
+            vertT = (float)i / numPoints * centipedeCircleCompleteTime * 2f * Mathf.PI / centipedeHeightCompletionTime; 
+            point = mapCenter;
+            point.x += maxCentipedeRoamRadius * Mathf.Cos(horiT);
+            point.z += maxCentipedeRoamRadius * Mathf.Sin(horiT);
+            point.y += maxCentipedeRoamHeightRange * Mathf.Sin(vertT);
+            GameManager.D_DrawPoint(point, Color.magenta);
+            Debug.DrawRay(prevP, point - prevP, Color.red);
+            prevP = point;
+        }
+        horiT = 0 * 2f * Mathf.PI;
+        vertT = 0 * 2f * centipedeCircleCompleteTime * Mathf.PI / centipedeHeightCompletionTime; 
+        point = mapCenter;
+        point.x += minCentipedeRoamRadius * Mathf.Cos(horiT);
+        point.z += minCentipedeRoamRadius * Mathf.Sin(horiT);
+        point.y += maxCentipedeRoamHeightRange * Mathf.Sin(vertT);
+        prevP = point;
+        for (int i = 1; i <= numPoints; i++) {
+            horiT = (float)i / numPoints * 2f * Mathf.PI;
+            vertT = (float)i / numPoints * centipedeCircleCompleteTime * 2f * Mathf.PI / centipedeHeightCompletionTime; 
+            point = mapCenter;
+            point.x += minCentipedeRoamRadius * Mathf.Cos(horiT);
+            point.z += minCentipedeRoamRadius * Mathf.Sin(horiT);
+            point.y += minCentipedeRoamHeightRange * Mathf.Sin(vertT);
+            GameManager.D_DrawPoint(point, Color.magenta);
+            Debug.DrawRay(prevP, point - prevP, Color.yellow);
+            prevP = point;
+        }
+    }
+#endif
+
     protected void SpawnPlayerAndConnect() {
         GameManager.A_PlayerSpawned += _onPlayerSpawned;
         GameManager.Instance.SpawnPlayer();

@@ -10088,6 +10088,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerSpawnPoint: {fileID: 1430545054}
   lava: {fileID: 747643374}
+  mapCenter: {x: 0, y: 65, z: 0}
+  maxCentipedeRoamRadius: 50
+  maxCentipedeRoamHeightRange: 5
+  centipedeCircleCompleteTime: 70
+  centipedeHeightCompletionTime: 7
   EnemiesForRicochet: []
   WaveSpawnManager: {fileID: 772814286}
   EnemiesKilled: 0

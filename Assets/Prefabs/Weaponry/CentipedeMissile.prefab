@@ -395,7 +395,7 @@ GameObject:
   - component: {fileID: 6711953258236828399}
   m_Layer: 15
   m_Name: CentipedeMissile
-  m_TagString: Enemy
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -442,7 +442,7 @@ MonoBehaviour:
   rb: {fileID: 0}
   boid: {fileID: 0}
   suckable: {fileID: 0}
-  RicochetCanon: 1
+  RicochetCannon: 1
   ConsiderForRicochet: 1
   invincible: 0
   CentMissConfig: {fileID: 11400000, guid: b931e40545003cd4aabd076dfa5586d5, type: 2}
