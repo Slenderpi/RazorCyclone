@@ -3,7 +3,7 @@ using UnityEngine;
 public class EnemyBase : MonoBehaviour {
     
     [Tooltip("FOR PRESTON TO SET.")]
-    public EnemyType etypeid;
+    public EEnemyType etypeid;
     
     [Header("Enemy Configuration")]
     [Tooltip("Reference to the common data of this enemy.")]

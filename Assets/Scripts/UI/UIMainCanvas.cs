@@ -14,7 +14,8 @@ public class UIMainCanvas : UIPanel {
         Gameplay,
         Paused,
         Settings,
-        DiedEndless
+        DiedEndless,
+        Almanac
     }
     
     [HideInInspector]
@@ -30,6 +31,7 @@ public class UIMainCanvas : UIPanel {
     public UIMainMenuPanel MainMenuPanel;
     public UIDeathPanel DeathPanel;
     public UITutorialPanel TutorialPanel;
+    public UIAlmanac AlmanacPanel;
     
     [Header("Other")]
     public RawImage Fader;
@@ -40,44 +42,52 @@ public class UIMainCanvas : UIPanel {
         SetCanvasState(ECanvasState.Settings);
     }
     
+    public void OnButton_OpenAlmanac() {
+        SetCanvasState(ECanvasState.Almanac);
+    }
+    
     public void OnButton_Back() {
         switch (CurrentCanvasState) {
-            case ECanvasState.Paused:
-                if (GameManager.Instance.gameIsPaused)
-                    GameManager.Instance.ResumeGame();
-                break;
-            case ECanvasState.Settings:
-                DataPersistenceManager.Instance.SaveSettings();
-                if (SceneManager.GetActiveScene().name == "MainMenuScene") {
-                    SetCanvasState(ECanvasState.MainMenu);
-                } else {
-                    SetCanvasState(ECanvasState.Paused);
-                }
-                break;
+        case ECanvasState.Paused:
+            if (GameManager.Instance.gameIsPaused)
+                GameManager.Instance.ResumeGame();
+            break;
+        case ECanvasState.Settings:
+            DataPersistenceManager.Instance.SaveSettings();
+            SetCanvasState(SceneManager.GetActiveScene().name == "MainMenuScene" ? ECanvasState.MainMenu : ECanvasState.Paused);
+            break;
         }
+    }
+    
+    public void OnButton_CloseAlmanac() {
+        SetCanvasState(SceneManager.GetActiveScene().name == "MainMenuScene" ? ECanvasState.MainMenu : ECanvasState.Paused);
     }
     
     public void SetCanvasState(ECanvasState newState) {
         CurrentCanvasState = newState;
         setAllInactive();
         switch (newState) {
-            case ECanvasState.None:
-                break;
-            case ECanvasState.MainMenu:
-                MainMenuPanel.SetActive(true);
-                break;
-            case ECanvasState.Gameplay:
-                GamePanel.SetActive(true);
-                break;
-            case ECanvasState.Paused:
-                PausePanel.SetActive(true);
-                break;
-            case ECanvasState.Settings:
-                SettingsPanel.SetActive(true);
-                break;
-            case ECanvasState.DiedEndless:
-                DeathPanel.SetActive(true);
-                break;
+        case ECanvasState.None:
+            break;
+        case ECanvasState.MainMenu:
+            MainMenuPanel.SetActive(true);
+            break;
+        case ECanvasState.Gameplay:
+            GamePanel.SetActive(true);
+            break;
+        case ECanvasState.Paused:
+            PausePanel.SetActive(true);
+            break;
+        case ECanvasState.Settings:
+            SettingsPanel.SetActive(true);
+            break;
+        case ECanvasState.DiedEndless:
+            DeathPanel.SetActive(true);
+            break;
+        case ECanvasState.Almanac:
+            // TODO
+            // AlmanacPanel.SetActive(true);
+            break;
         }
         CanvasStateChanged?.Invoke(CurrentCanvasState);
     }
@@ -114,6 +124,8 @@ public class UIMainCanvas : UIPanel {
         SettingsPanel.SetActive(false);
         MainMenuPanel.SetActive(false);
         DeathPanel.SetActive(false);
+        // TODO
+        // AlmanacPanel.SetActive(false);
     }
     
     public void FadeToBlack() {

@@ -226,11 +226,11 @@ public class GameManager : MonoBehaviour {
     
     public void PauseInputPressed(InputAction.CallbackContext context) {
         if (SceneManager.GetActiveScene() == SceneManager.GetSceneByName("MainMenuScene")) {
-            if (MainCanvas.CurrentCanvasState == UIMainCanvas.ECanvasState.Settings)
+            if (MainCanvas.CurrentCanvasState == UIMainCanvas.ECanvasState.Settings || MainCanvas.CurrentCanvasState == UIMainCanvas.ECanvasState.Almanac)
                 MainCanvas.SetCanvasState(UIMainCanvas.ECanvasState.MainMenu);
         } else {
             if (gameIsPaused) {
-                if (MainCanvas.CurrentCanvasState == UIMainCanvas.ECanvasState.Settings)
+                if (MainCanvas.CurrentCanvasState == UIMainCanvas.ECanvasState.Settings || MainCanvas.CurrentCanvasState == UIMainCanvas.ECanvasState.Almanac)
                     MainCanvas.SetCanvasState(UIMainCanvas.ECanvasState.Paused);
                 else
                     ResumeGame();
@@ -344,7 +344,7 @@ public enum EDamageType {
 /// <summary>
 /// Enum representing an enemy type.
 /// </summary>
-public enum EnemyType {
+public enum EEnemyType {
     CannonFodder,
     HunterBasic,
     Hunter,

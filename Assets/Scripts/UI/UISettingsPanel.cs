@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 public class UISettingsPanel : UIPanel {
     
-    public enum EActiveCategory {
+    enum EActiveCategory {
         Controls,
         Video,
         Audio

@@ -23,7 +23,7 @@ public struct WaveEntry {
         string s = $"WAVE: {num, 2} | {"TYPE", -11} | COUNTS:";
         for (int i = 0; i < enemyCounts.Length; i++) {
             if (enemyCounts[i] == 0) continue;
-            s += string.Format("\n{0, 10} {1, -12}: {2, 2}", ">", (EnemyType)i, enemyCounts[i]);
+            s += string.Format("\n{0, 10} {1, -12}: {2, 2}", ">", (EEnemyType)i, enemyCounts[i]);
         }
         return s;
     }
@@ -181,7 +181,7 @@ public class WaveSpawnerManager : MonoBehaviour {
     void generateWave(int wnum) {
         currPreloadedWave = new() {
             num = wnum,
-            enemyCounts = new int[(int)EnemyType.COUNT]
+            enemyCounts = new int[(int)EEnemyType.COUNT]
         };
         currPreloadedWave.enemyCounts[0] = 3; // Hard code fodder to only be 3
         for (int i = 1; i < currPreloadedWave.enemyCounts.Length; i++) {
@@ -256,7 +256,7 @@ public class WaveSpawnerManager : MonoBehaviour {
         // Check if the wave to activate only has fodders in it
         activatedWaveIsOnlyFodder = currPreloadedWave.enemyCounts[0] > 0;
         if (activatedWaveIsOnlyFodder)
-            for (int ti = 1; ti < (int)EnemyType.COUNT; ti++)
+            for (int ti = 1; ti < (int)EEnemyType.COUNT; ti++)
                 if (currPreloadedWave.enemyCounts[ti] > 0) {
                     activatedWaveIsOnlyFodder = false;
                     break;
@@ -274,7 +274,7 @@ public class WaveSpawnerManager : MonoBehaviour {
         // The availableSpawners array will now be populated with lists of spawners that accept
         /   respective EnemyTypes.
         */
-        int numETypes = (int)EnemyType.COUNT;
+        int numETypes = (int)EEnemyType.COUNT;
         Random rnd = new();
         List<Spawner>[] availableSpawners = new List<Spawner>[numETypes];
         for (int i = 0; i < numETypes; i++) availableSpawners[i] = new List<Spawner>(); // Initialize lists
@@ -282,7 +282,7 @@ public class WaveSpawnerManager : MonoBehaviour {
             if (!sp.ValidateSpawnerSpecificCriteria()) continue;
             for (int ti = 0; ti < numETypes; ti++) { // type i
                 if (currPreloadedWave.enemyCounts[ti] == 0) continue;
-                if (sp.AcceptsEnemy((EnemyType)ti)) {
+                if (sp.AcceptsEnemy((EEnemyType)ti)) {
                     availableSpawners[ti].Add(sp);
                 }
             }
@@ -348,7 +348,7 @@ public class WaveSpawnerManager : MonoBehaviour {
             if (counts[0] > 0)
                 waveComplete = false;
         } else {
-            for (int i = 1; i < (int)EnemyType.COUNT; i++) // Start at enemy right after cannon fodder
+            for (int i = 1; i < (int)EEnemyType.COUNT; i++) // Start at enemy right after cannon fodder
                 if (counts[i] > 0) {
                     waveComplete = false;
                     break;
