@@ -298,17 +298,33 @@ public class UIGamePanel : UIPanel {
         resetSpinTileColors();
     }
     
-    void onSpinCompleted(int newSpinCount) {
+    void onSpinCompleted(int newSpinCount, bool isGrounded) {
         resetSpinTileColors();
         // TileRendW.material = SpinTileMatProgress;
         if (!SpinCounterBG.activeSelf)
             SpinCounterBG.SetActive(true);
         setSpinCounterText(newSpinCount);
+        SpinCounterText.color = isGrounded ? Color.red : Color.black;
     }
     
     void onSpinsSpent(int prevSpinCount, int newSpinCount) {
         setSpinCounterText(newSpinCount);
         SpinCounterBG.SetActive(false);
+    }
+    
+    void onSpinsDecaying(float runoutTimerPerc) {
+        SpinCounterText.color = Color.Lerp(Color.red, Color.white, runoutTimerPerc);
+    }
+    
+    void onSpinsExpired() {
+        setSpinCounterText(0);
+        SpinCounterBG.SetActive(false);
+    }
+    
+    void onGroundednessChanged(bool newGrounded) {
+        if (!newGrounded)
+            SpinCounterText.color = Color.black;
+        // SpinCounterText.color = newGrounded ? Color.red : Color.black;
     }
     
     void updateHealthUI(float currH, float maxH) {
@@ -346,14 +362,6 @@ public class UIGamePanel : UIPanel {
         RoundLabelAnimator.SetTrigger("NewRound");
     }
     
-    // public void SetReadTimerOn(bool setReadOn) {
-    //     if (setReadOn) {
-            
-    //     } else {
-            
-    //     }
-    // }
-    
     void resetSpinTileColors() {
         TileRendW.material = SpinTileMatDefault;
         TileRendA.material = SpinTileMatDefault;
@@ -382,6 +390,9 @@ public class UIGamePanel : UIPanel {
         plr.A_SpinProgressReset += onSpinProgressReset;
         plr.A_SpinCompleted += onSpinCompleted;
         plr.A_SpinsSpent += onSpinsSpent;
+        plr.A_SpinsDecaying += onSpinsDecaying;
+        plr.A_SpinsExpired += onSpinsExpired;
+        plr.A_GroundednessChanged += onGroundednessChanged;
         ResetUIElements(plr);
     }
     

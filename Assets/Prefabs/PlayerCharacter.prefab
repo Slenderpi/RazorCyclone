@@ -1719,7 +1719,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ad1eb8074300cf41b3206d26bb51def, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentBikeSpins: 0
   mouseSensitivity: 0.11
   VacuumForce: 26
   VacuumForceLowSpeed: 25
@@ -1728,6 +1727,10 @@ MonoBehaviour:
   CannonForce: 8
   CannonBaseProjSpeed: 125
   InheritedVelocityFactor: 0.7
+  SpinHoldDuration: 2
+  GroundRayLength: 0.05
+  isGrounded: 1
+  currentBikeSpins: 0
   MaxFuel: 100
   CannonFuelCost: 12
   VacuumFuelTime: 10
