@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 public class UIMainCanvas : UIPanel {
     
-    public static readonly float FADER_FADE_DURATION = 0.6f;
+    public static readonly float FADER_FADE_DURATION = 0.3f;
     
     public enum ECanvasState {
         None,

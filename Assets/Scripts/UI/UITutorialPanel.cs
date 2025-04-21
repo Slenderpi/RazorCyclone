@@ -79,7 +79,7 @@ public class UITutorialPanel : UIPanel {
     public void VacuumMovement1() {
         prevVideoClip = nextVideoClip;
         vidPlayer.clip = prevVideoClip;
-        tutorialText.text = "Use LMB to use your Vacuum\nUse WASD to rotate your bike";
+        tutorialText.text = "Hold LMB to use your Vacuum\nUse WASD to rotate your bike horizontally";
         StartCoroutine(waitEnableConfirmButton(vidPlayer.length));
         showDemoUI();
         vidPlayer.Play();
@@ -89,7 +89,7 @@ public class UITutorialPanel : UIPanel {
     public void VacuumMovement2() {
         prevVideoClip = nextVideoClip;
         vidPlayer.clip = prevVideoClip;
-        tutorialText.text = "Use Space/Shift to rotate your bike vertically";
+        tutorialText.text = "Use Space/Shift to rotate your bike up/down";
         StartCoroutine(waitEnableConfirmButton(vidPlayer.length));
         showDemoUI();
         vidPlayer.Play();
@@ -99,7 +99,7 @@ public class UITutorialPanel : UIPanel {
     public void CannonMovement1() {
         prevVideoClip = nextVideoClip;
         vidPlayer.clip = prevVideoClip;
-        tutorialText.text = "RMB to use your Cannon\nThe Cannon aims BEHIND the bike";
+        tutorialText.text = "Use RMB to use your Cannon\nThe Cannon aims BEHIND the bike";
         StartCoroutine(waitEnableConfirmButton(vidPlayer.length));
         showDemoUI();
         vidPlayer.Play();
@@ -109,7 +109,7 @@ public class UITutorialPanel : UIPanel {
     public void CannonMovement2() {
         prevVideoClip = nextVideoClip;
         vidPlayer.clip = prevVideoClip;
-        tutorialText.text = "Use Space/Shift with the Cannon\nThis is how you jump";
+        tutorialText.text = "Use Space/Shift with the Cannon\nThis is how you jump and dive";
         StartCoroutine(waitEnableConfirmButton(vidPlayer.length));
         showDemoUI();
         vidPlayer.Play();
@@ -244,6 +244,7 @@ public class UITutorialPanel : UIPanel {
         Cursor.visible = true;
         GameManager.Instance.gameTimeScale = Time.timeScale;
         Time.timeScale = 0;
+        GameManager.Instance.Audio2D.SetUMastLPTo(true);
         demoUI.SetActive(true);
         taskUI.SetActive(false);
         controlsPanel.SetActive(false);
@@ -256,6 +257,7 @@ public class UITutorialPanel : UIPanel {
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
         Time.timeScale = GameManager.Instance.gameTimeScale;
+        GameManager.Instance.Audio2D.SetUMastLPTo(false);
         demoUI.SetActive(false);
         taskUI.SetActive(true);
         if (prevVideoClip)

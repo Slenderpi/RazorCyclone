@@ -222,6 +222,7 @@ public class GameManager : MonoBehaviour {
         Cursor.visible = false;
         A_GameResumed?.Invoke();
         Time.timeScale = gameTimeScale;
+        Audio2D.SetUMastLPTo(false);
     }
     
     public void PauseInputPressed(InputAction.CallbackContext context) {
@@ -372,12 +373,18 @@ class ProgrammerPreferences {
     public bool EnableMusic = true; // If false, music volume will be set to 0
     public bool PlayerInvincible = false; // If true, the player will spawn with invincibility on
     public bool PlayerNoFuelCost = false; // If true, the player will spawn with no fuel cost
-    public int StartRound = 1;
+    public int StartRound = 1; // Must be a value greater than 0. If not, a warning will be printed, and the game will start at round 1 anyway.
         
     internal void SetPreferencesAwake() {
         if (!UsePreferences) return;
         GameManager.Instance.plrInvincible = PlayerInvincible;
         GameManager.Instance.plrNoFuelCost = PlayerNoFuelCost;
+        if (StartRound < 1) {
+            Debug.LogWarning(
+                $">> The chosen StartRound of {StartRound} from your programmer preferences is an invalid value. Please make sure it is 1 or more. Starting on round 1."
+            );
+            StartRound = 1;
+        }
         GameManager.Instance.StartRound = StartRound;
     }
     
@@ -387,8 +394,14 @@ class ProgrammerPreferences {
         float lowSens = GameManager.Instance.LowestSensitivity;
         GameManager.Instance.CurrentMouseSensitivity = Mathf.Clamp(MouseSensitivity, lowSens, highSens);
         GameManager.Instance.SettingsPanel.MouseSenseSlider.value = (GameManager.Instance.CurrentMouseSensitivity - lowSens) / (highSens - lowSens);
-        if (MasterVolume == 1f) Debug.LogWarning(">> Programmer preferences file has MasterVolume set to 1. Did you mean 100? Currently, volume is on a scale from 0 to 100 rather than 0 to 1.");
-        else if (MasterVolume < 1f && MasterVolume > 0f) Debug.LogWarning(">> Programmer preferences file has MasterVolume between 0 and 1. Make sure you set the volume to be between 0 and 100--volume is on a scale from 0 to 100 rather than 0 to 1.");
+        if (MasterVolume == 1f)
+            Debug.LogWarning(
+                ">> Programmer preferences file has MasterVolume set to 1. Did you mean 100? Currently, volume is on a scale from 0 to 100 rather than 0 to 1."
+            );
+        else if (MasterVolume < 1f && MasterVolume > 0f)
+            Debug.LogWarning(
+                ">> Programmer preferences file has MasterVolume between 0 and 1. Make sure you set the volume to be between 0 and 100--volume is on a scale from 0 to 100 rather than 0 to 1."
+            );
         GameManager.Instance.Audio2D.SetMasterVolume(MasterVolume);
         GameManager.Instance.Audio2D.SetMusicVolume(EnableMusic ? 100 : 0);
     }

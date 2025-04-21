@@ -772,6 +772,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         int numCharges = 5;
         print($"Adding {numCharges} ricochet charges (from T key).");
         currentBikeSpins += numCharges;
+        spinDecayTimer = 0;
         A_SpinCompleted?.Invoke(currentBikeSpins, isGrounded);
     }
     
