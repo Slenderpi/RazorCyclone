@@ -75,8 +75,12 @@ AudioMixerController:
     name: volMusic
   - guid: da09fefa5328a1f49b7f4f4cc9b39a31
     name: volSFX
+  - guid: e1800a223df6d014cbaf79e9b151be2e
+    name: volTutorial
   - guid: 3cb17ee1d0330ac48b3bcbc9e29ffdf7
     name: volMaster
+  - guid: 6e7e1a5b2981628419fc0250ca0f1432
+    name: effUMastLP
   m_AudioMixerGroupViews:
   - guids:
     - 23feee230291fcf4080dc1a4cfdc35fb
@@ -135,11 +139,12 @@ AudioMixerSnapshotController:
   m_AudioMixer: {fileID: 24100000}
   m_SnapshotID: d69bd6f6e0c8ccc48831f474603c889a
   m_FloatValues:
-    f6735360e69ac5b46a86cc3f75d79255: 1.3
+    f6735360e69ac5b46a86cc3f75d79255: 1.2
     02a14c90c3523b248ae4d2f6e0a7f971: -9.833295
     7864d4e095eebd04a9d055227da50752: 1
     f1b9ac31cf5b3704e860ed4de7545661: 2.27
     3cb17ee1d0330ac48b3bcbc9e29ffdf7: -80
+    e1800a223df6d014cbaf79e9b151be2e: -80
     343b39a36b01e4848bd9655e2b0bc10f: 381
     f796ea14ff247c94b80cdb03ddde31a1: 17.37378
     44e1dfc562c0ce7408ec8bc474561ef3: 470
