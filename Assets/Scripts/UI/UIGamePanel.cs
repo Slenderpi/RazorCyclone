@@ -88,6 +88,7 @@ public class UIGamePanel : UIPanel {
     public RectTransform MomentumPanel;
     
     [Header("Input Overlay")]
+    public bool inputOverlayStartsOn = false;
     public GameObject InputOverlay;
     public Image KeyImageW;
     public Image KeyImageA;
@@ -112,6 +113,8 @@ public class UIGamePanel : UIPanel {
         sodHealthFill = new SecondOrderDynamicsF(fillf, fillz, fillr, 1);
 #if !UNITY_EDITOR && !KEEP_DEBUG
         Destroy(InputOverlay);
+#else
+        InputOverlay.SetActive(inputOverlayStartsOn);
 #endif
     }
     

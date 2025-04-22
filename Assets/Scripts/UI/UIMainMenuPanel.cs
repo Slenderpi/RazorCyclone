@@ -27,6 +27,7 @@ public class UIMainMenuPanel : UIPanel {
     void OnEnable() {
         setButtonsEnabled(true);
         GameManager.Instance.Audio2D.SetUMastLPTo(false);
+        Time.timeScale = 1;
     }
     
     void setButtonsEnabled(bool newEnabled) {
