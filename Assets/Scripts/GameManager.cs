@@ -134,6 +134,8 @@ public class GameManager : MonoBehaviour {
 #else
         DataPersistenceManager.Instance.LoadSettings();
 #endif
+        MainCanvas.AlmanacPanel.UpdateSidebuttons();
+        MainCanvas.AlmanacPanel.ViewEntry(0);
         Audio2D.asMusic.Play();
     }
     
@@ -144,6 +146,7 @@ public class GameManager : MonoBehaviour {
         SettingsPanel.Init();
         MainCanvas.MainMenuPanel.Init();
         MainCanvas.Init();
+        MainCanvas.AlmanacPanel.Init();
     }
     
     public void OnSceneStarted(SceneRunner sr) {

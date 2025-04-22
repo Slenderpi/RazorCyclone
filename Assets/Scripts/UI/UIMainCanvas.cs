@@ -85,8 +85,7 @@ public class UIMainCanvas : UIPanel {
             DeathPanel.SetActive(true);
             break;
         case ECanvasState.Almanac:
-            // TODO
-            // AlmanacPanel.SetActive(true);
+            AlmanacPanel.SetActive(true);
             break;
         }
         CanvasStateChanged?.Invoke(CurrentCanvasState);
@@ -124,8 +123,7 @@ public class UIMainCanvas : UIPanel {
         SettingsPanel.SetActive(false);
         MainMenuPanel.SetActive(false);
         DeathPanel.SetActive(false);
-        // TODO
-        // AlmanacPanel.SetActive(false);
+        AlmanacPanel.SetActive(false);
     }
     
     public void FadeToBlack() {

@@ -6,8 +6,8 @@ using UnityEngine.UI;
 public class UIAlmanac : UIPanel {
     
     public enum EAlmanacCategory {
-        Player,
-        Enemies
+        Enemies,
+        Player
     }
     
     struct AlmanacDataEntry {
@@ -82,11 +82,11 @@ public class UIAlmanac : UIPanel {
     
     [Header("Side Button References")]
     [SerializeField]
-    GameObject[] SidebarEntryButtons;
+    Button[] SidebarEntryButtons;
     TMP_Text[] sidebarEntryButtonLabels;
     
     [HideInInspector]
-    public EAlmanacCategory CurrentAlmanacCategory = EAlmanacCategory.Enemies;
+    public EAlmanacCategory CurrentAlmanacCategory;
     
     Texture2D currentLoadedImage;
     
@@ -97,7 +97,7 @@ public class UIAlmanac : UIPanel {
 #if UNITY_EDITOR
         // Assert that the number of sidebar buttons is valid
         int longestLength = Mathf.Max(enemyDataEntries.Length, playerDataEntries.Length);
-        int numButns = sidebarEntryButtonLabels.Length;
+        int numButns = SidebarEntryButtons.Length;
         if (numButns < longestLength)
             throw new System.Exception($"ERROR: Make sure the number of Almanac sidebar buttons ({numButns}) is equal to the length of the longest data entry array ({longestLength}).");
         else if (numButns > longestLength)
@@ -107,20 +107,63 @@ public class UIAlmanac : UIPanel {
         for (int i = 0; i < SidebarEntryButtons.Length; i++) {
             sidebarEntryButtonLabels[i] = SidebarEntryButtons[i].GetComponentInChildren<TMP_Text>();
         }
-        updateSidebuttons();
+        CurrentAlmanacCategory = EAlmanacCategory.Enemies;
+        EnemyTabButton.interactable = false;
     }
     
-    public void OnButton_ChangeTabTo(EAlmanacCategory categoryTab) {
-        CurrentAlmanacCategory = categoryTab;
-        updateSidebuttons();
-        viewEntry(0);
+    public void OnButton_ChangeTabTo(int categoryTab) {
+        switch (CurrentAlmanacCategory) {
+        case EAlmanacCategory.Enemies:
+            EnemyTabButton.interactable = true;
+            break;
+        case EAlmanacCategory.Player:
+            PlayerTabButton.interactable = true;
+            break;
+        }
+        CurrentAlmanacCategory = (EAlmanacCategory)categoryTab;
+        switch (CurrentAlmanacCategory) {
+        case EAlmanacCategory.Enemies:
+            EnemyTabButton.interactable = false;
+            break;
+        case EAlmanacCategory.Player:
+            PlayerTabButton.interactable = false;
+            break;
+        }
+        UpdateSidebuttons();
+        ViewEntry(0);
     }
     
     public void OnButton_ViewEntry(int index) {
-        viewEntry(index);
+        ViewEntry(index);
     }
     
-    void viewEntry(int index) {
+    public void UpdateSidebuttons() {
+        // GameData gd = DataPersistenceManager.Instance.GetGameData();
+        // int highestWave = gd ? gd.HighestWaveCompleted : 0;
+        int highestWave = DataPersistenceManager.Instance.GetGameData().HighestWaveCompleted;
+        AlmanacDataEntry[] entries = CurrentAlmanacCategory switch {
+            EAlmanacCategory.Enemies => enemyDataEntries,
+            EAlmanacCategory.Player => playerDataEntries,
+            _ => throw new System.Exception($"The Almanac category value of {(int)CurrentAlmanacCategory} is an impossible value.")
+        };
+        for (int i = 0; i < SidebarEntryButtons.Length; i++) {
+            if (i < entries.Length) {
+                SidebarEntryButtons[i].gameObject.SetActive(true);
+                if (CurrentAlmanacCategory == EAlmanacCategory.Enemies) {
+                    bool hasDiscovered = hasDiscoveredEnemy(i, highestWave);
+                    sidebarEntryButtonLabels[i].text = hasDiscovered ? entries[i].name : "???";
+                    SidebarEntryButtons[i].interactable = hasDiscovered;
+                } else {
+                    sidebarEntryButtonLabels[i].text = entries[i].name;
+                    SidebarEntryButtons[i].interactable = true;
+                }
+            } else {
+                SidebarEntryButtons[i].gameObject.SetActive(false);
+            }
+        }
+    }
+    
+    public void ViewEntry(int index) {
         AlmanacDataEntry entry = CurrentAlmanacCategory switch {
             EAlmanacCategory.Enemies => enemyDataEntries[index],
             EAlmanacCategory.Player => playerDataEntries[index],
@@ -139,46 +182,26 @@ public class UIAlmanac : UIPanel {
         EntryImage.texture = currentLoadedImage;
     }
     
-    void updateSidebuttons() {
-        int highestWave = DataPersistenceManager.Instance.GetGameData().HighestWaveCompleted;
-        AlmanacDataEntry[] entries = CurrentAlmanacCategory switch {
-            EAlmanacCategory.Enemies => enemyDataEntries,
-            EAlmanacCategory.Player => playerDataEntries,
-            _ => throw new System.Exception($"The Almanac category value of {(int)CurrentAlmanacCategory} is an impossible value.")
-        };
-        for (int i = 0; i < SidebarEntryButtons.Length; i++) {
-            if (i < entries.Length) {
-                SidebarEntryButtons[i].SetActive(true);
-                if (CurrentAlmanacCategory == EAlmanacCategory.Enemies) {
-                    sidebarEntryButtonLabels[i].text = hasDiscoveredEnemy(i, highestWave) ? entries[i].name : "???";
-                } else {
-                    sidebarEntryButtonLabels[i].text = entries[i].name;
-                }
-            } else {
-                SidebarEntryButtons[i].SetActive(false);
-            }
-        }
-    }
-    
     bool hasDiscoveredEnemy(int enIndex, int highestWave) {
-        // NOTE: HARDCODED VALUES. Make sure to update when the wave table file is updated. Consider based on the wave right before an enemy spawns
-        return enIndex switch {
-            // Bug
-            0 => true,
-            // Hunter basic
-            1 => highestWave >= 1,
-            // Hunter empowered
-            2 => highestWave >= 14,
-            // Crab basic
-            3 => highestWave >= 3,
-            // Crab empowered
-            4 => highestWave >= 11,
-            // Turtle
-            5 => highestWave >= 7,
-            // Centipede
-            6 => false,
-            _ => false,
-        };
+        return enIndex != 6;
+        // // NOTE: HARDCODED VALUES. Make sure to update when the wave table file is updated. Consider based on the wave right before an enemy spawns
+        // return enIndex switch {
+        //     // Bug
+        //     0 => true,
+        //     // Hunter basic
+        //     1 => highestWave >= 1,
+        //     // Hunter empowered
+        //     2 => highestWave >= 14,
+        //     // Crab basic
+        //     3 => highestWave >= 3,
+        //     // Crab empowered
+        //     4 => highestWave >= 11,
+        //     // Turtle
+        //     5 => highestWave >= 7,
+        //     // Centipede
+        //     6 => false,
+        //     _ => false,
+        // };
     }
     
 }

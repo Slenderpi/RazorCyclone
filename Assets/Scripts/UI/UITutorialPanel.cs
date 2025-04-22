@@ -38,10 +38,6 @@ public class UITutorialPanel : UIPanel {
     
     
     
-    public override void Init() {
-        base.Init();
-    }
-    
     public void OnBeginScene() {
         SetUIInactive();
 #if UNITY_EDITOR

@@ -18,4 +18,16 @@ public class GameData {
             TimeSpentEachWave[i] = d.TimeSpentEachWave[i];
     }
     
+    public static bool operator true(GameData gd) {
+        return gd != null;
+    }
+    
+    public static bool operator false(GameData gd) {
+        return gd == null;
+    }
+    
+    public static bool operator !(GameData gd) {
+        return gd == null;
+    }
+    
 }
