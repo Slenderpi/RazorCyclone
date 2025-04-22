@@ -46,7 +46,7 @@ public class SceneRunner : MonoBehaviour {
     public virtual void BeginScene() {
         SpawnPlayerAndConnect();
     }
-
+    
 #if UNITY_EDITOR && DRAW_CENTIPEDE_PATH
     void FixedUpdate() {
         int numPoints = 360;
@@ -88,7 +88,7 @@ public class SceneRunner : MonoBehaviour {
         }
     }
 #endif
-
+    
     protected void SpawnPlayerAndConnect() {
         GameManager.A_PlayerSpawned += _onPlayerSpawned;
         GameManager.Instance.SpawnPlayer();
