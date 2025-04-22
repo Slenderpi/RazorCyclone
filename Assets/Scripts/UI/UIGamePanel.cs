@@ -75,7 +75,12 @@ public class UIGamePanel : UIPanel {
     public MeshRenderer TileRendS;
     public MeshRenderer TileRendD;
     public TMP_Text SpinCounterText;
-    public GameObject SpinCounterBG;
+    // public GameObject SpinCounterBG;
+    public Image SpinCounterOutline;
+    [SerializeField]
+    Color SpinOutlineExpiringColor = Color.magenta;
+    [SerializeField]
+    Color SpinOutlineHoldColor = Color.black;
     
     [Header("Misc.")]
     public TMP_Text RoundLabel;
@@ -301,30 +306,38 @@ public class UIGamePanel : UIPanel {
     void onSpinCompleted(int newSpinCount, bool isGrounded) {
         resetSpinTileColors();
         // TileRendW.material = SpinTileMatProgress;
-        if (!SpinCounterBG.activeSelf)
-            SpinCounterBG.SetActive(true);
         setSpinCounterText(newSpinCount);
-        SpinCounterText.color = isGrounded ? Color.red : Color.black;
+        if (isGrounded) {
+            SpinCounterOutline.color = SpinOutlineExpiringColor;
+            updateSpinDecayFill(0);
+        } else {
+            SpinCounterOutline.color = SpinOutlineHoldColor;
+            updateSpinDecayFill(1);
+        }
+        if (!SpinCounterOutline.gameObject.activeSelf)
+            SpinCounterOutline.gameObject.SetActive(true);
     }
     
     void onSpinsSpent(int prevSpinCount, int newSpinCount) {
         setSpinCounterText(newSpinCount);
-        SpinCounterBG.SetActive(false);
+        SpinCounterOutline.gameObject.SetActive(false);
     }
     
     void onSpinsDecaying(float runoutTimerPerc) {
-        SpinCounterText.color = Color.Lerp(Color.red, Color.white, runoutTimerPerc);
+        updateSpinDecayFill(1 - runoutTimerPerc);
     }
     
     void onSpinsExpired() {
         setSpinCounterText(0);
-        SpinCounterBG.SetActive(false);
+        SpinCounterOutline.gameObject.SetActive(false);
     }
     
     void onGroundednessChanged(bool newGrounded) {
-        if (!newGrounded)
-            SpinCounterText.color = Color.black;
-        // SpinCounterText.color = newGrounded ? Color.red : Color.black;
+        if (!newGrounded) {
+            SpinCounterOutline.color = SpinOutlineHoldColor;
+        } else {
+            SpinCounterOutline.color = SpinOutlineExpiringColor;
+        }
     }
     
     void updateHealthUI(float currH, float maxH) {
@@ -373,6 +386,12 @@ public class UIGamePanel : UIPanel {
         SpinCounterText.text = spins.ToString();
     }
     
+    void updateSpinDecayFill(float perc) {
+        // float b = 0.05f;
+        // SpinCounterOutline.fillAmount = b * Mathf.Sin(8 * Mathf.PI * perc) / (8 * Mathf.PI * (1 - b)) + perc;
+        SpinCounterOutline.fillAmount = perc;
+    }
+    
     public override void OnGameResumed() {
         // SetActive(true);
     }
@@ -415,7 +434,7 @@ public class UIGamePanel : UIPanel {
         setSpinCounterText(plr.currentBikeSpins);
         RoundLabel.text = "Round: --";
         if (plr.currentBikeSpins == 0)
-            SpinCounterBG.SetActive(false);
+            SpinCounterOutline.gameObject.SetActive(false);
         if (gameObject.activeSelf) FuelOutlineAnimator.SetTrigger("Reset");
 #if UNITY_EDITOR || KEEP_DEBUG
         OnTurnInputChanged(Vector2.zero);
