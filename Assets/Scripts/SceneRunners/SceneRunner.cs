@@ -1,5 +1,5 @@
 // UNCOMMENT THE LINE BELOW TO SEE THE PATH THE CENTIPEDE WILL ROAM TOWARDS
-#define DRAW_CENTIPEDE_PATH
+// #define DRAW_CENTIPEDE_PATH
 
 using System.Collections;
 using System.Collections.Generic;
