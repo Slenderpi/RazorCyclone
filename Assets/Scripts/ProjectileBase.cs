@@ -194,7 +194,7 @@ public class ProjectileBase : MonoBehaviour {
             TrailNormal.emitting = true;
         }
         StartCoroutine(ricochetVelNextFrame(ricVel));
-        enemy.TakeDamage(100, EDamageType.Projectile);
+        enemy.TakeDamage(100, EDamageType.ProjectileRicochet);
         showRicochetEffect();
     }
     

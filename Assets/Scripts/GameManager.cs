@@ -195,6 +195,10 @@ public class GameManager : MonoBehaviour {
                 MainCanvas.GamePanel.OnPlayerKilledEnemy(enemy, true);
                 Audio2D.PlayClipSFX(AudioPlayer2D.EClipSFX.Cannon_Kill);
                 break;
+            case EDamageType.ProjectileRicochet:
+                MainCanvas.GamePanel.OnPlayerKilledEnemy(enemy, true);
+                Audio2D.PlayClipSFX(AudioPlayer2D.EClipSFX.Cannon_Kill);
+                break;
             case EDamageType.Vacuum:
                 MainCanvas.GamePanel.OnPlayerKilledEnemy(enemy, false);
                 Audio2D.PlayClipSFX(AudioPlayer2D.EClipSFX.Vacuum_Kill);
@@ -203,6 +207,10 @@ public class GameManager : MonoBehaviour {
         } else {
             switch (damageType) {
             case EDamageType.Projectile:
+                MainCanvas.GamePanel.OnPlayerDamagedEnemy(enemy);
+                Audio2D.PlayClipSFX(AudioPlayer2D.EClipSFX.Cannon_Hit);
+                break;
+            case EDamageType.ProjectileRicochet:
                 MainCanvas.GamePanel.OnPlayerDamagedEnemy(enemy);
                 Audio2D.PlayClipSFX(AudioPlayer2D.EClipSFX.Cannon_Hit);
                 break;
@@ -342,7 +350,8 @@ public enum EDamageType {
     Enemy,
     Projectile,
     Vacuum,
-    ProjectileExplosion
+    ProjectileExplosion,
+    ProjectileRicochet
 }
 
 /// <summary>

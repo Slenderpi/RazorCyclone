@@ -185,7 +185,7 @@ public class LaserEnemy : EnemyBase {
     protected override void OnTakeDamage(float amnt, EDamageType damageType) {
         if (damageType == EDamageType.Vacuum) {
             base.OnTakeDamage(amnt, damageType);
-        } else if (damageType == EDamageType.Projectile) {
+        } else if (damageType == EDamageType.Projectile || damageType == EDamageType.ProjectileRicochet) {
             onStunned();
         }
     }

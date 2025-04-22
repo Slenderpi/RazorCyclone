@@ -15,7 +15,9 @@ public class TUT_EnemyDefeatedDetector : MonoBehaviour {
         wasDefeated = true;
         SRTutorial srt = GameManager.Instance.currentSceneRunner as SRTutorial;
         if (!srt) return;
-        bool isCorrectType = srt.requiredDamageType == EDamageType.Any || srt.requiredDamageType == dtype;
+        bool isCorrectType = srt.requiredDamageType == EDamageType.Any ||
+                             (dtype == EDamageType.ProjectileRicochet && srt.requiredDamageType == EDamageType.Projectile) ||
+                             srt.requiredDamageType == dtype;
         if (isCorrectType) {
             srt.OnEnemyKilled(true);
         } else {

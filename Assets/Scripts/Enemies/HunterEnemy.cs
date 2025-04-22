@@ -32,7 +32,7 @@ public class HunterEnemy : EnemyBase {
     
     protected override void OnTakeDamage(float amnt, EDamageType damageType) {
         if (!isStunned) {
-            if (damageType == EDamageType.Projectile) {
+            if (damageType == EDamageType.Projectile || damageType == EDamageType.ProjectileRicochet) {
                 GetStunned();
                 GameManager.Instance.OnEnemyTookDamage(this, damageType, false);
             }
