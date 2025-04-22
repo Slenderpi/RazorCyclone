@@ -43,6 +43,7 @@ public class UIPausePanel : UIPanel {
     
     void OnEnable() {
         isReturningToMain = false;
+        GameManager.Instance.Audio2D.SetUMastLPTo(true);
     }
     
 }

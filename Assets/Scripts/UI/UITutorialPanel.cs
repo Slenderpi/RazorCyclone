@@ -53,6 +53,7 @@ public class UITutorialPanel : UIPanel {
             ETutorialState.VacuumKill => Resources.Load<VideoClip>("TutorialVideos/vacuum_kill_1"),
             ETutorialState.CannonKill1 => Resources.Load<VideoClip>("TutorialVideos/cannon_kill_1"),
             ETutorialState.CannonKill2 => Resources.Load<VideoClip>("TutorialVideos/cannon_kill_2"),
+            ETutorialState.CannonRicochet => Resources.Load<VideoClip>("TutorialVideos/cannon_ricochet"),
             _ => Resources.Load<VideoClip>("TutorialVideos/vacuum_movement_1")
         };
 #else
@@ -78,7 +79,7 @@ public class UITutorialPanel : UIPanel {
     public void VacuumMovement1() {
         prevVideoClip = nextVideoClip;
         vidPlayer.clip = prevVideoClip;
-        tutorialText.text = "Use LMB to use your Vacuum\nUse WASD to rotate your bike";
+        tutorialText.text = "Hold LMB to use your Vacuum\nUse WASD to rotate your bike horizontally";
         StartCoroutine(waitEnableConfirmButton(vidPlayer.length));
         showDemoUI();
         vidPlayer.Play();
@@ -88,7 +89,7 @@ public class UITutorialPanel : UIPanel {
     public void VacuumMovement2() {
         prevVideoClip = nextVideoClip;
         vidPlayer.clip = prevVideoClip;
-        tutorialText.text = "Use Space/Shift to rotate your bike vertically";
+        tutorialText.text = "Use Space/Shift to rotate your bike up/down";
         StartCoroutine(waitEnableConfirmButton(vidPlayer.length));
         showDemoUI();
         vidPlayer.Play();
@@ -98,7 +99,7 @@ public class UITutorialPanel : UIPanel {
     public void CannonMovement1() {
         prevVideoClip = nextVideoClip;
         vidPlayer.clip = prevVideoClip;
-        tutorialText.text = "RMB to use your Cannon\nThe Cannon aims BEHIND the bike";
+        tutorialText.text = "Use RMB to use your Cannon\nThe Cannon aims BEHIND the bike";
         StartCoroutine(waitEnableConfirmButton(vidPlayer.length));
         showDemoUI();
         vidPlayer.Play();
@@ -108,7 +109,7 @@ public class UITutorialPanel : UIPanel {
     public void CannonMovement2() {
         prevVideoClip = nextVideoClip;
         vidPlayer.clip = prevVideoClip;
-        tutorialText.text = "Use Space/Shift with the Cannon\nThis is how you jump";
+        tutorialText.text = "Use Space/Shift with the Cannon\nThis is how you jump and dive";
         StartCoroutine(waitEnableConfirmButton(vidPlayer.length));
         showDemoUI();
         vidPlayer.Play();
@@ -139,6 +140,16 @@ public class UITutorialPanel : UIPanel {
         prevVideoClip = nextVideoClip;
         vidPlayer.clip = prevVideoClip;
         tutorialText.text = "Use S + Space to shoot downward";
+        StartCoroutine(waitEnableConfirmButton(vidPlayer.length));
+        showDemoUI();
+        vidPlayer.Play();
+        StartCoroutine(loadNextVideoClipAsync("TutorialVideos/cannon_ricochet"));
+    }
+    
+    public void CannonRico() {
+        prevVideoClip = nextVideoClip;
+        vidPlayer.clip = prevVideoClip;
+        tutorialText.text = "Spin using W-A-S-D-W or W-D-S-A-W\nSpins give your Cannon ricochets";
         StartCoroutine(waitEnableConfirmButton(vidPlayer.length));
         showDemoUI();
         vidPlayer.Play();
@@ -187,6 +198,13 @@ public class UITutorialPanel : UIPanel {
         controlsPanel.SetActive(true);
     }
     
+    public void CannonRico_Task() {
+        TaskText.text = "Use W-A-S-D-W or W-D-S-A-W to ricochet";
+        TaskProgressText.text = $"0 / {srt.enemiesRequiredThisState}";
+        IncorrectWeaponText.text = "Incorrect weapon!\nUse the Cannon";
+        controlsPanel.SetActive(true);
+    }
+    
     public void PracticeKill_Task() {
         TaskText.text = "Kill all Bugs with any weapon";
         TaskProgressText.text = $"0 / {srt.enemiesRequiredThisState}";
@@ -201,6 +219,7 @@ public class UITutorialPanel : UIPanel {
             ETutorialState.VacuumKill => s,
             ETutorialState.CannonKill1 => s,
             ETutorialState.CannonKill2 => s,
+            ETutorialState.CannonRicochet => s,
             ETutorialState.PracticeKill => s,
             _ => "",
         };
@@ -225,6 +244,7 @@ public class UITutorialPanel : UIPanel {
         Cursor.visible = true;
         GameManager.Instance.gameTimeScale = Time.timeScale;
         Time.timeScale = 0;
+        GameManager.Instance.Audio2D.SetUMastLPTo(true);
         demoUI.SetActive(true);
         taskUI.SetActive(false);
         controlsPanel.SetActive(false);
@@ -237,6 +257,7 @@ public class UITutorialPanel : UIPanel {
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
         Time.timeScale = GameManager.Instance.gameTimeScale;
+        GameManager.Instance.Audio2D.SetUMastLPTo(false);
         demoUI.SetActive(false);
         taskUI.SetActive(true);
         if (prevVideoClip)

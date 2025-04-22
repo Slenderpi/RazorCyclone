@@ -8,9 +8,15 @@ public class TUT_CannonFodder : CannonFodderEnemy {
     
     
     
+    protected override void LateInit() {
+        base.LateInit();
+        ConsiderForRicochet = true;
+    }
+    
     protected override void OnDefeated(EDamageType damageType) {
         if (Dead) return;
-        edd.OnEnemyDefeated(damageType);
+        if (edd)
+            edd.OnEnemyDefeated(damageType);
         base.OnDefeated(damageType);
     }
     

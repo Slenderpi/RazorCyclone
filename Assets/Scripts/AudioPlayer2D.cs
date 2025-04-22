@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.Audio;
 
@@ -53,8 +54,13 @@ public class AudioPlayer2D : MonoBehaviour {
     public float MaxMotorcyclePitchSpeed = 45;
     public bool enableRotationSound = true;
     
-    // float lastSpeed = 0;
     PlayerCharacterCtrlr plr;
+    
+    Coroutine crtUMastLP = null;
+    bool isUMastLPOn = false;
+    readonly float UMAST_LP_LERP_DURATION = 0.2f;
+    float linearMasterVolume = 1; // For tut vol mixer
+    float linearSFXVolume = 1; // For tut vol mixer
     
     
     
@@ -116,8 +122,13 @@ public class AudioPlayer2D : MonoBehaviour {
     }
     
     void OnPlayerSpawned(PlayerCharacterCtrlr p) {
+        p.A_PlayerDied += OnPlayerDied;
         asMotorcycleDriving.Play();
         plr = p;
+    }
+    
+    void OnPlayerDied() {
+        asMotorcycleDriving.Stop();
     }
     
     void OnPlayerDestroying(PlayerCharacterCtrlr p) {
@@ -127,10 +138,14 @@ public class AudioPlayer2D : MonoBehaviour {
     
     public void SetMasterVolume(float volume) {
         MainAudioMixer.SetFloat("volMaster", calcLogarithmicVolume(volume));
+        linearMasterVolume = volume / 100f;
+        MainAudioMixer.SetFloat("volTutorial", calcLogarithmicVolume(linearMasterVolume * linearSFXVolume * 100f));
     }
     
     public void SetSFXVolume(float volume) {
         MainAudioMixer.SetFloat("volSFX", calcLogarithmicVolume(volume));
+        linearSFXVolume = volume / 100f;
+        MainAudioMixer.SetFloat("volTutorial", calcLogarithmicVolume(linearMasterVolume * linearSFXVolume * 100f));
     }
     
     public void SetMusicVolume(float volume) {
@@ -138,8 +153,40 @@ public class AudioPlayer2D : MonoBehaviour {
     }
     
     float calcLogarithmicVolume(float volume) { // linear int (or float) to log
-        volume /= 100f;
-        return volume <= 0.01f ? -80 : 20 * Mathf.Log10(volume);
+        return volume < 1 ? -80f : Mathf.Log(volume / 100f) * 12;
+    }
+    
+    /// <summary>
+    /// If true, the User Master LP filter cutoff will be set to a low value, causing a LP audio effect.
+    /// </summary>
+    /// <param name="toLowPassOn"></param>
+    public void SetUMastLPTo(bool toLowPassOn) {
+        if (isUMastLPOn == toLowPassOn) // It's already been set to desired setting
+            return;
+        if (crtUMastLP != null)
+            StopCoroutine(crtUMastLP);
+        isUMastLPOn = toLowPassOn;
+        crtUMastLP = StartCoroutine(lerpUMastLPTo(isUMastLPOn));
+    }
+    
+    IEnumerator lerpUMastLPTo(bool toLowPassOn) {
+        float cutoffFreq = toLowPassOn ? 500 : 22000;
+        MainAudioMixer.GetFloat("effUMastLP", out float startCutoffFreq);
+        float startTime = Time.unscaledTime;
+        float t;
+        do {
+            t = (Time.unscaledTime - startTime) / UMAST_LP_LERP_DURATION;
+            MainAudioMixer.SetFloat(
+                "effUMastLP",
+                Mathf.Lerp(
+                    startCutoffFreq,
+                    cutoffFreq,
+                    toLowPassOn ? (t - 1) * (t - 1) * (t - 1) + 1 : t * t
+                )
+            );
+            yield return null;
+        } while (t < 1);
+        crtUMastLP = null;
     }
     
 }

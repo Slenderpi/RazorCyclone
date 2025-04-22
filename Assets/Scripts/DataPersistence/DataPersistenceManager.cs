@@ -62,6 +62,10 @@ public class DataPersistenceManager : MonoBehaviour {
         }
     }
     
+    public GameData GetGameData() {
+        return gameData;
+    }
+    
     public void SaveGame() {
         if (disableGameData) return;
         

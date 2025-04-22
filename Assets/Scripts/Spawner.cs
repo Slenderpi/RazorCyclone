@@ -4,7 +4,7 @@ public class Spawner : MonoBehaviour {
     
     [Header("Spawner Config")]
     [Tooltip("A list of the enemy types that are NOT allowed to spawn at this spawner.")]
-    public EnemyType[] EnemyTypes;
+    public EEnemyType[] EnemyTypes;
     [Tooltip("If set to true, then the EnemyTypes list now means the enemies that ARE ALLOWED to spawn at this spawner.")]
     public bool UseTypesAsInclude = false;
     
@@ -23,9 +23,9 @@ public class Spawner : MonoBehaviour {
         return (plr.transform.position - transform.position).sqrMagnitude > playerDetectionRange * playerDetectionRange;
     }
     
-    public bool AcceptsEnemy(EnemyType etype) {
+    public bool AcceptsEnemy(EEnemyType etype) {
         // If etype is in enemyTypes, then return !UseAsExc
-        foreach (EnemyType flag in EnemyTypes) {
+        foreach (EEnemyType flag in EnemyTypes) {
             if (etype == flag) {
                 return UseTypesAsInclude;
             }

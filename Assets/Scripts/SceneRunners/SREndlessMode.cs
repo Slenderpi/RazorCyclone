@@ -11,7 +11,7 @@ public class SREndlessMode : SceneRunner, IDataPersistence {
     [HideInInspector]
     public int EnemiesKilled;
     [HideInInspector]
-    public int[] SpawnedEnemyCounts = new int[(int)EnemyType.COUNT];
+    public int[] SpawnedEnemyCounts = new int[(int)EEnemyType.COUNT];
     
     UIMainCanvas mainCanvas;
     GameData recordData;
@@ -31,8 +31,8 @@ public class SREndlessMode : SceneRunner, IDataPersistence {
     public override void BeginScene() {
         GameManager.Instance.MainCanvas.TutorialPanel.SetActive(false);
         WaveSpawnManager.OwningEndlessMode = this;
-        WaveSpawnManager.OnWaveActivated += OnWaveActivated;
-        WaveSpawnManager.OnWaveFinished += OnWaveFinished;
+        WaveSpawnManager.A_OnWaveActivated += OnWaveActivated;
+        WaveSpawnManager.A_OnWaveFinished += OnWaveFinished;
         WaveSpawnManager.InitWaveSpawner();
         mainCanvas = GameManager.Instance.MainCanvas;
         GameManager.A_EnemyKilled += () => { EnemiesKilled++; };
@@ -83,14 +83,14 @@ public class SREndlessMode : SceneRunner, IDataPersistence {
     public override void AddEnemyToList(EnemyBase en) {
         base.AddEnemyToList(en);
         int eti = (int)en.etypeid;
-        if (eti >= (int)EnemyType.COUNT) return;
+        if (eti >= (int)EEnemyType.COUNT) return;
         SpawnedEnemyCounts[eti]++;
     }
     
     public override void RemoveEnemyFromList(EnemyBase en) {
         base.RemoveEnemyFromList(en);
         int eti = (int)en.etypeid;
-        if (eti >= (int)EnemyType.COUNT) return;
+        if (eti >= (int)EEnemyType.COUNT) return;
         SpawnedEnemyCounts[eti]--;
         if (WaveSpawnManager)
             WaveSpawnManager.OnEnemyCountDecreased(SpawnedEnemyCounts);

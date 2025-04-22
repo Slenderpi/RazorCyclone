@@ -6,16 +6,6 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     
     PlayerInputActions.PlayerActions inputActions;
     
-    Vector3 desiredRotation = Vector3.zero;
-    Vector3 weaponRelativeRot = Vector3.forward;
-    Vector3 prevWeaponRelRot = Vector3.zero;
-    [HideInInspector]
-    public int currentBikeSpins = 0;
-    int bikeSpinProgress = 0;
-    Vector2 prevBikeFaceDir = Vector2.up; // For spinning the bike
-    int ricochetBaseVal = 1;
-    // int bikeRotSpinDir = 0; // For spinning the bike (determines CW or CCW)
-    
     // Events
     public event Action<float, float> A_FuelAdded; // float changeAmnt, float fuelPerc
     public event Action<float, float, bool> A_FuelSpent; // float changeAmnt, float fuelPerc, bool spentAsHealth
@@ -24,8 +14,11 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     public event Action A_PlayerDied;
     public event Action<int> A_SpinProgressed; // int progress
     public event Action<int> A_SpinProgressReset; // int progressBeforeReset
-    public event Action<int> A_SpinCompleted; // int newSpinCount
+    public event Action<int, bool> A_SpinCompleted; // int newSpinCount, bool isGrounded
     public event Action<int, int> A_SpinsSpent; // int prevSpinCount, int newSpinCount
+    public event Action<float> A_SpinsDecaying; // float runoutTimerPerc
+    public event Action A_SpinsExpired;
+    public event Action<bool> A_GroundednessChanged; // bool newGrounded
     
     [HideInInspector]
     public float mouseSensitivity;
@@ -58,6 +51,25 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     [SerializeField]
     [Tooltip("When a projectile is fired, its velocity will include the player's velocity by a factor.\nA value of 0 would mean player velocity has no effect on the projectile's veloctiy.\nA value of 0.5 would mean the projectile would add half of the player's velocity.")]
     float InheritedVelocityFactor = 0.7f;
+    
+    [Header("Spin Settings")]
+    [Tooltip("The amount of time the Player can hold onto their spin charges before they are automatically poofed.")]
+    public float SpinHoldDuration = 2;
+    float spinDecayTimer;
+    [Tooltip("Length of groundedness check raycast.")]
+    public float GroundRayLength = 0.05f;
+    [HideInInspector]
+    public bool isGrounded = true;
+    LayerMask groundLayerMask;
+    Vector3 desiredRotation = Vector3.zero;
+    Vector3 weaponRelativeRot = Vector3.forward;
+    Vector3 prevWeaponRelRot = Vector3.zero;
+    [HideInInspector]
+    public int currentBikeSpins = 0;
+    int bikeSpinProgress = 0;
+    Vector2 prevBikeFaceDir = Vector2.up; // For spinning the bike
+    int ricochetBaseVal = 1;
+    // int bikeRotSpinDir = 0; // For spinning the bike (determines CW or CCW)
     
     [Header("Fuel Settings")]
     [SerializeField]
@@ -155,6 +167,9 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         
         // 1 is for layers to include in raycast
         AimRayLayerMask = (1 << LayerMask.NameToLayer("Default")) | (1 << LayerMask.NameToLayer("EnemyHitbox"));
+        groundLayerMask = 1 << LayerMask.NameToLayer("Default");
+        
+        A_GroundednessChanged += onGroundednessChanged;
         
         AddFuel(MaxFuel);
         vacuumFuelCost = MaxFuel / VacuumFuelTime * Time.fixedDeltaTime;
@@ -193,19 +208,11 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
                 sodPivotRotAlpha.Update(1, Time.deltaTime)
             );
         }
+        
+        decaySpinCharges();
     }
     
     void FixedUpdate() {
-        // if (isVacuumOn && vacEnableddd) {
-        //     if (CurrentHealth <= 0) {
-        //         isVacuumOn = false;
-        //         vacuumHitbox.SetActive(false);
-        //         // signifyOutOfFuel();
-        //     } else {
-        //         SpendFuel(vacuumFuelCost);
-        //         rb.AddForce(charPivot.forward * (rb.velocity.magnitude <= VacuumForceNormalSpeed ? VacuumForceLowSpeed : VacuumForce), ForceMode.Acceleration);
-        //     }
-        // }
         if (isVacuumOn && vacEnableddd) {
             if (CurrentHealth > 0) {
                 SpendFuel(vacuumFuelCost);
@@ -217,6 +224,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         }
         handleHealthRegen();
         handleLavaCheck();
+        checkGroundedness();
     }
     
     void LateUpdate() {
@@ -467,9 +475,8 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     
     void bikeSpinProgressComplete() {
         bikeSpinProgress = 0;
-        // bikeRotSpinDir = 0;
-        A_SpinCompleted?.Invoke(++currentBikeSpins);
-        // Debug.LogWarning("Spin complete! Spins: " + currentBikeSpins);
+        spinDecayTimer = 0;
+        A_SpinCompleted?.Invoke(++currentBikeSpins, isGrounded);
     }
     
     void bikeSpinProgressed() {
@@ -559,11 +566,47 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         }
     }
     
+    void expireSpins() {
+        currentBikeSpins = 0;
+        spinDecayTimer = 0;
+        A_SpinsExpired?.Invoke();
+    }
+    
+    void decaySpinCharges() {
+        if (currentBikeSpins > 0 && isGrounded) {
+            spinDecayTimer += Time.deltaTime;
+            A_SpinsDecaying?.Invoke(Mathf.Min(1, spinDecayTimer / SpinHoldDuration));
+            if (spinDecayTimer > SpinHoldDuration) {
+                expireSpins();
+            }
+        }
+    }
+    
+    void checkGroundedness() {
+        // 0.7321434 is from the player collider's actual hitbox position + radius
+        bool grounded = Physics.Raycast(transform.position, Vector3.down, GroundRayLength + 0.7321434f, groundLayerMask);
+        if (grounded) {
+            if (!isGrounded) {
+                isGrounded = true;
+                A_GroundednessChanged?.Invoke(isGrounded);
+            }
+        } else {
+            if (isGrounded) {
+                isGrounded = false;
+                A_GroundednessChanged?.Invoke(isGrounded);
+            }
+        }
+    }
+    
     void playMuzzleFlashEffect() {
         currentMuzzleFlashEffect.SetActive(true);
         Destroy(currentMuzzleFlashEffect, 1);
         currentMuzzleFlashEffect = Instantiate(muzzleFlashEffect, cannonMuzzleTrans);
         currentMuzzleFlashEffect.SetActive(false);
+    }
+    
+    void onGroundednessChanged(bool newGrounded) {
+        
     }
     
     void OnEnable() {
@@ -729,7 +772,8 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         int numCharges = 5;
         print($"Adding {numCharges} ricochet charges (from T key).");
         currentBikeSpins += numCharges;
-        A_SpinCompleted?.Invoke(currentBikeSpins);
+        spinDecayTimer = 0;
+        A_SpinCompleted?.Invoke(currentBikeSpins, isGrounded);
     }
     
 }

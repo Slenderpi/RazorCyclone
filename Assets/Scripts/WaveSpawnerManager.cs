@@ -15,21 +15,6 @@ using Random = System.Random;
  * Drag/drop reference to respective prefab into WaveSpawnerManager.EnemyPrefabs
  */
 
-public struct TimedWaveEntry {
-    public int num;
-    public float spawnTime;
-    public int[] enemyCounts;
-    
-    public override readonly string ToString() {
-        string s = $"Wave: {num, 2} | time: {spawnTime, 3} | Counts:";
-        for (int i = 0; i < enemyCounts.Length; i++) {
-            if (enemyCounts[i] == 0) continue;
-            s += string.Format("\n{2, 11}{0, -11}: {1, 3}", (EnemyType)i, enemyCounts[i], "> ");
-        }
-        return s;
-    }
-}
-
 public struct WaveEntry {
     public int num;
     public int[] enemyCounts;
@@ -38,7 +23,7 @@ public struct WaveEntry {
         string s = $"WAVE: {num, 2} | {"TYPE", -11} | COUNTS:";
         for (int i = 0; i < enemyCounts.Length; i++) {
             if (enemyCounts[i] == 0) continue;
-            s += string.Format("\n{0, 10} {1, -12}: {2, 2}", ">", (EnemyType)i, enemyCounts[i]);
+            s += string.Format("\n{0, 10} {1, -12}: {2, 2}", ">", (EEnemyType)i, enemyCounts[i]);
         }
         return s;
     }
@@ -50,13 +35,13 @@ public class WaveSpawnerManager : MonoBehaviour {
     /// int: Activated wave number<br/>
     /// float: Activation time (Time.time)
     /// </summary>
-    public event Action<int, float> OnWaveActivated;
+    public event Action<int, float> A_OnWaveActivated;
     /// <summary>
     /// Called when all enemies in the current wave have been killed.<br/>
     /// int: Wave number of finished wave<br/>
     /// float: Time the wave was finished (Time.time)
     /// </summary>
-    public event Action<int, float> OnWaveFinished;
+    public event Action<int, float> A_OnWaveFinished;
     
     [Header("Wave Spawner Config")]
     public TextAsset WaveTableFile;
@@ -72,11 +57,10 @@ public class WaveSpawnerManager : MonoBehaviour {
     
     [HideInInspector]
     public WaveEntry[] waveEntries;
+    [HideInInspector]
+    public WaveEntry currPreloadedWave;
     readonly List<Spawner> spawners = new();
-    // TimedWaveEntry[] waveEntries;
     readonly List<EnemyBase> loadedWave = new();
-    // [HideInInspector]
-    // public float currentWaveSpawnTime = float.MaxValue;
     
     const float MAX_WAIT_TIME_FOR_UNFINISHED_PRELOAD = 3;
     const int PRELOAD_MAX_BATCH_SIZE = 100;
@@ -117,7 +101,6 @@ public class WaveSpawnerManager : MonoBehaviour {
         }
         
         int numWaveEntries = data.Count - 1;
-        // waveEntries = new TimedWaveEntry[numWaveEntries];
         waveEntries = new WaveEntry[numWaveEntries];
         for (int i = 0; i < numWaveEntries; i++) {
             string[] strs = data[i + 1];
@@ -130,19 +113,6 @@ public class WaveSpawnerManager : MonoBehaviour {
                 waveEntries[i].enemyCounts[j] = int.Parse(strs[j + 1]);
             }
         }
-        // for (int i = 0; i < numWaveEntries; i++) {
-        //     string[] strs = data[i + 1];
-        //     // Entries are in format "spawnTime, count for base, count for hunter, count for laser, ..."
-        //     // Set wave number
-        //     waveEntries[i].num = i + 1;
-        //     // Set spawnTime
-        //     waveEntries[i].spawnTime = float.Parse(strs[0]);
-        //     // Set enemyCounts
-        //     waveEntries[i].enemyCounts = new int[strs.Length - 1];
-        //     for (int j = 0; j < strs.Length - 1; j++) {
-        //         waveEntries[i].enemyCounts[j] = int.Parse(strs[j + 1]);
-        //     }
-        // }
         
 #if DEBUG_WAVE_STRS && UNITY_EDITOR
         PrintWaveEntries();
@@ -162,45 +132,70 @@ public class WaveSpawnerManager : MonoBehaviour {
     /// </summary>
     /// <param name="waveNumber">The first wave is 1, not 0.</param>
     public void PreloadWave(int waveNumber) {
-        if (waveNumber > waveEntries.Length || waveNumber <= 0) {
+        if (waveNumber <= 0) {
 #if DEBUG_WAVE_STRS && UNITY_EDITOR
-            Debug.LogWarning($"WARN: Attempted to preload wave number ({waveNumber}) but there are only {waveEntries.Length} determined waves.");
+            Debug.LogError($"WARN: Attempted to preload wave number ({waveNumber}) which is invalid.");
 #endif
             CurrentPreloadedWaveNumber = -1;
-            // currentWaveSpawnTime = float.MaxValue;
             return;
         }
         preloadWaveFinished = false;
         CurrentPreloadedWaveNumber = waveNumber;
-        // TimedWaveEntry wave = waveEntries[waveNumber - 1];  
-        // currentWaveSpawnTime = wave.spawnTime;
         // The loadedWave should already be cleared.
         StartCoroutine(preloadWaveStaggered(waveNumber));
     }
     
     IEnumerator preloadWaveStaggered(int waveNumber) { 
-        WaveEntry wave = waveEntries[waveNumber - 1];     
+        if (waveNumber > waveEntries.Length) {
+            // Generate wave
 #if DEBUG_WAVE_STRS && UNITY_EDITOR
-        Debug.Log("DEBUG: Preloading wave:\n" + wave);
+        Debug.Log($"DEBUG: Wave number ({waveNumber}) greater than pre-determined number of waves ({waveEntries.Length}), generating new wave.");
+#endif
+            generateWave(waveNumber);
+        } else {
+            currPreloadedWave = waveEntries[waveNumber - 1];     
+        }
+#if DEBUG_WAVE_STRS && UNITY_EDITOR
+        Debug.Log("DEBUG: Preloading wave:\n" + currPreloadedWave);
         float startTime = Time.time;
 #endif
         int currBatchSize = 0;
         for (int i = 0; i < EnemyPrefabs.Length; i++) {
-            int count = wave.enemyCounts[i];
-            for (int c = 0; c < count; c++) {
+            int count = currPreloadedWave.enemyCounts[i];
+            if (i == (int)EEnemyType.Centipede) {
+                if (count == 0) continue;
+                // Centipede count determines body length instead of count
                 EnemyBase en = Instantiate(EnemyPrefabs[i]);
                 en.gameObject.SetActive(false);
+                (en as CentipedeEnemy).BodyLength = count;
                 loadedWave.Add(en);
-                if (++currBatchSize >= PRELOAD_MAX_BATCH_SIZE) {
-                    currBatchSize = 0;   
+                currBatchSize++;
+            } else
+                for (int c = 0; c < count; c++) {
+                    EnemyBase en = Instantiate(EnemyPrefabs[i]);
+                    en.gameObject.SetActive(false);
+                    loadedWave.Add(en);
+                    if (++currBatchSize >= PRELOAD_MAX_BATCH_SIZE) {
+                        currBatchSize = 0;   
 #if DEBUG_WAVE_STRS && UNITY_EDITOR
-                    Debug.Log($"DEBUG: Preload batch delay t = {Time.time - startTime}");
+                        Debug.Log($"DEBUG: Preload batch delay t = {Time.time - startTime}");
 #endif
-                    yield return null;
+                        yield return null;
+                    }
                 }
-            }
         }
         preloadWaveFinished = true;
+    }
+    
+    void generateWave(int wnum) {
+        currPreloadedWave = new() {
+            num = wnum,
+            enemyCounts = new int[(int)EEnemyType.COUNT]
+        };
+        currPreloadedWave.enemyCounts[0] = 3; // Hard code fodder to only be 3
+        for (int i = 1; i < currPreloadedWave.enemyCounts.Length; i++) {
+            currPreloadedWave.enemyCounts[i] = 1;
+        }
     }
     
 #if UNITY_EDITOR || KEEP_DEBUG
@@ -225,7 +220,6 @@ public class WaveSpawnerManager : MonoBehaviour {
             return;
         }
         CurrentPreloadedWaveNumber = -1;
-        // currentWaveSpawnTime = float.MaxValue;
         foreach (EnemyBase en in loadedWave) {
             Destroy(en);
         }
@@ -262,18 +256,17 @@ public class WaveSpawnerManager : MonoBehaviour {
         }
         activateWaveFinished = false;
         CurrentWaveNumber = CurrentPreloadedWaveNumber;
-        OnWaveActivated?.Invoke(CurrentWaveNumber, Time.time);
+        A_OnWaveActivated?.Invoke(CurrentWaveNumber, Time.time);
         GameManager.Instance.MainCanvas.GamePanel.OnUpdateRoundNumber(CurrentWaveNumber);
         hasDefeatedActiveWave = false;
 #if DEBUG_WAVE_STRS && UNITY_EDITOR
         Debug.Log("DEBUG: Activating wave number: " + CurrentWaveNumber);
 #endif
         // Check if the wave to activate only has fodders in it
-        WaveEntry wave = waveEntries[CurrentPreloadedWaveNumber - 1];
-        activatedWaveIsOnlyFodder = wave.enemyCounts[0] > 0;
+        activatedWaveIsOnlyFodder = currPreloadedWave.enemyCounts[0] > 0;
         if (activatedWaveIsOnlyFodder)
-            for (int ti = 1; ti < (int)EnemyType.COUNT; ti++)
-                if (wave.enemyCounts[ti] > 0) {
+            for (int ti = 1; ti < (int)EEnemyType.COUNT; ti++)
+                if (currPreloadedWave.enemyCounts[ti] > 0) {
                     activatedWaveIsOnlyFodder = false;
                     break;
                 }
@@ -290,16 +283,15 @@ public class WaveSpawnerManager : MonoBehaviour {
         // The availableSpawners array will now be populated with lists of spawners that accept
         /   respective EnemyTypes.
         */
-        int numETypes = (int)EnemyType.COUNT;
-        // TimedWaveEntry wave = waveEntries[CurrentPreloadedWaveNumber - 1];
+        int numETypes = (int)EEnemyType.COUNT;
         Random rnd = new();
         List<Spawner>[] availableSpawners = new List<Spawner>[numETypes];
         for (int i = 0; i < numETypes; i++) availableSpawners[i] = new List<Spawner>(); // Initialize lists
         foreach (Spawner sp in spawners) {
             if (!sp.ValidateSpawnerSpecificCriteria()) continue;
             for (int ti = 0; ti < numETypes; ti++) { // type i
-                if (wave.enemyCounts[ti] == 0) continue;
-                if (sp.AcceptsEnemy((EnemyType)ti)) {
+                if (currPreloadedWave.enemyCounts[ti] == 0) continue;
+                if (sp.AcceptsEnemy((EEnemyType)ti)) {
                     availableSpawners[ti].Add(sp);
                 }
             }
@@ -309,10 +301,10 @@ public class WaveSpawnerManager : MonoBehaviour {
             if (availableSpawners[i].Count == 0)
                 availableSpawners[i].Add(spawners[rnd.Next(spawners.Count)]);
         
-        StartCoroutine(activateWaveStaggered(numETypes, availableSpawners, wave, rnd));
+        StartCoroutine(activateWaveStaggered(numETypes, availableSpawners, rnd));
     }
     
-    IEnumerator activateWaveStaggered(int numETypes, List<Spawner>[] availableSpawners, WaveEntry wave, Random rnd) {
+    IEnumerator activateWaveStaggered(int numETypes, List<Spawner>[] availableSpawners, Random rnd) {
         /* PSUEDOCODE for positioning and activating each enemy:
         // Now, for each enemy, choose a random valid spawner position and enable them
         // Since PreloadWave() preloads enemies in the order of WaveEntry.EnemyCounts, the order
@@ -337,7 +329,8 @@ public class WaveSpawnerManager : MonoBehaviour {
         int lei = 0; // Loaded Enemy i
         for (int eti = 0; eti < numETypes; eti++) { // Enemy Type i
             List<Spawner> currSpList = availableSpawners[eti];
-            for (int ci = 0; ci < wave.enemyCounts[eti]; ci++) { // (Enemy) Count i
+            int count = eti != (int)EEnemyType.Centipede ? currPreloadedWave.enemyCounts[eti] : currPreloadedWave.enemyCounts[eti] > 0 ? 1 : 0;
+            for (int ci = 0; ci < count; ci++) { // (Enemy) Count i
                 EnemyBase en = loadedWave[lei++];
                 Transform spawnTrans = currSpList[rnd.Next(currSpList.Count)].transform;
                 en.transform.SetPositionAndRotation(spawnTrans.position, spawnTrans.rotation);
@@ -365,7 +358,7 @@ public class WaveSpawnerManager : MonoBehaviour {
             if (counts[0] > 0)
                 waveComplete = false;
         } else {
-            for (int i = 1; i < (int)EnemyType.COUNT; i++) // Start at enemy right after cannon fodder
+            for (int i = 1; i < (int)EEnemyType.COUNT; i++) // Start at enemy right after cannon fodder
                 if (counts[i] > 0) {
                     waveComplete = false;
                     break;
@@ -373,8 +366,7 @@ public class WaveSpawnerManager : MonoBehaviour {
         }
         if (waveComplete) {
             hasDefeatedActiveWave = true;
-            OnWaveFinished?.Invoke(CurrentWaveNumber, Time.time);
-            // Debug.LogWarning("Wave completed!");
+            A_OnWaveFinished?.Invoke(CurrentWaveNumber, Time.time);
             GameManager.Instance.MainCanvas.GamePanel.OnRoundCompleted();
             GameManager.CurrentPlayer.HealHealth(GameManager.CurrentPlayer.MaxHealth);
             GameManager.CurrentPlayer.AddFuel(100);

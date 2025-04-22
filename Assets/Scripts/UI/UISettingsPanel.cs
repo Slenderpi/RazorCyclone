@@ -7,11 +7,12 @@ using UnityEngine.UI;
 
 public class UISettingsPanel : UIPanel {
     
-    public enum EActiveCategory {
+    enum EActiveCategory {
         Controls,
         Video,
         Audio
     }
+    EActiveCategory currCategory = EActiveCategory.Controls;
     
     [Header("Settings Category References")]
     public GameObject CategoryControls;
@@ -163,18 +164,22 @@ public class UISettingsPanel : UIPanel {
         case EActiveCategory.Controls:
             ControlsButton.interactable = false;
             CategoryControls.SetActive(true);
+            GameManager.Instance.Audio2D.SetUMastLPTo(true);
             break;
         case EActiveCategory.Video:
             updateVideoOptions();
             VideoButton.interactable = false;
             CategoryVideo.SetActive(true);
+            GameManager.Instance.Audio2D.SetUMastLPTo(true);
             break;
         case EActiveCategory.Audio:
             updateAudioOptions();
             AudioButton.interactable = false;
             CategoryAudio.SetActive(true);
+            GameManager.Instance.Audio2D.SetUMastLPTo(false);
             break;
         }
+        currCategory = newCategory;
     }
     
     public void SetMouseSenseText(float sens) {
@@ -182,7 +187,7 @@ public class UISettingsPanel : UIPanel {
     }
     
     void Start() {
-        setSettingsCategory(EActiveCategory.Controls);
+        setSettingsCategory(currCategory);
     }
     
     void setAllCategoriesInactive() {
@@ -298,7 +303,11 @@ public class UISettingsPanel : UIPanel {
     }
     
     int calcPowerVolume(float volAsLog) { // log to linear ints
-        return Mathf.RoundToInt(100 * Mathf.Pow(10, volAsLog / 20f));
+        return Mathf.RoundToInt(100 * Mathf.Exp(volAsLog / 12f));
     }
-    
+
+    void OnEnable() {
+        GameManager.Instance.Audio2D.SetUMastLPTo(currCategory != EActiveCategory.Audio);
+    }
+
 }
