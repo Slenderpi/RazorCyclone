@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.17700359, g: 0.2215751, b: 0.30385, a: 1}
+  m_IndirectSpecularColor: {r: 0.000017315264, g: 0.000000027479437, b: 0, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -4852,6 +4852,7 @@ MonoBehaviour:
   RoundLabel: {fileID: 2093631587}
   RoundLabelAnimator: {fileID: 337435215}
   MomentumPanel: {fileID: 553877717}
+  inputOverlayStartsOn: 0
   InputOverlay: {fileID: 1833976309}
   KeyImageW: {fileID: 294438707}
   KeyImageA: {fileID: 1363697063}
