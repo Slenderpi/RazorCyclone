@@ -1727,7 +1727,7 @@ MonoBehaviour:
   CannonForce: 8
   CannonBaseProjSpeed: 125
   InheritedVelocityFactor: 0.7
-  SpinHoldDuration: 2
+  SpinHoldDuration: 1
   GroundRayLength: 0.05
   isGrounded: 1
   currentBikeSpins: 0

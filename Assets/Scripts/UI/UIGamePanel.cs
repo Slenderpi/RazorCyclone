@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -82,7 +83,15 @@ public class UIGamePanel : UIPanel {
     [SerializeField]
     Color SpinOutlineHoldColor = Color.black;
     
+    [Header("Killfeed")]
+    public RectTransform KillfeedArea;
+    float killFeedElemHeight;
+    int currKillElem;
+    public RectTransform[] KillfeedElements;
+    RawImage[] killfeedEntryIcons;
+    
     [Header("Misc.")]
+    public Animator LavaWarning; // TODO
     public TMP_Text RoundLabel;
     public Animator RoundLabelAnimator;
     public RectTransform MomentumPanel;
@@ -116,6 +125,7 @@ public class UIGamePanel : UIPanel {
 #else
         InputOverlay.SetActive(inputOverlayStartsOn);
 #endif
+        initKillfeed();
     }
     
     void Update() {
@@ -123,6 +133,15 @@ public class UIGamePanel : UIPanel {
         if (Time.deltaTime > 0) {
             setFuelSliderFill();
             setHealthSliderFill();
+        }
+    }
+    
+    void LateUpdate() {
+        if (!GameManager.CurrentPlayer) return;
+        if (Time.deltaTime > 0) {
+            lerpSway();
+            lerpSpeed();
+            lerpKillfeedElemPosns();
         }
     }
     
@@ -148,14 +167,6 @@ public class UIGamePanel : UIPanel {
             0
         );
         HealthSliderLevel.localRotation = Quaternion.Euler(0, 0, ang);
-    }
-    
-    void LateUpdate() {
-        if (!GameManager.CurrentPlayer) return;
-        if (Time.deltaTime > 0) {
-            lerpSway();
-            lerpSpeed();
-        }
     }
     
     void lerpSway() {
@@ -357,15 +368,37 @@ public class UIGamePanel : UIPanel {
             FuelOutlineAnimator.SetTrigger("OutOfFuel");
     }
     
-    public void OnPlayerDamagedEnemy(EnemyBase enemy) {
-        CannonHitmarkerAnim.SetTrigger("Hit");
+    public void OnPlayerDamagedEnemy(EDamageType dtype, bool wasKill, EnemyBase enemy) {
+        if (wasKill) {
+            CannonHitmarkerAnim.SetTrigger("Hit");
+        } else {
+            if (dtype == EDamageType.Vacuum) {
+                VacuumHitmarkerAnim.SetTrigger("Kill");
+            } else {
+                CannonHitmarkerAnim.SetTrigger("Kill");
+            }
+        }
+        
+        // KillfeedElements[(currKillElem - 1 + KillfeedElements.Length) % KillfeedElements.Length].gameObject.SetActive(false);
+        currKillElem = (currKillElem + 1) % KillfeedElements.Length;
+        KillfeedElements[currKillElem].anchoredPosition = Vector2.zero;
     }
     
-    public void OnPlayerKilledEnemy(EnemyBase enemy, bool wasCannon) {
-        if (wasCannon) {
-            CannonHitmarkerAnim.SetTrigger("Kill");
-        } else {
-            VacuumHitmarkerAnim.SetTrigger("Kill");
+    // if (gameObject.activeSelf)
+    //     StartCoroutine(TEST_OnPlayerKilledEnemy());
+    IEnumerator TEST_OnPlayerKilledEnemy() {
+        Debug.Log("STARTING KILLFEED TESTER");
+        while (true) {
+            for (int i = 0; i < KillfeedElements.Length; i++) {
+                OnPlayerDamagedEnemy(EDamageType.Any, true, null);
+                yield return new WaitForSeconds(0.5f);
+            }
+            yield return new WaitForSeconds(1.5f);
+            for (int i = 0; i < KillfeedElements.Length * 4; i++) {
+                OnPlayerDamagedEnemy(EDamageType.Any, true, null);
+                yield return new WaitForSeconds(0.1f);
+            }
+            yield return new WaitForSeconds(1.5f);
         }
     }
     
@@ -395,12 +428,15 @@ public class UIGamePanel : UIPanel {
         SpinCounterOutline.fillAmount = perc;
     }
     
-    public override void OnGameResumed() {
-        // SetActive(true);
-    }
-    
-    public override void OnGamePaused() {
-        // SetActive(false);
+    void lerpKillfeedElemPosns() {
+        for (int i = 0; i < KillfeedElements.Length; i++) {
+            int curr = (currKillElem - i + KillfeedElements.Length) % KillfeedElements.Length;
+            KillfeedElements[curr].anchoredPosition = Vector2.Lerp(
+                KillfeedElements[curr].anchoredPosition,
+                new(0, i * killFeedElemHeight),
+                0.1f
+            );
+        }
     }
     
     public override void OnPlayerSpawned(PlayerCharacterCtrlr plr) {
@@ -446,5 +482,18 @@ public class UIGamePanel : UIPanel {
         OnFireCannon(false);
 #endif
     }
-
+    
+    void initKillfeed() {
+        int numKFElems = KillfeedElements.Length;
+        currKillElem = numKFElems - 1;
+        killFeedElemHeight = KillfeedElements[0].rect.height;
+        killfeedEntryIcons = new RawImage[numKFElems * 3];
+        for (int i = 0; i < numKFElems; i++) {
+            RawImage[] elemIcons = KillfeedElements[i].GetComponentsInChildren<RawImage>();
+            killfeedEntryIcons[i * 3 + 0] = elemIcons[0];
+            killfeedEntryIcons[i * 3 + 1] = elemIcons[1];
+            killfeedEntryIcons[i * 3 + 2] = elemIcons[2];
+        }
+    }
+    
 }
