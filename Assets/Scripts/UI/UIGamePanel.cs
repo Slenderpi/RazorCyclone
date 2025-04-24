@@ -89,6 +89,7 @@ public class UIGamePanel : UIPanel {
     int currKillElem;
     public RectTransform[] KillfeedElements;
     RawImage[] killfeedEntryIcons;
+    Texture2D[] killfeedIcons; // Weapon, Weapon, KillType, KillType, Enemies...
     
     [Header("Misc.")]
     public Animator LavaWarning; // TODO
@@ -379,9 +380,10 @@ public class UIGamePanel : UIPanel {
             }
         }
         
-        // KillfeedElements[(currKillElem - 1 + KillfeedElements.Length) % KillfeedElements.Length].gameObject.SetActive(false);
         currKillElem = (currKillElem + 1) % KillfeedElements.Length;
         KillfeedElements[currKillElem].anchoredPosition = Vector2.zero;
+        KillfeedElements[currKillElem].gameObject.SetActive(true);
+        KillfeedElements[(currKillElem - 4 + KillfeedElements.Length) % KillfeedElements.Length].gameObject.SetActive(false);
     }
     
     // if (gameObject.activeSelf)
@@ -429,7 +431,7 @@ public class UIGamePanel : UIPanel {
     }
     
     void lerpKillfeedElemPosns() {
-        for (int i = 0; i < KillfeedElements.Length; i++) {
+        for (int i = 0; i < 4; i++) {
             int curr = (currKillElem - i + KillfeedElements.Length) % KillfeedElements.Length;
             KillfeedElements[curr].anchoredPosition = Vector2.Lerp(
                 KillfeedElements[curr].anchoredPosition,
@@ -493,6 +495,22 @@ public class UIGamePanel : UIPanel {
             killfeedEntryIcons[i * 3 + 0] = elemIcons[0];
             killfeedEntryIcons[i * 3 + 1] = elemIcons[1];
             killfeedEntryIcons[i * 3 + 2] = elemIcons[2];
+            KillfeedElements[i].gameObject.SetActive(false);
+        }
+        StartCoroutine(loadKFIconsAsync());
+    }
+    
+    IEnumerator loadKFIconsAsync() {
+        string[] iconPaths = {
+            "Resources/KillfeedIcons/IMAGE",
+            "Resources/KillfeedIcons/IMAGE"
+        };
+        killfeedIcons = new Texture2D[iconPaths.Length];
+        ResourceRequest rr;
+        for (int i = 0; i < iconPaths.Length; i++) {
+            rr = Resources.LoadAsync<Texture2D>(iconPaths[i]);
+            yield return rr;
+            killfeedIcons[i] = rr.asset as Texture2D;
         }
     }
     
