@@ -10090,7 +10090,9 @@ MonoBehaviour:
   lava: {fileID: 747643374}
   mapCenter: {x: 0, y: 65, z: 0}
   maxCentipedeRoamRadius: 50
+  minCentipedeRoamRadius: 20
   maxCentipedeRoamHeightRange: 5
+  minCentipedeRoamHeightRange: 1.5
   centipedeCircleCompleteTime: 70
   centipedeHeightCompletionTime: 7
   EnemiesForRicochet: []
