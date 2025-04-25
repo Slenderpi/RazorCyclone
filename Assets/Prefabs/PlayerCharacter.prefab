@@ -1736,6 +1736,7 @@ MonoBehaviour:
   VacuumFuelTime: 10
   MaxHealth: 100
   CurrentHealth: 0
+  HealOnKillAmount: 5
   HealthRegenPerSecond: 15
   HealthRegenDelay: 1
   FuelHelathCostMultiplier: 2

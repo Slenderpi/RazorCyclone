@@ -283,12 +283,14 @@ public class UIGamePanel : UIPanel {
     
     public void OnDamageTaken(float amnt) {
         PlayerCharacterCtrlr plr = GameManager.CurrentPlayer;
-        updateHealthUI(plr.CurrentHealth, plr.MaxHealth);
+        if (plr)
+            updateHealthUI(plr.CurrentHealth, plr.MaxHealth);
     }
     
     public void OnPlayerHealed(float amnt) {
         PlayerCharacterCtrlr plr = GameManager.CurrentPlayer;
-        updateHealthUI(plr.CurrentHealth, plr.MaxHealth);
+        if (plr)
+            updateHealthUI(plr.CurrentHealth, plr.MaxHealth);
     }
     
     void onSpinProgressed(int progress) {
@@ -460,9 +462,11 @@ public class UIGamePanel : UIPanel {
         ResetUIElements(plr);
     }
     
-    // public override void OnPlayerDestroying(PlayerCharacterCtrlr plr) {
-    //     unloadKFIcons();
-    // }
+    public override void OnPlayerDestroying(PlayerCharacterCtrlr plr) {
+        // unloadKFIcons();
+        for (int i = 0; i < 4; i++)
+            KillfeedElements[(currKillElem - i + KillfeedElements.Length) % KillfeedElements.Length].gameObject.SetActive(false);
+    }
     
     public void ResetUIElements(PlayerCharacterCtrlr plr) {
         OnFuelAdded(0, 1);
