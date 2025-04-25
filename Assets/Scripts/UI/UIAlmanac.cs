@@ -26,37 +26,37 @@ public class UIAlmanac : UIPanel {
         new(
             name: "Bug",
             desc: "This be what the bug do. It do, what it be of can, where when it shall.",
-            imageURL: "Resources/Almanac/bug_thumbnail"
+            imageURL: "Almanac/bug_thumbnail"
         ),
         new(
             name: "Hunter",
             desc: "Lorem ipsum type beat.",
-            imageURL: "Resources/Almanac/hunterBasic_thumbnail"
+            imageURL: "Almanac/hunterBasic_thumbnail"
         ),
         new(
             name: "Empowered Hunter",
             desc: "Lorem ipsum type beat.",
-            imageURL: "Resources/Almanac/hunterEmpowered_thumbnail"
+            imageURL: "Almanac/hunterEmpowered_thumbnail"
         ),
         new(
             name: "Crab",
             desc: "Lorem ipsum type beat.",
-            imageURL: "Resources/Almanac/crabBasic_thumbnail"
+            imageURL: "Almanac/crabBasic_thumbnail"
         ),
         new(
             name: "Laser Crab",
             desc: "Lorem ipsum type beat.",
-            imageURL: "Resources/Almanac/crabLaser_thumbnail"
+            imageURL: "Almanac/crabLaser_thumbnail"
         ),
         new(
             name: "Turtle",
             desc: "Lorem ipsum type beat.",
-            imageURL: "Resources/Almanac/turtle_thumbnail"
+            imageURL: "Almanac/turtle_thumbnail"
         ),
         new(
             name: "Centipede",
             desc: "Lorem ipsum type beat.",
-            imageURL: "Resources/Almanac/centipede_thumbnail"
+            imageURL: "Almanac/centipede_thumbnail"
         ),
     };
     
@@ -64,7 +64,7 @@ public class UIAlmanac : UIPanel {
         new(
             name: "Player Entry Title",
             desc: "Description here.",
-            imageURL: "Resources/Almanac/THUMBNAIL_IMAGE"
+            imageURL: "Almanac/THUMBNAIL_IMAGE"
         ),
     };
     

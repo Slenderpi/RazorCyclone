@@ -88,8 +88,8 @@ public class UIGamePanel : UIPanel {
     float killFeedElemHeight;
     int currKillElem;
     public RectTransform[] KillfeedElements;
-    RawImage[] killfeedEntryIcons;
-    Texture2D[] killfeedIcons; // Weapon, Weapon, KillType, KillType, Enemies...
+    RawImage[] killfeedEntryImages; // Groups of 4: card bg, wp icon, kill type icon, enemy icon
+    Texture2D[] killfeedTextures; // Weapon, Weapon, Weapon, KillType, KillType, Enemies...
     
     [Header("Misc.")]
     public Animator LavaWarning; // TODO
@@ -127,6 +127,10 @@ public class UIGamePanel : UIPanel {
         InputOverlay.SetActive(inputOverlayStartsOn);
 #endif
         initKillfeed();
+    }
+    
+    void Start() {
+        StartCoroutine(loadKFIconsAsync());
     }
     
     void Update() {
@@ -380,28 +384,28 @@ public class UIGamePanel : UIPanel {
             }
         }
         
+        // Increment current card index
         currKillElem = (currKillElem + 1) % KillfeedElements.Length;
+        
+        // Position card directly at the bottom
         KillfeedElements[currKillElem].anchoredPosition = Vector2.zero;
+        
+        // Set color of card background
+        killfeedEntryImages[currKillElem * 4].color = wasKill ? Color.red : Color.yellow;
+        
+        // Set images for card icons
+        killfeedEntryImages[currKillElem * 4 + 1].texture = killfeedTextures[dtype switch {
+            EDamageType.Vacuum => 0,
+            EDamageType.Projectile => 1,
+            EDamageType.ProjectileRicochet => 2,
+            _ => throw new Exception($"ERROR: Player damage type when damaging enemy is invalid. Type given: {dtype}.")
+        }];
+        killfeedEntryImages[currKillElem * 4 + 2].texture = killfeedTextures[4];
+        killfeedEntryImages[currKillElem * 4 + 3].texture = killfeedTextures[enemy.etypeid < EEnemyType.COUNT ? (int)enemy.etypeid + 5 : 5];
+        
+        // Enable new card, disable oldest card
         KillfeedElements[currKillElem].gameObject.SetActive(true);
         KillfeedElements[(currKillElem - 4 + KillfeedElements.Length) % KillfeedElements.Length].gameObject.SetActive(false);
-    }
-    
-    // if (gameObject.activeSelf)
-    //     StartCoroutine(TEST_OnPlayerKilledEnemy());
-    IEnumerator TEST_OnPlayerKilledEnemy() {
-        Debug.Log("STARTING KILLFEED TESTER");
-        while (true) {
-            for (int i = 0; i < KillfeedElements.Length; i++) {
-                OnPlayerDamagedEnemy(EDamageType.Any, true, null);
-                yield return new WaitForSeconds(0.5f);
-            }
-            yield return new WaitForSeconds(1.5f);
-            for (int i = 0; i < KillfeedElements.Length * 4; i++) {
-                OnPlayerDamagedEnemy(EDamageType.Any, true, null);
-                yield return new WaitForSeconds(0.1f);
-            }
-            yield return new WaitForSeconds(1.5f);
-        }
     }
     
     public void OnRoundCompleted() {
@@ -456,17 +460,9 @@ public class UIGamePanel : UIPanel {
         ResetUIElements(plr);
     }
     
-    public override void OnPlayerDestroying(PlayerCharacterCtrlr plr) {
-        // NOTE: Not sure if these unsubscriptions are necessary since the player's getting destroyed anyway
-        plr.A_FuelAdded -= OnFuelAdded;
-        plr.A_FuelSpent -= OnFuelSpent;
-        plr.A_PlayerTakenDamage -= OnDamageTaken;
-        plr.A_PlayerHealed -= OnPlayerHealed;
-        plr.A_SpinProgressed -= onSpinProgressed;
-        plr.A_SpinProgressReset -= onSpinProgressReset;
-        plr.A_SpinCompleted -= onSpinCompleted;
-        plr.A_SpinsSpent -= onSpinsSpent;
-    }
+    // public override void OnPlayerDestroying(PlayerCharacterCtrlr plr) {
+    //     unloadKFIcons();
+    // }
     
     public void ResetUIElements(PlayerCharacterCtrlr plr) {
         OnFuelAdded(0, 1);
@@ -489,28 +485,51 @@ public class UIGamePanel : UIPanel {
         int numKFElems = KillfeedElements.Length;
         currKillElem = numKFElems - 1;
         killFeedElemHeight = KillfeedElements[0].rect.height;
-        killfeedEntryIcons = new RawImage[numKFElems * 3];
+        killfeedEntryImages = new RawImage[numKFElems * 4];
         for (int i = 0; i < numKFElems; i++) {
-            RawImage[] elemIcons = KillfeedElements[i].GetComponentsInChildren<RawImage>();
-            killfeedEntryIcons[i * 3 + 0] = elemIcons[0];
-            killfeedEntryIcons[i * 3 + 1] = elemIcons[1];
-            killfeedEntryIcons[i * 3 + 2] = elemIcons[2];
+            // GetComponentsInChildren() is supposed to only look in children but for some reason this one includes the current gameObject
+            RawImage[] elemImages = KillfeedElements[i].GetComponentsInChildren<RawImage>();
+            for (int ri = 0; ri < 4; ri++)
+                killfeedEntryImages[i * 4 + ri] = elemImages[ri];
             KillfeedElements[i].gameObject.SetActive(false);
         }
-        StartCoroutine(loadKFIconsAsync());
     }
     
     IEnumerator loadKFIconsAsync() {
         string[] iconPaths = {
-            "Resources/KillfeedIcons/IMAGE",
-            "Resources/KillfeedIcons/IMAGE"
+            // Weapons
+            "Killfeed Icons/Vacuum",
+            "Killfeed Icons/Cannon",
+            "Killfeed Icons/Ricochet",
+            // Arrows
+            "Killfeed Icons/SmallArrow",
+            "Killfeed Icons/BigArrow",
+            // Enemy icons
+            "Killfeed Icons/Bug",
+            "Killfeed Icons/Bird",
+            "Killfeed Icons/BirdOutline",
+            "Killfeed Icons/Crab",
+            "Killfeed Icons/CrabOutline",
+            "Killfeed Icons/Turtle",
+            "Killfeed Icons/CentipedeIcon"
         };
-        killfeedIcons = new Texture2D[iconPaths.Length];
+        killfeedTextures = new Texture2D[iconPaths.Length];
         ResourceRequest rr;
         for (int i = 0; i < iconPaths.Length; i++) {
             rr = Resources.LoadAsync<Texture2D>(iconPaths[i]);
             yield return rr;
-            killfeedIcons[i] = rr.asset as Texture2D;
+            killfeedTextures[i] = rr.asset as Texture2D;
+            // if (!killfeedTextures[i])
+            //     Debug.LogWarning($"FAILED TO LOAD KILLFEED ICON: \"{iconPaths[i]}\"");
+            // else
+            //     print($"Loaded '{killfeedTextures[i].name}' (path: '{iconPaths[i]}')");
+        }
+    }
+    
+    void unloadKFIcons() {
+        if (killfeedTextures == null) return;
+        for (int i = 0; i < killfeedTextures.Length; i++) {
+            Resources.UnloadAsset(killfeedTextures[i]);
         }
     }
     
