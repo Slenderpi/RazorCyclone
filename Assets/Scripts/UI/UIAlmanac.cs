@@ -25,37 +25,37 @@ public class UIAlmanac : UIPanel {
     readonly AlmanacDataEntry[] enemyDataEntries = new AlmanacDataEntry[] {
         new(
             name: "Bug",
-            desc: "This be what the bug do. It do, what it be of can, where when it shall.",
+            desc: "The Bug is a passive enemy that aimlessly wanders around, ignoring the player. A great source of free fuel.",
             imageURL: "Almanac/bug_thumbnail"
         ),
         new(
             name: "Hunter",
-            desc: "Lorem ipsum type beat.",
+            desc: "The Hunter relentlessly chases you down. Fortunately, they're not too tough to kill.",
             imageURL: "Almanac/hunterBasic_thumbnail"
         ),
         new(
-            name: "Empowered Hunter",
-            desc: "Lorem ipsum type beat.",
+            name: "Shielded Hunter",
+            desc: "The Shielded Hunter is extremely aggressive and will rapidly pursue you. Its shield can only be disabled with a cannon shot.",
             imageURL: "Almanac/hunterEmpowered_thumbnail"
         ),
         new(
             name: "Crab",
-            desc: "Lorem ipsum type beat.",
+            desc: "The Crab is a small, stationary enemy that occasionally fires at you. Not much of a threat.",
             imageURL: "Almanac/crabBasic_thumbnail"
         ),
         new(
             name: "Laser Crab",
-            desc: "Lorem ipsum type beat.",
+            desc: "The Laser Crab fires a continuous laser that grows more deadly the longer it locks on. While immune to cannon kills, a cannon shot will stun it and reset its laser's damage buildup.",
             imageURL: "Almanac/crabLaser_thumbnail"
         ),
         new(
             name: "Turtle",
-            desc: "Lorem ipsum type beat.",
+            desc: "The Turtle causes the lava to rise as long as it stays alive. A cannon shot will expose its core—destroy the core to defeat it.",
             imageURL: "Almanac/turtle_thumbnail"
         ),
         new(
             name: "Centipede",
-            desc: "Lorem ipsum type beat.",
+            desc: "The Centipede is made up of several segments, each firing a missile in sequence. To defeat it, you must destroy every segment",
             imageURL: "Almanac/centipede_thumbnail"
         ),
     };
