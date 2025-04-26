@@ -59,6 +59,7 @@ public class UIGamePanel : UIPanel {
     public Animator HealthFillAnimator;
     public Image HealthSlider2;
     public RectTransform HealthSliderLevel;
+    public RawImage HealthVignette;
     
     [Header("Crosshairs")]
     public RectTransform MainVacuumCrosshair;
@@ -174,6 +175,7 @@ public class UIGamePanel : UIPanel {
             0
         );
         HealthSliderLevel.localRotation = Quaternion.Euler(0, 0, ang);
+        HealthVignette.color = new Color(1, 0, 0, 1 - fill);
     }
     
     void lerpSway() {
