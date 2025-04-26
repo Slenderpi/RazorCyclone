@@ -402,8 +402,8 @@ public class UIGamePanel : UIPanel {
             EDamageType.ProjectileRicochet => 2,
             _ => throw new Exception($"ERROR: Player damage type when damaging enemy is invalid. Type given: {dtype}.")
         }];
-        killfeedEntryImages[currKillElem * 4 + 2].texture = killfeedTextures[4];
-        killfeedEntryImages[currKillElem * 4 + 3].texture = killfeedTextures[enemy.etypeid < EEnemyType.COUNT ? (int)enemy.etypeid + 5 : 5];
+        // killfeedEntryImages[currKillElem * 4 + 2].texture = killfeedTextures[3];
+        killfeedEntryImages[currKillElem * 4 + 3].texture = killfeedTextures[enemy.etypeid < EEnemyType.COUNT ? (int)enemy.etypeid + 4 : 4];
         
         // Enable new card, disable oldest card
         KillfeedElements[currKillElem].gameObject.SetActive(true);
@@ -505,29 +505,36 @@ public class UIGamePanel : UIPanel {
             "Killfeed Icons/Vacuum",
             "Killfeed Icons/Cannon",
             "Killfeed Icons/Ricochet",
-            // Arrows
-            "Killfeed Icons/SmallArrow",
-            "Killfeed Icons/BigArrow",
+            // Arrow
+            "Killfeed Icons/S_Arrow",
             // Enemy icons
             "Killfeed Icons/Bug",
             "Killfeed Icons/Bird",
-            "Killfeed Icons/BirdOutline",
+            "Killfeed Icons/Bird+",
             "Killfeed Icons/Crab",
-            "Killfeed Icons/CrabOutline",
+            "Killfeed Icons/Crab+",
             "Killfeed Icons/Turtle",
-            "Killfeed Icons/CentipedeIcon"
+            "Killfeed Icons/Centipede"
         };
-        killfeedTextures = new Texture2D[iconPaths.Length];
+        int numIcons = iconPaths.Length;
+#if UNITY_EDITOR
+        int successes = 0;
+#endif
+        killfeedTextures = new Texture2D[numIcons];
         ResourceRequest rr;
-        for (int i = 0; i < iconPaths.Length; i++) {
+        for (int i = 0; i < numIcons; i++) {
             rr = Resources.LoadAsync<Texture2D>(iconPaths[i]);
             yield return rr;
             killfeedTextures[i] = rr.asset as Texture2D;
-            // if (!killfeedTextures[i])
-            //     Debug.LogWarning($"FAILED TO LOAD KILLFEED ICON: \"{iconPaths[i]}\"");
-            // else
-            //     print($"Loaded '{killfeedTextures[i].name}' (path: '{iconPaths[i]}')");
+#if UNITY_EDITOR
+            if (killfeedTextures[i])
+                successes++;
+#endif
         }
+#if UNITY_EDITOR
+        if (successes != numIcons)
+            Debug.LogWarning($"WARN: UIGamePanel failed to load all required Killfeed Icons (successfully loaded: {successes} / {numIcons}).");
+#endif
     }
     
     void unloadKFIcons() {
