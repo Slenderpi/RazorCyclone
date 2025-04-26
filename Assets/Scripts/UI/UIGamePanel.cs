@@ -407,9 +407,8 @@ public class UIGamePanel : UIPanel {
         // killfeedEntryImages[currKillElem * 4 + 2].texture = killfeedTextures[3];
         killfeedEntryImages[currKillElem * 4 + 3].sprite = killfeedSprites[enemy.etypeid < EEnemyType.COUNT ? (int)enemy.etypeid + 4 : 4];
         
-        // Enable new card, disable oldest card
+        // Start animators
         killfeedCardAnimators[currKillElem].SetTrigger("Activate");
-        killfeedCardAnimators[(currKillElem - 4 + KillfeedElements.Length) % KillfeedElements.Length].SetTrigger("Default");
         KillfeedImpactAnimator.SetTrigger("Activate");
     }
     
@@ -440,13 +439,16 @@ public class UIGamePanel : UIPanel {
     }
     
     void lerpKillfeedElemPosns() {
-        for (int i = 0; i < 4; i++) {
-            int curr = (currKillElem - i + KillfeedElements.Length) % KillfeedElements.Length;
-            KillfeedElements[curr].anchoredPosition = Vector2.Lerp(
-                KillfeedElements[curr].anchoredPosition,
-                new(0, i * killFeedElemHeight),
-                0.1f
-            );
+        int curr = (currKillElem - 1 + KillfeedElements.Length) % KillfeedElements.Length;
+        Vector2 firstCardPos = Vector2.Lerp(
+            KillfeedElements[curr].anchoredPosition,
+            new(0, killFeedElemHeight),
+            0.1f
+        );
+        for (int i = 1; i < 4; i++) {
+            curr = (currKillElem - i + KillfeedElements.Length) % KillfeedElements.Length;
+            KillfeedElements[curr].anchoredPosition = firstCardPos;
+            firstCardPos.y += killFeedElemHeight;
         }
     }
     
@@ -477,10 +479,6 @@ public class UIGamePanel : UIPanel {
         currKillElem = 0;
         foreach (Animator kfanim in killfeedCardAnimators)
             kfanim.SetTrigger("Default");
-        // for (int i = 0; i < 4; i++)
-        //     killfeedCardAnimators[(currKillElem - i + KillfeedElements.Length) % KillfeedElements.Length].SetTrigger("Default");
-            // KillfeedElements[(currKillElem - i + KillfeedElements.Length) % KillfeedElements.Length].gameObject.SetActive(true);
-            // KillfeedElements[i].gameObject.SetActive(false);
 #if UNITY_EDITOR || KEEP_DEBUG
         OnTurnInputChanged(Vector2.zero);
         OnVertInputChanged(0);
