@@ -84,12 +84,14 @@ public class UIGamePanel : UIPanel {
     Color SpinOutlineHoldColor = Color.black;
     
     [Header("Killfeed")]
+    public Animator KillfeedImpactAnimator;
     public RectTransform KillfeedArea;
     float killFeedElemHeight;
     int currKillElem;
     public RectTransform[] KillfeedElements;
-    RawImage[] killfeedEntryImages; // Groups of 4: card bg, wp icon, kill type icon, enemy icon
-    Texture2D[] killfeedTextures; // Weapon, Weapon, Weapon, KillType, KillType, Enemies...
+    Image[] killfeedEntryImages; // Groups of 4: card bg, wp icon, kill type icon, enemy icon
+    Sprite[] killfeedSprites; // Weapon, Weapon, Weapon, KillType, KillType, Enemies...
+    Animator[] killfeedCardAnimators;
     
     [Header("Misc.")]
     public Animator LavaWarning; // TODO
@@ -396,18 +398,19 @@ public class UIGamePanel : UIPanel {
         killfeedEntryImages[currKillElem * 4].color = wasKill ? Color.red : Color.yellow;
         
         // Set images for card icons
-        killfeedEntryImages[currKillElem * 4 + 1].texture = killfeedTextures[dtype switch {
+        killfeedEntryImages[currKillElem * 4 + 1].sprite = killfeedSprites[dtype switch {
             EDamageType.Vacuum => 0,
             EDamageType.Projectile => 1,
             EDamageType.ProjectileRicochet => 2,
             _ => throw new Exception($"ERROR: Player damage type when damaging enemy is invalid. Type given: {dtype}.")
         }];
         // killfeedEntryImages[currKillElem * 4 + 2].texture = killfeedTextures[3];
-        killfeedEntryImages[currKillElem * 4 + 3].texture = killfeedTextures[enemy.etypeid < EEnemyType.COUNT ? (int)enemy.etypeid + 4 : 4];
+        killfeedEntryImages[currKillElem * 4 + 3].sprite = killfeedSprites[enemy.etypeid < EEnemyType.COUNT ? (int)enemy.etypeid + 4 : 4];
         
         // Enable new card, disable oldest card
-        KillfeedElements[currKillElem].gameObject.SetActive(true);
-        KillfeedElements[(currKillElem - 4 + KillfeedElements.Length) % KillfeedElements.Length].gameObject.SetActive(false);
+        killfeedCardAnimators[currKillElem].SetTrigger("Activate");
+        killfeedCardAnimators[(currKillElem - 4 + KillfeedElements.Length) % KillfeedElements.Length].SetTrigger("Default");
+        KillfeedImpactAnimator.SetTrigger("Activate");
     }
     
     public void OnRoundCompleted() {
@@ -462,12 +465,6 @@ public class UIGamePanel : UIPanel {
         ResetUIElements(plr);
     }
     
-    public override void OnPlayerDestroying(PlayerCharacterCtrlr plr) {
-        // unloadKFIcons();
-        for (int i = 0; i < 4; i++)
-            KillfeedElements[(currKillElem - i + KillfeedElements.Length) % KillfeedElements.Length].gameObject.SetActive(false);
-    }
-    
     public void ResetUIElements(PlayerCharacterCtrlr plr) {
         OnFuelAdded(0, 1);
         updateHealthUI(100, 100);
@@ -477,6 +474,13 @@ public class UIGamePanel : UIPanel {
         if (plr.currentBikeSpins == 0)
             SpinCounterOutline.gameObject.SetActive(false);
         if (gameObject.activeSelf) FuelOutlineAnimator.SetTrigger("Reset");
+        currKillElem = 0;
+        foreach (Animator kfanim in killfeedCardAnimators)
+            kfanim.SetTrigger("Default");
+        // for (int i = 0; i < 4; i++)
+        //     killfeedCardAnimators[(currKillElem - i + KillfeedElements.Length) % KillfeedElements.Length].SetTrigger("Default");
+            // KillfeedElements[(currKillElem - i + KillfeedElements.Length) % KillfeedElements.Length].gameObject.SetActive(true);
+            // KillfeedElements[i].gameObject.SetActive(false);
 #if UNITY_EDITOR || KEEP_DEBUG
         OnTurnInputChanged(Vector2.zero);
         OnVertInputChanged(0);
@@ -489,13 +493,15 @@ public class UIGamePanel : UIPanel {
         int numKFElems = KillfeedElements.Length;
         currKillElem = numKFElems - 1;
         killFeedElemHeight = KillfeedElements[0].rect.height;
-        killfeedEntryImages = new RawImage[numKFElems * 4];
+        killfeedEntryImages = new Image[numKFElems * 4];
+        killfeedCardAnimators = new Animator[numKFElems];
         for (int i = 0; i < numKFElems; i++) {
             // GetComponentsInChildren() is supposed to only look in children but for some reason this one includes the current gameObject
-            RawImage[] elemImages = KillfeedElements[i].GetComponentsInChildren<RawImage>();
+            Image[] elemImages = KillfeedElements[i].GetComponentsInChildren<Image>();
             for (int ri = 0; ri < 4; ri++)
                 killfeedEntryImages[i * 4 + ri] = elemImages[ri];
-            KillfeedElements[i].gameObject.SetActive(false);
+            killfeedCardAnimators[i] = KillfeedElements[i].GetComponent<Animator>();
+            killfeedCardAnimators[i].SetTrigger("Default");
         }
     }
     
@@ -520,14 +526,14 @@ public class UIGamePanel : UIPanel {
 #if UNITY_EDITOR
         int successes = 0;
 #endif
-        killfeedTextures = new Texture2D[numIcons];
+        killfeedSprites = new Sprite[numIcons];
         ResourceRequest rr;
         for (int i = 0; i < numIcons; i++) {
-            rr = Resources.LoadAsync<Texture2D>(iconPaths[i]);
+            rr = Resources.LoadAsync<Sprite>(iconPaths[i]);
             yield return rr;
-            killfeedTextures[i] = rr.asset as Texture2D;
+            killfeedSprites[i] = rr.asset as Sprite;
 #if UNITY_EDITOR
-            if (killfeedTextures[i])
+            if (killfeedSprites[i])
                 successes++;
 #endif
         }
@@ -538,9 +544,9 @@ public class UIGamePanel : UIPanel {
     }
     
     void unloadKFIcons() {
-        if (killfeedTextures == null) return;
-        for (int i = 0; i < killfeedTextures.Length; i++) {
-            Resources.UnloadAsset(killfeedTextures[i]);
+        if (killfeedSprites == null) return;
+        for (int i = 0; i < killfeedSprites.Length; i++) {
+            Resources.UnloadAsset(killfeedSprites[i]);
         }
     }
     
