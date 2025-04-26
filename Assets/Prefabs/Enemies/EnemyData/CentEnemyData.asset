@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 20e3ed72087e71549b58a392be331837, type: 3}
   m_Name: CentEnemyData
   m_EditorClassIdentifier: 
-  MoveSpeed: 5
+  MoveSpeed: 7
   FollowOffset: 1.5
   MissileFireDelay: 10
   MissileFireDelayOffset: 0.1
