@@ -175,7 +175,7 @@ public class UIGamePanel : UIPanel {
             0
         );
         HealthSliderLevel.localRotation = Quaternion.Euler(0, 0, ang);
-        HealthVignette.color = new Color(1, 0, 0, 1 - fill);
+        HealthVignette.color = new Color(0.65f, 0, 0, 1 - fill);
     }
     
     void lerpSway() {
