@@ -12,12 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 20e3ed72087e71549b58a392be331837, type: 3}
   m_Name: CentEnemyData
   m_EditorClassIdentifier: 
-  MoveSpeed: 5
+  MoveSpeed: 7
   FollowOffset: 1.5
   MissileFireDelay: 10
   MissileFireDelayOffset: 0.1
-  MissileDoorAnimTime: 1
-  MissileDoorLeaveOpenTime: 0.2
+  MissileDoorAnimTime: 0.2
+  MissileDoorWaitOpenTime: 1
+  MissileDoorLeaveOpenTime: 1
   MissilePrefab: {fileID: 6751577663681668669, guid: 9228885265ca714478c763de6e658fd9, type: 3}
   MissileFireEffectPrefab: {fileID: 6498789483473948991, guid: ef11bc4966759d743b0d851211ffeaf8, type: 3}
   HeadMaterial: {fileID: 2100000, guid: 4cde6ee6e09aa084ea0d3801cd4d516e, type: 2}

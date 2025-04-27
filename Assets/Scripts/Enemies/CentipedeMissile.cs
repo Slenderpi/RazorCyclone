@@ -5,6 +5,8 @@ public class CentipedeMissile : EnemyBase {
     
     [Header("Missile Config")]
     public CentMissileEnemySO CentMissConfig;
+    [SerializeField]
+    TrailRenderer MissileTrail;
     // [Tooltip("Determines the amount of seconds this missile can exist before it automatically explodes.")]
     // public float MaximumMissileLifetime = 10;
     // [Tooltip("When a missile is spawned in, it will start off without tracking and just burst forward, because that looks cool. This is the 'arming' phase.\nThe missile is still able to collide during this phase.\n\nThis variable determines how long arming lasts.")]
@@ -28,6 +30,7 @@ public class CentipedeMissile : EnemyBase {
         rb.drag = CentMissConfig.ArmingDrag;
         pooledExplosion = Instantiate(CentMissConfig.ExplosionEffectPrefab);
         pooledExplosion.SetActive(false);
+        ConsiderForRicochet = false;
     }
     
     protected override void LateInit() {
@@ -39,12 +42,19 @@ public class CentipedeMissile : EnemyBase {
     
     void OnTriggerEnter(Collider collider) {
         if (Dead || hasTriggered) return;
+        if (collider.CompareTag("Vacuum")) // Ignore vacuum
+            return;
         hasTriggered = true;
         if (collider.CompareTag("Player"))
             Attack();
         explode();
-        gameObject.SetActive(false);
+        Model.SetActive(false);
         Destroy(gameObject, 1);
+    }
+    
+    protected override void OnTakeDamage(float amnt, EDamageType damageType) {
+        if (damageType != EDamageType.Vacuum)
+            base.OnTakeDamage(amnt, damageType);
     }
     
     protected override void OnDestroying() {

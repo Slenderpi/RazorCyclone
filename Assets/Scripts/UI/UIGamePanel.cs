@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -53,11 +54,11 @@ public class UIGamePanel : UIPanel {
     public RectTransform FuelSliderLevel;
     
     [Header("Healthbar")]
-    public Slider HealthSlider;
-    public TMP_Text HealthText;
     public Animator HealthFillAnimator;
+    public Animator HealthOutlineAnimator;
     public Image HealthSlider2;
     public RectTransform HealthSliderLevel;
+    public RawImage HealthVignette;
     
     [Header("Crosshairs")]
     public RectTransform MainVacuumCrosshair;
@@ -82,7 +83,18 @@ public class UIGamePanel : UIPanel {
     [SerializeField]
     Color SpinOutlineHoldColor = Color.black;
     
+    [Header("Killfeed")]
+    public Animator KillfeedImpactAnimator;
+    public RectTransform KillfeedArea;
+    float killFeedElemHeight;
+    int currKillElem;
+    public RectTransform[] KillfeedElements;
+    Image[] killfeedEntryImages; // Groups of 4: card bg, wp icon, kill type icon, enemy icon
+    Sprite[] killfeedSprites; // Weapon, Weapon, Weapon, KillType, KillType, Enemies...
+    Animator[] killfeedCardAnimators;
+    
     [Header("Misc.")]
+    public Animator LavaWarning; // TODO
     public TMP_Text RoundLabel;
     public Animator RoundLabelAnimator;
     public RectTransform MomentumPanel;
@@ -116,6 +128,11 @@ public class UIGamePanel : UIPanel {
 #else
         InputOverlay.SetActive(inputOverlayStartsOn);
 #endif
+        initKillfeed();
+    }
+    
+    void Start() {
+        StartCoroutine(loadKFIconsAsync());
     }
     
     void Update() {
@@ -123,6 +140,15 @@ public class UIGamePanel : UIPanel {
         if (Time.deltaTime > 0) {
             setFuelSliderFill();
             setHealthSliderFill();
+        }
+    }
+    
+    void LateUpdate() {
+        if (!GameManager.CurrentPlayer) return;
+        if (Time.deltaTime > 0) {
+            lerpSway();
+            lerpSpeed();
+            lerpKillfeedElemPosns();
         }
     }
     
@@ -148,14 +174,7 @@ public class UIGamePanel : UIPanel {
             0
         );
         HealthSliderLevel.localRotation = Quaternion.Euler(0, 0, ang);
-    }
-    
-    void LateUpdate() {
-        if (!GameManager.CurrentPlayer) return;
-        if (Time.deltaTime > 0) {
-            lerpSway();
-            lerpSpeed();
-        }
+        HealthVignette.color = new Color(0.65f, 0, 0, 1 - fill);
     }
     
     void lerpSway() {
@@ -243,36 +262,34 @@ public class UIGamePanel : UIPanel {
 #endif
     
     public void OnFuelAdded(float changeAmnt, float perc) {
-        // FuelSlider.value = perc;
-        // TODO
         currFuel = perc;
         
         if (!gameObject.activeSelf) return;
-        // if (perc == 1f || true) FuelOutlineAnimator.SetTrigger("RefillFuel");
+        // if (perc >= 1f || true) FuelOutlineAnimator.SetTrigger("RefillFuel");
+        if (changeAmnt > 0)
+            FuelOutlineAnimator.SetTrigger("AddFill");
         
         // Temporary?
         GameManager.Instance.Audio2D.PlayClipSFX(AudioPlayer2D.EClipSFX.Plr_PickupFuel);
     }
     
     public void OnFuelSpent(float amnt, float perc, bool spentAsHealth) {
-        // FuelSlider.value = perc;
-        // if (spentAsHealth)
-        //     HealthFillAnimator.SetTrigger("HealthAsFuel");
-        // else
-        //     FuelFillAnimator.SetTrigger("SpendFuel");
-        
-        // TODO
         currFuel = perc;
+        if (spentAsHealth)
+            HealthFillAnimator.SetTrigger("HealthAsFuel");
     }
     
     public void OnDamageTaken(float amnt) {
         PlayerCharacterCtrlr plr = GameManager.CurrentPlayer;
-        updateHealthUI(plr.CurrentHealth, plr.MaxHealth);
+        if (plr)
+            updateHealthUI(plr.CurrentHealth, plr.MaxHealth);
     }
     
     public void OnPlayerHealed(float amnt) {
+        if (amnt == 0) return;
         PlayerCharacterCtrlr plr = GameManager.CurrentPlayer;
-        updateHealthUI(plr.CurrentHealth, plr.MaxHealth);
+        if (plr && gameObject.activeSelf)
+            updateHealthUI(plr.CurrentHealth, plr.MaxHealth);
     }
     
     void onSpinProgressed(int progress) {
@@ -344,29 +361,50 @@ public class UIGamePanel : UIPanel {
     }
     
     void updateHealthUI(float currH, float maxH) {
-        // HealthSlider.value = currH / maxH;
-        // HealthText.text = Mathf.CeilToInt(currH).ToString();
-        
-        // TODO
         currHlth = currH / maxH;
+        // if (currH >= maxH)
+        //     HealthOutlineAnimator.SetTrigger("FullRefill");
     }
     
     public void OnOutOfFuel() {
-        AnimatorStateInfo asi = FuelOutlineAnimator.GetCurrentAnimatorStateInfo(0);
-        if (!asi.IsName("OutOfFuelBlink") || asi.normalizedTime >= 0.8f)
-            FuelOutlineAnimator.SetTrigger("OutOfFuel");
+        // AnimatorStateInfo asi = FuelOutlineAnimator.GetCurrentAnimatorStateInfo(0);
+        // if (!asi.IsName("OutOfFuelBlink") || asi.normalizedTime >= 0.8f)
+        //     FuelOutlineAnimator.SetTrigger("OutOfFuel");
     }
     
-    public void OnPlayerDamagedEnemy(EnemyBase enemy) {
-        CannonHitmarkerAnim.SetTrigger("Hit");
-    }
-    
-    public void OnPlayerKilledEnemy(EnemyBase enemy, bool wasCannon) {
-        if (wasCannon) {
-            CannonHitmarkerAnim.SetTrigger("Kill");
+    public void OnPlayerDamagedEnemy(EDamageType dtype, bool wasKill, EnemyBase enemy) {
+        if (wasKill) {
+            CannonHitmarkerAnim.SetTrigger("Hit");
         } else {
-            VacuumHitmarkerAnim.SetTrigger("Kill");
+            if (dtype == EDamageType.Vacuum) {
+                VacuumHitmarkerAnim.SetTrigger("Kill");
+            } else {
+                CannonHitmarkerAnim.SetTrigger("Kill");
+            }
         }
+        
+        // Increment current card index
+        currKillElem = (currKillElem + 1) % KillfeedElements.Length;
+        
+        // Position card directly at the bottom
+        KillfeedElements[currKillElem].anchoredPosition = Vector2.zero;
+        
+        // Set color of card background
+        killfeedEntryImages[currKillElem * 4].color = wasKill ? Color.red : Color.yellow;
+        
+        // Set images for card icons
+        killfeedEntryImages[currKillElem * 4 + 1].sprite = killfeedSprites[dtype switch {
+            EDamageType.Vacuum => 0,
+            EDamageType.Projectile => 1,
+            EDamageType.ProjectileRicochet => 2,
+            _ => throw new Exception($"ERROR: Player damage type when damaging enemy is invalid. Type given: {dtype}.")
+        }];
+        // killfeedEntryImages[currKillElem * 4 + 2].texture = killfeedTextures[3];
+        killfeedEntryImages[currKillElem * 4 + 3].sprite = killfeedSprites[enemy.etypeid < EEnemyType.COUNT ? (int)enemy.etypeid + 4 : 4];
+        
+        // Start animators
+        killfeedCardAnimators[currKillElem].SetTrigger("Activate");
+        KillfeedImpactAnimator.SetTrigger("Activate");
     }
     
     public void OnRoundCompleted() {
@@ -395,12 +433,18 @@ public class UIGamePanel : UIPanel {
         SpinCounterOutline.fillAmount = perc;
     }
     
-    public override void OnGameResumed() {
-        // SetActive(true);
-    }
-    
-    public override void OnGamePaused() {
-        // SetActive(false);
+    void lerpKillfeedElemPosns() {
+        int curr = (currKillElem - 1 + KillfeedElements.Length) % KillfeedElements.Length;
+        Vector2 firstCardPos = Vector2.Lerp(
+            KillfeedElements[curr].anchoredPosition,
+            new(0, killFeedElemHeight),
+            0.1f
+        );
+        for (int i = 1; i < 4; i++) {
+            curr = (currKillElem - i + KillfeedElements.Length) % KillfeedElements.Length;
+            KillfeedElements[curr].anchoredPosition = firstCardPos;
+            firstCardPos.y += killFeedElemHeight;
+        }
     }
     
     public override void OnPlayerSpawned(PlayerCharacterCtrlr plr) {
@@ -418,18 +462,6 @@ public class UIGamePanel : UIPanel {
         ResetUIElements(plr);
     }
     
-    public override void OnPlayerDestroying(PlayerCharacterCtrlr plr) {
-        // NOTE: Not sure if these unsubscriptions are necessary since the player's getting destroyed anyway
-        plr.A_FuelAdded -= OnFuelAdded;
-        plr.A_FuelSpent -= OnFuelSpent;
-        plr.A_PlayerTakenDamage -= OnDamageTaken;
-        plr.A_PlayerHealed -= OnPlayerHealed;
-        plr.A_SpinProgressed -= onSpinProgressed;
-        plr.A_SpinProgressReset -= onSpinProgressReset;
-        plr.A_SpinCompleted -= onSpinCompleted;
-        plr.A_SpinsSpent -= onSpinsSpent;
-    }
-    
     public void ResetUIElements(PlayerCharacterCtrlr plr) {
         OnFuelAdded(0, 1);
         updateHealthUI(100, 100);
@@ -438,7 +470,9 @@ public class UIGamePanel : UIPanel {
         RoundLabel.text = "Round: --";
         if (plr.currentBikeSpins == 0)
             SpinCounterOutline.gameObject.SetActive(false);
-        if (gameObject.activeSelf) FuelOutlineAnimator.SetTrigger("Reset");
+        currKillElem = 0;
+        foreach (Animator kfanim in killfeedCardAnimators)
+            kfanim.SetTrigger("Default");
 #if UNITY_EDITOR || KEEP_DEBUG
         OnTurnInputChanged(Vector2.zero);
         OnVertInputChanged(0);
@@ -446,5 +480,66 @@ public class UIGamePanel : UIPanel {
         OnFireCannon(false);
 #endif
     }
-
+    
+    void initKillfeed() {
+        int numKFElems = KillfeedElements.Length;
+        currKillElem = numKFElems - 1;
+        killFeedElemHeight = KillfeedElements[0].rect.height;
+        killfeedEntryImages = new Image[numKFElems * 4];
+        killfeedCardAnimators = new Animator[numKFElems];
+        for (int i = 0; i < numKFElems; i++) {
+            // GetComponentsInChildren() is supposed to only look in children but for some reason this one includes the current gameObject
+            Image[] elemImages = KillfeedElements[i].GetComponentsInChildren<Image>();
+            for (int ri = 0; ri < 4; ri++)
+                killfeedEntryImages[i * 4 + ri] = elemImages[ri];
+            killfeedCardAnimators[i] = KillfeedElements[i].GetComponent<Animator>();
+            killfeedCardAnimators[i].SetTrigger("Default");
+        }
+    }
+    
+    IEnumerator loadKFIconsAsync() {
+        string[] iconPaths = {
+            // Weapons
+            "Killfeed Icons/Vacuum",
+            "Killfeed Icons/Cannon",
+            "Killfeed Icons/Ricochet",
+            // Arrow
+            "Killfeed Icons/S_Arrow",
+            // Enemy icons
+            "Killfeed Icons/Bug",
+            "Killfeed Icons/Bird",
+            "Killfeed Icons/Bird+",
+            "Killfeed Icons/Crab",
+            "Killfeed Icons/Crab+",
+            "Killfeed Icons/Turtle",
+            "Killfeed Icons/Centipede"
+        };
+        int numIcons = iconPaths.Length;
+#if UNITY_EDITOR
+        int successes = 0;
+#endif
+        killfeedSprites = new Sprite[numIcons];
+        ResourceRequest rr;
+        for (int i = 0; i < numIcons; i++) {
+            rr = Resources.LoadAsync<Sprite>(iconPaths[i]);
+            yield return rr;
+            killfeedSprites[i] = rr.asset as Sprite;
+#if UNITY_EDITOR
+            if (killfeedSprites[i])
+                successes++;
+#endif
+        }
+#if UNITY_EDITOR
+        if (successes != numIcons)
+            Debug.LogWarning($"WARN: UIGamePanel failed to load all required Killfeed Icons (successfully loaded: {successes} / {numIcons}).");
+#endif
+    }
+    
+    void unloadKFIcons() {
+        if (killfeedSprites == null) return;
+        for (int i = 0; i < killfeedSprites.Length; i++) {
+            Resources.UnloadAsset(killfeedSprites[i]);
+        }
+    }
+    
 }

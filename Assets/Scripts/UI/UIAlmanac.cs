@@ -2,6 +2,7 @@ using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Video;
 
 public class UIAlmanac : UIPanel {
     
@@ -13,50 +14,50 @@ public class UIAlmanac : UIPanel {
     struct AlmanacDataEntry {
         public readonly string name;
         public readonly string desc;
-        public readonly string imageURL;
+        public readonly string rsrcURL;
         
-        public AlmanacDataEntry(string name, string desc, string imageURL) {
+        public AlmanacDataEntry(string name, string desc, string rsrcURL) {
             this.name = name;
             this.desc = desc;
-            this.imageURL = imageURL;
+            this.rsrcURL = rsrcURL;
         }
     }
     
     readonly AlmanacDataEntry[] enemyDataEntries = new AlmanacDataEntry[] {
         new(
             name: "Bug",
-            desc: "This be what the bug do. It do, what it be of can, where when it shall.",
-            imageURL: "Resources/Almanac/bug_thumbnail"
+            desc: "The Bug is a passive enemy that aimlessly wanders around, ignoring the player. A great source of free fuel.",
+            rsrcURL: "Almanac/bug_thumbnail"
         ),
         new(
             name: "Hunter",
-            desc: "Lorem ipsum type beat.",
-            imageURL: "Resources/Almanac/hunterBasic_thumbnail"
+            desc: "The Hunter relentlessly chases you down. Fortunately, they're not too tough to kill.",
+            rsrcURL: "Almanac/hunterBasic_thumbnail"
         ),
         new(
-            name: "Empowered Hunter",
-            desc: "Lorem ipsum type beat.",
-            imageURL: "Resources/Almanac/hunterEmpowered_thumbnail"
+            name: "Shielded Hunter",
+            desc: "The Shielded Hunter is extremely aggressive and will rapidly pursue you. Its shield can only be disabled with a cannon shot.",
+            rsrcURL: "Almanac/hunterEmpowered_thumbnail"
         ),
         new(
             name: "Crab",
-            desc: "Lorem ipsum type beat.",
-            imageURL: "Resources/Almanac/crabBasic_thumbnail"
+            desc: "The Crab is a small, stationary enemy that occasionally fires at you. Not much of a threat.",
+            rsrcURL: "Almanac/crabBasic_thumbnail"
         ),
         new(
             name: "Laser Crab",
-            desc: "Lorem ipsum type beat.",
-            imageURL: "Resources/Almanac/crabLaser_thumbnail"
+            desc: "The Laser Crab fires a continuous laser that grows more deadly the longer it locks on. While immune to cannon kills, a cannon shot will stun it and reset its laser's damage buildup.",
+            rsrcURL: "Almanac/crabLaser_thumbnail"
         ),
         new(
             name: "Turtle",
-            desc: "Lorem ipsum type beat.",
-            imageURL: "Resources/Almanac/turtle_thumbnail"
+            desc: "The Turtle causes the lava to rise as long as it stays alive. A cannon shot will expose its core—destroy the core to defeat it.",
+            rsrcURL: "Almanac/turtle_thumbnail"
         ),
         new(
             name: "Centipede",
-            desc: "Lorem ipsum type beat.",
-            imageURL: "Resources/Almanac/centipede_thumbnail"
+            desc: "The Centipede is made up of several segments, each firing a missile in sequence. To defeat it, you must destroy every segment",
+            rsrcURL: "Almanac/centipede_thumbnail"
         ),
     };
     
@@ -64,7 +65,7 @@ public class UIAlmanac : UIPanel {
         new(
             name: "Player Entry Title",
             desc: "Description here.",
-            imageURL: "Resources/Almanac/THUMBNAIL_IMAGE"
+            rsrcURL: "Almanac/THUMBNAIL_IMAGE"
         ),
     };
     
@@ -79,6 +80,8 @@ public class UIAlmanac : UIPanel {
     TMP_Text EntryDescriptionLabel;
     [SerializeField]
     RawImage EntryImage;
+    [SerializeField]
+    VideoPlayer EntryVideo;
     
     [Header("Side Button References")]
     [SerializeField]
@@ -89,6 +92,7 @@ public class UIAlmanac : UIPanel {
     public EAlmanacCategory CurrentAlmanacCategory;
     
     Texture2D currentLoadedImage;
+    VideoClip currentLoadedVideo;
     
     
     
@@ -109,24 +113,30 @@ public class UIAlmanac : UIPanel {
         }
         CurrentAlmanacCategory = EAlmanacCategory.Enemies;
         EnemyTabButton.interactable = false;
+        EntryImage.gameObject.SetActive(true);
+        EntryVideo.gameObject.SetActive(false);
     }
     
     public void OnButton_ChangeTabTo(int categoryTab) {
         switch (CurrentAlmanacCategory) {
         case EAlmanacCategory.Enemies:
             EnemyTabButton.interactable = true;
+            EntryImage.gameObject.SetActive(false);
             break;
         case EAlmanacCategory.Player:
             PlayerTabButton.interactable = true;
+            EntryVideo.gameObject.SetActive(false);
             break;
         }
         CurrentAlmanacCategory = (EAlmanacCategory)categoryTab;
         switch (CurrentAlmanacCategory) {
         case EAlmanacCategory.Enemies:
             EnemyTabButton.interactable = false;
+            EntryImage.gameObject.SetActive(true);
             break;
         case EAlmanacCategory.Player:
             PlayerTabButton.interactable = false;
+            EntryVideo.gameObject.SetActive(true);
             break;
         }
         UpdateSidebuttons();
@@ -164,14 +174,21 @@ public class UIAlmanac : UIPanel {
     }
     
     public void ViewEntry(int index) {
-        AlmanacDataEntry entry = CurrentAlmanacCategory switch {
-            EAlmanacCategory.Enemies => enemyDataEntries[index],
-            EAlmanacCategory.Player => playerDataEntries[index],
-            _ => throw new System.Exception($"The Almanac category value of {(int)CurrentAlmanacCategory} is an impossible value.")
-        };
-        EntryNameLabel.text = entry.name;
-        EntryDescriptionLabel.text = entry.desc;
-        loadAndSetEntryImageAsync(entry.imageURL);
+        AlmanacDataEntry entry;
+        switch (CurrentAlmanacCategory) {
+        case EAlmanacCategory.Enemies:
+            entry = enemyDataEntries[index];
+            EntryNameLabel.text = entry.name;
+            EntryDescriptionLabel.text = entry.desc;
+            loadAndSetEntryImageAsync(entry.rsrcURL);
+            break;
+        case EAlmanacCategory.Player:
+            entry = playerDataEntries[index];
+            EntryNameLabel.text = entry.name;
+            EntryDescriptionLabel.text = entry.desc;
+            loadAndSetEntryVideoAsync(entry.rsrcURL);
+            break;
+        }
     }
     
     IEnumerator loadAndSetEntryImageAsync(string path) {
@@ -180,6 +197,14 @@ public class UIAlmanac : UIPanel {
         Resources.UnloadAsset(currentLoadedImage);
         currentLoadedImage = rr.asset as Texture2D;
         EntryImage.texture = currentLoadedImage;
+    }
+    
+    IEnumerator loadAndSetEntryVideoAsync(string path) {
+        ResourceRequest rr = Resources.LoadAsync<VideoClip>(path);
+        yield return rr;
+        Resources.UnloadAsset(currentLoadedVideo);
+        currentLoadedVideo = rr.asset as VideoClip;
+        EntryVideo.clip = currentLoadedVideo;
     }
     
     bool hasDiscoveredEnemy(int enIndex, int highestWave) {

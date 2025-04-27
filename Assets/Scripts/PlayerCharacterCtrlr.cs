@@ -87,6 +87,9 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     [HideInInspector]
     public float CurrentHealth;
     [SerializeField]
+    [Tooltip("The amount of healh the player will heal whenever they get a kill.")]
+    float HealOnKillAmount = 5;
+    [SerializeField]
     float HealthRegenPerSecond;
     [SerializeField]
     float HealthRegenDelay = 1;
@@ -157,6 +160,8 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     void Awake() {
         inputActions = new PlayerInputActions().Player;
         _gamePanel = GameManager.Instance.MainCanvas.GamePanel;
+        
+        GameManager.A_EnemyKilled += onEnemyKilled;
         
         mouseSensitivity = GameManager.Instance.CurrentMouseSensitivity;
         
@@ -233,7 +238,12 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     }
     
     public void AddFuel(float amount) {
-        currentFuel = Mathf.Min(currentFuel + amount, MaxFuel);
+        // currentFuel = Mathf.Min(currentFuel + amount, MaxFuel);
+        currentFuel += amount;
+        if (currentFuel > MaxFuel) {
+            amount -= currentFuel - MaxFuel;
+            currentFuel = MaxFuel;
+        }
         A_FuelAdded?.Invoke(amount, currentFuel / MaxFuel);
     }
     
@@ -267,6 +277,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         CurrentHealth = Mathf.Max(CurrentHealth - amount, 0);
         
         if (CurrentHealth == 0) {
+            GameManager.A_EnemyKilled -= onEnemyKilled;
             A_PlayerDied?.Invoke();
             gameObject.SetActive(false);
         }
@@ -277,7 +288,11 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     }
     
     public void HealHealth(float amount) {
-        CurrentHealth = Mathf.Min(CurrentHealth + amount, MaxHealth);
+        CurrentHealth += amount;
+        if (CurrentHealth > MaxHealth) {
+            amount -= CurrentHealth - MaxHealth;
+            CurrentHealth = MaxHealth;
+        }
         A_PlayerHealed?.Invoke(amount);
     }
     
@@ -547,6 +562,10 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         }
         
         _gamePanel.UpdateCrosshairPositions(screenPointVacuum, screenPointCannon);
+    }
+    
+    void onEnemyKilled() {
+        HealHealth(HealOnKillAmount);
     }
     
     void handleHealthRegen() {

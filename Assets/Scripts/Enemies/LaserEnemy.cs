@@ -187,6 +187,7 @@ public class LaserEnemy : EnemyBase {
             base.OnTakeDamage(amnt, damageType);
         } else if (damageType == EDamageType.Projectile || damageType == EDamageType.ProjectileRicochet) {
             onStunned();
+            GameManager.Instance.OnEnemyTookDamage(this, damageType, false);
         }
     }
         
