@@ -28,6 +28,9 @@ public class UITutorialPanel : UIPanel {
     [SerializeField]
     GameObject DeathFuelUI;
     [SerializeField]
+    Button DeathFuelUIRespawnButton;
+    bool hasShownDeathFuelUI = false;
+    [SerializeField]
     GameObject controlsPanel;
     
     VideoClip prevVideoClip;
@@ -56,6 +59,7 @@ public class UITutorialPanel : UIPanel {
         nextVideoClip = Resources.Load<VideoClip>("TutorialVideos/vacuum_movement_1");
 #endif
         TaskProgressText.text = "";
+        hasShownDeathFuelUI = false;
     }
     
     public void OnButton_ConfirmVideo() {
@@ -69,7 +73,17 @@ public class UITutorialPanel : UIPanel {
     }
     
     public void ShowDeathFuelUI() {
+        if (!hasShownDeathFuelUI) {
+            hasShownDeathFuelUI = true;
+            DeathFuelUIRespawnButton.interactable = false;
+            StartCoroutine(enableDeathFuelUIRespawnButton());
+        }
         DeathFuelUI.SetActive(true);
+    }
+    
+    IEnumerator enableDeathFuelUIRespawnButton() {
+        yield return new WaitForSecondsRealtime(3);
+        DeathFuelUIRespawnButton.interactable = true;
     }
     
     public void VacuumMovement1() {

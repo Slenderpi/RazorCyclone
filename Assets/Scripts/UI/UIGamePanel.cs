@@ -47,9 +47,7 @@ public class UIGamePanel : UIPanel {
     const float BENT_BAR_CENTERED_RADIUS = 115f * 1.927799f - 22.16969f / 2f;
     
     [Header("Fuel Gauge")]
-    public Slider FuelSlider;
     public Animator FuelOutlineAnimator;
-    public Animator FuelFillAnimator;
     public Image FuelSlider2;
     public RectTransform FuelSliderLevel;
     
@@ -94,7 +92,10 @@ public class UIGamePanel : UIPanel {
     Animator[] killfeedCardAnimators;
     
     [Header("Misc.")]
-    public Animator LavaWarning; // TODO
+    public RawImage LavaWarning;
+    float lavaRiseTime = -1;
+    float lavaMinAlpha = 0.5f;
+    float lavaPulsePeriod = 1.33f;
     public TMP_Text RoundLabel;
     public Animator RoundLabelAnimator;
     public RectTransform MomentumPanel;
@@ -129,6 +130,12 @@ public class UIGamePanel : UIPanel {
         InputOverlay.SetActive(inputOverlayStartsOn);
 #endif
         initKillfeed();
+        Lava.A_LavaRising += () => {
+            lavaRiseTime = Time.time;
+        };
+        Lava.A_LavaNotRising += () => {
+            lavaRiseTime = -1;
+        };
     }
     
     void Start() {
@@ -137,9 +144,15 @@ public class UIGamePanel : UIPanel {
     
     void Update() {
         if (!GameManager.CurrentPlayer) return;
-        if (Time.deltaTime > 0) {
-            setFuelSliderFill();
-            setHealthSliderFill();
+        if (Time.deltaTime == 0)
+            return;
+        setFuelSliderFill();
+        setHealthSliderFill();
+        if (!LavaWarning) return; // TODO: Remove this when lava warning UI finally created and set
+        if (lavaRiseTime < 0) {
+            Color c = LavaWarning.color;
+            c.a = (1 - lavaMinAlpha) / 2f * Mathf.Cos(2 * Mathf.PI * (Time.time - lavaRiseTime) / lavaPulsePeriod) + (1 + lavaMinAlpha) / 2f;
+            LavaWarning.color = c;
         }
     }
     

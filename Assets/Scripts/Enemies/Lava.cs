@@ -1,6 +1,10 @@
+using System;
 using UnityEngine;
 
 public class Lava : MonoBehaviour {
+    
+    public static Action A_LavaRising;
+    public static Action A_LavaNotRising;
     
     [Header("Lava Behavior and Stats")]
     public float LavaRiseSpeed = 0.5f;
@@ -43,6 +47,7 @@ public class Lava : MonoBehaviour {
         if (currentHeight > MaxLavaHeight) {
             currentHeight = MaxLavaHeight;
             currRiseRate = 0;
+            A_LavaNotRising?.Invoke();
         } else if (livingLavaEnemies == 0 && currentHeight <= startY) {
             currRiseRate = 0;
             currentHeight = startY;
@@ -57,6 +62,7 @@ public class Lava : MonoBehaviour {
         if (++livingLavaEnemies == 1) {
             if (currentHeight < MaxLavaHeight) {
                 currRiseRate = LavaRiseSpeed;
+                A_LavaRising?.Invoke();
             }
         }
     }
@@ -67,6 +73,7 @@ public class Lava : MonoBehaviour {
 #endif
         if (--livingLavaEnemies == 0) {
             currRiseRate = -LavaLowerSpeed;
+            A_LavaNotRising?.Invoke();
         }
     }
     
