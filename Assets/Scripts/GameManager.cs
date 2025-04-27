@@ -178,27 +178,40 @@ public class GameManager : MonoBehaviour {
         CurrentPlayer = null;
     }
     
+    // public void OnEnemyDied(EnemyBase enemy, EDamageType damageType) {
+    //     switch (damageType) {
+    //     case EDamageType.Projectile:
+    //         Audio2D.PlayClipSFX(AudioPlayer2D.EClipSFX.Kill_DirectHit);
+    //         break;
+    //     }
+    //     MainCanvas.GamePanel.OnPlayerDamagedEnemy(enemy);
+    // }
+    
     public void OnEnemyTookDamage(EnemyBase enemy, EDamageType damageType, bool wasKillingBlow) {
-        MainCanvas.GamePanel.OnPlayerDamagedEnemy(damageType, wasKillingBlow, enemy);
         if (wasKillingBlow) {
             A_EnemyKilled?.Invoke();
             switch (damageType) {
             case EDamageType.Projectile:
+                MainCanvas.GamePanel.OnPlayerKilledEnemy(enemy, true);
                 Audio2D.PlayClipSFX(AudioPlayer2D.EClipSFX.Cannon_Kill);
                 break;
             case EDamageType.ProjectileRicochet:
+                MainCanvas.GamePanel.OnPlayerKilledEnemy(enemy, true);
                 Audio2D.PlayClipSFX(AudioPlayer2D.EClipSFX.Cannon_Kill);
                 break;
             case EDamageType.Vacuum:
+                MainCanvas.GamePanel.OnPlayerKilledEnemy(enemy, false);
                 Audio2D.PlayClipSFX(AudioPlayer2D.EClipSFX.Vacuum_Kill);
                 break;
             }
         } else {
             switch (damageType) {
             case EDamageType.Projectile:
+                MainCanvas.GamePanel.OnPlayerDamagedEnemy(enemy);
                 Audio2D.PlayClipSFX(AudioPlayer2D.EClipSFX.Cannon_Hit);
                 break;
             case EDamageType.ProjectileRicochet:
+                MainCanvas.GamePanel.OnPlayerDamagedEnemy(enemy);
                 Audio2D.PlayClipSFX(AudioPlayer2D.EClipSFX.Cannon_Hit);
                 break;
             }

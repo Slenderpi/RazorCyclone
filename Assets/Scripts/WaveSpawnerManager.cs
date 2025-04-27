@@ -192,11 +192,10 @@ public class WaveSpawnerManager : MonoBehaviour {
             num = wnum,
             enemyCounts = new int[(int)EEnemyType.COUNT]
         };
+        currPreloadedWave.enemyCounts[0] = 3; // Hard code fodder to only be 3
         for (int i = 1; i < currPreloadedWave.enemyCounts.Length; i++) {
             currPreloadedWave.enemyCounts[i] = 1;
         }
-        currPreloadedWave.enemyCounts[(int)EEnemyType.CannonFodder] = 3; // Hard code fodder to only be 3
-        currPreloadedWave.enemyCounts[(int)EEnemyType.Centipede] = 30;
     }
     
 #if UNITY_EDITOR || KEEP_DEBUG

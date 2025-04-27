@@ -1727,7 +1727,7 @@ MonoBehaviour:
   CannonForce: 8
   CannonBaseProjSpeed: 125
   InheritedVelocityFactor: 0.7
-  SpinHoldDuration: 1
+  SpinHoldDuration: 2
   GroundRayLength: 0.05
   isGrounded: 1
   currentBikeSpins: 0
@@ -1736,7 +1736,6 @@ MonoBehaviour:
   VacuumFuelTime: 10
   MaxHealth: 100
   CurrentHealth: 0
-  HealOnKillAmount: 5
   HealthRegenPerSecond: 15
   HealthRegenDelay: 1
   FuelHelathCostMultiplier: 2
@@ -2915,7 +2914,7 @@ GameObject:
   - component: {fileID: 4973514006164548479}
   m_Layer: 9
   m_Name: VacuumSuckbox
-  m_TagString: Vacuum
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

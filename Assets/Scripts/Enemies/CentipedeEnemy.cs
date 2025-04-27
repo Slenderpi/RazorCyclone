@@ -6,11 +6,9 @@ public class CentipedeEnemy : EnemyBase {
     enum MissileAction {
         Waiting,
         OpeningDoor,
-        WaitOpen,
         FiringMissile,
         LeaveOpen,
-        ClosingDoor,
-        NONE
+        ClosingDoor
     }
     
     [Header("Centipede Config")]
@@ -70,7 +68,8 @@ public class CentipedeEnemy : EnemyBase {
             StartCoroutine(staggerSpawnAndStartBody());
         }
         poolMissile();
-        currMissileAction = MissileAction.NONE;
+        lastMissileActionTime = Time.time + CentConfig.MissileFireDelayOffset * bodyIndex;
+        currMissileAction = MissileAction.Waiting;
     }
     
     IEnumerator staggerSpawnAndStartBody() {
@@ -101,7 +100,6 @@ public class CentipedeEnemy : EnemyBase {
         lastSampleTime = Time.time;
         headDoneInitializing = true;
         StartCoroutine(sampleTransform());
-        startMissileTimers(Time.time);
         modelMeshRenderer.material = CentConfig.HeadMaterial;
     }
     
@@ -207,8 +205,8 @@ public class CentipedeEnemy : EnemyBase {
     void handleMissileActionState() {
         switch (currMissileAction) {
         case MissileAction.Waiting:
-            if (Time.time - lastMissileActionTime >= CentConfig.MissileFireDelay - CentConfig.MissileDoorAnimTime * 2 - CentConfig.MissileDoorLeaveOpenTime - CentConfig.MissileDoorWaitOpenTime) {
-                lastMissileActionTime += CentConfig.MissileFireDelay - CentConfig.MissileDoorAnimTime * 2 - CentConfig.MissileDoorLeaveOpenTime - CentConfig.MissileDoorWaitOpenTime;
+            if (Time.time - lastMissileActionTime >= CentConfig.MissileFireDelay - CentConfig.MissileDoorAnimTime * 2 - CentConfig.MissileDoorLeaveOpenTime) {
+                lastMissileActionTime += CentConfig.MissileFireDelay - CentConfig.MissileDoorAnimTime * 2 - CentConfig.MissileDoorLeaveOpenTime;
                 currMissileAction = MissileAction.OpeningDoor;
             }
             break;
@@ -217,15 +215,9 @@ public class CentipedeEnemy : EnemyBase {
             if (alpha >= 1) {
                 animateDoors(1);
                 lastMissileActionTime += CentConfig.MissileDoorAnimTime;
-                currMissileAction = MissileAction.WaitOpen;
+                currMissileAction = MissileAction.FiringMissile;
             } else {
                 animateDoors(alpha);
-            }
-            break;
-        case MissileAction.WaitOpen:
-            if (Time.time - lastMissileActionTime >= CentConfig.MissileDoorWaitOpenTime) {
-                lastMissileActionTime += CentConfig.MissileDoorWaitOpenTime;
-                currMissileAction = MissileAction.FiringMissile;
             }
             break;
         case MissileAction.FiringMissile:
@@ -292,13 +284,6 @@ public class CentipedeEnemy : EnemyBase {
         //     GameManager.D_DrawPoint(sampledPositions[(sampleHead + i) % samplingLength], Color.green, samplingDelay);
         // }
         StartCoroutine(sampleTransform());
-    }
-    
-    void startMissileTimers(float startTime) {
-        lastMissileActionTime = startTime + CentConfig.MissileFireDelayOffset * bodyIndex;
-        currMissileAction = MissileAction.Waiting;
-        if (ceAft)
-            ceAft.startMissileTimers(startTime);
     }
     
     void setStartSamples() {
