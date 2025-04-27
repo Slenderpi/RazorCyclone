@@ -238,7 +238,12 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     }
     
     public void AddFuel(float amount) {
-        currentFuel = Mathf.Min(currentFuel + amount, MaxFuel);
+        // currentFuel = Mathf.Min(currentFuel + amount, MaxFuel);
+        currentFuel += amount;
+        if (currentFuel > MaxFuel) {
+            amount -= currentFuel - MaxFuel;
+            currentFuel = MaxFuel;
+        }
         A_FuelAdded?.Invoke(amount, currentFuel / MaxFuel);
     }
     
@@ -283,7 +288,11 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     }
     
     public void HealHealth(float amount) {
-        CurrentHealth = Mathf.Min(CurrentHealth + amount, MaxHealth);
+        CurrentHealth += amount;
+        if (CurrentHealth > MaxHealth) {
+            amount -= CurrentHealth - MaxHealth;
+            CurrentHealth = MaxHealth;
+        }
         A_PlayerHealed?.Invoke(amount);
     }
     

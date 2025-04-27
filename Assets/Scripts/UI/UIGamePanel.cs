@@ -54,9 +54,8 @@ public class UIGamePanel : UIPanel {
     public RectTransform FuelSliderLevel;
     
     [Header("Healthbar")]
-    public Slider HealthSlider;
-    public TMP_Text HealthText;
     public Animator HealthFillAnimator;
+    public Animator HealthOutlineAnimator;
     public Image HealthSlider2;
     public RectTransform HealthSliderLevel;
     public RawImage HealthVignette;
@@ -263,26 +262,21 @@ public class UIGamePanel : UIPanel {
 #endif
     
     public void OnFuelAdded(float changeAmnt, float perc) {
-        // FuelSlider.value = perc;
-        // TODO
         currFuel = perc;
         
         if (!gameObject.activeSelf) return;
-        // if (perc == 1f || true) FuelOutlineAnimator.SetTrigger("RefillFuel");
+        // if (perc >= 1f || true) FuelOutlineAnimator.SetTrigger("RefillFuel");
+        if (changeAmnt > 0)
+            FuelOutlineAnimator.SetTrigger("AddFill");
         
         // Temporary?
         GameManager.Instance.Audio2D.PlayClipSFX(AudioPlayer2D.EClipSFX.Plr_PickupFuel);
     }
     
     public void OnFuelSpent(float amnt, float perc, bool spentAsHealth) {
-        // FuelSlider.value = perc;
-        // if (spentAsHealth)
-        //     HealthFillAnimator.SetTrigger("HealthAsFuel");
-        // else
-        //     FuelFillAnimator.SetTrigger("SpendFuel");
-        
-        // TODO
         currFuel = perc;
+        if (spentAsHealth)
+            HealthFillAnimator.SetTrigger("HealthAsFuel");
     }
     
     public void OnDamageTaken(float amnt) {
@@ -292,8 +286,9 @@ public class UIGamePanel : UIPanel {
     }
     
     public void OnPlayerHealed(float amnt) {
+        if (amnt == 0) return;
         PlayerCharacterCtrlr plr = GameManager.CurrentPlayer;
-        if (plr)
+        if (plr && gameObject.activeSelf)
             updateHealthUI(plr.CurrentHealth, plr.MaxHealth);
     }
     
@@ -366,17 +361,15 @@ public class UIGamePanel : UIPanel {
     }
     
     void updateHealthUI(float currH, float maxH) {
-        // HealthSlider.value = currH / maxH;
-        // HealthText.text = Mathf.CeilToInt(currH).ToString();
-        
-        // TODO
         currHlth = currH / maxH;
+        // if (currH >= maxH)
+        //     HealthOutlineAnimator.SetTrigger("FullRefill");
     }
     
     public void OnOutOfFuel() {
-        AnimatorStateInfo asi = FuelOutlineAnimator.GetCurrentAnimatorStateInfo(0);
-        if (!asi.IsName("OutOfFuelBlink") || asi.normalizedTime >= 0.8f)
-            FuelOutlineAnimator.SetTrigger("OutOfFuel");
+        // AnimatorStateInfo asi = FuelOutlineAnimator.GetCurrentAnimatorStateInfo(0);
+        // if (!asi.IsName("OutOfFuelBlink") || asi.normalizedTime >= 0.8f)
+        //     FuelOutlineAnimator.SetTrigger("OutOfFuel");
     }
     
     public void OnPlayerDamagedEnemy(EDamageType dtype, bool wasKill, EnemyBase enemy) {
@@ -477,7 +470,6 @@ public class UIGamePanel : UIPanel {
         RoundLabel.text = "Round: --";
         if (plr.currentBikeSpins == 0)
             SpinCounterOutline.gameObject.SetActive(false);
-        if (gameObject.activeSelf) FuelOutlineAnimator.SetTrigger("Reset");
         currKillElem = 0;
         foreach (Animator kfanim in killfeedCardAnimators)
             kfanim.SetTrigger("Default");
