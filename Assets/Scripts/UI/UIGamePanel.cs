@@ -132,10 +132,13 @@ public class UIGamePanel : UIPanel {
         initKillfeed();
         Lava.A_LavaRising += () => {
             lavaRiseTime = Time.time;
+            LavaWarning.gameObject.SetActive(true);
         };
         Lava.A_LavaNotRising += () => {
             lavaRiseTime = -1;
+            LavaWarning.gameObject.SetActive(false);
         };
+        LavaWarning.gameObject.SetActive(false);
     }
     
     void Start() {
@@ -148,8 +151,7 @@ public class UIGamePanel : UIPanel {
             return;
         setFuelSliderFill();
         setHealthSliderFill();
-        if (!LavaWarning) return; // TODO: Remove this when lava warning UI finally created and set
-        if (lavaRiseTime < 0) {
+        if (lavaRiseTime >= 0) {
             Color c = LavaWarning.color;
             c.a = (1 - lavaMinAlpha) / 2f * Mathf.Cos(2 * Mathf.PI * (Time.time - lavaRiseTime) / lavaPulsePeriod) + (1 + lavaMinAlpha) / 2f;
             LavaWarning.color = c;
@@ -168,25 +170,36 @@ public class UIGamePanel : UIPanel {
     void setFuelSliderFill() {
         float fill = Mathf.Clamp(sodFuelFill.Update(currFuel, Time.deltaTime), 0, 1);
         FuelSlider2.fillAmount = fill * BENT_BAR_MAX_FILL;
-        float ang = (2 * fill - 1) * (180f * BENT_BAR_MAX_FILL);
-        FuelSliderLevel.localPosition = new Vector3(
-            BENT_BAR_CENTERED_RADIUS * Mathf.Cos(ang * Mathf.Deg2Rad),
-            BENT_BAR_CENTERED_RADIUS * Mathf.Sin(ang * Mathf.Deg2Rad),
-            0
-        );
-        FuelSliderLevel.localRotation = Quaternion.Euler(0, 0, ang);
+        if (fill >= 0.001 && fill <= 0.999) {
+            if (!FuelSliderLevel.gameObject.activeSelf)
+                FuelSliderLevel.gameObject.SetActive(true);
+            float ang = (2 * fill - 1) * (180f * BENT_BAR_MAX_FILL);
+            FuelSliderLevel.localPosition = new Vector3(
+                BENT_BAR_CENTERED_RADIUS * Mathf.Cos(ang * Mathf.Deg2Rad),
+                BENT_BAR_CENTERED_RADIUS * Mathf.Sin(ang * Mathf.Deg2Rad),
+                0
+            );
+            FuelSliderLevel.localRotation = Quaternion.Euler(0, 0, ang);
+        } else if (FuelSliderLevel.gameObject.activeSelf)
+            FuelSliderLevel.gameObject.SetActive(false);
     }
     
     void setHealthSliderFill() {
         float fill = Mathf.Clamp(sodHealthFill.Update(currHlth, Time.deltaTime), 0, 1);
         HealthSlider2.fillAmount = fill * BENT_BAR_MAX_FILL;
-        float ang = 180 - (2 * fill - 1) * (180f * BENT_BAR_MAX_FILL);
-        HealthSliderLevel.localPosition = new Vector3(
-            BENT_BAR_CENTERED_RADIUS * Mathf.Cos(ang * Mathf.Deg2Rad),
-            BENT_BAR_CENTERED_RADIUS * Mathf.Sin(ang * Mathf.Deg2Rad),
-            0
-        );
-        HealthSliderLevel.localRotation = Quaternion.Euler(0, 0, ang);
+        if (fill >= 0.001 && fill <= 0.999) {
+            if (!HealthSliderLevel.gameObject.activeSelf)
+                HealthSliderLevel.gameObject.SetActive(true);
+            float ang = 180 - (2 * fill - 1) * (180f * BENT_BAR_MAX_FILL);
+            HealthSliderLevel.localPosition = new Vector3(
+                BENT_BAR_CENTERED_RADIUS * Mathf.Cos(ang * Mathf.Deg2Rad),
+                BENT_BAR_CENTERED_RADIUS * Mathf.Sin(ang * Mathf.Deg2Rad),
+                0
+            );
+            HealthSliderLevel.localRotation = Quaternion.Euler(0, 0, ang);
+        } else if (HealthSliderLevel.gameObject.activeSelf)
+            HealthSliderLevel.gameObject.SetActive(false);
+        
         HealthVignette.color = new Color(0.65f, 0, 0, 1 - fill);
     }
     
