@@ -136,6 +136,15 @@ public class UIGamePanel : UIPanel {
             0
         );
         FuelSliderLevel.localRotation = Quaternion.Euler(0, 0, ang);
+
+        //ADAM CODE
+        if(fill >= 0.99 || fill <= 0.01){
+            if(FuelSliderLevel.gameObject.activeSelf){
+                FuelSliderLevel.gameObject.SetActive(false);
+            }
+        }else if(!FuelSliderLevel.gameObject.activeSelf){
+            FuelSliderLevel.gameObject.SetActive(true);
+        }
     }
     
     void setHealthSliderFill() {
@@ -148,6 +157,15 @@ public class UIGamePanel : UIPanel {
             0
         );
         HealthSliderLevel.localRotation = Quaternion.Euler(0, 0, ang);
+
+        //ADAM CODE
+        if(fill >= 0.99 || fill <= 0.01){
+            if(HealthSliderLevel.gameObject.activeSelf){
+                HealthSliderLevel.gameObject.SetActive(false);
+            }
+        }else if(!HealthSliderLevel.gameObject.activeSelf){
+            HealthSliderLevel.gameObject.SetActive(true);
+        }
     }
     
     void LateUpdate() {
