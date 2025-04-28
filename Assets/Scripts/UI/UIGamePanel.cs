@@ -162,6 +162,16 @@ public class UIGamePanel : UIPanel {
             0
         );
         FuelSliderLevel.localRotation = Quaternion.Euler(0, 0, ang);
+
+        if(fill >= 0.999 || fill <= 0.001){
+            if(FuelSliderLevel.gameObject.activeSelf){
+                FuelSliderLevel.gameObject.SetActive(false);
+            }
+        }else{
+            if(!FuelSliderLevel.gameObject.activeSelf){
+                FuelSliderLevel.gameObject.SetActive(true);
+            }
+        }
     }
     
     void setHealthSliderFill() {
@@ -174,6 +184,16 @@ public class UIGamePanel : UIPanel {
             0
         );
         HealthSliderLevel.localRotation = Quaternion.Euler(0, 0, ang);
+
+        if(fill >= 0.999 || fill <= 0.001){
+            if(HealthSliderLevel.gameObject.activeSelf){
+                HealthSliderLevel.gameObject.SetActive(false);
+            }
+        }else{
+            if(!HealthSliderLevel.gameObject.activeSelf){
+                HealthSliderLevel.gameObject.SetActive(true);
+            }
+        }
     }
     
     void lerpSway() {
