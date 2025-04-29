@@ -463,15 +463,15 @@ public class UIGamePanel : UIPanel {
     
     void lerpKillfeedElemPosns() {
         int curr = (currKillElem - 1 + KillfeedElements.Length) % KillfeedElements.Length;
-        Vector2 firstCardPos = Vector2.Lerp(
+        Vector2 secondCardPos = Vector2.Lerp(
             KillfeedElements[curr].anchoredPosition,
-            new(0, killFeedElemHeight),
+            new(0, -killFeedElemHeight),
             0.1f
         );
         for (int i = 1; i < 4; i++) {
             curr = (currKillElem - i + KillfeedElements.Length) % KillfeedElements.Length;
-            KillfeedElements[curr].anchoredPosition = firstCardPos;
-            firstCardPos.y += killFeedElemHeight;
+            KillfeedElements[curr].anchoredPosition = secondCardPos;
+            secondCardPos.y -= killFeedElemHeight;
         }
     }
     
