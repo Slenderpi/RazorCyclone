@@ -68,7 +68,7 @@ public class WaveSpawnerManager : MonoBehaviour {
     readonly float[] ENEMY_WEIGHTS = new float[] {
         // # of an enemy to spawn = (int)allocatedBudget / weight
         // Basic hunter, Emp hunter, Basic crab, Emp crab, Turtle, Centipede
-        2, 3.5f, 3f, 5.5f, 6, 1
+        5, 14f, 6f, 20f, 40, 1
     };
     // Fodder is not included in wave budget proportions
     // Basic hunter, Emp hunter, Basic crab, Emp crab, Turtle, Centipede
@@ -92,8 +92,8 @@ public class WaveSpawnerManager : MonoBehaviour {
         // Every 8th and 9th wave will heavy a heavy mix of everything except centipede
         new float[] {0.20f, 0.20f, 0.20f, 0.20f, 0.20f, 0.00f},
     };
-    float currentWaveBudget = 20;
-    float budgetPerNormalRound = 2;
+    float currentWaveBudget = 200;
+    float budgetPerNormalRound = 10;
     // budget after current 10th round = currBudget + (currBudget + budgPerNorm) * budgPer10Exp
     float budgetPer10RoundExp = 1.1f;
     
