@@ -13,7 +13,8 @@ public class AudioPlayer2D : MonoBehaviour {
         Weapon_CannonShot,
         Plr_OutOfFuel,
         Plr_PickupFuel,
-        Plr_RotateWoosh
+        Plr_RotateWoosh,
+        SpinRev
     }
     
     public enum EClipMusic {
@@ -28,6 +29,7 @@ public class AudioPlayer2D : MonoBehaviour {
     public AudioSource asMotorcycleDriving;
     public AudioSource asMotorcycleRotating;
     public AudioSource asCannon;
+    public AudioSource asSpinRev;
     
     [Header("Sound Effect References")]
     [SerializeField]
@@ -44,6 +46,8 @@ public class AudioPlayer2D : MonoBehaviour {
     AudioClip sfx_Plr_PickupFuel;
     [SerializeField]
     AudioClip sfx_Plr_RotateWoosh;
+    [SerializeField]
+    AudioClip sfx_SpinRev;
     
     [Header("Music references")]
     [SerializeField]
@@ -105,6 +109,9 @@ public class AudioPlayer2D : MonoBehaviour {
         case EClipSFX.Plr_RotateWoosh:
             if (!enableRotationSound) return;
             asMotorcycleRotating.Play();
+            break;
+        case EClipSFX.SpinRev:
+            asSpinRev.Play();
             break;
         }
     }

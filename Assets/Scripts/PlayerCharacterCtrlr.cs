@@ -492,6 +492,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         bikeSpinProgress = 0;
         spinDecayTimer = 0;
         A_SpinCompleted?.Invoke(++currentBikeSpins, isGrounded);
+        GameManager.Instance.Audio2D.PlayClipSFX(AudioPlayer2D.EClipSFX.SpinRev);
     }
     
     void bikeSpinProgressed() {
