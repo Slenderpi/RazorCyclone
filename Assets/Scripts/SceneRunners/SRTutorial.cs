@@ -73,7 +73,7 @@ public class SRTutorial : SceneRunner {
             ETutorialState.CannonMovement2 => spawnForCanMove2,
             _ => spawnForKillPractice
         };
-        if (StartingState > ETutorialState.VacuumKill)
+        if (StartingState >= ETutorialState.VacuumKill)
             cannonMovement2Finished.gameObject.SetActive(false);
 #else
         playerSpawnPoint = spawnForVacMove1;
