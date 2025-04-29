@@ -65,6 +65,37 @@ public class WaveSpawnerManager : MonoBehaviour {
     const float MAX_WAIT_TIME_FOR_UNFINISHED_PRELOAD = 3;
     const int PRELOAD_MAX_BATCH_SIZE = 100;
     const int ACTIVATE_MAX_BATCH_SIZE = 10;
+    readonly float[] ENEMY_WEIGHTS = new float[] {
+        // # of an enemy to spawn = (int)allocatedBudget / weight
+        // Basic hunter, Emp hunter, Basic crab, Emp crab, Turtle, Centipede
+        2, 3.5f, 3f, 5.5f, 6, 1
+    };
+    // Fodder is not included in wave budget proportions
+    // Basic hunter, Emp hunter, Basic crab, Emp crab, Turtle, Centipede
+    readonly float[][] WAVE_BUDGET_PROPORTIONS = new float[][] {
+        // Every 10th wave will have a really long centipede with everything else given a small bias
+        new float[] {0.02f, 0.02f, 0.02f, 0.02f, 0.02f, 0.90f},
+        // Every 1st wave will have heavy bias towards basic hunter
+        new float[] {0.80f, 0.05f, 0.10f, 0.05f, 0.05f, 0.00f},
+        // Every 2nd wave will have heavy bias towards basic crab
+        new float[] {0.10f, 0.05f, 0.80f, 0.05f, 0.05f, 0.00f},
+        // Every 3rd wave will have heavy bias towards basic hunter and a small amount of empowered hunter
+        new float[] {0.55f, 0.30f, 0.05f, 0.05f, 0.05f, 0.00f},
+        // Every 4th wave will have heavy bias towards basic crab and a small amount of empowered crab
+        new float[] {0.05f, 0.05f, 0.55f, 0.30f, 0.05f, 0.00f},
+        // Every 5th wave will have heavy bias towards turtles and a moderate bias towards basic/empowered crab/hunter
+        new float[] {0.10f, 0.10f, 0.10f, 0.10f, 0.60f, 0.00f},
+        // Every 6th wave will have heavy bias towards empowered hunter, a moderate bias towards basic hunter, and a small mix of basic crab
+        new float[] {0.25f, 0.60f, 0.13f, 0.02f, 0.00f, 0.00f},
+        // Every 7th wave will have heavy bias towards empowered crab, a moderate bias towards basic crab, and a small mix of basic hunter
+        new float[] {0.13f, 0.02f, 0.25f, 0.60f, 0.00f, 0.00f},
+        // Every 8th and 9th wave will heavy a heavy mix of everything except centipede
+        new float[] {0.20f, 0.20f, 0.20f, 0.20f, 0.20f, 0.00f},
+    };
+    float currentWaveBudget = 20;
+    float budgetPerNormalRound = 2;
+    // budget after current 10th round = currBudget + (currBudget + budgPerNorm) * budgPer10Exp
+    float budgetPer10RoundExp = 1.1f;
     
     bool preloadWaveFinished = true;
     public bool activateWaveFinished = true;
@@ -152,6 +183,7 @@ public class WaveSpawnerManager : MonoBehaviour {
         Debug.Log($"DEBUG: Wave number ({waveNumber}) greater than pre-determined number of waves ({waveEntries.Length}), generating new wave.");
 #endif
             generateWave(waveNumber);
+            increaseBudget(waveNumber);
         } else {
             currPreloadedWave = waveEntries[waveNumber - 1];     
         }
@@ -187,16 +219,45 @@ public class WaveSpawnerManager : MonoBehaviour {
         preloadWaveFinished = true;
     }
     
+    /*
+    ENEMY_WEIGHTS = new float[] {
+        // # of an enemy to spawn = (int)allocatedBudget / weight
+        2, 3, 2.5f, 5, 6, 1
+    };
+    // Basic hunter, Emp hunter, Basic crab, Emp crab, Turtle, Centipede
+    WAVE_BUDGET_PROPORTIONS = new float[][] {
+    float currentWaveBudget = 20;
+    float budgetPerNormalRound = 2;
+    // budget after current 10th round = currBudget + budgPer10 + currBudg * budgPer10Exp
+    float budgetPer10Round = 20;
+    float budgetPer10RoundExp = 1.1f;
+    */
     void generateWave(int wnum) {
         currPreloadedWave = new() {
             num = wnum,
             enemyCounts = new int[(int)EEnemyType.COUNT]
         };
-        for (int i = 1; i < currPreloadedWave.enemyCounts.Length; i++) {
-            currPreloadedWave.enemyCounts[i] = 1;
+        currPreloadedWave.enemyCounts[0] = 3; // Hard code fodder to only be 3
+        int waveOnesPlace = wnum % 10;
+        if (waveOnesPlace == 9)
+            waveOnesPlace = 8;
+        for (int i = 0; i < currPreloadedWave.enemyCounts.Length - 1; i++) {
+            // # of an enemy to spawn = (int)allocatedBudget / weight
+            currPreloadedWave.enemyCounts[i + 1] = (int)(currentWaveBudget * WAVE_BUDGET_PROPORTIONS[waveOnesPlace][i] / ENEMY_WEIGHTS[i]);
         }
-        currPreloadedWave.enemyCounts[(int)EEnemyType.CannonFodder] = 3; // Hard code fodder to only be 3
-        currPreloadedWave.enemyCounts[(int)EEnemyType.Centipede] = 30;
+#if DEBUG_WAVE_STRS && UNITY_EDITOR
+        Debug.Log($"Generated wave {wnum} ({waveOnesPlace}) as the following: {currPreloadedWave}");
+#endif
+    }
+    
+    void increaseBudget(int wnum) {
+#if DEBUG_WAVE_STRS && UNITY_EDITOR
+        float prevBudg = currentWaveBudget;
+#endif
+        currentWaveBudget += wnum % 10 != 0 ? budgetPerNormalRound : (currentWaveBudget + budgetPerNormalRound) * budgetPer10RoundExp;
+#if DEBUG_WAVE_STRS && UNITY_EDITOR
+        Debug.Log($"Wave budget increased from {(int)prevBudg} to {(int)currentWaveBudget}.");
+#endif
     }
     
 #if UNITY_EDITOR || KEEP_DEBUG
