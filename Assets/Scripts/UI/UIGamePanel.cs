@@ -92,6 +92,8 @@ public class UIGamePanel : UIPanel {
     Image[] killfeedEntryImages; // Groups of 4: card bg, wp icon, kill type icon, enemy icon
     Sprite[] killfeedSprites; // Weapon, Weapon, Weapon, KillType, KillType, Enemies...
     Animator[] killfeedCardAnimators;
+    [SerializeField] Color killColorKF;
+    [SerializeField] Color hitColorKF;
     
     [Header("Misc.")]
     public Animator LavaWarning; // TODO
@@ -415,7 +417,7 @@ public class UIGamePanel : UIPanel {
         KillfeedElements[currKillElem].anchoredPosition = Vector2.zero;
         
         // Set color of card background
-        killfeedEntryImages[currKillElem * 4].color = wasKill ? Color.red : Color.yellow;
+        killfeedEntryImages[currKillElem * 4].color = wasKill ? killColorKF : hitColorKF;
         
         // Set images for card icons
         killfeedEntryImages[currKillElem * 4 + 1].sprite = killfeedSprites[dtype switch {
