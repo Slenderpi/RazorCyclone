@@ -4,6 +4,7 @@ public class LavaEnemy : WeakpointedEnemy {
     
     [Header("Lava Enemy Configuration")]
     public LavaEnemySO LavaConfig;
+    public AudioSource StunAudio;
     
     // WaitForSeconds exposeWaiter;
     LavaWeakpoint weakpoint;
@@ -40,6 +41,8 @@ public class LavaEnemy : WeakpointedEnemy {
         if (Dead) return;
         lava.OnLavaEnemyDefeated();
         // Lava enemy does not drop its own fuel cell. Instead, its weakpoint(s) will.
+        if (StunAudio.isPlaying)
+            StunAudio.Stop();
         ShowDeath();
     }
     
@@ -58,6 +61,7 @@ public class LavaEnemy : WeakpointedEnemy {
         ConsiderForRicochet = false;
         weakpoint.BeginExpose();
         boid.enabled = false;
+        SetAudioState(true);
     }
     
     void ReArmor() {
@@ -65,6 +69,16 @@ public class LavaEnemy : WeakpointedEnemy {
         ConsiderForRicochet = true;
         weakpoint.BeginHide();
         boid.enabled = true;
+        SetAudioState(false);
+    }
+    
+    void SetAudioState(bool toStunned) {
+        if (toStunned) {
+            AmbientAudio.Stop();
+            StunAudio.Play();
+        } else {
+            AmbientAudio.Play();
+        }
     }
     
 }

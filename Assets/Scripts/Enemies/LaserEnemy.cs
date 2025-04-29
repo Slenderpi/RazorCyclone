@@ -138,6 +138,7 @@ public class LaserEnemy : EnemyBase {
                 if (Time.time - lastStateChangeTime >= LaserConfig.StunDuration - LaserConfig.ReArmDuration) {
                     state = 3;
                     lastStateChangeTime += LaserConfig.StunDuration - LaserConfig.ReArmDuration;
+                    AmbientAudio.Play();
                 }
                 break;
             case 3: // Re-arming
@@ -363,6 +364,7 @@ public class LaserEnemy : EnemyBase {
         state = 2;
         lastStateChangeTime = Time.time;
         setLaserAll(false);
+        AmbientAudio.Stop();
         StunAudio.Play();
     }
     
