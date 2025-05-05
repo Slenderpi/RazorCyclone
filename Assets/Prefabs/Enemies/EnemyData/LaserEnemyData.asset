@@ -12,15 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5fc083c4aec49d47868201f263f1bee, type: 3}
   m_Name: LaserEnemyData
   m_EditorClassIdentifier: 
-  WeakDamageDuration: 5
+  WeakDamageDuration: 3.5
   StunDuration: 7
   ReArmDuration: 5
   WeakDamagePerSecond: 5
-  StrongDamagePerSecond: 50
+  StrongDamagePerSecond: 35
   WeakColor:
     serializedVersion: 2
-    key0: {r: 1, g: 1, b: 1, a: 1}
-    key1: {r: 1, g: 1, b: 1, a: 1}
+    key0: {r: 1, g: 1, b: 0, a: 1}
+    key1: {r: 1, g: 1, b: 0, a: 1}
     key2: {r: 0, g: 0, b: 0, a: 0}
     key3: {r: 0, g: 0, b: 0, a: 0}
     key4: {r: 0, g: 0, b: 0, a: 0}
@@ -48,8 +48,8 @@ MonoBehaviour:
     m_NumAlphaKeys: 2
   StrongColor:
     serializedVersion: 2
-    key0: {r: 1, g: 0, b: 0, a: 1}
-    key1: {r: 1, g: 0, b: 0, a: 1}
+    key0: {r: 1, g: 0.008962946, b: 0, a: 1}
+    key1: {r: 1, g: 0.007843138, b: 0, a: 1}
     key2: {r: 0, g: 0, b: 0, a: 0}
     key3: {r: 0, g: 0, b: 0, a: 0}
     key4: {r: 0, g: 0, b: 0, a: 0}
