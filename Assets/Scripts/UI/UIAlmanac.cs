@@ -26,37 +26,37 @@ public class UIAlmanac : UIPanel {
     readonly AlmanacDataEntry[] enemyDataEntries = new AlmanacDataEntry[] {
         new(
             name: "Bug",
-            desc: "The Bug is a passive enemy that aimlessly wanders around, ignoring the player. A great source of free fuel.",
+            desc: "The Bug is a passive enemy that aimlessly wanders around, ignoring the player. It can be killed wither both the vacuum and the cannon.",
             rsrcURL: "Almanac/bug_thumbnail"
         ),
         new(
             name: "Hunter",
-            desc: "The Hunter relentlessly chases you down. Fortunately, they're not too tough to kill.",
+            desc: "The Hunter relentlessly chases you down. Fortunately, they're not too tough to kill, they can be defeated by either the vacuum or cannon.",
             rsrcURL: "Almanac/hunterBasic_thumbnail"
         ),
         new(
             name: "Shielded Hunter",
-            desc: "The Shielded Hunter is extremely aggressive and will rapidly pursue you. Its shield can only be disabled with a cannon shot.",
+            desc: "The Shielded Hunter is extremely aggressive and will rapidly pursue you. Its blue shield can only be damaged by a cannon shot, but once its shield is disabled, the vacuum or cannon can finish the job.",
             rsrcURL: "Almanac/hunterEmpowered_thumbnail"
         ),
         new(
             name: "Crab",
-            desc: "The Crab is a small, stationary enemy that occasionally fires at you. Not much of a threat.",
+            desc: "The Crab is a small, stationary enemy that occasionally fires at you. Not much of a threat, can be killed by the vacuum and cannon.",
             rsrcURL: "Almanac/crabBasic_thumbnail"
         ),
         new(
             name: "Laser Crab",
-            desc: "The Laser Crab fires a continuous laser that grows more deadly the longer it locks on. While immune to cannon kills, a cannon shot will stun it and reset its laser's damage buildup.",
+            desc: "The Laser Crab fires a continuous laser that grows more deadly the longer it locks on. This enemy can only be killed by the vacuum, however shooting it with the cannon will stun it, resetting its damage buildup.",
             rsrcURL: "Almanac/crabLaser_thumbnail"
         ),
         new(
             name: "Turtle",
-            desc: "The Turtle causes the lava to rise as long as it stays alive. A cannon shot will expose its core—destroy the core to defeat it.",
+            desc: "The Turtle causes the lava to rise as long as it stays alive. The turtle body can only be damaged by the cannon, but once shot it will expose its core. The core can be destroyed by either the cannon or vacuum.",
             rsrcURL: "Almanac/turtle_thumbnail"
         ),
         new(
             name: "Centipede",
-            desc: "The Centipede is made up of several segments, each firing a missile in sequence. To defeat it, you must destroy every segment",
+            desc: "The Centipede is made up of several segments, each firing a missile in sequence. To defeat it, you must destroy every segment, luckily the segments can be killed by either the vacuum or cannon.",
             rsrcURL: "Almanac/centipede_thumbnail"
         ),
     };
