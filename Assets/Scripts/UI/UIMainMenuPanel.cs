@@ -1,14 +1,9 @@
 using System.Collections;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class UIMainMenuPanel : UIPanel {
     
-    [Header("Main Menu Buttons")]
-    public Button PlayEndlessButton;
-    public Button PlayTutorialButton;
-    public Button SettingsButton;
-    public Button QuitGameButton;
+    bool buttonsEnabled = true;
     
     
     
@@ -25,26 +20,21 @@ public class UIMainMenuPanel : UIPanel {
     }
     
     void OnEnable() {
-        setButtonsEnabled(true);
+        buttonsEnabled = true;
         GameManager.Instance.Audio2D.SetUMastLPTo(false);
         Time.timeScale = 1;
     }
     
-    void setButtonsEnabled(bool newEnabled) {
-        PlayEndlessButton.interactable = newEnabled;
-        PlayTutorialButton.interactable = newEnabled;
-        SettingsButton.interactable = newEnabled;
-        QuitGameButton.interactable = newEnabled;
-    }
-    
     IEnumerator delayLoadScene(bool isEndless) {
-        setButtonsEnabled(false);
-        GameManager.Instance.MainCanvas.FadeToBlack();
-        yield return new WaitForSecondsRealtime(UIMainCanvas.FADER_FADE_DURATION);
-        if (isEndless)
-            ((SRMainMenu)GameManager.Instance.currentSceneRunner).LoadLevel_EndlessMode();
-        else
-            ((SRMainMenu)GameManager.Instance.currentSceneRunner).LoadLevel_Tutorial();
+        if (buttonsEnabled) {
+            buttonsEnabled = false;
+            GameManager.Instance.MainCanvas.FadeToBlack();
+            yield return new WaitForSecondsRealtime(UIMainCanvas.FADER_FADE_DURATION);
+            if (isEndless)
+                ((SRMainMenu)GameManager.Instance.currentSceneRunner).LoadLevel_EndlessMode();
+            else
+                ((SRMainMenu)GameManager.Instance.currentSceneRunner).LoadLevel_Tutorial();
+        }
     }
     
 }
