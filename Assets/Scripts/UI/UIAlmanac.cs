@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using UnityEngine.Video;
 
 public class UIAlmanac : UIPanel {
-    
+
     public enum EAlmanacCategory {
         Enemies,
         Player
@@ -180,13 +180,13 @@ public class UIAlmanac : UIPanel {
             entry = enemyDataEntries[index];
             EntryNameLabel.text = entry.name;
             EntryDescriptionLabel.text = entry.desc;
-            loadAndSetEntryImageAsync(entry.rsrcURL);
+            StartCoroutine(loadAndSetEntryImageAsync(entry.rsrcURL));;
             break;
         case EAlmanacCategory.Player:
             entry = playerDataEntries[index];
             EntryNameLabel.text = entry.name;
             EntryDescriptionLabel.text = entry.desc;
-            loadAndSetEntryVideoAsync(entry.rsrcURL);
+            StartCoroutine(loadAndSetEntryVideoAsync(entry.rsrcURL));
             break;
         }
     }

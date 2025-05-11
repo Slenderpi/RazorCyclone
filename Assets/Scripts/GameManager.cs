@@ -134,8 +134,10 @@ public class GameManager : MonoBehaviour {
 #else
         DataPersistenceManager.Instance.LoadSettings();
 #endif
+        MainCanvas.AlmanacPanel.SetActive(true); //ADAM FIX
         MainCanvas.AlmanacPanel.UpdateSidebuttons();
         MainCanvas.AlmanacPanel.ViewEntry(0);
+        MainCanvas.AlmanacPanel.SetActive(false); // ADAM FIX
         Audio2D.asMusic.Play();
     }
     
