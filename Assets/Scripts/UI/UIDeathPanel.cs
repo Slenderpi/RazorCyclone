@@ -19,10 +19,19 @@ public class UIDeathPanel : UIPanel {
         StartCoroutine(delayLoadScene(false));
     }
     
-    public void SetEndScreenInfo(GameData recordData, int wavesCompleted, bool isNewWaveRecord, float timeSpent) {
-        DefeatedWavesValue.text = isNewWaveRecord ? $"! {wavesCompleted}" : $"{wavesCompleted}";
-        RecordDefeatedWavesValue.text = isNewWaveRecord ? $"! {recordData.HighestWaveCompleted}" : $"{recordData.HighestWaveCompleted}";
-        RecordTimeSpentValue.text = textifyTime(timeSpent);
+    /// <summary>
+    /// Record enum is an int with the following meanings:<br/>
+    /// 0: No new records<br/>
+    /// 1: New highest wave<br/>
+    /// 2: Same wave, but faster time<br/>
+    /// </summary>
+    /// <param name="recordData"></param>
+    /// <param name="runData"></param>
+    /// <param name="recordEnum"></param>
+    public void SetEndScreenInfo(GameData recordData, GameData runData, int recordEnum) {
+        DefeatedWavesValue.text = $"{runData.HighestWaveCompleted}";
+        RecordDefeatedWavesValue.text = recordEnum == 1 ? $"! {recordData.HighestWaveCompleted}" : $"{recordData.HighestWaveCompleted}";
+        RecordTimeSpentValue.text = (recordEnum >= 1 ? "! " : "") + textifyTime(runData.GameTimeSpent);
     }
     
     // public void SetEndScreenInfo(GameData data, int waveReached, bool isNewWaveRecord, bool isNewTimeRecord) {

@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Collections;
-using System.Linq;
 using UnityEngine;
 
 public class SREndlessMode : SceneRunner, IDataPersistence {
@@ -56,18 +55,34 @@ public class SREndlessMode : SceneRunner, IDataPersistence {
     protected override void OnPlayerDied() {
         playerIsDead = true;
         GameManager.Instance.SetPauseInputActionsEnabled(false);
-        
-        bool isNewWaveRecord = false;
-        // bool[] recordTimes; // Determines if a time is a new record
-        if (wavesCompleted > recordData.HighestWaveCompleted) { // Completed more waves than before
-            recordData.HighestWaveCompleted = wavesCompleted;
-            isNewWaveRecord = true;
-        }
-        float totalTimeSpent = 0;
-        for (int i = 0; i < wavesCompleted; i++)
-            totalTimeSpent += TimesSpentEachWave[i];
-        mainCanvas.DeathPanel.SetEndScreenInfo(recordData, wavesCompleted, isNewWaveRecord, totalTimeSpent);
+        GameData runData = calcCurrentRunResults();
+        mainCanvas.DeathPanel.SetEndScreenInfo(recordData, runData, determineAndSetRecords(runData));
         mainCanvas.SetCanvasState(UIMainCanvas.ECanvasState.DiedEndless);
+        DataPersistenceManager.Instance.SaveGame();
+    }
+    
+    GameData calcCurrentRunResults() {
+        float gameTimeSpent = 0;
+        for (int i = 0; i < wavesCompleted; i++)
+            gameTimeSpent += TimesSpentEachWave[i];
+        return new(wavesCompleted, gameTimeSpent);
+    }
+    
+    int determineAndSetRecords(GameData runData) {
+        int recordEnum = 0;
+        if (runData.HighestWaveCompleted > recordData.HighestWaveCompleted) { // New wave record
+            recordEnum = 1;
+            recordData.HighestWaveCompleted = runData.HighestWaveCompleted;
+            recordData.GameTimeSpent = runData.GameTimeSpent;
+        } else if (runData.HighestWaveCompleted == recordData.HighestWaveCompleted && runData.GameTimeSpent < recordData.GameTimeSpent) { // Only new time record
+            recordEnum = 2;
+            recordData.GameTimeSpent = runData.GameTimeSpent;
+        }
+        return recordEnum;
+    }
+    
+    public void SaveGameNow() {
+        determineAndSetRecords(calcCurrentRunResults());
         DataPersistenceManager.Instance.SaveGame();
     }
     
@@ -77,7 +92,8 @@ public class SREndlessMode : SceneRunner, IDataPersistence {
     
     public void SaveData(GameData data) {
         data.HighestWaveCompleted = recordData.HighestWaveCompleted;
-        data.TimeSpentEachWave = recordData.TimeSpentEachWave;
+        data.GameTimeSpent = recordData.GameTimeSpent;
+        // data.TimeSpentEachWave = recordData.TimeSpentEachWave;
     }
     
     public override void AddEnemyToList(EnemyBase en) {
@@ -109,6 +125,10 @@ public class SREndlessMode : SceneRunner, IDataPersistence {
         wavesCompleted = waveNum;
         // Use the stored activation time to calculate the spent duration
         TimesSpentEachWave[waveNum - 1] = Time.time - TimesSpentEachWave[waveNum - 1];
+    }
+    
+    void OnApplicationQuit() {
+        SaveGameNow();
     }
     
 }

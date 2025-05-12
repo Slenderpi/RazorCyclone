@@ -9,6 +9,9 @@ public class UIPausePanel : UIPanel {
     
     public void OnButton_ReturnMain() {
         if (isReturningToMain) return;
+        SREndlessMode sre = GameManager.Instance.currentSceneRunner as SREndlessMode;
+        if (sre)
+            sre.SaveGameNow();
         StartCoroutine(delayReturnToMenu());
     }
     
