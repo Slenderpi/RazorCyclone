@@ -71,12 +71,12 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     int ricochetMultiplier = 1;
     readonly int[,] RICOCHET_MULTS = new int[,] {
     //   SH -- SP
-        {1, 0, 1}, // --
+        {3, 0, 2}, // --
         {1, 1, 1}, // S
-        {3, 2, 3}, // SD
-        {3, 3, 3}, // D
-        {4, 4, 4}, // WD
-        {2, 2, 2}, // W
+        {3, 2, 2}, // SD
+        {3, 3, 2}, // D
+        {3, 4, 2}, // WD
+        {3, 3, 2}, // W
     };
     
     [Header("Fuel Settings")]
