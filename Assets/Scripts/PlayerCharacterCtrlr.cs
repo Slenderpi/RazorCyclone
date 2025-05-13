@@ -68,8 +68,16 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     public int currentBikeSpins = 0;
     int bikeSpinProgress = 0;
     Vector2 prevBikeFaceDir = Vector2.up; // For spinning the bike
-    int ricochetBaseVal = 1;
-    // int bikeRotSpinDir = 0; // For spinning the bike (determines CW or CCW)
+    int ricochetMultiplier = 1;
+    readonly int[,] RICOCHET_MULTS = new int[,] {
+    //   SH -- SP
+        {1, 0, 1}, // --
+        {1, 1, 1}, // S
+        {3, 2, 3}, // SD
+        {3, 3, 3}, // D
+        {4, 4, 4}, // WD
+        {2, 2, 2}, // W
+    };
     
     [Header("Fuel Settings")]
     [SerializeField]
@@ -406,7 +414,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
                 rotBeforeInputUpdate = charPivot.localRotation;
                 rotAfterInputUpdate = Quaternion.LookRotation(weaponRelativeRot);
                 checkBikeSpinning();
-                // updateSpecialShotBonus();
+                updateSpecialShotBonus();
                 AudioPlayer2D.Instance.PlayClipSFX(AudioPlayer2D.EClipSFX.Plr_RotateWoosh);
             }
         } else {
@@ -454,22 +462,13 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     }
     
     void updateSpecialShotBonus() {
-        int newRicBaseVal = 0;
-        if (weaponRelativeRot.x == 0 && weaponRelativeRot.y == 0 && weaponRelativeRot.z == -1)
-            newRicBaseVal = 0;
-        else {
-            // +1 if non-zero y
-            newRicBaseVal += Mathf.Abs(weaponRelativeRot.y) > 0.1f ? 1 : 0;
-            // +1 if non-zero x
-            newRicBaseVal += Mathf.Abs(weaponRelativeRot.x) > 0.1f ? 1 : 0;;
-            // +1 if 0 z
-            if (Mathf.Abs(weaponRelativeRot.z) <= 0.001f)
-                newRicBaseVal++;
-        }
-        if (newRicBaseVal != ricochetBaseVal) {
-            ricochetBaseVal = newRicBaseVal;
-            print("Base ricochet: " + ricochetBaseVal);
-        }
+        int xzComp = 0;
+        Vector2 v2 = new(desiredRotation.x, desiredRotation.z);
+        if (v2.sqrMagnitude >= 0.01f)
+            xzComp = Mathf.RoundToInt(Vector2.Dot(Vector2.up, v2) * 1.6f) + 3;
+        int yComp = Mathf.RoundToInt(desiredRotation.y) + 1;
+        ricochetMultiplier = RICOCHET_MULTS[xzComp, yComp];
+        // print($"xzComp: {xzComp} | yComp: {yComp} | ricMult: {ricochetMultiplier}");
     }
     
     /// <summary>
@@ -511,16 +510,9 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         updateRayCastedAimPoint();
         rb.AddForce((charModel.rotation * weaponRelativeRot).normalized * CannonForce * 100000);
         Vector3 projVel = (aimPoint - cannonProjSpawnTrans.position).normalized * CannonBaseProjSpeed + rb.velocity * InheritedVelocityFactor;
-        // if (ricochetBaseVal > 0) { // Only spend spins of base val is non-zero
-        //     projectilePrefab.MaxRicochet = ricochetBaseVal * currentBikeSpins;
-        //     print($"Ricochets: {projectilePrefab.MaxRicochet} ({ricochetBaseVal} * {currentBikeSpins})");
-        //     A_SpinsSpent?.Invoke(currentBikeSpins, 1);
-        //     currentBikeSpins = 1;
-        // } else {
-        //     projectilePrefab.MaxRicochet = 0;
-        // }
         // NOTE: Ignoring special shot stuff since it's weird to figure out. Just going to have bike spins be the ricochet count
-        projectilePrefab.MaxRicochet = currentBikeSpins;
+        print($"Ric Mult: {ricochetMultiplier}");
+        projectilePrefab.MaxRicochet = currentBikeSpins * ricochetMultiplier;
         if (currentBikeSpins > 0) {
             A_SpinsSpent?.Invoke(currentBikeSpins, 0);
             currentBikeSpins = 0;
