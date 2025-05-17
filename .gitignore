@@ -73,3 +73,6 @@ crashlytics-build.properties
 
 # Ignore the programmer preferences file
 /[Aa]ssets/[Rr]esources/ProgrammerPreferences.*
+
+#Mac stuff
+.DS_Store
