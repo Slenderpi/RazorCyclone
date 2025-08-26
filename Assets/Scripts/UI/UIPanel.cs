@@ -4,6 +4,8 @@ public abstract class UIPanel : MonoBehaviour {
     
     protected bool hasInitialized = false;
     
+
+
     public virtual void Init() {
         if (hasInitialized) return;
         hasInitialized = true;
