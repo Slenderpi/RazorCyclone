@@ -8840,6 +8840,33 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerSpawnPoint: {fileID: 1430545054}
+  lava: {fileID: 0}
+  mapCenter: {x: 0, y: 0, z: 0}
+  maxCentipedeRoamRadius: 50
+  minCentipedeRoamRadius: 20
+  maxCentipedeRoamHeightRange: 5
+  minCentipedeRoamHeightRange: 1.5
+  centipedeCircleCompleteTime: 70
+  centipedeHeightCompletionTime: 7
+  EnemiesForRicochet: []
+  vacuumMovement1Finished: {fileID: 0}
+  vacuumMovement2Finished: {fileID: 0}
+  cannonMovement1Finished: {fileID: 0}
+  cannonMovement2Finished: {fileID: 0}
+  spawnForVacMove1: {fileID: 0}
+  spawnForVacMove2: {fileID: 0}
+  spawnForCanMove1: {fileID: 0}
+  spawnForCanMove2: {fileID: 0}
+  spawnForKillPractice: {fileID: 0}
+  vacuumSpawnGroup: {fileID: 0}
+  cannonSpawnGroup1: {fileID: 0}
+  cannonSpawnGroup2: {fileID: 0}
+  canRicSpawnGroup: {fileID: 0}
+  practiceKillSpawnGroup: {fileID: 0}
+  requiredDamageType: 1
+  enemiesRequiredThisState: 0
+  enemiesKilled: 0
+  StartingState: 1
 --- !u!4 &1545043122
 Transform:
   m_ObjectHideFlags: 0

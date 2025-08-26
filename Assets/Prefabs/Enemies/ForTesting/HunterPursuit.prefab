@@ -9859,19 +9859,27 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   etypeid: 0
-  EnData: {fileID: 11400000, guid: 52c1642a7706cf64da79d8ccf4fb58a8, type: 2}
-  IsEmpowered: 0
+  EnConfig: {fileID: 0}
+  Hitboxes: {fileID: 0}
+  EnemyTrigger: {fileID: 0}
+  Model: {fileID: 0}
   TransformForRicochetToAimAt: {fileID: 0}
+  AmbientAudio: {fileID: 0}
+  DeathAudio: {fileID: 0}
+  Dead: 0
   MaxHealth: 50
   health: 0
   rb: {fileID: 0}
   boid: {fileID: 0}
   suckable: {fileID: 0}
-  RicochetCanon: 1
+  RicochetCannon: 1
   ConsiderForRicochet: 1
   invincible: 0
   HunterConfig: {fileID: 11400000, guid: 74cb069c5b0f5884b8cddab4f13d13c1, type: 2}
+  trails: []
+  lrenderers: []
   ModelMeshRenderer: {fileID: 4667816667457809461}
+  StunAudio: {fileID: 0}
 --- !u!54 &9113617427949065013
 Rigidbody:
   m_ObjectHideFlags: 0

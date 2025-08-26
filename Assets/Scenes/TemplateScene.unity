@@ -310,6 +310,44 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a6a8bd0296f44eb4ba82a4f2dd71a33d, type: 3}
+--- !u!1 &461326113 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 9213267263744958652, guid: a6a8bd0296f44eb4ba82a4f2dd71a33d, type: 3}
+  m_PrefabInstance: {fileID: 461326112}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &461326114
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 461326113}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a79441f348de89743a2939f4d699eac1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_RenderShadows: 1
+  m_RequiresDepthTextureOption: 2
+  m_RequiresOpaqueTextureOption: 2
+  m_CameraType: 0
+  m_Cameras: []
+  m_RendererIndex: -1
+  m_VolumeLayerMask:
+    serializedVersion: 2
+    m_Bits: 1
+  m_VolumeTrigger: {fileID: 0}
+  m_VolumeFrameworkUpdateModeOption: 2
+  m_RenderPostProcessing: 0
+  m_Antialiasing: 0
+  m_AntialiasingQuality: 2
+  m_StopNaN: 0
+  m_Dithering: 0
+  m_ClearDepth: 1
+  m_AllowXRRendering: 1
+  m_RequiresDepthTexture: 0
+  m_RequiresColorTexture: 0
+  m_Version: 2
 --- !u!1 &601074362
 GameObject:
   m_ObjectHideFlags: 0
@@ -550,6 +588,32 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerSpawnPoint: {fileID: 1430545054}
   lava: {fileID: 0}
+  mapCenter: {x: 0, y: 0, z: 0}
+  maxCentipedeRoamRadius: 50
+  minCentipedeRoamRadius: 20
+  maxCentipedeRoamHeightRange: 5
+  minCentipedeRoamHeightRange: 1.5
+  centipedeCircleCompleteTime: 70
+  centipedeHeightCompletionTime: 7
+  EnemiesForRicochet: []
+  vacuumMovement1Finished: {fileID: 0}
+  vacuumMovement2Finished: {fileID: 0}
+  cannonMovement1Finished: {fileID: 0}
+  cannonMovement2Finished: {fileID: 0}
+  spawnForVacMove1: {fileID: 0}
+  spawnForVacMove2: {fileID: 0}
+  spawnForCanMove1: {fileID: 0}
+  spawnForCanMove2: {fileID: 0}
+  spawnForKillPractice: {fileID: 0}
+  vacuumSpawnGroup: {fileID: 0}
+  cannonSpawnGroup1: {fileID: 0}
+  cannonSpawnGroup2: {fileID: 0}
+  canRicSpawnGroup: {fileID: 0}
+  practiceKillSpawnGroup: {fileID: 0}
+  requiredDamageType: 1
+  enemiesRequiredThisState: 0
+  enemiesKilled: 0
+  StartingState: 1
 --- !u!4 &1545043122
 Transform:
   m_ObjectHideFlags: 0
