@@ -72,7 +72,7 @@ public class ProjectileBase : MonoBehaviour {
 #if DEBUG_RAYS
         GameManager.D_DrawPoint(transform.position, Color.green);
 #endif
-        float dist = rb.velocity.magnitude * Time.fixedDeltaTime;
+        float dist = rb.linearVelocity.magnitude * Time.fixedDeltaTime;
         hitCase = 0;
         closestHitSqrd = float.MaxValue;
         raycastCollision(Vector3.zero, dist);
@@ -93,7 +93,7 @@ public class ProjectileBase : MonoBehaviour {
 #endif
         if (Physics.Raycast(
             origin: transform.position + offset,
-            direction: rb.velocity,
+            direction: rb.linearVelocity,
             maxDistance: dist,
             layerMask: layerMask,
             hitInfo: out RaycastHit hit)) {
@@ -127,7 +127,7 @@ public class ProjectileBase : MonoBehaviour {
             } else {
                 if (hitCollider == colliderToIgnore) return;
             }
-            transform.position += closestHit.distance * rb.velocity.normalized;
+            transform.position += closestHit.distance * rb.linearVelocity.normalized;
             if (ricRemain > 0) {
                 ricRemain--;
                 if (enemy)
@@ -182,13 +182,13 @@ public class ProjectileBase : MonoBehaviour {
         if (closestEn) {
             if (closestEn.rb) // If has enemy has an rb, use predictive aiming
                 ricVel = (BoidSteerer.PredictPosition(
-                            transform.position, closestEn.TransformForRicochetToAimAt.position, rb.velocity, closestEn.rb.velocity
-                        ) - transform.position).normalized * rb.velocity.magnitude;
+                            transform.position, closestEn.TransformForRicochetToAimAt.position, rb.linearVelocity, closestEn.rb.linearVelocity
+                        ) - transform.position).normalized * rb.linearVelocity.magnitude;
             else // Enemy has no rb, so use their current position
-                ricVel = (closestEn.TransformForRicochetToAimAt.position - transform.position).normalized * rb.velocity.magnitude;
+                ricVel = (closestEn.TransformForRicochetToAimAt.position - transform.position).normalized * rb.linearVelocity.magnitude;
         } else // No valid enemy to ricochet to. Reflect physically
-            ricVel = Vector3.Reflect(rb.velocity, closestHit.normal);
-        rb.velocity *= 0;
+            ricVel = Vector3.Reflect(rb.linearVelocity, closestHit.normal);
+        rb.linearVelocity *= 0;
         if (ricRemain == 0) {
             TrailRicochet.emitting = false;
             TrailNormal.emitting = true;
@@ -201,8 +201,8 @@ public class ProjectileBase : MonoBehaviour {
     protected void OnRicochetNonEnemy() {
         colliderToIgnore = closestHit.collider;
         enemyToIgnore = null;
-        Vector3 ricVel = Vector3.Reflect(rb.velocity, closestHit.normal);
-        rb.velocity *= 0;
+        Vector3 ricVel = Vector3.Reflect(rb.linearVelocity, closestHit.normal);
+        rb.linearVelocity *= 0;
         if (ricRemain == 0) {
             TrailRicochet.emitting = false;
             TrailNormal.emitting = true;
@@ -213,7 +213,7 @@ public class ProjectileBase : MonoBehaviour {
     
     IEnumerator ricochetVelNextFrame(Vector3 ricVel) {
         yield return waitFixedUpdForRic;
-        rb.velocity = ricVel;
+        rb.linearVelocity = ricVel;
         transform.rotation = Quaternion.LookRotation(ricVel);
     }
     
@@ -228,7 +228,7 @@ public class ProjectileBase : MonoBehaviour {
     
     void endProjectile() {
         projectileDead = true;
-        rb.velocity *= 0;
+        rb.linearVelocity *= 0;
         if (ricRemain > 0)
             TrailRicochet.emitting = false;
         else

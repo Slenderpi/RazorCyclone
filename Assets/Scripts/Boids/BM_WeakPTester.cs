@@ -13,7 +13,7 @@ public class BM_WeakPTester : BoidMover {
     public override Vector3 CalculateSteering() {
         StepWanderPoint2D(WeakPTestData);
         return BoidSteerer.Wander(
-            transform.position, rb.velocity, wanderPoint, WeakPTestData
+            transform.position, rb.linearVelocity, wanderPoint, WeakPTestData
         );
     }
     

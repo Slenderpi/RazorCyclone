@@ -229,7 +229,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         if (isVacuumOn && vacEnableddd) {
             if (CurrentHealth > 0) {
                 SpendFuel(vacuumFuelCost);
-                rb.AddForce(charPivot.forward * (rb.velocity.magnitude <= VacuumForceNormalSpeed ? VacuumForceLowSpeed : VacuumForce), ForceMode.Acceleration);
+                rb.AddForce(charPivot.forward * (rb.linearVelocity.magnitude <= VacuumForceNormalSpeed ? VacuumForceLowSpeed : VacuumForce), ForceMode.Acceleration);
             } else {
                 isVacuumOn = false;
                 Vacuum.DisableVacuum();
@@ -509,7 +509,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     void fireCannon() {
         updateRayCastedAimPoint();
         rb.AddForce((charModel.rotation * weaponRelativeRot).normalized * CannonForce * 100000);
-        Vector3 projVel = (aimPoint - cannonProjSpawnTrans.position).normalized * CannonBaseProjSpeed + rb.velocity * InheritedVelocityFactor;
+        Vector3 projVel = (aimPoint - cannonProjSpawnTrans.position).normalized * CannonBaseProjSpeed + rb.linearVelocity * InheritedVelocityFactor;
         // NOTE: Ignoring special shot stuff since it's weird to figure out. Just going to have bike spins be the ricochet count
         print($"Ric Mult: {ricochetMultiplier}");
         projectilePrefab.MaxRicochet = currentBikeSpins * ricochetMultiplier;
@@ -518,7 +518,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
             currentBikeSpins = 0;
         }
         ProjectileBase proj = Instantiate(projectilePrefab, cannonProjSpawnTrans.position, Quaternion.LookRotation(projVel));
-        proj.rb.velocity = projVel;
+        proj.rb.linearVelocity = projVel;
         SpendFuel(CannonFuelCost);
         GameManager.Instance.Audio2D.PlayClipSFX(AudioPlayer2D.EClipSFX.Weapon_CannonShot);
         playMuzzleFlashEffect();
@@ -534,7 +534,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     }
     
     void updateCrosshairPositions() {
-        Vector3 rbVelocityCompensation = rb.velocity.sqrMagnitude > 0.001f ? rb.velocity * InheritedVelocityFactor / CannonBaseProjSpeed : Vector3.zero;
+        Vector3 rbVelocityCompensation = rb.linearVelocity.sqrMagnitude > 0.001f ? rb.linearVelocity * InheritedVelocityFactor / CannonBaseProjSpeed : Vector3.zero;
         // The vacuum does not account for the player's velocity
         Vector3 screenPointVacuum;
         if (!isInThirdPerson) {
@@ -571,9 +571,9 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         float offset = 0.7321717f;
         if (lava && transform.position.y - offset <= lava.currentHeight) {
             transform.position = new(transform.position.x, lava.currentHeight + offset + 0.1f, transform.position.z);
-            Vector3 bouncedVel = Vector3.Reflect(rb.velocity, Vector3.up);
+            Vector3 bouncedVel = Vector3.Reflect(rb.linearVelocity, Vector3.up);
             bouncedVel.y = Mathf.Max(bouncedVel.y, lava.MinimumVerticalBounceSpeed);
-            rb.velocity = bouncedVel;
+            rb.linearVelocity = bouncedVel;
             TakeDamage(lava.LavaDamage, EDamageType.Any);
         }
     }

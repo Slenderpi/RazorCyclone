@@ -64,10 +64,10 @@ public class BM_Basic : BoidMover {
     public override Vector3 CalculateSteering() {
         checkAndSetForOverride();
         return bt switch {
-            BoidBehaviour.Seek => BoidSteerer.Seek(transform.position, GameManager.CurrentPlayer.transform.position, rb.velocity, msv, msf),
-            BoidBehaviour.Flee => BoidSteerer.Flee(transform.position, GameManager.CurrentPlayer.transform.position, rb.velocity, msv, msf),
-            BoidBehaviour.Pursuit => BoidSteerer.Pursuit(transform.position, GameManager.CurrentPlayer.transform.position, rb.velocity, GameManager.CurrentPlayer.rb.velocity, msv, msf),
-            BoidBehaviour.Evade => BoidSteerer.Evade(transform.position, GameManager.CurrentPlayer.transform.position, rb.velocity, GameManager.CurrentPlayer.rb.velocity, msv, msf),
+            BoidBehaviour.Seek => BoidSteerer.Seek(transform.position, GameManager.CurrentPlayer.transform.position, rb.linearVelocity, msv, msf),
+            BoidBehaviour.Flee => BoidSteerer.Flee(transform.position, GameManager.CurrentPlayer.transform.position, rb.linearVelocity, msv, msf),
+            BoidBehaviour.Pursuit => BoidSteerer.Pursuit(transform.position, GameManager.CurrentPlayer.transform.position, rb.linearVelocity, GameManager.CurrentPlayer.rb.linearVelocity, msv, msf),
+            BoidBehaviour.Evade => BoidSteerer.Evade(transform.position, GameManager.CurrentPlayer.transform.position, rb.linearVelocity, GameManager.CurrentPlayer.rb.linearVelocity, msv, msf),
             BoidBehaviour.Wander => doWander(),
             BoidBehaviour.TestState => testObstAvoid(),
             _ => Vector3.zero,
@@ -86,15 +86,15 @@ public class BM_Basic : BoidMover {
     
     Vector3 doWander() {
         StepWanderPoint2D(wmd, wlr, wcd);
-        return BoidSteerer.Wander(transform.position, rb.velocity, wanderPoint, wld, msv, msf);
+        return BoidSteerer.Wander(transform.position, rb.linearVelocity, wanderPoint, wld, msv, msf);
     }
     
     Vector3 testObstAvoid() {
-        Vector3 forward = rb.velocity;
+        Vector3 forward = rb.linearVelocity;
         if (forward.sqrMagnitude <= 0.0001f)
             forward = transform.forward;
         // Vector3 avoid = BoidSteerer.Avoidance3P(transform.position, forward, awa, amld, ai, amsf);
-        Vector3 straight = BoidSteerer.Seek(transform.position, transform.position + forward.normalized * BoidData.MaxSteeringForce / 10f, rb.velocity, msv, msf);
+        Vector3 straight = BoidSteerer.Seek(transform.position, transform.position + forward.normalized * BoidData.MaxSteeringForce / 10f, rb.linearVelocity, msv, msf);
         return straight;
         // return avoid + straight;
         // return doWander() + avoid;

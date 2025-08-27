@@ -24,12 +24,12 @@ public class BM_Hunter : BoidMover {
             // If greater than WanderTriggerDist, include wander
             if (HunterData.IncludeWander && toPlrMag > HunterData.WanderTriggerDist * HunterData.WanderTriggerDist) {
                 StepWanderPoint3D(HunterData);
-                ret += BoidSteerer.Wander(transform.position, rb.velocity, wanderPoint, HunterData);
+                ret += BoidSteerer.Wander(transform.position, rb.linearVelocity, wanderPoint, HunterData);
             }
             // If Hunter passed player, set lastRunawayTime and flee
-            if (rb.velocity.sqrMagnitude > HunterData.RunAwayRequiredSpeed * HunterData.RunAwayRequiredSpeed &&
+            if (rb.linearVelocity.sqrMagnitude > HunterData.RunAwayRequiredSpeed * HunterData.RunAwayRequiredSpeed &&
                 toPlrMag <= HunterData.RunAwayRequiredDist * HunterData.RunAwayRequiredDist &&
-                Vector3.Dot(toPlayer, rb.velocity) <= 0) {
+                Vector3.Dot(toPlayer, rb.linearVelocity) <= 0) {
                 lastRunawayTime = Time.fixedTime;
                 ret += hunterFlee(plrTrans.position);
             } else {
@@ -37,7 +37,7 @@ public class BM_Hunter : BoidMover {
                 ret += BoidSteerer.Seek(
                     transform.position,
                     plrTrans.position,
-                    rb.velocity,
+                    rb.linearVelocity,
                     HunterData
                 );
             }
@@ -47,7 +47,7 @@ public class BM_Hunter : BoidMover {
     
     Vector3 hunterFlee(Vector3 playerPos) {
         return BoidSteerer.Flee(
-            transform.position, playerPos, rb.velocity,
+            transform.position, playerPos, rb.linearVelocity,
             HunterData.RunAwayMaxSteerVelocity, HunterData.RunAwayMaxSteerForce
         );
         // return BoidSteer.Evade(transform.position, playerPos, rb.velocity, GameManager.CurrentPlayer.rb.velocity, HunterData);

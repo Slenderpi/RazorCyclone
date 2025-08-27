@@ -48,7 +48,7 @@ public class GameCamera : MonoBehaviour {
 #if UNITY_EDITOR
             sodFOV.SetDynamics(f, z, r);
 #endif
-            updateFOV(sodFOV.Update(Mathf.Lerp(0, MaxAddFOV, GameManager.CurrentPlayer.rb.velocity.magnitude / SpeedForMaxFOV), Time.deltaTime));
+            updateFOV(sodFOV.Update(Mathf.Lerp(0, MaxAddFOV, GameManager.CurrentPlayer.rb.linearVelocity.magnitude / SpeedForMaxFOV), Time.deltaTime));
         }
     }
     

@@ -69,7 +69,7 @@ public class CrabBasicEnemy : EnemyBase {
     public override void Attack() {
         Vector3 toPlr = calcVToPlr();
         pooledProj.transform.SetPositionAndRotation(BarrelEndpoint.position, Quaternion.LookRotation(toPlr));
-        pooledProj.rb.velocity = toPlr.normalized * CrabBasicConfig.ProjectileSpeed;
+        pooledProj.rb.linearVelocity = toPlr.normalized * CrabBasicConfig.ProjectileSpeed;
         pooledProj.gameObject.SetActive(true);
         if (FireGunVFX.activeSelf)
             foreach (ParticleSystem ps in fireGunParticles)
@@ -85,7 +85,7 @@ public class CrabBasicEnemy : EnemyBase {
     
     Vector3 predictPlrPos() {
         Vector3 ppos = GameManager.CurrentPlayer.transform.position;
-        Vector3 pvel = GameManager.CurrentPlayer.rb.velocity;
+        Vector3 pvel = GameManager.CurrentPlayer.rb.linearVelocity;
         // Solve for t in the following: ppos + pspeed * t == cpos + cspeed * t
         float predictTime = (ppos - BarrelEndpoint.position).magnitude / Mathf.Abs(pvel.magnitude - CrabBasicConfig.ProjectileSpeed);
         return ppos + pvel * Mathf.Min(predictTime, maxPredictTime);

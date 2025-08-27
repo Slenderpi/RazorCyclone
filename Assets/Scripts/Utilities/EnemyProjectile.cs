@@ -30,7 +30,7 @@ public class EnemyProjectile : MonoBehaviour {
     }
     
     void onHitSomething() {
-        rb.velocity *= 0;
+        rb.linearVelocity *= 0;
         MeshAndCollider.SetActive(false);
         explosionEffect.SetActive(true);
         Destroy(gameObject, 5);

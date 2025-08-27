@@ -13,7 +13,7 @@ public class BM_Lava : BoidMover {
     public override Vector3 CalculateSteering() {
         StepWanderPoint2D(LavaEnemyData);
         return BoidSteerer.Wander(
-            transform.position, rb.velocity, wanderPoint,
+            transform.position, rb.linearVelocity, wanderPoint,
             LavaEnemyData
         );
     }

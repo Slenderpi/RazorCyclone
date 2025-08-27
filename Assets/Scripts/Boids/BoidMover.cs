@@ -50,7 +50,7 @@ public abstract class BoidMover : MonoBehaviour {
         if (!plr) return;
         Vector3 steer = CalculateSteering();
         // if (ModelToRotate)
-        calculatedRotation = _calcRotation(rb.velocity, steer);
+        calculatedRotation = _calcRotation(rb.linearVelocity, steer);
         if (enableAvoidanceTest)
             steer += testAvoidance();
         rb.AddForce(steer, ForceMode.Acceleration);
@@ -100,11 +100,11 @@ public abstract class BoidMover : MonoBehaviour {
     
     protected Vector3 testAvoidance() {
         return generalBoidData.AvoidanceTestType switch {
-            AvoidanceTestMode.SingleFlat => BoidSteerer.Avoidance1PFlat(transform.position, rb.velocity, generalBoidData),
-            AvoidanceTestMode.Single3D => BoidSteerer.Avoidance1P(transform.position, rb.velocity, generalBoidData),
-            AvoidanceTestMode.TripleFlat => BoidSteerer.Avoidance3PFlat(transform.position, rb.velocity, generalBoidData),
-            AvoidanceTestMode.Triple3D => BoidSteerer.Avoidance3P3D(transform.position, rb.velocity, calculatedRotation, generalBoidData),
-            AvoidanceTestMode.FivePoints => BoidSteerer.Avoidance5P(transform.position, rb.velocity, calculatedRotation, generalBoidData),
+            AvoidanceTestMode.SingleFlat => BoidSteerer.Avoidance1PFlat(transform.position, rb.linearVelocity, generalBoidData),
+            AvoidanceTestMode.Single3D => BoidSteerer.Avoidance1P(transform.position, rb.linearVelocity, generalBoidData),
+            AvoidanceTestMode.TripleFlat => BoidSteerer.Avoidance3PFlat(transform.position, rb.linearVelocity, generalBoidData),
+            AvoidanceTestMode.Triple3D => BoidSteerer.Avoidance3P3D(transform.position, rb.linearVelocity, calculatedRotation, generalBoidData),
+            AvoidanceTestMode.FivePoints => BoidSteerer.Avoidance5P(transform.position, rb.linearVelocity, calculatedRotation, generalBoidData),
             _ => Vector3.zero,
         };
     }

@@ -26,8 +26,8 @@ public class CentipedeMissile : EnemyBase {
     
     protected override void Init() {
         boid.enabled = false;
-        drag = rb.drag;
-        rb.drag = CentMissConfig.ArmingDrag;
+        drag = rb.linearDamping;
+        rb.linearDamping = CentMissConfig.ArmingDrag;
         pooledExplosion = Instantiate(CentMissConfig.ExplosionEffectPrefab);
         pooledExplosion.SetActive(false);
         ConsiderForRicochet = false;
@@ -74,7 +74,7 @@ public class CentipedeMissile : EnemyBase {
     IEnumerator armTimer() {
         yield return new WaitForSeconds(CentMissConfig.ArmingTime);
         rb.useGravity = false;
-        rb.drag = drag;
+        rb.linearDamping = drag;
         boid.enabled = true;
     }
     

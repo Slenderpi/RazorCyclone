@@ -26,7 +26,7 @@ public class HunterEnemy : EnemyBase {
     
     protected override void Init() {
         suckable.CanGetVacuumSucked = false;
-        rb.drag = HunterConfig.ShieldDrag;
+        rb.linearDamping = HunterConfig.ShieldDrag;
         SetEffectState(isStunned);
     }
     
@@ -53,7 +53,7 @@ public class HunterEnemy : EnemyBase {
             // CanGetVacuumKilled = true;
             boid.enabled = false;
             rb.useGravity = true;
-            rb.drag = HunterConfig.StunDrag;
+            rb.linearDamping = HunterConfig.StunDrag;
             SetEffectState(true);
             SetAudioState(true);
             StartCoroutine(StunRecovery());
@@ -67,7 +67,7 @@ public class HunterEnemy : EnemyBase {
             // CanGetVacuumKilled = false;
             boid.enabled = true;
             rb.useGravity = false;
-            rb.drag = HunterConfig.ShieldDrag;
+            rb.linearDamping = HunterConfig.ShieldDrag;
             isStunned = false;
             SetEffectState(false);
             SetAudioState(false);

@@ -221,7 +221,7 @@ public class UIGamePanel : UIPanel {
 #if UNITY_EDITOR
         sodSpeed.SetDynamics(scf, scz, scr);
 #endif
-        float speed = GameManager.CurrentPlayer.rb.velocity.magnitude;
+        float speed = GameManager.CurrentPlayer.rb.linearVelocity.magnitude;
         float newScale = Mathf.LerpUnclamped(1, 1 - AdditionalScale, sodSpeed.Update(speed, Time.deltaTime) / HighAdditionalScaleSpeed);
         MomentumPanel.localScale = new Vector3(newScale, newScale, 1);
     }

@@ -77,7 +77,7 @@ public class AudioPlayer2D : MonoBehaviour {
 
     void Update() {
         if (!plr) return;
-        float speed = plr.rb.velocity.magnitude;
+        float speed = plr.rb.linearVelocity.magnitude;
         asMotorcycleDriving.pitch = Mathf.Lerp(asMotorcycleDriving.pitch, Mathf.Lerp(1, MaxMotorcyclePitch, speed / MaxMotorcyclePitchSpeed), 0.3f);
         // lastSpeed = speed;
     }

@@ -30,20 +30,20 @@ public class BM_CentipedeMissile : BoidMover {
             //     centMissileData
             // );
             return Vector3.ClampMagnitude(
-                finalTrackingDirection.normalized * centMissileData.MaxSteeringVelocity - rb.velocity, centMissileData.MaxSteeringForce
+                finalTrackingDirection.normalized * centMissileData.MaxSteeringVelocity - rb.linearVelocity, centMissileData.MaxSteeringForce
             );
         } else {
             finalTrackingDirection = BoidSteerer.PredictPosition(
                 transform.position,
                 GameManager.CurrentPlayer.transform.position,
-                rb.velocity,
-                GameManager.CurrentPlayer.rb.velocity
+                rb.linearVelocity,
+                GameManager.CurrentPlayer.rb.linearVelocity
             ) - transform.position;
             return BoidSteerer.Pursuit(
                 transform.position,
                 GameManager.CurrentPlayer.transform.position,
-                rb.velocity,
-                GameManager.CurrentPlayer.rb.velocity,
+                rb.linearVelocity,
+                GameManager.CurrentPlayer.rb.linearVelocity,
                 centMissileData
             );
         }

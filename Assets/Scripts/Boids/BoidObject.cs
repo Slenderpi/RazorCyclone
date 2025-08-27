@@ -130,7 +130,7 @@ public class BoidObject : MonoBehaviour {
         // }
         rb.AddForce(totalSteer, ForceMode.Acceleration);
         
-        calculatedRot = CalculateModelRotation(rb.velocity, totalSteer);
+        calculatedRot = CalculateModelRotation(rb.linearVelocity, totalSteer);
     }
     
     // float passTime = -500;
@@ -139,7 +139,7 @@ public class BoidObject : MonoBehaviour {
         return BoidSteerer.Seek(
             transform.position,
             targetPos,
-            rb.velocity,
+            rb.linearVelocity,
             MaxSteeringVelocity,
             MaxSteeringForce
         );
@@ -153,7 +153,7 @@ public class BoidObject : MonoBehaviour {
         return BoidSteerer.Flee(
             transform.position,
             targetPos,
-            rb.velocity,
+            rb.linearVelocity,
             MaxSteeringVelocity,
             MaxSteeringForce
         );
@@ -176,7 +176,7 @@ public class BoidObject : MonoBehaviour {
         return BoidSteerer.Pursuit(
             transform.position,
             targetPos,
-            rb.velocity,
+            rb.linearVelocity,
             targetVel,
             MaxSteeringVelocity,
             MaxSteeringForce
@@ -189,7 +189,7 @@ public class BoidObject : MonoBehaviour {
         return BoidSteerer.Evade(
             transform.position,
             targetPos,
-            rb.velocity,
+            rb.linearVelocity,
             targetVel,
             MaxSteeringVelocity,
             MaxSteeringForce
@@ -204,7 +204,7 @@ public class BoidObject : MonoBehaviour {
 #if UNITY_EDITOR
         if (VisualizeWanderPoint) { // DEBUGGING
             bool fromWanderCenter = false;
-            Vector3 forward = rb.velocity.normalized;
+            Vector3 forward = rb.linearVelocity.normalized;
             // forward = Vector3.forward;
             
             float time = Time.fixedDeltaTime;
@@ -219,7 +219,7 @@ public class BoidObject : MonoBehaviour {
             // return Vector3.zero;
         }
 #endif
-        return Seek(transform.position + WanderLimitDist * rb.velocity.normalized + wanderPoint);
+        return Seek(transform.position + WanderLimitDist * rb.linearVelocity.normalized + wanderPoint);
     }
     
     public Quaternion CalculateModelRotation(Vector3 forward, Vector3 steer) {
@@ -323,10 +323,10 @@ public class BoidObject : MonoBehaviour {
                 steer = Flee(item.trans.position);
                 break;
             case BoidBehaviour.Pursuit:
-                steer = Pursuit(item.trans.position, item.rb.velocity);
+                steer = Pursuit(item.trans.position, item.rb.linearVelocity);
                 break;
             case BoidBehaviour.Evade:
-                steer = Evade(item.trans.position, item.rb.velocity);
+                steer = Evade(item.trans.position, item.rb.linearVelocity);
                 break;
             case BoidBehaviour.Wander:
                 steer = Wander();
