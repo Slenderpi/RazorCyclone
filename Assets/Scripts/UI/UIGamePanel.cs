@@ -500,7 +500,8 @@ public class UIGamePanel : UIPanel {
             SpinCounterOutline.gameObject.SetActive(false);
         currKillElem = 0;
         foreach (Animator kfanim in killfeedCardAnimators)
-            kfanim.SetTrigger("Default");
+            if (kfanim.gameObject.activeSelf)
+                kfanim.SetTrigger("Default");
 #if UNITY_EDITOR || KEEP_DEBUG
         OnTurnInputChanged(Vector2.zero);
         OnVertInputChanged(0);
@@ -521,7 +522,7 @@ public class UIGamePanel : UIPanel {
             for (int ri = 0; ri < 4; ri++)
                 killfeedEntryImages[i * 4 + ri] = elemImages[ri];
             killfeedCardAnimators[i] = KillfeedElements[i].GetComponent<Animator>();
-            killfeedCardAnimators[i].SetTrigger("Default");
+            if (killfeedCardAnimators[i].gameObject.activeSelf) killfeedCardAnimators[i].SetTrigger("Default");
         }
     }
     

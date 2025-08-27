@@ -104,11 +104,12 @@ public class DataPersistenceManager : MonoBehaviour {
     }
     
     List<IDataPersistence> FindAllDataPersistenceObjects() {
-        // FindObjectsofType takes in an optional boolean to include inactive gameobjects
-        IEnumerable<IDataPersistence> dataPersistenceObjects = FindObjectsOfType<MonoBehaviour>(true)
-            .OfType<IDataPersistence>();
-        
-        return new List<IDataPersistence>(dataPersistenceObjects);
+        return new List<IDataPersistence>(
+            FindObjectsByType<MonoBehaviour>(
+                FindObjectsInactive.Include,
+                FindObjectsSortMode.None
+            ).OfType<IDataPersistence>()
+        );
     }
     
     void loadControlSettings() {

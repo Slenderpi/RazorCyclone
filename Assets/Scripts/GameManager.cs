@@ -160,10 +160,7 @@ public class GameManager : MonoBehaviour {
     public void SpawnPlayer() {
         CurrentPlayer = Instantiate(playerPrefab);
         if (currentSceneRunner.playerSpawnPoint)
-            CurrentPlayer.transform.SetPositionAndRotation(
-                currentSceneRunner.playerSpawnPoint.position,
-                currentSceneRunner.playerSpawnPoint.rotation
-            );
+            CurrentPlayer.rb.position = currentSceneRunner.playerSpawnPoint.position;
 #if UNITY_EDITOR || KEEP_DEBUG
         CurrentPlayer.IsInvincible = plrInvincible;
         CurrentPlayer.NoFuelCost = plrNoFuelCost;
@@ -250,7 +247,7 @@ public class GameManager : MonoBehaviour {
     }
     
     public void OnSceneLoaded(Scene scene, LoadSceneMode mode) {
-        GCam = FindObjectOfType<GameCamera>();
+        GCam = FindAnyObjectByType<GameCamera>();
         if (GCam) {
             GCam.SetFOV(CurrentFOV);
             rearCamera = GCam.RearCam;

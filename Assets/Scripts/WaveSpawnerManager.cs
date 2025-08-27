@@ -105,7 +105,7 @@ public class WaveSpawnerManager : MonoBehaviour {
     
     
     void Awake() {
-        spawners.AddRange(FindObjectsOfType<Spawner>());
+        spawners.AddRange(FindObjectsByType<Spawner>(FindObjectsInactive.Include, FindObjectsSortMode.None));
     }
     
     // void Update() {

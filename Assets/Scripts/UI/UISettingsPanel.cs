@@ -59,8 +59,10 @@ public class UISettingsPanel : UIPanel {
     
     public void OnDropdown_Resolution(int option) {
         Resolution resop = resolutionOptions[option];
-        print("Selected: " + resop.width + " x " + resop.height + " " + resop.refreshRate + " Hz");
-        Screen.SetResolution(resop.width, resop.height, Screen.fullScreen, resop.refreshRate);
+#if UNITY_EDITOR
+        print("Selected: " + resop.width + " x " + resop.height + " " + resop.refreshRateRatio + " Hz");
+#endif
+        Screen.SetResolution(resop.width, resop.height, FullScreenMode.FullScreenWindow, resop.refreshRateRatio);
     }
     
     public void OnToggle_VSync(bool isOn) {
@@ -208,7 +210,7 @@ public class UISettingsPanel : UIPanel {
         List<string> optstrs = new List<string>();
         for (int i = 0; i < resolutionOptions.Length; i++) {
             Resolution res = resolutionOptions[i];
-            optstrs.Add(res.width + " x " + res.height + " " + res.refreshRate + " Hz");
+            optstrs.Add(res.width + " x " + res.height + " " + res.refreshRateRatio + " Hz");
         }
         resolutionDropdown.AddOptions(optstrs);
     }
