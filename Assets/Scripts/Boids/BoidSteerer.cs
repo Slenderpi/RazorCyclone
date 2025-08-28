@@ -1,6 +1,8 @@
 // UNCOMMENT THE BELOW LINE TO DRAW DEBUG RAYS
 // #define DEBUG_RAYS
 
+using Unity.Mathematics;
+using Unity.VisualScripting;
 using UnityEngine;
 
 /// <summary>
@@ -17,9 +19,19 @@ public class BoidSteerer {
         // Find desired velocity via |targ - pos| * maxSteerVel
         // Steer force is then desired - currVel, clamped by maxSteerForce
         return Vector3.ClampMagnitude((targetPos - pos).normalized * maxSteeringVelocity - velocity, maxSteeringForce);
+	}
+
+	// NOTE: DOTS
+    public static float3 Seek(float3 pos, float3 targetPos, float3 velocity, float maxSteeringVelocity, float maxSteeringForce) {
+        // Find desired velocity via |targ - pos| * maxSteerVel
+		// Steer force is then desired - currVel, clamped by maxSteerForce
+        float3 steeringForce = math.normalize(targetPos - pos) * maxSteeringVelocity - velocity;
+        if (math.lengthsq(steeringForce) > maxSteeringForce * maxSteeringForce)
+            steeringForce = math.normalize(steeringForce) * maxSteeringForce;
+        return steeringForce;
     }
-    
-    public static Vector3 Seek(Vector3 pos, Vector3 targetPos, Vector3 velocity, GeneralBoidSO boidData) {
+
+public static Vector3 Seek(Vector3 pos, Vector3 targetPos, Vector3 velocity, GeneralBoidSO boidData) {
         return Seek(pos, targetPos, velocity, boidData.MaxSteeringVelocity, boidData.MaxSteeringForce);
     }
     
@@ -84,23 +96,36 @@ public class BoidSteerer {
     public static Vector3 Wander(Vector3 pos, Vector3 velocity, Vector3 wanderPoint, float wanderLimitDist, float maxSteeringVelocity, float maxWanderForce) {
         return Seek(pos, pos + wanderLimitDist * velocity.normalized + wanderPoint, velocity, maxSteeringVelocity, maxWanderForce);
     }
-    
-    public static Vector3 Wander(Vector3 pos, Vector3 velocity, Vector3 wanderPoint, GeneralBoidSO boidData) {
+
+    // NOTE: DOTS
+    public static float3 Wander(float3 pos, float3 velocity, float3 wanderPoint, float wanderLimitDist, float maxSteeringVelocity, float maxWanderForce) {
+		return Seek(pos, pos + wanderLimitDist * math.normalize(velocity) + wanderPoint, velocity, maxSteeringVelocity, maxWanderForce);
+	}
+
+
+	public static Vector3 Wander(Vector3 pos, Vector3 velocity, Vector3 wanderPoint, GeneralBoidSO boidData) {
         return Wander(
             pos, velocity, wanderPoint,
             boidData.WanderLimitDist,
             boidData.MaxSteeringVelocity,
             boidData.MaxWanderForce
         );
-    }
-    
-    public static Vector3 StepWanderPoint2D(Vector3 wanderPoint, float wanderLimitRadius, float wanderChangeDist) {
-        wanderPoint.x += (UnityEngine.Random.Range(0, 2) * 2 - 1) * wanderChangeDist;
-        wanderPoint.z += (UnityEngine.Random.Range(0, 2) * 2 - 1) * wanderChangeDist;
-        return wanderPoint * wanderLimitRadius / wanderPoint.magnitude;
-    }
-    
-    public static Vector3 StepWanderPoint2D(Vector3 wanderPoint, GeneralBoidSO boidData) {
+	}
+
+	public static Vector3 StepWanderPoint2D(Vector3 wanderPoint, float wanderLimitRadius, float wanderChangeDist) {
+		wanderPoint.x += (UnityEngine.Random.Range(0, 2) * 2 - 1) * wanderChangeDist;
+		wanderPoint.z += (UnityEngine.Random.Range(0, 2) * 2 - 1) * wanderChangeDist;
+		return wanderPoint * wanderLimitRadius / wanderPoint.magnitude;
+	}
+
+	// NOTE: DOTS
+	public static float3 StepWanderPoint2D(float3 wanderPoint, float wanderLimitRadius, float wanderChangeDist, Unity.Mathematics.Random rng) {
+		wanderPoint.x += (rng.NextFloat(0, 2) * 2 - 1) * wanderChangeDist;
+		wanderPoint.z += (rng.NextFloat(0, 2) * 2 - 1) * wanderChangeDist;
+		return wanderPoint * wanderLimitRadius / math.length(wanderPoint);
+	}
+
+	public static Vector3 StepWanderPoint2D(Vector3 wanderPoint, GeneralBoidSO boidData) {
         return StepWanderPoint2D(wanderPoint, boidData.WanderLimitRadius, boidData.WanderChangeDist);
     }
     
