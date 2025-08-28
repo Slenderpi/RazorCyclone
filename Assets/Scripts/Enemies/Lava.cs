@@ -44,7 +44,7 @@ public class Lava : MonoBehaviour {
     
     void FixedUpdate() {
         currentHeight += Time.fixedDeltaTime * currRiseRate;
-        if (currentHeight > MaxLavaHeight) {
+		if (currentHeight > MaxLavaHeight) {
             currentHeight = MaxLavaHeight;
             currRiseRate = 0;
             A_LavaNotRising?.Invoke();
