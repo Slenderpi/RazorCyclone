@@ -16,6 +16,7 @@ partial struct CannonFodderBoidSystem : ISystem {
     [BurstCompile]
     public void OnUpdate(ref SystemState state) {
 		CannonFodderBoidJob job = new CannonFodderBoidJob() {
+			DeltaTime = SystemAPI.Time.DeltaTime,
 			ElapsedTime = (float)SystemAPI.Time.ElapsedTime
 		};
 		job.ScheduleParallel();
@@ -63,6 +64,7 @@ partial struct CannonFodderBoidSystem : ISystem {
 }
 
 partial struct CannonFodderBoidJob : IJobEntity {
+	public float DeltaTime;
 	public float ElapsedTime;
 
 	public void Execute(
@@ -75,7 +77,7 @@ partial struct CannonFodderBoidJob : IJobEntity {
 	) {
 		if (ElapsedTime - generalBoid.lastWanderStepTime <= generalBoid.WanderMinimumDelay)
 			return;
-		generalBoid.lastWanderStepTime = (float)ElapsedTime;
+		generalBoid.lastWanderStepTime = ElapsedTime;
 		generalBoid.wanderPoint = Util.StepWanderPoint2D(
 			generalBoid.wanderPoint,
 			generalBoid.WanderLimitRadius,
@@ -94,6 +96,10 @@ partial struct CannonFodderBoidJob : IJobEntity {
 		physicsVelocity.ApplyLinearImpulse(physicsMass, steer * 10f);
 		physicsVelocity.Angular = float3.zero;
 
-		localTransform.Rotation = quaternion.identity;
+		localTransform.Rotation = math.slerp(
+			localTransform.Rotation,
+			quaternion.LookRotation(steer, math.up()),
+			DeltaTime * 10f
+		);
 	}
 }

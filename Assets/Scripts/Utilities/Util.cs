@@ -1,6 +1,7 @@
 using System;
 using Unity.Entities;
 using Unity.Mathematics;
+using Unity.Transforms;
 using UnityEngine;
 
 public static class Util {
@@ -58,12 +59,21 @@ public static class Util {
 
 	public static uint GenerateSeed(Transform transform) {
 		// uh um random weird code go
-		float val = 1 + (
-			transform.position.x +
-			transform.position.y * -transform.position.y +
-			transform.position.z * transform.position.z * transform.position.z
+		float3 pos = transform.position;
+		float val = (
+			pos.x +
+			pos.y * -pos.y +
+			pos.z * pos.z * pos.z
 		);
-		if (val <= 0) val = -val * 3 + 1;
+		if (val < 0) val = 1 + -val * 3;
+		if (val < 1) {
+			float3 rot = math.EulerXYZ(transform.rotation);
+			val = 1 + (
+				47 * (math.abs(rot.x) + math.abs(pos.y) + 1) +
+				11 * (math.abs(rot.y) + math.abs(pos.z) + 1) +
+				71 * (math.abs(rot.z) + math.abs(pos.z) + 1
+			));
+		}
 		return (uint)val;
 	}
 
