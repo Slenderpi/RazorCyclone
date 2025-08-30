@@ -1,6 +1,9 @@
+using Unity.Burst;
+using Unity.Collections;
 using Unity.Mathematics;
 using UnityEngine;
 
+[BurstCompile]
 public static class Util {
 
 	public readonly static Unity.Mathematics.Random rng = new Unity.Mathematics.Random(1);
@@ -77,7 +80,7 @@ public static class Util {
 
 
 	///////////////////////////////////////////////////// BOIDS
-	
+
 	public static float3 Seek(float3 pos, float3 targetPos, float3 velocity, float maxSteeringVelocity, float maxSteeringForce) {
 		// Find desired velocity via |targ - pos| * maxSteerVel
 		// Steer force is then desired - currVel, clamped by maxSteerForce
@@ -100,7 +103,7 @@ public static class Util {
 
 
 	///////////////////////////////////////////////////// DEBUGGING
-	
+
 	public static void D_DrawPoint(float3 position, Color c) {
 		D_DrawPoint(position, c, 9999999f);
 	}
@@ -149,6 +152,32 @@ public static class Util {
 		Debug.DrawRay(topLeftFront, botLeftFront - topLeftFront, c, t, depthTest); // front left
 		Debug.DrawRay(topRightBack, botRightBack - topRightBack, c, t, depthTest); // back right
 		Debug.DrawRay(topLeftBack, botLeftBack - topLeftBack, c, t, depthTest); // back left
+	}
+
+	[BurstCompile]
+	public static void D_VisualizePointCloud(in NativeArray<bool> pointCloud, in PointCloudConfig pcc) {
+		float3 pointOffset = new(pcc.DistBetweenPoints / 2f);
+		float3 pointBoxSize = new(pcc.PointRadius * 2f);
+		int YZ = pcc.numY * pcc.numZ;
+		float3 size = new float3(pcc.numX, pcc.numY, pcc.numZ) * pcc.DistBetweenPoints;
+		D_DrawBox(pcc.cornerPosition + size / 2f, size, Color.cyan);
+		for (int x = 0; x < pcc.numX; x++)
+			for (int y = 0; y < pcc.numY; y++)
+				for (int z = 0; z < pcc.numZ; z++) {
+					bool isVisible = pointCloud[x * YZ + y * pcc.numZ + z];
+					//if (isVisible)
+					//	continue;
+					float3 pos = pcc.cornerPosition + new float3(x, y, z) * pcc.DistBetweenPoints + pointOffset;
+					D_DrawPoint(
+						pos,
+						isVisible ? Color.green : Color.red,
+						9999999f,
+						0.15f,
+						true
+					);
+					if (!isVisible)
+						D_DrawBox(pos, pointBoxSize, Color.red);
+				}
 	}
 
 }

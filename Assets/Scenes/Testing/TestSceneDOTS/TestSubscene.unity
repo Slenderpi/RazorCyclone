@@ -1908,11 +1908,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 214c11eacab1693439a6ef0cddd5c094, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GENERATE_POINT_CLOUD: 1
-  CenterPosition: {x: 0, y: 10, z: 0}
-  FullLimitX: 100
-  FullLimitY: 30
-  FullLimitZ: 100
+  GENERATE_POINT_CLOUD: 0
+  CenterPosition:
+    x: 0
+    y: 15
+    z: 0
+  DimensionX: 100
+  DimensionY: 30
+  DimensionZ: 100
   DistanceBetweenPoints: 2.5
   PointRadius: 0.75
 --- !u!4 &1541557327

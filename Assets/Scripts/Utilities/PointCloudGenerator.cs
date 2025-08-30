@@ -16,16 +16,16 @@ public class PointCloudGenerator : MonoBehaviour {
 	[Tooltip("If enabled, PointCloudGenerator will run when you enter play mode.\nIf False, the generator will not run, but the PCC will still be added. Uncomment the define at the beginning of this file to fully disable the generator.")]
 	public bool GENERATE_POINT_CLOUD = false;
 
-	public Vector3 CenterPosition;
+	public float3 CenterPosition;
 	[Tooltip("Example: a value of 5 means 2.5 on either side of CenterPosition.x")]
 	[Min(1)]
-	public float FullLimitX = 1f;
+	public float DimensionX = 1f;
 	[Tooltip("Example: a value of 5 means 2.5 on either side of CenterPosition.y")]
 	[Min(1f)]
-	public float FullLimitY = 1f;
+	public float DimensionY = 1f;
 	[Tooltip("Example: a value of 5 means 2.5 on either side of CenterPosition.z")]
 	[Min(1f)]
-	public float FullLimitZ = 1f;
+	public float DimensionZ = 1f;
 	[Tooltip("Distance from one point to another in the generated point cloud grid.")]
 	[Min(0.1f)]
 	public float DistanceBetweenPoints = 1f;
@@ -46,19 +46,17 @@ public class PointCloudGenerator : MonoBehaviour {
 			//AddComponent(entity, new RandomGenerator() {
 			//	rng = new Unity.Mathematics.Random(Util.GenerateSeed(auth.transform))
 			//});
+			float3 dims = new(auth.DimensionX, auth.DimensionY, auth.DimensionZ);
 			AddComponent(entity, new PointCloudConfig() {
-				IsEnabled = auth.GENERATE_POINT_CLOUD,
+				IsEnabled = auth.GENERATE_POINT_CLOUD ? 1 : 0,
 
-				CenterPosition = auth.CenterPosition,
-				FullLimitX = auth.FullLimitX,
-				FullLimitY = auth.FullLimitY,
-				FullLimitZ = auth.FullLimitZ,
 				DistBetweenPoints = auth.DistanceBetweenPoints,
 				PointRadius = auth.PointRadius,
 
-				numX = (int)(auth.FullLimitX / auth.DistanceBetweenPoints),
-				numY = (int)(auth.FullLimitY / auth.DistanceBetweenPoints),
-				numZ = (int)(auth.FullLimitZ / auth.DistanceBetweenPoints),
+				numX = (int)(auth.DimensionX / auth.DistanceBetweenPoints),
+				numY = (int)(auth.DimensionY / auth.DistanceBetweenPoints),
+				numZ = (int)(auth.DimensionZ / auth.DistanceBetweenPoints),
+				cornerPosition = auth.CenterPosition - dims / 2f
 			});
 #endif
 		}
@@ -68,11 +66,7 @@ public class PointCloudGenerator : MonoBehaviour {
 
 public struct PointCloudConfig : IComponentData {
 	// Input
-	public bool IsEnabled;
-	public float3 CenterPosition;
-	public float FullLimitX;
-	public float FullLimitY;
-	public float FullLimitZ;
+	public int IsEnabled;
 	public float DistBetweenPoints; // Distance from one point to another
 	public float PointRadius; // Max distance a collider can be from this point to consider this point invalid
 
@@ -80,6 +74,7 @@ public struct PointCloudConfig : IComponentData {
 	public int numX;
 	public int numY;
 	public int numZ;
+	public float3 cornerPosition;
 }
 
 /*
@@ -136,7 +131,7 @@ partial struct PointCloudGeneratorSystem : ISystem {
 				$"WARN: Point Cloud Generator found more than one PointCloudConfig component (found {pccs.Length}). Only the first found will be used."
 			);
 		PointCloudConfig pcc = pccs[0];
-		if (!pcc.IsEnabled) {
+		if (pcc.IsEnabled == 0) {
 			Debug.Log("The point cloud generator is disabled. The generator's system will be disabled.");
 			state.Enabled = false;
 			return;
@@ -153,29 +148,40 @@ partial struct PointCloudGeneratorSystem : ISystem {
 			1u << 15 | // EnemyWeapon
 			1u << 16 // MainCamera
 		);
-		(NativeArray<bool> PointCloud, float3 startPoint) = GeneratePointCloud(pcc);
+
+		NativeArray<bool> PointCloud = GeneratePointCloud(pcc);
+		
 		string outFile = "GeneratedPointCloudCode.txt";
 		outFile = Path.Combine(Application.persistentDataPath, outFile);
-		string outStr = "";
-		outStr += $"CornerPosition = new({startPoint.x}f, {startPoint.y}f, {startPoint.z}f);\n" +
-			$"Nums = new({pcc.numX}, {pcc.numY}, {pcc.numZ});\n" +
-			$"DistBetweenPoints = {pcc.DistBetweenPoints}f;\n";
+
+		/* Save pcc info */
+		string outStr = @$"		pcc = new() {{
+			DistBetweenPoints = {pcc.DistBetweenPoints}f,
+			PointRadius = {pcc.PointRadius}f,
+
+			numX = {pcc.numX},
+			numY = {pcc.numY},
+			numZ = {pcc.numZ},
+			cornerPosition = new {pcc.cornerPosition}
+		}};";
+
+		/* Save generated point cloud */
 		string pcstr = "{ ";
 		for (int i = 0; i < PointCloud.Length - 1; i++)
 			pcstr += PointCloud[i] ? "true," : "false,";
 		pcstr += PointCloud[^1] ? "true }" : "false}";
-		outStr += $"\t\tNativeArray<bool> PointCloud = new(\n" +
-			$"\t\t\tnew bool[] {pcstr},\n" +
-			$"\t\t\tAllocator.Temp\n" +
-			$"\t\t);";
+		outStr += @$"
+		NativeArray<bool> PointCloud = new(
+			new bool[] {pcstr},
+			Allocator.Temp
+		);";
+
 		File.WriteAllText(outFile, outStr);
 		Debug.Log($"Generated code written to '{outFile}'");
-
-		VisualizePointCloud(PointCloud, pcc);
 	}
 
 	[BurstCompile]
-	(NativeArray<bool>, float3) GeneratePointCloud(PointCloudConfig pcc) {
+	NativeArray<bool> GeneratePointCloud(PointCloudConfig pcc) {
 		Debug.Log("Generating point cloud...");
 		NativeArray<bool> pointCloud = new(pcc.numX * pcc.numY * pcc.numZ, Allocator.Temp);
 
@@ -201,20 +207,19 @@ partial struct PointCloudGeneratorSystem : ISystem {
 		then,
 		i = x * Y * Z + y * Z + z
 		*/
-		float3 size = new(pcc.FullLimitX, pcc.FullLimitY, pcc.FullLimitZ);
+		//float3 size = new(pcc.FullLimitX, pcc.FullLimitY, pcc.FullLimitZ);
 		float3 pointOffset = new(pcc.DistBetweenPoints / 2f);
-		float3 startPoint = pcc.CenterPosition - size / 2f;
 		int YZ = pcc.numY * pcc.numZ;
 		for (int x = 0; x < pcc.numX; x++)
 			for (int y = 0; y < pcc.numY; y++)
 				for (int z = 0; z < pcc.numZ; z++) {
 					int i = x * YZ + y * pcc.numZ + z;
-					float3 point = startPoint + new float3(x, y, z) * pcc.DistBetweenPoints + pointOffset;
+					float3 point = pcc.cornerPosition + new float3(x, y, z) * pcc.DistBetweenPoints + pointOffset;
 					pointCloud[i] = IsPointValid(point, pcc.PointRadius);
 				}
 
 		Debug.Log("Point cloud generated!");
-		return (pointCloud, startPoint);
+		return pointCloud;
 	}
 
 	[BurstCompile]
@@ -231,31 +236,4 @@ partial struct PointCloudGeneratorSystem : ISystem {
 		return !pw.CalculateDistance(pdi, out DistanceHit hit);
 	}
 
-	[BurstCompile]
-	public void VisualizePointCloud(NativeArray<bool> pointCloud, PointCloudConfig config) {
-		float3 size = new(config.FullLimitX, config.FullLimitY, config.FullLimitZ);
-		Util.D_DrawBox(config.CenterPosition, size, Color.cyan);
-		float3 pointOffset = new(config.DistBetweenPoints / 2f);
-		float3 startPoint = config.CenterPosition - size / 2f;
-		float3 pointBoxSize = new(config.PointRadius * 2f);
-		int YZ = config.numY * config.numZ;
-		for (int x = 0; x < config.numX; x++)
-			for (int y = 0; y < config.numY; y++)
-				for (int z = 0; z < config.numZ; z++) {
-					bool isVisible = pointCloud[x * YZ + y * config.numZ + z];
-					//if (isVisible)
-					//	continue;
-					float3 pos = startPoint + new float3(x, y, z) * config.DistBetweenPoints + pointOffset;
-					Util.D_DrawPoint(
-						pos,
-						isVisible ? Color.green : Color.red,
-						9999999f,
-						0.15f,
-						true
-					);
-					if (!isVisible)
-						Util.D_DrawBox(pos, pointBoxSize, Color.red);
-				}
-		Debug.Log("Point cloud visualized.");
-	}
 }
