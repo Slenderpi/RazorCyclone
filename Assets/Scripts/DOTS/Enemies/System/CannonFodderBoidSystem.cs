@@ -21,45 +21,45 @@ partial struct CannonFodderBoidSystem : ISystem {
 		};
 		job.ScheduleParallel();
 
-  //      foreach (var (
-  //          physicsVelocity,
-  //          localTransform,
-		//	generalBoid,
-  //          cannonFodderBoid,
-		//	physicsMass,
-		//	randomGenerator
-  //      ) in SystemAPI.Query<
-  //          RefRW<PhysicsVelocity>,
-  //          RefRW<LocalTransform>,
-		//	RefRW<GeneralBoid>,
-  //          RefRO<CannonFodderBoid>,
-		//	RefRO<PhysicsMass>,
-		//	RefRO<RandomGenerator>
-  //      >()) {
-		//	if (SystemAPI.Time.ElapsedTime - generalBoid.ValueRO.lastWanderStepTime <= generalBoid.ValueRO.WanderMinimumDelay)
-		//		continue;
-		//	generalBoid.ValueRW.lastWanderStepTime = (float)SystemAPI.Time.ElapsedTime;
-		//	generalBoid.ValueRW.wanderPoint = BoidSteerer.StepWanderPoint2D(
-		//		generalBoid.ValueRO.wanderPoint,
-		//		generalBoid.ValueRO.WanderLimitRadius,
-		//		generalBoid.ValueRO.WanderChangeDist,
-		//		randomGenerator.ValueRO.rng
-		//	);
-		//	float3 steer = BoidSteerer.Wander(
-		//		localTransform.ValueRO.Position,
-		//		physicsVelocity.ValueRO.Linear,
-		//		generalBoid.ValueRO.wanderPoint,
-		//		generalBoid.ValueRO.WanderLimitDist,
-		//		generalBoid.ValueRO.MaxSteeringVelocity,
-		//		generalBoid.ValueRO.MaxSteeringForce
-		//	);
+		/*foreach (var (
+			physicsVelocity,
+			localTransform,
+			generalBoid,
+			cannonFodderBoid,
+			physicsMass,
+			randomGenerator
+		) in SystemAPI.Query<
+			RefRW<PhysicsVelocity>,
+			RefRW<LocalTransform>,
+			RefRW<GeneralBoid>,
+			RefRO<CannonFodderBoid>,
+			RefRO<PhysicsMass>,
+			RefRO<RandomGenerator>
+		>()) {
+			if (SystemAPI.Time.ElapsedTime - generalBoid.ValueRO.lastWanderStepTime <= generalBoid.ValueRO.WanderMinimumDelay)
+				continue;
+			generalBoid.ValueRW.lastWanderStepTime = (float)SystemAPI.Time.ElapsedTime;
+			generalBoid.ValueRW.wanderPoint = BoidSteerer.StepWanderPoint2D(
+				generalBoid.ValueRO.wanderPoint,
+				generalBoid.ValueRO.WanderLimitRadius,
+				generalBoid.ValueRO.WanderChangeDist,
+				randomGenerator.ValueRO.rng
+			);
+			float3 steer = BoidSteerer.Wander(
+				localTransform.ValueRO.Position,
+				physicsVelocity.ValueRO.Linear,
+				generalBoid.ValueRO.wanderPoint,
+				generalBoid.ValueRO.WanderLimitDist,
+				generalBoid.ValueRO.MaxSteeringVelocity,
+				generalBoid.ValueRO.MaxSteeringForce
+			);
 
-		//	physicsVelocity.ValueRW.ApplyLinearImpulse(physicsMass.ValueRO, steer * 10f);
-		//	physicsVelocity.ValueRW.Angular = float3.zero;
+			physicsVelocity.ValueRW.ApplyLinearImpulse(physicsMass.ValueRO, steer * 10f);
+			physicsVelocity.ValueRW.Angular = float3.zero;
 
-		//	localTransform.ValueRW.Rotation = quaternion.identity;
-		//}
-    }
+			localTransform.ValueRW.Rotation = quaternion.identity;
+		}*/
+	}
 
 }
 

@@ -1,7 +1,4 @@
-using System;
-using Unity.Entities;
 using Unity.Mathematics;
-using Unity.Transforms;
 using UnityEngine;
 
 public static class Util {
@@ -98,6 +95,60 @@ public static class Util {
 		wanderPoint.x += (rng.NextFloat(0, 2) * 2 - 1) * wanderChangeDist;
 		wanderPoint.z += (rng.NextFloat(0, 2) * 2 - 1) * wanderChangeDist;
 		return wanderPoint * wanderLimitRadius / math.length(wanderPoint);
+	}
+
+
+
+	///////////////////////////////////////////////////// DEBUGGING
+	
+	public static void D_DrawPoint(float3 position, Color c) {
+		D_DrawPoint(position, c, 9999999f);
+	}
+
+	public static void D_DrawPoint(float3 position, Color c, float t) {
+		D_DrawPoint(position, c, t, 0.15f, false);
+	}
+
+	public static void D_DrawPoint(float3 position, Color c, float t, float radius, bool depthTest) {
+		Debug.DrawRay(position + math.forward() * radius, 2 * radius * math.back(), c, t, depthTest);
+		Debug.DrawRay(position + math.right() * radius, 2 * radius * math.left(), c, t, depthTest);
+	}
+
+	public static void D_DrawBox(float3 centerPosition, float3 size, Color c) {
+		D_DrawBox(centerPosition, size, c, 9999999f);
+	}
+
+	public static void D_DrawBox(float3 centerPosition, float3 size, Color c, float t) {
+		D_DrawBox(centerPosition, size, c, 9999999f, true);
+	}
+
+	public static void D_DrawBox(float3 centerPosition, float3 size, Color c, float t, bool depthTest) {
+		float3 topRightFront = centerPosition + size / 2f;
+		float3 topLeftFront = topRightFront + math.left() * size.x;
+		float3 topRightBack = topRightFront + math.back() * size.z;
+		float3 topLeftBack = topLeftFront + math.back() * size.z;
+		float3 botRightFront = topRightFront + math.down() * size.y;
+		float3 botLeftFront = topLeftFront + math.down() * size.y;
+		float3 botRightBack = topRightBack + math.down() * size.y;
+		float3 botLeftBack = topLeftBack + math.down() * size.y;
+
+		/* Top rect */
+		Debug.DrawRay(topRightFront, topLeftFront - topRightFront, c, t, depthTest); // top front
+		Debug.DrawRay(topRightFront, topRightBack - topRightFront, c, t, depthTest); // top right
+		Debug.DrawRay(topLeftFront, topLeftBack - topLeftFront, c, t, depthTest); // top left
+		Debug.DrawRay(topRightBack, topLeftBack - topRightBack, c, t, depthTest); // top back
+
+		/* Bottom rect */
+		Debug.DrawRay(botRightFront, botLeftFront - botRightFront, c, t, depthTest); // bot front
+		Debug.DrawRay(botRightFront, botRightBack - botRightFront, c, t, depthTest); // bot right
+		Debug.DrawRay(botLeftFront, botLeftBack - botLeftFront, c, t, depthTest); // bot left
+		Debug.DrawRay(botRightBack, botLeftBack - botRightBack, c, t, depthTest); // bot back
+
+		/* 4 Poles */
+		Debug.DrawRay(topRightFront, botRightFront - topRightFront, c, t, depthTest); // front right
+		Debug.DrawRay(topLeftFront, botLeftFront - topLeftFront, c, t, depthTest); // front left
+		Debug.DrawRay(topRightBack, botRightBack - topRightBack, c, t, depthTest); // back right
+		Debug.DrawRay(topLeftBack, botLeftBack - topLeftBack, c, t, depthTest); // back left
 	}
 
 }
