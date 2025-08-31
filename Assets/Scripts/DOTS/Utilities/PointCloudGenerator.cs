@@ -42,7 +42,7 @@ public class PointCloudGenerator : MonoBehaviour {
 	class Baker : Baker<PointCloudGenerator> {
 		public override void Bake(PointCloudGenerator auth) {
 #if !FORCE_DISABLE_POINT_CLOUD_GENERATOR
-			Entity entity = GetEntity(TransformUsageFlags.Dynamic);
+			Entity entity = GetEntity(TransformUsageFlags.None);
 			//AddComponent(entity, new RandomGenerator() {
 			//	rng = new Unity.Mathematics.Random(Util.GenerateSeed(auth.transform))
 			//});

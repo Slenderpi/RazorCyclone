@@ -77,9 +77,28 @@ public static class Util {
 		return (uint)val;
 	}
 
+	/// <summary>
+	/// A value of 0 is cold, a value of 1 is hot.<br/>
+	/// The heatmap is in 5 colors. In cold to hot:<br/>
+	/// 0-------0.25-----0.5--------0.75------1<br/>
+	/// Blue -> Cyan -> Green -> Yellow -> Red
+	/// </summary>
+	/// <param name="perc"></param>
+	/// <returns></returns>
+	public static Color MakeHeatmapColor(float heat) {
+		if (heat < 0.25f)
+			return Color.Lerp(Color.blue, Color.cyan, heat / 0.25f);
+		else if (heat < 0.5f)
+			return Color.Lerp(Color.cyan, Color.green, (heat - 0.25f) / 0.25f);
+		else if (heat < 0.75f)
+			return Color.Lerp(Color.green, Color.yellow, (heat - 0.5f) / 0.25f);
+		else
+			return Color.Lerp(Color.yellow, Color.red, (heat - 0.75f) / 0.25f);
+	}
 
 
-	///////////////////////////////////////////////////// BOIDS
+
+	///////////////////////////////////////////////////// BOID STEERING
 
 	public static float3 Seek(float3 pos, float3 targetPos, float3 velocity, float maxSteeringVelocity, float maxSteeringForce) {
 		// Find desired velocity via |targ - pos| * maxSteerVel
@@ -104,28 +123,34 @@ public static class Util {
 
 	///////////////////////////////////////////////////// DEBUGGING
 
-	public static void D_DrawPoint(float3 position, Color c) {
+	[BurstCompile]
+	public static void D_DrawPoint(in float3 position, in Color c) {
 		D_DrawPoint(position, c, 9999999f);
 	}
 
-	public static void D_DrawPoint(float3 position, Color c, float t) {
+	[BurstCompile]
+	public static void D_DrawPoint(in float3 position, in Color c, float t) {
 		D_DrawPoint(position, c, t, 0.15f, false);
 	}
 
-	public static void D_DrawPoint(float3 position, Color c, float t, float radius, bool depthTest) {
+	[BurstCompile]
+	public static void D_DrawPoint(in float3 position, in Color c, float t, float radius, bool depthTest) {
 		Debug.DrawRay(position + math.forward() * radius, 2 * radius * math.back(), c, t, depthTest);
 		Debug.DrawRay(position + math.right() * radius, 2 * radius * math.left(), c, t, depthTest);
 	}
 
-	public static void D_DrawBox(float3 centerPosition, float3 size, Color c) {
+	[BurstCompile]
+	public static void D_DrawBox(in float3 centerPosition, in float3 size, in Color c) {
 		D_DrawBox(centerPosition, size, c, 9999999f);
 	}
 
-	public static void D_DrawBox(float3 centerPosition, float3 size, Color c, float t) {
-		D_DrawBox(centerPosition, size, c, 9999999f, true);
+	[BurstCompile]
+	public static void D_DrawBox(in float3 centerPosition, in float3 size, in Color c, float t) {
+		D_DrawBox(centerPosition, size, c, t, true);
 	}
 
-	public static void D_DrawBox(float3 centerPosition, float3 size, Color c, float t, bool depthTest) {
+	[BurstCompile]
+	public static void D_DrawBox(in float3 centerPosition, in float3 size, in Color c, float t, bool depthTest) {
 		float3 topRightFront = centerPosition + size / 2f;
 		float3 topLeftFront = topRightFront + math.left() * size.x;
 		float3 topRightBack = topRightFront + math.back() * size.z;
