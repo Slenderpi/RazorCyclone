@@ -9,12 +9,11 @@ public partial struct WavefrontPropagator : ISystem {
 
 	public double WavefrontUpdateDelay;
 
-	//public float3 GoalPosition;
-
 	PointCloudConfig pcc;
 	Entity BufferEntity;
 
 	double lastWavefrontUpdateTime;
+
 
 
 	public void OnCreate(ref SystemState state) {
@@ -34,7 +33,7 @@ public partial struct WavefrontPropagator : ISystem {
 		);
 		/** ------------------------------------- **/
 
-		WavefrontUpdateDelay = 1;
+		WavefrontUpdateDelay = 0.4f;
 		lastWavefrontUpdateTime = WavefrontUpdateDelay * -2;
 
 		if (!SystemAPI.HasSingleton<WavefrontPointCloudSingleton>()) {
@@ -51,15 +50,14 @@ public partial struct WavefrontPropagator : ISystem {
 
 		foreach (bool b in PointCloud) {
 			PointCloudValueBuffer.Add(new PointCloudValue(b));
-			WavefrontValueBuffer.Add(b ? new WavefrontValue(0, int3.zero) : new WavefrontValue(-1, new(0, 1, 0)));
+			WavefrontValueBuffer.Add(b ? new WavefrontValue(0) : new WavefrontValue(-1));
 		}
 
 		PointCloudValueBuffer = SystemAPI.GetBuffer<PointCloudValue>(BufferEntity);
 		WavefrontValueBuffer = SystemAPI.GetBuffer<WavefrontValue>(BufferEntity);
 
 		DoWavefront(ref state, new(0, 5, 0), PointCloudValueBuffer, ref WavefrontValueBuffer);
-		DetermineDescentDirections(ref WavefrontValueBuffer);
-
+		//VisualizeWavefrontHeatmap(WavefrontUpdateDelay, WavefrontValueBuffer);
 		//Util.D_VisualizePointCloud(PointCloud, pcc)
 	}
 
@@ -74,29 +72,32 @@ public partial struct WavefrontPropagator : ISystem {
 			NativeArray<WavefrontGoalTarget> wgtarr = eq.ToComponentDataArray<WavefrontGoalTarget>(Allocator.Temp);
 			if (wgtarr.Length == 0)
 				return;
+#if UNITY_EDITOR
 			bool shouldVisualizeHeatmap = wgtarr[0].VisualizeWavefrontHeatmap;
 			WavefrontUpdateDelay = wgtarr[0].WavefrontUpdateDelay;
+#endif
 			float3 goalPosition = eq.ToComponentDataArray<LocalTransform>(Allocator.Temp)[0].Position;
 
 			// Do wavefront propagation
 			DoWavefront(ref state, goalPosition, PointCloudValueBuffer, ref WavefrontValueBuffer);
-			DetermineDescentDirections(ref WavefrontValueBuffer);
+#if UNITY_EDITOR
 			if (shouldVisualizeHeatmap)
 				VisualizeWavefrontHeatmap((float)WavefrontUpdateDelay + 0.001f, WavefrontValueBuffer);
+#endif
 		}
 
 		// Update readers
 		//new UpdateWavefrontReadersJob() {
 		//	deltaTime = SystemAPI.Time.DeltaTime
 		//}.ScheduleParallel();
+		NativeArray<byte> diagonals = new(new byte[] { 5, 6, 9, 10, 17, 18, 20, 21, 22, 24, 25, 26, 33, 34, 36, 37, 38, 40, 41, 42 }, Allocator.Temp);
 		foreach (var (reader, transform) in SystemAPI.Query<RefRW<WavefrontReader>, RefRO<LocalTransform>>()) {
 			int3 currPoint = PositionToPoint(transform.ValueRO.Position);
 			if (IsPointInWall(currPoint, PointCloudValueBuffer))
 				continue;
 			float3 pos = transform.ValueRO.Position;
 			int ind = PositionToIndex(pos);
-			int3 ddir = WavefrontValueBuffer[ind].DescentDirection;
-			reader.ValueRW.DescentDirection = WavefrontValueBuffer[PointToIndex(currPoint)].DescentDirection;
+			reader.ValueRW.DescentDirection = GetDescentDirection(currPoint, diagonals, WavefrontValueBuffer);
 		}
 	}
 
@@ -116,9 +117,9 @@ public partial struct WavefrontPropagator : ISystem {
 		// Reset wavefront values
 		for (int i = 0; i < WavefrontValueBuffer.Length; i++)
 			if (WavefrontValueBuffer[i].DistCost != -1)
-				WavefrontValueBuffer[i] = new WavefrontValue(0, int3.zero);
+				WavefrontValueBuffer[i] = new WavefrontValue(0);
 
-		// Assume maximum queue size to be the 'surface area' of the point cloud
+		// Create simple queue for BFS
 		NativeQueue<int> indexQueue = new(Allocator.Temp);
 		// Update and enqueue neighbors of starting position
 		(NativeArray<int> neighbors, int numNeighbors) = UpdateAndGetNeighbors(startIndex, ref WavefrontValueBuffer);
@@ -127,9 +128,9 @@ public partial struct WavefrontPropagator : ISystem {
 		neighbors.Dispose();
 
 		// Set starting point as a wall value so that it gets ignored by the neighbor search
-		WavefrontValueBuffer[startIndex] = new WavefrontValue(-1, int3.zero);
+		WavefrontValueBuffer[startIndex] = new WavefrontValue(-1);
 
-		// Perform wavefront propagation on the rest of the points
+		// Perform wavefront propagation (BFS) on the rest of the points
 		while (!indexQueue.IsEmpty()) {
 			(neighbors, numNeighbors) = UpdateAndGetNeighbors(indexQueue.Dequeue(), ref WavefrontValueBuffer);
 			for (int i = 0; i < numNeighbors; i++)
@@ -139,9 +140,7 @@ public partial struct WavefrontPropagator : ISystem {
 		indexQueue.Dispose();
 
 		// Set starting point value as 0 again
-		WavefrontValueBuffer[startIndex] = new WavefrontValue(0, int3.zero);
-
-		//Debug.Log("Wavefront propagator finished.");
+		WavefrontValueBuffer[startIndex] = new WavefrontValue(0);
 	}
 
 	[BurstCompile]
@@ -149,8 +148,7 @@ public partial struct WavefrontPropagator : ISystem {
 		NativeArray<int> neighbors = new(6, Allocator.Temp); // There can be up to 6 neighbors
 		int currIndex = 0;
 		int3 point = IndexToPoint(index);
-		int distCostToAssign = WavefrontValueBuffer[index].DistCost + 1;
-		int currDistCost = WavefrontValueBuffer[index].DistCost;
+		int newCost = WavefrontValueBuffer[index].DistCost + 1;
 
 		/*
 		 *	All orthogonal tests are:
@@ -183,11 +181,11 @@ public partial struct WavefrontPropagator : ISystem {
 		 *		10 10 01 
 		 *		10 10 10
 		 * 
+		 * Corresponding integer values:
 		 * 5, 6, 9, 10, 17, 18, 20, 21, 22, 24, 25, 26, 33, 34, 36, 37, 38, 40, 41, 42
 		 */
 
-		byte valids = 0;
-		byte orthogonal = 1;
+		byte orthogonal = 1; // Bit shift left for each orthogonal
 
 		// Traverse orthogonal neighbors
 		for (int i = 0; i < 6; i++) {
@@ -196,40 +194,30 @@ public partial struct WavefrontPropagator : ISystem {
 				point.y + orthogonal switch { 4 => -1, 8 => 1, _ => 0 },
 				point.z + orthogonal switch { 1 => -1, 2 => 1, _ => 0 }
 			);
-			if (TryUpdateNeighbor(neighborPoint, currDistCost + 1, ref WavefrontValueBuffer)) {
-				valids |= orthogonal;
+			if (TryUpdateNeighbor(neighborPoint, newCost, ref WavefrontValueBuffer))
 				neighbors[currIndex++] = PointToIndex(neighborPoint);
-			}
 			orthogonal <<= 1;
 		}
 
 		return (neighbors, currIndex);
 	}
 
+	/// <summary>
+	/// Updates the given point with a new DistCost if the point is valid (in bounds, 
+	/// not a wall, and unvisited).
+	/// </summary>
+	/// <param name="neighborPoint">Point whose DistCost needs to be updated.</param>
+	/// <param name="newCost">The new DistCost to update the point to.</param>
+	/// <param name="WavefrontValueBuffer">Wavefront value buffer.</param>
+	/// <returns>False if neighborPoint was valid (in bounds, not a wall, and unvisited)</returns>
 	[BurstCompile]
 	public bool TryUpdateNeighbor(in int3 neighborPoint, int newCost, ref DynamicBuffer<WavefrontValue> WavefrontValueBuffer) {
 		int index = PointToIndex(neighborPoint);
 		if (IsPointInBounds(neighborPoint) && WavefrontValueBuffer[index].DistCost == 0) {
-			WavefrontValueBuffer[index] = new WavefrontValue(newCost, int3.zero);
+			WavefrontValueBuffer[index] = new WavefrontValue(newCost);
 			return true;
 		}
 		return false;
-	}
-
-	[BurstCompile]
-	public void DetermineDescentDirections(ref DynamicBuffer<WavefrontValue> WavefrontValueBuffer) {
-		NativeArray<byte> diagonals = new(new byte[] { 5, 6, 9, 10, 17, 18, 20, 21, 22, 24, 25, 26, 33, 34, 36, 37, 38, 40, 41, 42 }, Allocator.Temp);
-		for (int i = 0; i < WavefrontValueBuffer.Length; i++) {
-			int currCost = WavefrontValueBuffer[i].DistCost;
-			if (currCost <= 0) // Ignore walls and the goal point
-				continue;
-			int3 currPoint = IndexToPoint(i);
-			int3 leastPoint = GetNeighborPointWithLeastCost(currPoint, diagonals, ref WavefrontValueBuffer);
-			WavefrontValueBuffer[i] = new WavefrontValue(
-				currCost,
-				math.lengthsq(leastPoint) == 0 ? new(0, 1, 0) : leastPoint - currPoint
-			);
-		}
 	}
 
 	/// <summary>
@@ -244,7 +232,7 @@ public partial struct WavefrontPropagator : ISystem {
 	/// <returns>If currPoint is trapped in a wall, int3.zero is returned.<br/>
 	/// Otherwise, the neighboring point with the least DistCost is returned.</returns>
 	[BurstCompile]
-	public int3 GetNeighborPointWithLeastCost(in int3 currPoint, in NativeArray<byte> diagonals, ref DynamicBuffer<WavefrontValue> wavefrontValueBuffer) {
+	public int3 GetNeighborPointWithLeastCost(in int3 currPoint, in NativeArray<byte> diagonals, in DynamicBuffer<WavefrontValue> wavefrontValueBuffer) {
 		int leastCost = 99999999;
 		int3 leastPoint = int3.zero;
 		byte orthogonal = 1; // Bit shift left for each orthogonal
@@ -494,6 +482,25 @@ public partial struct WavefrontPropagator : ISystem {
 	}
 
 	[BurstCompile]
+	public int3 GetDescentDirection(in int3 point, in NativeArray<byte> diagonals, in DynamicBuffer<WavefrontValue> WavefrontValueBuffer) {
+		int3 leastPoint = GetNeighborPointWithLeastCost(point, diagonals, WavefrontValueBuffer);
+		return math.lengthsq(leastPoint) == 0 ? new(0, 1, 0) : leastPoint - point;
+	}
+
+	[BurstCompile]
+	public NativeArray<int3> DetermineDescentDirections(in DynamicBuffer<WavefrontValue> WavefrontValueBuffer) {
+		NativeArray<int3> DescentDirections = new(WavefrontValueBuffer.Length, Allocator.Temp);
+		NativeArray<byte> diagonals = new(new byte[] { 5, 6, 9, 10, 17, 18, 20, 21, 22, 24, 25, 26, 33, 34, 36, 37, 38, 40, 41, 42 }, Allocator.Temp);
+		for (int i = 0; i < WavefrontValueBuffer.Length; i++) {
+			if (WavefrontValueBuffer[i].DistCost <= 0) // Ignore walls and the goal point
+				continue;
+			int3 currPoint = IndexToPoint(i);
+			DescentDirections[i] = GetDescentDirection(currPoint, diagonals, WavefrontValueBuffer);
+		}
+		return DescentDirections;
+	}
+
+	[BurstCompile]
 	public void VisualizeWavefrontHeatmap(in DynamicBuffer<WavefrontValue> WavefrontValueBuffer) {
 		VisualizeWavefrontHeatmap(9999999f, WavefrontValueBuffer);
 	}
@@ -501,6 +508,8 @@ public partial struct WavefrontPropagator : ISystem {
 	[BurstCompile]
 	public void VisualizeWavefrontHeatmap(float drawDuration, in DynamicBuffer<WavefrontValue> WavefrontValueBuffer) {
 		Color WALL_COLOR = Color.black;
+
+		NativeArray<int3> DescentDirections = DetermineDescentDirections(WavefrontValueBuffer);
 
 		//Debug.Log("Visualizing current wavefront as a heatmap.");
 		float maxDistCost = -1;
@@ -512,14 +521,17 @@ public partial struct WavefrontPropagator : ISystem {
 			maxDistCost = 1;
 		}
 		//Debug.Log($"Maximum DistCost of this wavefront: {maxDistCost}.");
+
 		float3 pointBoxSize = new(pcc.PointRadius);
 		float3 airBoxSize = new(0.3f);
 		for (int x = 0; x < pcc.numX; x++)
 			for (int y = 0; y < pcc.numY; y++)
 				for (int z = 0; z < pcc.numZ; z++) {
-					WavefrontValue val = WavefrontValueBuffer[PointToIndex(x, y, z)];
+					int ind = PointToIndex(x, y, z);
+					int cost = WavefrontValueBuffer[ind].DistCost;
+					int3 descDir = DescentDirections[ind];
 					float3 position = PointToPosition(x, y, z);
-					if (val.DistCost == -1) {
+					if (cost == -1) {
 						// Visualize wall
 						//Util.D_DrawPoint(
 						//	position,
@@ -529,10 +541,10 @@ public partial struct WavefrontPropagator : ISystem {
 						//	true
 						//);
 						//Util.D_DrawBox(position, pointBoxSize, WALL_COLOR, drawDuration);
-						Util.D_DrawArrowCenteredAt(position, val.DescentDirection, 1, WALL_COLOR, drawDuration);
+						Util.D_DrawArrowCenteredAt(position, descDir, 1, WALL_COLOR, drawDuration);
 					} else {
 						// Draw a heatmap-colored point
-						Color c = Util.MakeHeatmapColor(val.DistCost / maxDistCost);
+						Color c = Util.MakeHeatmapColor(cost / maxDistCost);
 						//Util.D_DrawPoint(
 						//	position,
 						//	c,
@@ -541,7 +553,7 @@ public partial struct WavefrontPropagator : ISystem {
 						//	true
 						//);
 						//Util.D_DrawBox(position, airBoxSize, c, drawDuration);
-						Util.D_DrawArrowCenteredAt(position, val.DescentDirection, 1, c, drawDuration);
+						Util.D_DrawArrowCenteredAt(position, descDir, 1, c, drawDuration);
 					}
 				}
 	}
@@ -560,11 +572,9 @@ public struct PointCloudValue : IBufferElementData {
 
 public struct WavefrontValue : IBufferElementData {
 	public int DistCost;
-	public int3 DescentDirection;
 
-	public WavefrontValue(int distCost, int3 descentDirection) {
+	public WavefrontValue(int distCost) {
 		DistCost = distCost;
-		DescentDirection = descentDirection;
 	}
 }
 
