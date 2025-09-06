@@ -161,22 +161,55 @@ public static class Util {
 		float3 botLeftBack = topLeftBack + math.down() * size.y;
 
 		/* Top rect */
-		Debug.DrawRay(topRightFront, topLeftFront - topRightFront, c, t, depthTest); // top front
-		Debug.DrawRay(topRightFront, topRightBack - topRightFront, c, t, depthTest); // top right
-		Debug.DrawRay(topLeftFront, topLeftBack - topLeftFront, c, t, depthTest); // top left
-		Debug.DrawRay(topRightBack, topLeftBack - topRightBack, c, t, depthTest); // top back
+		Debug.DrawLine(topRightFront, topLeftFront, c, t, depthTest); // top front
+		Debug.DrawLine(topRightFront, topRightBack, c, t, depthTest); // top right
+		Debug.DrawLine(topLeftFront, topLeftBack, c, t, depthTest); // top left
+		Debug.DrawLine(topRightBack, topLeftBack, c, t, depthTest); // top back
 
 		/* Bottom rect */
-		Debug.DrawRay(botRightFront, botLeftFront - botRightFront, c, t, depthTest); // bot front
-		Debug.DrawRay(botRightFront, botRightBack - botRightFront, c, t, depthTest); // bot right
-		Debug.DrawRay(botLeftFront, botLeftBack - botLeftFront, c, t, depthTest); // bot left
-		Debug.DrawRay(botRightBack, botLeftBack - botRightBack, c, t, depthTest); // bot back
+		Debug.DrawLine(botRightFront, botLeftFront, c, t, depthTest); // bot front
+		Debug.DrawLine(botRightFront, botRightBack, c, t, depthTest); // bot right
+		Debug.DrawLine(botLeftFront, botLeftBack, c, t, depthTest); // bot left
+		Debug.DrawLine(botRightBack, botLeftBack, c, t, depthTest); // bot back
 
 		/* 4 Poles */
-		Debug.DrawRay(topRightFront, botRightFront - topRightFront, c, t, depthTest); // front right
-		Debug.DrawRay(topLeftFront, botLeftFront - topLeftFront, c, t, depthTest); // front left
-		Debug.DrawRay(topRightBack, botRightBack - topRightBack, c, t, depthTest); // back right
-		Debug.DrawRay(topLeftBack, botLeftBack - topLeftBack, c, t, depthTest); // back left
+		Debug.DrawLine(topRightFront, botRightFront, c, t, depthTest); // front right
+		Debug.DrawLine(topLeftFront, botLeftFront, c, t, depthTest); // front left
+		Debug.DrawLine(topRightBack, botRightBack, c, t, depthTest); // back right
+		Debug.DrawLine(topLeftBack, botLeftBack, c, t, depthTest); // back left
+	}
+
+	[BurstCompile]
+	public static void D_DrawArrowCenteredAt(in float3 position, in float3 direction, float length, in Color c) {
+		D_DrawArrowCenteredAt(position, direction, length, c, 9999999f);
+	}
+
+	[BurstCompile]
+	public static void D_DrawArrowCenteredAt(in float3 position, in float3 direction, float length, in Color c, float t) {
+		D_DrawArrowCenteredAt(position, direction, length, c, t, true);
+	}
+
+	[BurstCompile]
+	public static void D_DrawArrowCenteredAt(in float3 position, in float3 direction, float length, in Color c, float t, bool depthTest) {
+		if (math.lengthsq(direction) == 0) {
+			D_DrawPoint(position, Color.white, t, length, depthTest);
+			return;
+		}
+		float3 normalizedDir = math.normalize(direction);
+		float3 lengthenedDir = normalizedDir * length;
+
+		float3 crosser = math.up();
+		if (direction.x == 0 && direction.y != 0 && direction.z == 0)
+			crosser = math.forward();
+		float3 norm = math.normalize(math.cross(normalizedDir, crosser)) * length * 0.3f;
+		float3 tipPosition = position + lengthenedDir * 0.5f;
+		float3 alongPosition = position + lengthenedDir * 0.5f * 0.3f;
+		float3 rightTipPosition = alongPosition + norm;
+		float3 leftTipPosition = alongPosition - norm;
+
+		Debug.DrawLine(position - lengthenedDir * 0.5f, tipPosition, c, t, depthTest);
+		Debug.DrawLine(tipPosition, rightTipPosition, c, t, depthTest);
+		Debug.DrawLine(tipPosition, leftTipPosition, c, t, depthTest);
 	}
 
 	[BurstCompile]
