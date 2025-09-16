@@ -96,6 +96,40 @@ public static class Util {
 			return Color.Lerp(Color.yellow, Color.red, (heat - 0.75f) / 0.25f);
 	}
 
+	///// <summary>
+	///// Returns an up vector for use in:
+	///// <code>quaternion.LookRotation(lookVector, UpForLookRotation(lookVector)).</code>
+	///// </summary>
+	///// <param name="lookVector">The look vector you plan to use for quaternion.LookRotation().</param>
+	///// <returns>Normally, (0, 1, 0).<br/>
+	///// However, if lookVector is too close to that, returns (0, 0, 1) instead.</returns>
+	//[BurstCompile]
+	//public static float3 UpForLookRotation(in float3 lookVector) {
+	//	return lookVector.z != 0 || lookVector.x != 0 || math.abs(lookVector.y - 1f) > 0.0001f ?
+	//		math.up() :
+	//		math.back();
+	//}
+
+	/// <summary>
+	/// Returns an up vector for use in:
+	/// <code>quaternion.LookRotation(lookVector, UpForLookRotation(lookVector)).</code>
+	/// </summary>
+	/// <param name="lookVector">The look vector you plan to use for quaternion.LookRotation().</param>
+	/// <returns>Normally, math.up().<br/>
+	/// However, if lookVector is too close to that, returns math.back() instead.</returns>
+	[BurstCompile]
+	public static void UpForLookRotation(in float3 lookVector, out float3 upVector) {
+		if (lookVector.z != 0 || lookVector.x != 0 || math.abs(lookVector.y - 1f) > 0.0001f)
+			upVector = math.up();
+		else
+			upVector = math.back();
+	}
+
+	[BurstCompile]
+	public static bool IsNearZero(in float3 v) {
+		return math.lengthsq(v) <= 0.00001f;
+	}
+
 
 
 	///////////////////////////////////////////////////// BOID STEERING
