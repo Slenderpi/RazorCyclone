@@ -27,11 +27,12 @@ public class PlayerAuthoring : MonoBehaviour {
             AddComponent(entity, new PlayerInput() {
                 RotationInput = math.forward()
             });
+            AddComponent(entity, new PlayerExtraInput());
             AddComponent(entity, new PlayerControlsSettings(
                 auth.MouseSensitivity
             ));
             AddComponent(entity, new PlayerMovement());
-            PlayerResources resources = new PlayerResources {
+			PlayerResources resources = new() {
                 HealthRegenRate = auth.HealthRegenRate,
                 HealthRegenDelay = auth.HealthRegenDelay,
                 HealOnKillAmount = auth.HealOnKillAmount,
@@ -165,36 +166,25 @@ public struct PlayerInput : IComponentData {
     public bool FireCannon;
     public bool EnableVacuum;
 
-    public bool RefillFuel;
-    public bool SlowTime;
-    public bool AddRicochets;
-
     public float3 aimDirection;
-
-	public PlayerInput(
-        float2 lookInputDelta,
-        float3 rotationInput,
-        bool fireCannon,
-        bool enableVacuum,
-        bool refillFuel,
-        bool slowTime,
-        bool addRicochets) {
-        LookInputDelta = lookInputDelta;
-        RotationInput = rotationInput;
-        FireCannon = fireCannon;
-		EnableVacuum = enableVacuum;
-
-        RefillFuel = refillFuel;
-        SlowTime = slowTime;
-        AddRicochets = addRicochets;
-
-        aimDirection = default;
-	}
 
     public void ResetPresses() {
         FireCannon = false;
+    }
+}
 
+public struct PlayerExtraInput : IComponentData {
+	public bool SlowTime;
+	public bool RefillFuel;
+	public bool AddRicochets;
+    public bool HealHealth;
+    public bool TakeDamage;
+
+    public void ResetPresses() {
+        RefillFuel = false;
         AddRicochets = false;
+        HealHealth = false;
+        TakeDamage = false;
     }
 }
 
