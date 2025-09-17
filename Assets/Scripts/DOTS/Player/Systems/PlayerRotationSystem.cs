@@ -8,7 +8,8 @@ using UnityEngine;
 /// <summary>
 /// Handles camtrans and pivot rotation based on their respective look and rotation inputs.
 /// </summary>
-[UpdateInGroup(typeof(SimulationSystemGroup))]
+[UpdateInGroup(typeof(PlayerPostUpdateGroup))]
+[UpdateBefore(typeof(PlayerResourcesSystem))]
 partial struct PlayerRotationSystem : ISystem {
 
     [BurstCompile]

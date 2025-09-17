@@ -41,6 +41,7 @@ public struct WavefrontReaderTester : IComponentData, IEnableableComponent {
     }
 }
 
+[UpdateAfter(typeof(WavefrontPropagator))]
 public partial struct WavefrontReaderTesterSystem : ISystem {
     [BurstCompile]
     public void OnUpdate(ref SystemState state) {

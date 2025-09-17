@@ -137,12 +137,13 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2824239204909485295}
+  - component: {fileID: 546633662916620907}
   - component: {fileID: 6497303026256985611}
   - component: {fileID: 3796998830785265628}
   - component: {fileID: 4313129200134049585}
   m_Layer: 0
   m_Name: MainCamera
-  m_TagString: Untagged
+  m_TagString: MainCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -163,6 +164,24 @@ Transform:
   - {fileID: 1240367805072030802}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &546633662916620907
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6745771235715613225}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c42b165a372da20499be69d71b1e97d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  WeaponCamera: {fileID: 8186715017659616238}
+  f: 3
+  z: 1
+  r: 0.2
+  MaxAddFOV: 20
+  SpeedForMaxFOV: 40
 --- !u!20 &6497303026256985611
 Camera:
   m_ObjectHideFlags: 0

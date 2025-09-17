@@ -7,6 +7,8 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Physics;
+using Unity.Scenes;
+using Unity.Transforms;
 using UnityEngine;
 
 public class PointCloudGenerator : MonoBehaviour {
@@ -95,6 +97,10 @@ public struct PointCloudConfig : IComponentData {
  * 
  * Should have a separate script that can visualize open area spots
  */
+//[UpdateAfter(typeof(TransformSystemGroup))]
+//[UpdateBefore(typeof(WavefrontPropagator))]
+[UpdateInGroup(typeof(InitializationSystemGroup))]
+[UpdateAfter(typeof(SceneSystemGroup))]
 partial struct PointCloudGeneratorSystem : ISystem {
 
 	public PointCloudConfig Instance;

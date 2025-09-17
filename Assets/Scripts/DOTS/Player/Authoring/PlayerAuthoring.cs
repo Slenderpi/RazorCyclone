@@ -1,6 +1,7 @@
+using System.Runtime.CompilerServices;
+using Unity.Burst;
 using Unity.Entities;
 using Unity.Mathematics;
-using Unity.Physics;
 using UnityEngine;
 
 /// <summary>
@@ -9,6 +10,13 @@ using UnityEngine;
 public class PlayerAuthoring : MonoBehaviour {
 
     public float MouseSensitivity = 0.11f;
+
+    public float HuelFactor = 2f;
+    public float MinHuelRequired = 5f;
+
+    public float HealthRegenRate = 15f;
+    public float HealthRegenDelay = 1f;
+    public float HealOnKillAmount = 100f;
 
 
     
@@ -23,7 +31,15 @@ public class PlayerAuthoring : MonoBehaviour {
                 auth.MouseSensitivity
             ));
             AddComponent(entity, new PlayerMovement());
-            AddComponent(entity, new PlayerResources());
+            PlayerResources resources = new PlayerResources {
+                HealthRegenRate = auth.HealthRegenRate,
+                HealthRegenDelay = auth.HealthRegenDelay,
+                HealOnKillAmount = auth.HealOnKillAmount,
+                HuelFactor = auth.HuelFactor,
+                MinHuelRequired = auth.MinHuelRequired
+            };
+            resources.Init();
+			AddComponent(entity, resources);
 		}
     }
     
@@ -43,19 +59,103 @@ public struct PlayerMovement : IComponentData {
     public bool IsGrounded;
 }
 
+[BurstCompile]
 public struct PlayerResources : IComponentData {
     /// <summary>
-    /// Max fuel is 100
+    /// Max fuel is 100.
     /// </summary>
     public float Fuel;
     /// <summary>
-    /// Max health is 100
+    /// Max health is 100.
     /// </summary>
     public float Health;
+    /// <summary>
+    /// Amount per second to regenerate health.
+    /// </summary>
+    public float HealthRegenRate;
+    /// <summary>
+    /// This value determines the amount of time required since taking damage to begin health regen.
+    /// </summary>
+    public float HealthRegenDelay;
+    /// <summary>
+    /// Amount of health to heal on kill.
+    /// </summary>
+    public float HealOnKillAmount;
+    /// <summary>
+    /// Cost factor when spending huel (health as fuel).<br/>
+    /// Example: for a factor of 2, the use of 20 fuel ends up costing 20 * 2 = 40 health.
+    /// </summary>
+    public float HuelFactor;
+    /// <summary>
+    /// Minimum huel (health as fuel) required to have in order to spend fuel.
+    /// </summary>
+    public float MinHuelRequired;
 
-    public PlayerResources(float maxAmount = 100) {
-        Fuel = maxAmount;
-        Health = maxAmount;
+    float lastDamageTime;
+
+
+
+    [BurstCompile]
+    public void Init() {
+        Fuel = 100f;
+        Health = 100f;
+        lastDamageTime = -99999f;
+	}
+
+	[BurstCompile]
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public bool CanRegenHealth(float time) {
+		return Health < 100f && time - lastDamageTime >= HealthRegenDelay;
+	}
+
+    [BurstCompile]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void RegenerateHealth(float deltaTime) {
+        HealHealth(HealthRegenRate * deltaTime);
+    }
+
+	[BurstCompile]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public bool CanSpendFuel() {
+        return Fuel > 0 || Health > MinHuelRequired;
+    }
+
+    [BurstCompile]
+    public void SpendFuel(float amount, float time) {
+        if (Fuel > 0) {
+            Fuel -= amount;
+            // If there's overflow, spend it as huel
+            if (Fuel < 0) {
+                SpendHuel(-Fuel, time);
+                Fuel = 0;
+            }
+        } else
+            SpendHuel(amount, time);
+    }
+
+    [BurstCompile]
+    public void TakeDamage(float amount, float time) {
+        lastDamageTime = time;
+        Health -= amount;
+        if (Health < 0f)
+            Health = 0f;
+    }
+
+    [BurstCompile]
+    public void HealHealth(float amount) {
+        Health += amount;
+        if (Health > 100f)
+            Health = 100f;
+    }
+
+    [BurstCompile]
+    private void SpendHuel(float amount, float time) {
+		lastDamageTime = time;
+		Health -= amount * HuelFactor;
+        if (Health < 0) {
+            // Prevent accidental suicide
+            Health = 1f;
+        }
     }
 }
 

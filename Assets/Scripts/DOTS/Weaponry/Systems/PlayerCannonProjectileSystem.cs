@@ -1,6 +1,7 @@
 using Unity.Burst;
 using Unity.Entities;
 
+[UpdateInGroup(typeof(ProjectilePostUpdateGroup))]
 partial struct PlayerCannonProjectileSystem : ISystem {
 
     [BurstCompile]

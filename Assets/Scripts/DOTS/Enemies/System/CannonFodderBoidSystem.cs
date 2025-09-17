@@ -6,6 +6,7 @@ using Unity.Physics.Extensions;
 using Unity.Transforms;
 using UnityEngine;
 
+[UpdateInGroup(typeof(EnemyLogicPostUpdateGroup))]
 partial struct CannonFodderBoidSystem : ISystem {
 
 	[BurstCompile]

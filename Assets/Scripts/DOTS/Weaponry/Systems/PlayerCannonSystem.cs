@@ -5,8 +5,11 @@ using Unity.Mathematics;
 using Unity.Physics;
 using Unity.Physics.Extensions;
 using Unity.Transforms;
+using UnityEngine;
 
-[UpdateInGroup(typeof(SimulationSystemGroup))]
+[UpdateInGroup(typeof(PlayerPostUpdateGroup))]
+[UpdateAfter(typeof(PlayerRotationSystem))]
+[UpdateBefore(typeof(PlayerResourcesSystem))]
 partial struct PlayerCannonSystem : ISystem {
 
     [BurstCompile]
@@ -14,13 +17,19 @@ partial struct PlayerCannonSystem : ISystem {
         state.RequireForUpdate<Player>();
         state.RequireForUpdate<PlayerInput>();
         state.RequireForUpdate<PlayerCannon>();
+        state.RequireForUpdate<PlayerResources>();
 	}
 
     [BurstCompile]
     public void OnUpdate(ref SystemState state) {
-        EntityQuery eqPlayer = SystemAPI.QueryBuilder().WithAll<PlayerInput, PhysicsVelocity, PhysicsMass, LocalToWorld>().Build();
+        EntityQuery eqPlayer = SystemAPI
+            .QueryBuilder()
+            .WithAll<PlayerInput, PhysicsVelocity, PhysicsMass, LocalToWorld, PlayerResources>().Build();
         PlayerInput input = eqPlayer.ToComponentDataArray<PlayerInput>(Allocator.Temp)[0];
 		if (!input.FireCannon)
+            return;
+		PlayerResources resources = eqPlayer.ToComponentDataArray<PlayerResources>(Allocator.Temp)[0];
+        if (!resources.CanSpendFuel())
             return;
         PhysicsVelocity pv = eqPlayer.ToComponentDataArray<PhysicsVelocity>(Allocator.Temp)[0];
         PhysicsMass pm = eqPlayer.ToComponentDataArray<PhysicsMass>(Allocator.Temp)[0];
@@ -36,6 +45,10 @@ partial struct PlayerCannonSystem : ISystem {
         Entity cannonEntity = eqCannon.ToEntityArray(Allocator.Temp)[0];
 		EntityManager em = state.EntityManager;
         //EntityCommandBuffer ecb = SystemAPI.GetSingleton<BeginVariableRateSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(state.WorldUnmanaged);
+
+        // Spend fuel
+        resources.SpendFuel(cannon.FuelCost, (float)SystemAPI.Time.ElapsedTime);
+        SystemAPI.SetComponent(playerEntity, resources);
 
         // Apply velocity
         pm.InverseInertia = float3.zero;

@@ -1,5 +1,6 @@
 using Unity.Burst;
 using Unity.Entities;
+using Unity.Transforms;
 using UnityEngine;
 
 public class EntityTimer : MonoBehaviour {
@@ -29,6 +30,9 @@ public struct EntityLifetime : IComponentData {
 
 
 
+[UpdateInGroup(typeof(LateSimulationSystemGroup))]
+//[UpdateAfter(typeof(TransformSystemGroup))]
+//[UpdateBefore(typeof(LateSimulationSystemGroup))]
 public partial struct EntityTimerSystem : ISystem {
 
     [BurstCompile]
