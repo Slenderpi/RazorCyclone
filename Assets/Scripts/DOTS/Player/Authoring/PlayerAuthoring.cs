@@ -106,7 +106,7 @@ public struct PlayerResources : IComponentData {
 	[BurstCompile]
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public bool CanRegenHealth(float time) {
-		return Health < 100f && time - lastDamageTime >= HealthRegenDelay;
+		return Health < 100f && time - lastDamageTime >= HealthRegenDelay && Health > 0;
 	}
 
     [BurstCompile]
