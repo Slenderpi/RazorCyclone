@@ -47,7 +47,5 @@ public struct PlayerVacuum : IComponentData {
 
     [BurstCompile]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public readonly float GetFuelRate() {
-        return vacuumFuelRate;
-    }
+    public readonly float GetFuelRate() => vacuumFuelRate;
 }

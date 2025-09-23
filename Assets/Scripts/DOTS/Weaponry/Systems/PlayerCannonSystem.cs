@@ -6,6 +6,7 @@ using Unity.Physics;
 using Unity.Physics.Extensions;
 using Unity.Transforms;
 using UnityEngine;
+using static UnityEngine.EventSystems.EventTrigger;
 
 [UpdateInGroup(typeof(PlayerPostUpdateGroup))]
 [UpdateAfter(typeof(PlayerRotationSystem))]
@@ -24,7 +25,7 @@ partial struct PlayerCannonSystem : ISystem {
     public void OnUpdate(ref SystemState state) {
         EntityQuery eqPlayer = SystemAPI
             .QueryBuilder()
-            .WithAll<PlayerInput, PhysicsVelocity, PhysicsMass, LocalToWorld, PlayerResources>().Build();
+            .WithAll<PlayerInput, PhysicsVelocity, PhysicsMass, LocalToWorld, PlayerResources, PlayerSpinfo>().Build();
         PlayerInput input = eqPlayer.ToComponentDataArray<PlayerInput>(Allocator.Temp)[0];
 		if (!input.FireCannon)
             return;
@@ -33,7 +34,8 @@ partial struct PlayerCannonSystem : ISystem {
             return;
         PhysicsVelocity pv = eqPlayer.ToComponentDataArray<PhysicsVelocity>(Allocator.Temp)[0];
         PhysicsMass pm = eqPlayer.ToComponentDataArray<PhysicsMass>(Allocator.Temp)[0];
-        Entity playerEntity = eqPlayer.ToEntityArray(Allocator.Temp)[0];
+		PlayerSpinfo spinfo = eqPlayer.ToComponentDataArray<PlayerSpinfo>(Allocator.Temp)[0];
+		Entity playerEntity = eqPlayer.ToEntityArray(Allocator.Temp)[0];
         LocalToWorld camtransWorld = SystemAPI
             .QueryBuilder()
             .WithAll<PlayerCameraTransform, LocalToWorld>()
@@ -41,7 +43,6 @@ partial struct PlayerCannonSystem : ISystem {
             .ToComponentDataArray<LocalToWorld>(Allocator.Temp)[0];
         EntityQuery eqCannon = SystemAPI.QueryBuilder().WithAll<PlayerCannon, LocalToWorld>().Build();
         PlayerCannon cannon = eqCannon.ToComponentDataArray<PlayerCannon>(Allocator.Temp)[0];
-        LocalToWorld muzzleTrans = eqCannon.ToComponentDataArray<LocalToWorld>(Allocator.Temp)[0];
         Entity cannonEntity = eqCannon.ToEntityArray(Allocator.Temp)[0];
 		EntityManager em = state.EntityManager;
         //EntityCommandBuffer ecb = SystemAPI.GetSingleton<BeginVariableRateSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(state.WorldUnmanaged);
@@ -59,7 +60,13 @@ partial struct PlayerCannonSystem : ISystem {
 
         // Spawn and setup projectile
         Entity projectile = em.Instantiate(cannon.ProjectilePrefab);
-        em.AddComponentData(
+        PlayerCannonProjectile pcp = em.GetComponentData<PlayerCannonProjectile>(projectile);
+        //Debug.Log($"Spins: {spinfo.CurrentSpins} | Mult: {spinfo.CurrentRicochetMultiplier} | Total: {spinfo.CurrentSpins * spinfo.CurrentRicochetMultiplier}");
+        pcp.SetMaxRicochets(spinfo.CurrentSpins * spinfo.CurrentRicochetMultiplier);
+        spinfo.CurrentSpins = 0; // Consume spins
+        SystemAPI.SetComponent(playerEntity, spinfo);
+		em.AddComponentData(projectile, pcp);
+		em.AddComponentData(
             projectile,
             LocalTransform.FromPositionRotation(
                 camtransWorld.Position,
@@ -78,6 +85,6 @@ partial struct PlayerCannonSystem : ISystem {
             em.Instantiate(cannon.MuzzleFlashVFX),
             new Parent { Value = cannonEntity }
         );
-    }
+	}
 
 }

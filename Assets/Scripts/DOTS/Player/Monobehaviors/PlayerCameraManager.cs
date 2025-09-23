@@ -81,11 +81,11 @@ public class PlayerCameraManager : MonoBehaviour {
 
 	void updateFOV(float addFOV) {
 		c.fieldOfView = currFOV + addFOV;
-		//WeaponCamera.fieldOfView = c.fieldOfView;
+		WeaponCamera.fieldOfView = c.fieldOfView;
 	}
 
-	void OnDestroy() {
-		//GameManager.Instance.GCam = null;
-	}
+	//void OnDestroy() {
+	//	GameManager.Instance.GCam = null;
+	//}
 
 }

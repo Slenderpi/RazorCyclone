@@ -19,10 +19,11 @@ partial struct PlayerExtraInputsSystem : ISystem {
     public void OnUpdate(ref SystemState state) {
 		EntityQuery eqPlayer = SystemAPI
 			.QueryBuilder()
-			.WithAll<PlayerExtraInput, PlayerResources>().Build();
+			.WithAll<PlayerExtraInput, PlayerResources, PlayerSpinfo>().Build();
 		Entity playerEntity = eqPlayer.ToEntityArray(Allocator.Temp)[0];
 		PlayerExtraInput input = eqPlayer.ToComponentDataArray<PlayerExtraInput>(Allocator.Temp)[0];
 		PlayerResources resources = eqPlayer.ToComponentDataArray<PlayerResources>(Allocator.Temp)[0];
+		PlayerSpinfo spinfo = eqPlayer.ToComponentDataArray<PlayerSpinfo>(Allocator.Temp)[0];
 
 		// Handle input
 		if (input.SlowTime) {
@@ -32,7 +33,7 @@ partial struct PlayerExtraInputsSystem : ISystem {
 			resources.Fuel = 100f;
 		}
 		if (input.AddRicochets) {
-			// TODO
+			spinfo.CurrentSpins += 5;
 		}
 		if (input.HealHealth) {
 			resources.HealHealth(100f);
@@ -44,7 +45,9 @@ partial struct PlayerExtraInputsSystem : ISystem {
 		// Reset extra input
 		input.ResetPresses();
 
+		// Update values
 		SystemAPI.SetComponent(playerEntity, resources);
+		SystemAPI.SetComponent(playerEntity, spinfo);
 		SystemAPI.SetComponent(playerEntity, input);
 	}
 

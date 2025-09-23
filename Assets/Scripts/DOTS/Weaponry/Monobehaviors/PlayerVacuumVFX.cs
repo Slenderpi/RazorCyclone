@@ -18,6 +18,9 @@ public class PlayerVacuumVFX : MonoBehaviour {
 		vacuumVFX = Instantiate(vacuumVFXPrefab);
 		vacuumVFX.SetActive(false);
 		vacuumParticles = vacuumVFX.GetComponentsInChildren<ParticleSystem>();
+	}
+
+	private void Start() {
 		StopVacuumVFX();
 	}
 

@@ -9,14 +9,20 @@ using UnityEngine;
 /// </summary>
 public class PlayerAuthoring : MonoBehaviour {
 
+    [Header("Controls")]
     public float MouseSensitivity = 0.11f;
 
+    [Header("Fuel")]
     public float HuelFactor = 2f;
     public float MinHuelRequired = 5f;
 
+    [Header("Health")]
     public float HealthRegenRate = 15f;
     public float HealthRegenDelay = 1f;
     public float HealOnKillAmount = 100f;
+
+    [Header("Spinning")]
+    public float SpinHoldDuration = 1.5f;
 
 
     
@@ -31,7 +37,7 @@ public class PlayerAuthoring : MonoBehaviour {
             AddComponent(entity, new PlayerControlsSettings(
                 auth.MouseSensitivity
             ));
-            AddComponent(entity, new PlayerMovement());
+            //AddComponent(entity, new PlayerMovement());
 			PlayerResources resources = new() {
                 HealthRegenRate = auth.HealthRegenRate,
                 HealthRegenDelay = auth.HealthRegenDelay,
@@ -41,6 +47,10 @@ public class PlayerAuthoring : MonoBehaviour {
             };
             resources.Init();
 			AddComponent(entity, resources);
+			AddComponent(entity, new PlayerSpinfo {
+                SpinHoldDuration = auth.SpinHoldDuration,
+                CurrentRicochetMultiplier = 1 // TEMPORARY
+            });
 		}
     }
     
@@ -50,15 +60,15 @@ public class PlayerAuthoring : MonoBehaviour {
 
 public struct Player : IComponentData { }
 
-public struct PlayerMovement : IComponentData {
-    public float VacuumForce;
-    public float VacuumForceLowSpeed;
-	// The max speed for VacuumForceLowSpeed to be used at
-	public float VacuumForceNormalSpeed; // default 8
-    public float CannonForce;
+//public struct PlayerMovement : IComponentData {
+//    public float VacuumForce;
+//    public float VacuumForceLowSpeed;
+//	// The max speed for VacuumForceLowSpeed to be used at
+//	public float VacuumForceNormalSpeed; // default 8
+//    public float CannonForce;
 
-    public bool IsGrounded;
-}
+//    public bool IsGrounded;
+//}
 
 [BurstCompile]
 public struct PlayerResources : IComponentData {
@@ -157,6 +167,20 @@ public struct PlayerResources : IComponentData {
             // Prevent accidental suicide
             Health = 1f;
         }
+    }
+}
+
+public struct PlayerSpinfo : IComponentData {
+    public int CurrentSpins;
+	public float SpinHoldDuration;
+    public int CurrentRicochetMultiplier;
+
+    public float2 prevSpinDir;
+    public int spinProgress;
+
+    [BurstCompile]
+    public void ProcessAimDirection(float3 aimDir) {
+        // TODO: update spinProgress, maybe update CurrentSpins, maybe update CurrentRicochetMultiplier, etc.
     }
 }
 

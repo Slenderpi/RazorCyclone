@@ -119,7 +119,7 @@ public static class Util {
 	/// However, if lookVector is too close to that, returns math.back() instead.</returns>
 	[BurstCompile]
 	public static void UpForLookRotation(in float3 lookVector, out float3 upVector) {
-		if (lookVector.z != 0 || lookVector.x != 0 || math.abs(lookVector.y - 1f) > 0.0001f)
+		if (lookVector.z != 0 || lookVector.x != 0 || math.abs(lookVector.y - 1f) <= 1e-6f)
 			upVector = math.up();
 		else
 			upVector = math.back();
