@@ -170,6 +170,7 @@ public struct PlayerResources : IComponentData {
     }
 }
 
+[BurstCompile]
 public struct PlayerSpinfo : IComponentData {
     public int CurrentSpins;
 	public float SpinHoldDuration;

@@ -27,6 +27,7 @@ public class ProjectileAuthoring : MonoBehaviour {
 /// Component for all projectiles.<br/>
 /// Collision detection is done rearward from the projectile so that collisions look better.
 /// </summary>
+[BurstCompile]
 public struct Projectile : IComponentData {
     public CollisionFilter Filter;
     /// <summary>

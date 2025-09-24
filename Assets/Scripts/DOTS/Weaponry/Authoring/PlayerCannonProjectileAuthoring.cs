@@ -29,6 +29,7 @@ public class PlayerCannonProjectileAuthoring : MonoBehaviour {
 
 
 
+[BurstCompile]
 public struct PlayerCannonProjectile : IComponentData {
     public float MaxRicochet;
     public float RemainingRicochets;
