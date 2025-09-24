@@ -19,8 +19,9 @@ public class PlayerCannonProjectileAuthoring : MonoBehaviour {
 			proj.SetFilter(
 				(1u << LayerMask.NameToLayer("Default")) |
 				(1u << LayerMask.NameToLayer("EnemyHitbox"))
-			);
-			AddComponent(entity, proj);
+            );
+            AddComponent(entity, proj);
+            AddComponent<PlayerCannonProjectileTrailAttachment>(entity);
         }
     }
     
@@ -70,3 +71,5 @@ public struct PlayerCannonProjectile : IComponentData {
     //[Tooltip("VFX for ricochet.")]
     //public GameObject RicochetEffect;
 }
+
+public struct PlayerCannonProjectileTrailAttachment : IComponentData, IEnableableComponent { }

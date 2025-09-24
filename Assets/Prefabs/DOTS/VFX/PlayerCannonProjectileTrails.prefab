@@ -166,6 +166,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5005707659042782317}
+  - component: {fileID: 8643355731811941437}
   m_Layer: 0
   m_Name: PlayerCannonProjectileTrails
   m_TagString: Untagged
@@ -190,6 +191,20 @@ Transform:
   - {fileID: 6002827202213269210}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8643355731811941437
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6613970692422013889}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e7655ca346d5cf4d825dca3596e66cb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TrailNormal: {fileID: 4820848572270135394}
+  TrailRicochet: {fileID: 4832770370496748134}
 --- !u!1 &8989336606713481343
 GameObject:
   m_ObjectHideFlags: 0
