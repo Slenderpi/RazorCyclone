@@ -1,6 +1,7 @@
 using Unity.Burst;
 using Unity.Entities;
 using Unity.Mathematics;
+using Unity.Physics.Systems;
 using Unity.Transforms;
 using UnityEngine;
 
@@ -30,7 +31,7 @@ public class PlayerCannonProjectileTrailManager : MonoBehaviour {
 /// <summary>
 /// Detects PlayerCannonProjectiles that need a trail.
 /// </summary>
-[UpdateInGroup(typeof(FixedStepSimulationSystemGroup))]
+[UpdateInGroup(typeof(PhysicsSystemGroup))]
 [UpdateAfter(typeof(PlayerCannonProjectileSystem))]
 public partial class PlayerCannonProjectileTrailAttachmentSystem : SystemBase {
 

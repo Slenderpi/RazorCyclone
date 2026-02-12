@@ -9,7 +9,7 @@ using UnityEngine;
 /// <summary>
 /// Processes every CannonProjectile that hit something this frame.
 /// </summary>
-[UpdateInGroup(typeof(FixedStepSimulationSystemGroup))]
+[UpdateInGroup(typeof(PhysicsSystemGroup))]
 [UpdateAfter(typeof(ProjectileSystem))]
 partial struct PlayerCannonProjectileSystem : ISystem {
 
