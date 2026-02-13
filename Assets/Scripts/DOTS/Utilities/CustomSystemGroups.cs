@@ -21,3 +21,15 @@ public partial class ProjectilePostUpdateGroup : ComponentSystemGroup { }
 [UpdateAfter(typeof(ProjectilePostUpdateGroup))]
 [UpdateBefore(typeof(TransformSystemGroup))]
 public partial class EnemyGeneralPostUpdateGroup : ComponentSystemGroup { } // E.g. process enemy health
+
+
+// FIXED STEP
+
+/// <summary>
+/// Fixed step, before PhysicsSystemGroup.
+/// 
+/// For enemy movement code involving physics.
+/// </summary>
+[UpdateInGroup(typeof(FixedStepSimulationSystemGroup))]
+[UpdateBefore(typeof(PhysicsSystemGroup))]
+public partial class PrePhysicsGroup : ComponentSystemGroup { }

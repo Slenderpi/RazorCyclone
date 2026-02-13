@@ -57,6 +57,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7118412212879287041}
   - component: {fileID: 6536730442613988159}
+  - component: {fileID: 6924270188722137098}
   - component: {fileID: 8604846337837243168}
   - component: {fileID: 1142870214232243203}
   m_Layer: 6
@@ -102,6 +103,21 @@ MonoBehaviour:
   HealthRegenDelay: 1
   HealOnKillAmount: 100
   SpinHoldDuration: 1.5
+--- !u!114 &6924270188722137098
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1018020868418296100}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c5a01126c36a0204aa6ccc7aebbb8c51, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DISABLE_THIS_TARGET: 0
+  WavefrontUpdateDelay: 0.4
+  VisualizeWavefrontHeatmap: 0
 --- !u!54 &8604846337837243168
 Rigidbody:
   m_ObjectHideFlags: 0

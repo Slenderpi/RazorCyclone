@@ -8,6 +8,7 @@ using UnityEngine;
 
 public class WavefrontReaderAuthoring : MonoBehaviour {
 
+    public bool EnableTester = false;
     public float TesterMoveSpeed;
     public float TesterRotateSpeed;
     
@@ -17,7 +18,8 @@ public class WavefrontReaderAuthoring : MonoBehaviour {
         public override void Bake(WavefrontReaderAuthoring auth) {
             Entity entity = GetEntity(TransformUsageFlags.Dynamic);
             AddComponent(entity, new WavefrontReader());
-            AddComponent(entity, new WavefrontReaderTester(auth.TesterMoveSpeed, auth.TesterRotateSpeed));
+            if (auth.EnableTester)
+                AddComponent(entity, new WavefrontReaderTester(auth.TesterMoveSpeed, auth.TesterRotateSpeed));
         }
     }
     

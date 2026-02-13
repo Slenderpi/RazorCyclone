@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections;
 
-public class Enemy : EnemyBase
+public class SpawnerEnemy : EnemyBase
 {
     public GameObject hunterEnemy;
     public float spawnDelay = 3f;

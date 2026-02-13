@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5143590433627438753}
   - component: {fileID: 5484310257654027552}
+  - component: {fileID: 4806239723682207848}
   m_Layer: 0
   m_Name: StaticsContainer
   m_TagString: Untagged
@@ -46,3 +47,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ImpactVFX: {fileID: 3002241975603437205, guid: 80374ef7d0b981b4cbffdeb0ebf79bc9, type: 3}
   RicochetVFX: {fileID: 3002241975603437205, guid: e79ef6db1d7da914b931e1ea966ac2f6, type: 3}
+--- !u!114 &4806239723682207848
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4473496465658862889}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7e05b2c0e8d3ac24d823ddfcd765a366, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CannonFodderSO: {fileID: 11400000, guid: ecc3839188a02c94d9336aaa5c36ab9b, type: 2}
