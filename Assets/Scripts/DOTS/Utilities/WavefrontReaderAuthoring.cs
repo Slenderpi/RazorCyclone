@@ -28,6 +28,9 @@ public class WavefrontReaderAuthoring : MonoBehaviour {
 
 
 public struct WavefrontReader : IComponentData {
+    /// <summary>
+    /// Not normalized (it's an int3).
+    /// </summary>
     public int3 DescentDirection;
 }
 

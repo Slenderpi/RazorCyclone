@@ -2361,7 +2361,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5a01126c36a0204aa6ccc7aebbb8c51, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DISABLE_THIS_TARGET: 0
+  DISABLE_THIS_TARGET: 1
   WavefrontUpdateDelay: 0.4
   VisualizeWavefrontHeatmap: 0
 --- !u!4 &1682812786
