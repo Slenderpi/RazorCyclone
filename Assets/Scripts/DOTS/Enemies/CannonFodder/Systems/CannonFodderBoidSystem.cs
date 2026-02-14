@@ -37,42 +37,47 @@ partial struct CannonFodderBoidSystem : ISystem {
 			ref CannonFodderBoid cannonFodderBoid,
 			ref PhysicsVelocity physicsVelocity,
 			ref LocalTransform localTransform,
+			ref RandomGenerator randomGenerator,
 			in PhysicsMass physicsMass,
 			in WavefrontReader wavefrontReader,
-			in EnemyComponent enemyComp,
-			in RandomGenerator randomGenerator
+			in EnemyComponent enemyComp
 		) {
 			float3 vel = Util.IsNearZero(physicsVelocity.Linear) ? new float3(0f, 0f, 0.1f) : physicsVelocity.Linear;
 			float distCheck = math.lengthsq(PlayerPosition - localTransform.Position);
-			{
-				if (distCheck <= BoidStatics.FleeTriggerDistance * BoidStatics.FleeTriggerDistance)
-					Util.D_DrawArrowStartingAt(
-						localTransform.Position,
-						PlayerPosition - localTransform.Position,
-						BoidStatics.FleeTriggerDistance,
-						enemyComp.HasLineOfSight ? Color.red : Color.magenta,
-						DeltaTime,
-						false
-					);
-			}
+			//{ // VISUALIZER FOR FLEEING
+			//	if (distCheck <= BoidStatics.FleeTriggerDistance * BoidStatics.FleeTriggerDistance)
+			//		Util.D_DrawArrowStartingAt(
+			//			localTransform.Position,
+			//			PlayerPosition - localTransform.Position,
+			//			BoidStatics.FleeTriggerDistance,
+			//			enemyComp.HasLineOfSight ? Color.red : Color.magenta,
+			//			DeltaTime
+			//		);
+			//}
 			if (enemyComp.HasLineOfSight && distCheck <= BoidStatics.FleeTriggerDistance * BoidStatics.FleeTriggerDistance) {
 				cannonFodderBoid.steerForce = math.normalizesafe(
 					distCheck <= 4f * 4f ? // At short distances, just run from the player directly
 					localTransform.Position - PlayerPosition :
 					new float3(-wavefrontReader.DescentDirection.x, 0, -wavefrontReader.DescentDirection.z
 				)) * BoidStatics.FleeForce;
-			} else if (cannonFodderBoid.timeSinceLastWanderStep >= BoidStatics.WanderMinimumDelay) {
-				cannonFodderBoid.timeSinceLastWanderStep -= BoidStatics.WanderMinimumDelay;
-				cannonFodderBoid.wanderPoint = BoidUtil.StepWanderPoint2D(
-					cannonFodderBoid.wanderPoint,
-					BoidStatics.WanderLimitRadius,
-					BoidStatics.WanderChangeDist,
-					randomGenerator.rng
-				);
-				cannonFodderBoid.steerForce = BoidUtil.Wander(
+			} else {
+				if (cannonFodderBoid.timeSinceLastWanderStep >= BoidStatics.WanderMinimumDelay) {
+					cannonFodderBoid.timeSinceLastWanderStep = 0;
+					//float3 newWanderDelta = new(randomGenerator.rng.NextFloat(-1f, 1f), 0f, randomGenerator.rng.NextFloat(-1f, 1f));
+					//newWanderDelta = (Util.IsNearZero(newWanderDelta) ? math.forward() : math.normalize(newWanderDelta)) * BoidStatics.WanderChangeDist;
+					//cannonFodderBoid.lastWanderDelta = newWanderDelta;
+					//cannonFodderBoid.wanderVector = math.normalizesafe(cannonFodderBoid.wanderVector + newWanderDelta) * BoidStatics.WanderLimitRadius;
+					cannonFodderBoid.wanderVector = BoidUtil.StepWanderVector2D(
+						cannonFodderBoid.wanderVector,
+						BoidStatics.WanderChangeDist,
+						BoidStatics.WanderLimitRadius,
+						ref randomGenerator.rng
+					);
+				}
+				cannonFodderBoid.steerForce = BoidUtil.SeekWander(
 					localTransform.Position,
 					vel,
-					cannonFodderBoid.wanderPoint,
+					cannonFodderBoid.wanderVector,
 					BoidStatics.WanderLimitDist,
 					BoidStatics.MaxSteeringVelocity,
 					BoidStatics.MaxSteeringForce
@@ -86,10 +91,18 @@ partial struct CannonFodderBoidSystem : ISystem {
 				quaternion.LookRotationSafe(cannonFodderBoid.steerForce, math.up()),
 				DeltaTime
 			);
-			{
-				Util.D_DrawArrowStartingAt(localTransform.Position, cannonFodderBoid.steerForce, math.length(cannonFodderBoid.steerForce) / 5f, Color.cyan, DeltaTime, false);
-				Util.D_DrawArrowStartingAt(localTransform.Position, vel, math.length(vel) / 5f, Color.green, DeltaTime, false);
-			}
+			//{ // VISUALIZER FOR BOID VECTORS
+			//	// Steering force visual
+			//	Util.D_DrawArrowStartingAt(localTransform.Position, cannonFodderBoid.steerForce, math.length(cannonFodderBoid.steerForce) / 5f, Color.cyan, DeltaTime);
+			//	float3 wanderVelEnd = localTransform.Position + math.normalizesafe(vel) * BoidStatics.WanderLimitDist;
+			//	float3 wanderVectorEnd = wanderVelEnd + cannonFodderBoid.wanderVector;
+			//	//float3 wanderDeltaEnd = wanderVectorEnd + cannonFodderBoid.lastWanderDelta;
+			//	// Visual for velocity limited by WanderLimitDist
+			//	Util.D_DrawArrowFromTo(localTransform.Position, wanderVelEnd, Color.yellow, DeltaTime);
+			//	// Visual for wanderVector
+			//	Util.D_DrawArrowFromTo(wanderVelEnd, wanderVectorEnd, new Color(1f, 165f / 255f, 0f), DeltaTime);
+			//	//Util.D_DrawArrowFromTo(wanderVectorEnd, wanderDeltaEnd, Color.red, DeltaTime);
+			//}
 		}
 	}
 

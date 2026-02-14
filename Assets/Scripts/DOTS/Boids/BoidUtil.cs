@@ -1,5 +1,7 @@
+using System.Runtime.CompilerServices;
 using Unity.Burst;
 using Unity.Mathematics;
+using Unity.Transforms;
 using UnityEngine;
 
 [BurstCompile]
@@ -20,15 +22,42 @@ public static class BoidUtil {
 		return steeringForce;
 	}
 
-	public static float3 Wander(float3 pos, float3 velocity, float3 wanderPoint, float wanderLimitDist, float maxSteeringVelocity, float maxWanderForce) {
-		return Seek(pos, pos + wanderLimitDist * math.normalize(velocity) + wanderPoint, velocity, maxSteeringVelocity, maxWanderForce);
+	/// <summary>
+	/// Computes a new wanderVector.
+	/// </summary>
+	/// <param name="prevWander">The wanderVector to iterate on.</param>
+	/// <param name="wanderChangeDist">The length of wanderDelta that will be applied to "turn" the wanderVector.</param>
+	/// <param name="rng">Random number generator.</param>
+	/// <param name="wanderLimitDist">The length of wanderVector.</param>
+	/// <returns>The stepped wanderVector, randomly iterated from prevWander.</returns>
+	public static float3 StepWanderVector2D(in float3 prevWander, float wanderChangeDist, float wanderLimitDist, ref Unity.Mathematics.Random rng) {
+		float3 newWanderDelta = new(rng.NextFloat(-1f, 1f), 0f, rng.NextFloat(-1f, 1f));
+		newWanderDelta = (Util.IsNearZero(newWanderDelta) ? math.forward() : math.normalize(newWanderDelta)) * wanderChangeDist;
+		return math.normalizesafe(prevWander + newWanderDelta) * wanderLimitDist;
 	}
 
-	public static float3 StepWanderPoint2D(float3 wanderPoint, float wanderLimitRadius, float wanderChangeDist, Unity.Mathematics.Random rng) {
-		wanderPoint.x += (rng.NextFloat(0, 2) * 2 - 1) * wanderChangeDist;
-		wanderPoint.z += (rng.NextFloat(0, 2) * 2 - 1) * wanderChangeDist;
-		return wanderPoint * wanderLimitRadius / math.length(wanderPoint);
+	/// <summary>
+	/// Convenient method to apply Seek in the context of Wandering.
+	/// </summary>
+	/// <param name="position">Current position of the Boid.</param>
+	/// <param name="velocity">Current velocity of the Boid.</param>
+	/// <param name="wanderVector">The wanderVector of the Boid.</param>
+	/// <param name="wanderLimitDist">Distance along velocity, used as the start position of wanderVector.</param>
+	/// <param name="maxSteerVel">Max steering velocity.</param>
+	/// <param name="maxSteerForce">Max Steering force.</param>
+	/// <returns>The Seek steer force to use for the given Wander parameters.</returns>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public static float3 SeekWander(in float3 position, in float3 velocity, in float3 wanderVector, float wanderLimitDist, float maxSteerVel, float maxSteerForce) {
+		return Seek(
+			position,
+			position + math.normalizesafe(velocity) * wanderLimitDist + wanderVector,
+			velocity,
+			maxSteerVel,
+			maxSteerForce
+		);
 	}
+
+
 
 	/// <summary>
 	/// For initializing boid components.
@@ -37,9 +66,9 @@ public static class BoidUtil {
 
 		public static CannonFodderBoid CannonFodder() {
 			return new() {
-				wanderPoint = float3.zero,
-				timeSinceLastWanderStep = 0f,
-				steerForce = float3.zero
+				steerForce = float3.zero,
+				wanderVector = math.forward(),
+				timeSinceLastWanderStep = 0f
 			};
 		}
 

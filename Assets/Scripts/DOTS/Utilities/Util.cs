@@ -208,7 +208,7 @@ public static class Util {
 
 	[BurstCompile]
 	public static void D_DrawArrowCenteredAt(in float3 position, in float3 direction, float length, in Color c, float t) {
-		D_DrawArrowCenteredAt(position, direction, length, c, t, true);
+		D_DrawArrowCenteredAt(position, direction, length, c, t, false);
 	}
 
 	[BurstCompile]
@@ -241,7 +241,7 @@ public static class Util {
 
 	[BurstCompile]
 	public static void D_DrawArrowStartingAt(in float3 position, in float3 direction, float length, in Color c, float t) {
-		D_DrawArrowStartingAt(position, direction, length, c, t, true);
+		D_DrawArrowStartingAt(position, direction, length, c, t, false);
 	}
 
 	[BurstCompile]
@@ -263,6 +263,22 @@ public static class Util {
 		Debug.DrawLine(position, tipPosition, c, t, depthTest);
 		Debug.DrawLine(tipPosition, rightTipPosition, c, t, depthTest);
 		Debug.DrawLine(tipPosition, leftTipPosition, c, t, depthTest);
+	}
+
+	[BurstCompile]
+	public static void D_DrawArrowFromTo(in float3 arrowStartPosition, in float3 arrowHeadPosition, in Color c) {
+		D_DrawArrowFromTo(arrowStartPosition, arrowHeadPosition, c, 9999999f, false);
+	}
+
+	[BurstCompile]
+	public static void D_DrawArrowFromTo(in float3 arrowStartPosition, in float3 arrowHeadPosition, in Color c, float t) {
+		D_DrawArrowFromTo(arrowStartPosition, arrowHeadPosition, c, t, false);
+	}
+
+	[BurstCompile]
+	public static void D_DrawArrowFromTo(in float3 arrowStartPosition, in float3 arrowHeadPosition, in Color c, float t, bool depthTest) {
+		float3 v = arrowHeadPosition - arrowStartPosition;
+		D_DrawArrowStartingAt(arrowStartPosition, v, math.length(v), c, t, depthTest);
 	}
 
 	[BurstCompile]

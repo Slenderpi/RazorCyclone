@@ -14,11 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MaxSteeringVelocity: 10
   MaxSteeringForce: 10
-  WanderLimitRadius: 0.7
+  WanderLimitRadius: 1
   WanderLimitDist: 1
-  WanderChangeDist: 0.12
-  MaxWanderForce: 10
-  WanderMinimumDelay: 0.1
+  WanderChangeDist: 0.2
+  MaxWanderForce: 9
+  WanderMinimumDelay: 0
   AvoidanceTestType: 3
   AvoidanceMaxLookDist: 3
   AvoidanceWhiskerAngle: 30

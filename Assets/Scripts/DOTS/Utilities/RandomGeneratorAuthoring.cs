@@ -11,7 +11,7 @@ public class RandomGeneratorAuthoring : MonoBehaviour {
         public override void Bake(RandomGeneratorAuthoring authoring) {
             Entity entity = GetEntity(TransformUsageFlags.Dynamic);
             AddComponent(entity, new RandomGenerator() {
-                rng = new Unity.Mathematics.Random(Util.GenerateSeed(authoring.transform))
+                rng = new Unity.Mathematics.Random((uint)System.DateTime.Now.Ticks)
             });
         }
     }
