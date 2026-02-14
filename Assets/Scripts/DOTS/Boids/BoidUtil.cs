@@ -79,8 +79,17 @@ public static class BoidUtil {
 	/// </summary>
 	public static class StaticsBuilder {
 
-		public static CannonFodderBoidStatics CannonFodder(SO_CannonFodder so) {
-			return new CannonFodderBoidStatics() {
+		public static CannonFodderStatics CannonFodder(SO_CannonFodder so) {
+			return new() {
+				BoidProperties = GeneralBoid(so),
+				FleeTriggerDistance = so.FleeTriggerDistance,
+				FleeForce = so.FleeForce
+			};
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static GeneralBoidProperties GeneralBoid(GeneralBoidSO so) {
+			return new() {
 				MaxSteeringVelocity = so.MaxSteeringVelocity,
 				MaxSteeringForce = so.MaxSteeringForce,
 				WanderLimitRadius = so.WanderLimitRadius,
@@ -94,10 +103,7 @@ public static class BoidUtil {
 				AvoidanceMinIntensity = so.AvoidanceMinIntensity,
 				AvoidanceMaxIntensity = so.AvoidanceMaxIntensity,
 				AvoidanceMaxSteeringForce = so.MaxSteeringForce,
-				AvoidInvisBoidWalls = so.AvoidInvisBoidWalls,
-
-				FleeTriggerDistance = so.FleeTriggerDistance,
-				FleeForce = so.FleeForce
+				AvoidInvisBoidWalls = so.AvoidInvisBoidWalls
 			};
 		}
 
