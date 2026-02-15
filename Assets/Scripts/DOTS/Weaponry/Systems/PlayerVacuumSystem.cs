@@ -3,6 +3,8 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Physics;
+using Unity.Physics.Extensions;
+using Unity.Transforms;
 using UnityEngine;
 
 [UpdateInGroup(typeof(PlayerPostUpdateGroup))]
@@ -65,13 +67,52 @@ partial struct PlayerVacuumSystem : ISystem {
 		SystemAPI.SetComponent(playerEntity, new PhysicsVelocity {
 			Linear = vacuum.VacuumPullForce * input.aimDirection + pv.Linear
 		});
+
+		// Suck/kill enemies
+		new VacuumHitDetectionJob() {
+			Vacuum = vacuum,
+			VacLocation = SystemAPI.GetComponent<LocalToWorld>(vacuumEntity).Position
+		}.ScheduleParallel();
 	}
 
-	[BurstCompile]
 #pragma warning disable IDE0251 // Make member 'readonly'
+	[BurstCompile]
 	void DisableVacuum(in Entity vacuumEntity, PlayerVacuum vacuum, ref SystemState state) {
 		vacuum.VacuumEnabled = false;
 		SystemAPI.SetComponent(vacuumEntity, vacuum);
+	}
+
+	[BurstCompile]
+	partial struct VacuumHitDetectionJob : IJobEntity {
+		public PlayerVacuum Vacuum;
+		public float3 VacLocation;
+
+		[BurstCompile]
+		public void Execute(
+			ref VacuumTarget target,
+			ref PhysicsVelocity pv,
+			in PhysicsMass pm,
+			in LocalTransform trans
+		) {
+			float3 toPlayer = VacLocation - trans.Position;
+			float distsq = math.lengthsq(toPlayer);
+			if (target.CanGetKilled && distsq <= Util.pow2(Vacuum.VacuumKillRadius + target.VacuumHitboxRadius)) {
+				target.SetEventKilled();
+				return;
+			}
+			// If VacuumKillRadius < VacuumSuckRadius (which should always be the case) then distsq will never be 0 here
+			if (target.CanGetSucked && distsq <= Util.pow2(Vacuum.VacuumSuckRadius + target.VacuumHitboxRadius)) {
+				target.SetEventSucked();
+				ApplySuckForce(ref pv, pm, Vacuum, toPlayer, math.sqrt(distsq));
+			}
+
+		}
+
+		[BurstCompile]
+		void ApplySuckForce(ref PhysicsVelocity pv, in PhysicsMass pm, in PlayerVacuum vac, in float3 toPlayer, float dist) {
+			float3 impulse = toPlayer / dist * vac.VacuumSuckForce;
+			pv.ApplyLinearImpulse(pm, impulse);
+		}
 	}
 #pragma warning restore IDE0251 // Make member 'readonly'
 

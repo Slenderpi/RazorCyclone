@@ -13,29 +13,34 @@ using UnityEngine;
 [UpdateAfter(typeof(ProjectileSystem))]
 partial struct PlayerCannonProjectileSystem : ISystem {
 
+    private ComponentLookup<CannonTarget> CannonTargetLookup;
+
     [BurstCompile]
     public void OnCreate(ref SystemState state) {
         state.RequireForUpdate<PlayerCannonProjectile>();
         state.RequireForUpdate<PlayerCannonProjectileStatics>();
+        CannonTargetLookup = state.GetComponentLookup<CannonTarget>(false);
     }
 
     [BurstCompile]
     public void OnUpdate(ref SystemState state) {
+        CannonTargetLookup.Update(ref state);
         new CannonProjectileJob() {
             ecb = SystemAPI
                 .GetSingleton<BeginFixedStepSimulationEntityCommandBufferSystem.Singleton>()
                 .CreateCommandBuffer(state.WorldUnmanaged),
-            pcps = SystemAPI.GetSingleton<PlayerCannonProjectileStatics>()
-        }.Schedule();
+            pcps = SystemAPI.GetSingleton<PlayerCannonProjectileStatics>(),
+            CannonTargetLookup = CannonTargetLookup
+        }.Schedule(); // Not necessary to be parallel. Very unlikely for there to be enough cannon projectiles to warrant that
     }
 
     [BurstCompile]
     partial struct CannonProjectileJob : IJobEntity {
         public EntityCommandBuffer ecb;
         public PlayerCannonProjectileStatics pcps;
-        //public EntityManager em;
+		public ComponentLookup<CannonTarget> CannonTargetLookup;
 
-        [BurstCompile]
+		[BurstCompile]
         public void Execute(
             ref Projectile proj,
             ref PlayerCannonProjectile cannonProjectile,
@@ -76,13 +81,12 @@ partial struct PlayerCannonProjectileSystem : ISystem {
 				)
 			);
 
-            // If hit an enemy, damage them
-            /*
-			if (em.HasComponent<Enemy>(proj.Hit.Entity)) {
-                Enemy hitEnemy = em.GetComponentData<Enemy>(proj.Hit.Entity);
-                // TODO
+            // If hit a cannon target, set its hit event and try to deal damage
+            if (CannonTargetLookup.HasComponent(proj.Hit.Entity)) {
+                CannonTarget target = CannonTargetLookup[proj.Hit.Entity];
+                target.SetEventHit();
+                CannonTargetLookup[proj.Hit.Entity] = target;
             }
-            */
         }
     }
 

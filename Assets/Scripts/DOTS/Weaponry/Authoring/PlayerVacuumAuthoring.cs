@@ -10,7 +10,9 @@ public class PlayerVacuumAuthoring : MonoBehaviour {
     public float VacuumPullForce = 26f;
     public float VacuumSuckForce = 8500f;
     public float VacuumFuelTime = 10f;
-    
+
+    public float VacuumSuckRadius = 7f;
+    public float VacuumKillRadius = 0.6f;
     
     
     class Baker : Baker<PlayerVacuumAuthoring> {
@@ -19,7 +21,10 @@ public class PlayerVacuumAuthoring : MonoBehaviour {
             PlayerVacuum vacuum = new() {
                 VacuumPullForce = auth.VacuumPullForce,
                 VacuumSuckForce = auth.VacuumSuckForce,
-                VacuumFuelTime = auth.VacuumFuelTime
+                VacuumFuelTime = auth.VacuumFuelTime,
+
+                VacuumSuckRadius = auth.VacuumSuckRadius,
+                VacuumKillRadius = auth.VacuumKillRadius
             };
             vacuum.Init();
 			AddComponent(entity, vacuum);
@@ -35,6 +40,8 @@ public struct PlayerVacuum : IComponentData {
     public float VacuumPullForce;
     public float VacuumSuckForce;
     public float VacuumFuelTime;
+    public float VacuumSuckRadius;
+    public float VacuumKillRadius;
 
     public bool VacuumEnabled;
 

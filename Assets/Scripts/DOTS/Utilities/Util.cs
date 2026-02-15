@@ -58,6 +58,16 @@ public static class Util {
 	//	return BoidSteerer.StepWanderPoint2D(prevWanderPoint, wanderLimitRadius, wanderChangeDist);
 	//}
 
+	/// <summary>
+	/// Convenience method for squaring a float.
+	/// </summary>
+	/// <param name="x">The float to get squared.</param>
+	/// <returns>x * x</returns>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+#pragma warning disable IDE1006 // Naming Styles
+	public static float pow2(float x) { return x * x; }
+#pragma warning restore IDE1006 // Naming Styles
+
 	public static uint GenerateSeed(Transform transform) {
 		// uh um random weird code go
 		float3 pos = transform.position;

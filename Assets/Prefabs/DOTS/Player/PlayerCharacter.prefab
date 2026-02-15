@@ -273,7 +273,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2820318792828161296, guid: 906ac015f33d37944bd6d4974135ed87, type: 3}
       propertyPath: VacuumPullForce
-      value: 1
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2820318792828161296, guid: 906ac015f33d37944bd6d4974135ed87, type: 3}
+      propertyPath: VacuumSuckForce
+      value: 85
       objectReference: {fileID: 0}
     - target: {fileID: 3970165366949203100, guid: 906ac015f33d37944bd6d4974135ed87, type: 3}
       propertyPath: m_LocalPosition.x

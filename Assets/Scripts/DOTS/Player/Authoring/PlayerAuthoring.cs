@@ -22,7 +22,7 @@ public class PlayerAuthoring : MonoBehaviour {
     public float HealOnKillAmount = 100f;
 
     [Header("Spinning")]
-    public float SpinHoldDuration = 1.5f;
+    public float SpinHoldDuration = 3f;
 
 
     
