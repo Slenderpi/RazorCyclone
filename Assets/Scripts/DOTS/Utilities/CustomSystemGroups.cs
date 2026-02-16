@@ -33,3 +33,12 @@ public partial class EnemyGeneralPostUpdateGroup : ComponentSystemGroup { } // E
 [UpdateInGroup(typeof(FixedStepSimulationSystemGroup))]
 [UpdateBefore(typeof(PhysicsSystemGroup))]
 public partial class PrePhysicsGroup : ComponentSystemGroup { }
+
+/// <summary>
+/// Fixed step, after PhysicsSystemGroup (so at the end of fixed step).
+/// 
+/// For handling physics-related events (e.g. enemies handling their cannon projectile hit event)
+/// </summary>
+[UpdateInGroup(typeof(FixedStepSimulationSystemGroup))]
+[UpdateAfter(typeof(PhysicsSystemGroup))]
+public partial class EnemyEndPhysicsGroup : ComponentSystemGroup { }

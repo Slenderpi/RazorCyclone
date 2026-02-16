@@ -1,6 +1,6 @@
 using Unity.Entities;
 
-public struct HealthConditions : IComponentData {
-    public bool IsInvincible;
-    public bool IsDead;
-}
+//public struct HealthConditions : IComponentData {
+//    public bool IsInvincible;
+//    public bool IsDead;
+//}

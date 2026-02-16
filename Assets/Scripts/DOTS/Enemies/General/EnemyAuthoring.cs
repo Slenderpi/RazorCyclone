@@ -27,7 +27,7 @@ public struct EnemyComponent : IComponentData {
 }
 
 [UpdateInGroup(typeof(FixedStepSimulationSystemGroup))]
-[UpdateAfter(typeof(PhysicsSystemGroup))]
+[UpdateBefore(typeof(PrePhysicsGroup))]
 partial struct GeneralEnemySystem : ISystem {
 
 	[BurstCompile]

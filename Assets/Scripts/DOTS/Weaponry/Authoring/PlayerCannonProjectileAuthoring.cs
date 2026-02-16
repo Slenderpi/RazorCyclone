@@ -5,9 +5,6 @@ using UnityEngine;
 public class PlayerCannonProjectileAuthoring : MonoBehaviour {
 
     public float ProjectileRadius = 0.5f;
-
-    public GameObject ImpactVFX;
-    public GameObject RicochetVFX;
     
     
     

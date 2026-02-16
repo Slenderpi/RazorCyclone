@@ -59,9 +59,35 @@ public struct VacuumTarget : IComponentData {
 
     public bool IsKilled() {
         return isGettingKilled;
-    }
+	}
 
-    public void ResetEvents() {
+    /// <summary>
+    /// This function can be used to both check and consume the Sucked event.
+    /// To only check the Sucked event, use IsSucked().
+    /// </summary>
+    /// <returns></returns>
+	public bool TryConsumeSuckEvent() {
+		if (isGettingSucked) {
+			isGettingSucked = false;
+			return true;
+		}
+		return false;
+	}
+
+	/// <summary>
+	/// This function can be used to both check and consume the Killed event.
+	/// To only check the Killed event, use IsKilled().
+	/// </summary>
+	/// <returns></returns>
+	public bool TryConsumeKillEvent() {
+		if (isGettingKilled) {
+			isGettingKilled = false;
+			return true;
+		}
+		return false;
+	}
+
+	public void ResetEvents() {
         isGettingSucked = false;
         isGettingKilled = false;
     }
@@ -78,6 +104,19 @@ public struct CannonTarget : IComponentData {
 
     public bool IsHit() {
         return isHitThisFrame;
+    }
+
+	/// <summary>
+	/// This function can be used to both check and consume the Hit event.
+	/// To only check the Hit event, use IsHit().
+	/// </summary>
+	/// <returns></returns>
+	public bool TryConsumeHitEvent() {
+        if (isHitThisFrame) {
+            isHitThisFrame = false;
+            return true;
+        }
+        return false;
     }
 
     public void ResetEvents() {

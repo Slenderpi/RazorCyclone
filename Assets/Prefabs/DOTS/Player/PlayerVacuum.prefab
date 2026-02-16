@@ -51,7 +51,7 @@ MonoBehaviour:
   VacuumSuckForce: 8500
   VacuumFuelTime: 10
   VacuumSuckRadius: 7
-  VacuumKillRadius: 1
+  VacuumKillRadius: 1.1
 --- !u!82 &6858949137656366999
 AudioSource:
   m_ObjectHideFlags: 0

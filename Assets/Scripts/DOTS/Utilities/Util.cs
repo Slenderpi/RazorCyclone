@@ -58,14 +58,38 @@ public static class Util {
 	//	return BoidSteerer.StepWanderPoint2D(prevWanderPoint, wanderLimitRadius, wanderChangeDist);
 	//}
 
+#pragma warning disable IDE1006 // Naming Styles
 	/// <summary>
 	/// Convenience method for squaring a float.
 	/// </summary>
 	/// <param name="x">The float to get squared.</param>
 	/// <returns>x * x</returns>
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-#pragma warning disable IDE1006 // Naming Styles
 	public static float pow2(float x) { return x * x; }
+
+	/// <summary>
+	/// Convenience method for squaring an int.
+	/// </summary>
+	/// <param name="x">The int to get squared.</param>
+	/// <returns>x * x</returns>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public static int pow2(int x) { return x * x; }
+
+	/// <summary>
+	/// Convenience method for cubing a float.
+	/// </summary>
+	/// <param name="x">The float to get cubed.</param>
+	/// <returns>x * x * x</returns>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public static float pow3(float x) { return x * x * x; }
+
+	/// <summary>
+	/// Convenience method for cubing an int.
+	/// </summary>
+	/// <param name="x">The int to get cubed.</param>
+	/// <returns>x * x * x</returns>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public static int pow3(int x) { return x * x * x; }
 #pragma warning restore IDE1006 // Naming Styles
 
 	public static uint GenerateSeed(Transform transform) {
