@@ -1,5 +1,6 @@
 using System.Linq;
 using Unity.Burst;
+using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Physics;
@@ -22,6 +23,7 @@ partial struct CannonFodderBoidSystem : ISystem {
 		new CannonFodderBoidJob() {
 			DeltaTime = SystemAPI.Time.DeltaTime,
 			Statics = SystemAPI.GetSingleton<CannonFodderStatics>(),
+			pw = SystemAPI.GetSingleton<PhysicsWorldSingleton>().PhysicsWorld,
 			PlayerPosition = SystemAPI.GetComponent<LocalToWorld>(SystemAPI.GetSingletonEntity<Player>()).Position
 		}.ScheduleParallel();
 	}
@@ -30,6 +32,7 @@ partial struct CannonFodderBoidSystem : ISystem {
 	partial struct CannonFodderBoidJob : IJobEntity {
 		public float DeltaTime;
 		public CannonFodderStatics Statics;
+		[ReadOnly] public PhysicsWorld pw;
 		public float3 PlayerPosition;
 
 		[BurstCompile]
@@ -39,8 +42,7 @@ partial struct CannonFodderBoidSystem : ISystem {
 			ref LocalTransform localTransform,
 			ref RandomGenerator randomGenerator,
 			in PhysicsMass physicsMass,
-			in WavefrontReader wavefrontReader,
-			in EnemyComponent enemyComp
+			in WavefrontReader wavefrontReader
 		) {
 			float3 vel = Util.IsNearZero(physicsVelocity.Linear) ? new float3(0f, 0f, 0.1f) : physicsVelocity.Linear;
 			float distCheck = math.lengthsq(PlayerPosition - localTransform.Position);
@@ -50,11 +52,11 @@ partial struct CannonFodderBoidSystem : ISystem {
 			//			localTransform.Position,
 			//			PlayerPosition - localTransform.Position,
 			//			Statics.FleeTriggerDistance,
-			//			enemyComp.HasLineOfSight ? Color.red : Color.magenta,
+			//			HasLos(localTransform.Position, Statics.LosFilterForFleeing) ? Color.red : Color.magenta,
 			//			DeltaTime
 			//		);
 			//}
-			if (enemyComp.HasLineOfSight && distCheck <= Statics.FleeTriggerDistance * Statics.FleeTriggerDistance) {
+			if (distCheck <= Statics.FleeTriggerDistance * Statics.FleeTriggerDistance && HasLos(localTransform.Position, Statics.LosFilterForFleeing)) {
 				cannonFodderBoid.steerForce = math.normalizesafe(
 					distCheck <= 4f * 4f ? // At short distances, just run from the player directly
 					localTransform.Position - PlayerPosition :
@@ -103,6 +105,14 @@ partial struct CannonFodderBoidSystem : ISystem {
 			//	Util.D_DrawArrowFromTo(wanderVelEnd, wanderVectorEnd, new Color(1f, 165f / 255f, 0f), DeltaTime);
 			//	//Util.D_DrawArrowFromTo(wanderVectorEnd, wanderDeltaEnd, Color.red, DeltaTime);
 			//}
+		}
+
+		bool HasLos(in float3 myPos, in CollisionFilter losFilter) {
+			return !pw.CastRay(new() {
+				Start = PlayerPosition,
+				End = myPos,
+				Filter = losFilter
+			});
 		}
 	}
 

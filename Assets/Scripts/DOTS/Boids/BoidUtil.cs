@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 using Unity.Burst;
 using Unity.Mathematics;
+using Unity.Physics;
 using Unity.Transforms;
 using UnityEngine;
 
@@ -83,7 +84,12 @@ public static class BoidUtil {
 			return new() {
 				BoidProperties = GeneralBoid(so),
 				FleeTriggerDistance = so.FleeTriggerDistance,
-				FleeForce = so.FleeForce
+				FleeForce = so.FleeForce,
+				LosFilterForFleeing = new() {
+					BelongsTo = 1u << 8, // Projectile
+					CollidesWith = 1u | (1u << 17) | (1u << 18), // Collide with environment only
+					GroupIndex = 0
+				}
 			};
 		}
 

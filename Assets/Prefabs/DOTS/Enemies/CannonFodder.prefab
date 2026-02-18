@@ -100,7 +100,6 @@ GameObject:
   - component: {fileID: 9022241585045512172}
   - component: {fileID: 8060262029461062446}
   - component: {fileID: 7953469162371633779}
-  - component: {fileID: 4364070999540472955}
   - component: {fileID: 6831953770576045758}
   - component: {fileID: 3709569421634412367}
   - component: {fileID: 7675750269132818160}
@@ -152,18 +151,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CannonFodderData: {fileID: 11400000, guid: ecc3839188a02c94d9336aaa5c36ab9b, type: 2}
---- !u!114 &4364070999540472955
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5632368010658110814}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b766b6320414814cba03ba400fb2a78, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &6831953770576045758
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -191,8 +178,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cfb30cbd0cd871e4b821538917d0550c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CanGetSucked: 1
-  CanGetKilled: 1
+  CanGetHitByVacuum: 1
+  CanGetSuckedByVacuum: 1
+  CanGetKilledByVacuum: 1
+  VacuumHitboxRadius: 0.6
+  CanGetHitByCannon: 1
 --- !u!54 &7675750269132818160
 Rigidbody:
   m_ObjectHideFlags: 0

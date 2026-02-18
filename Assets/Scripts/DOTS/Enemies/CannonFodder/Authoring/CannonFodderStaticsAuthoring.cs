@@ -1,4 +1,5 @@
 using Unity.Entities;
+using Unity.Physics;
 using UnityEngine;
 
 public class CannonFodderStaticsAuthoring : MonoBehaviour {
@@ -20,4 +21,5 @@ public struct CannonFodderStatics : IComponentData {
 	public GeneralBoidProperties BoidProperties;
 	public float FleeTriggerDistance;
 	public float FleeForce;
+	public CollisionFilter LosFilterForFleeing;
 }
