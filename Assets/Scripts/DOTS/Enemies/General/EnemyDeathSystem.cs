@@ -10,21 +10,18 @@ partial struct EnemyDeathSystem : ISystem {
 
     [BurstCompile]
     public void OnCreate(ref SystemState state) {
+        state.RequireForUpdate<EnemyDeathStatics>();
         state.RequireForUpdate<DeadEnemyTag>();
     }
 
     [BurstCompile]
     public void OnUpdate(ref SystemState state) {
-        if (!SystemAPI.TryGetSingleton(out EnemyDeathStatics DeathStatics)) {
-            Debug.LogWarning("EnemyDeathSystem tried to get EnemyDeathStatics but couldn't find it.");
-            return;
-        }
         state.Dependency = new EnemyDeathJob() {
 			ecb = SystemAPI
 				.GetSingleton<EndFixedStepSimulationEntityCommandBufferSystem.Singleton>()
 				.CreateCommandBuffer(state.WorldUnmanaged)
 				.AsParallelWriter(),
-			DeathStatics = DeathStatics
+			DeathStatics = SystemAPI.GetSingleton<EnemyDeathStatics>()
 		}.ScheduleParallel(state.Dependency);
     }
 
