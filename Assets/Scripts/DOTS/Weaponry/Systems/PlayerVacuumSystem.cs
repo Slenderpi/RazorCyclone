@@ -71,7 +71,8 @@ partial struct PlayerVacuumSystem : ISystem {
 		// Suck/kill enemies
 		new VacuumHitDetectionJob() {
 			Vacuum = vacuum,
-			VacLocation = SystemAPI.GetComponent<LocalToWorld>(vacuumEntity).Position
+			VacLocation = SystemAPI.GetComponent<LocalToWorld>(vacuumEntity).Position,
+			VacDirection = input.aimDirection
 		}.ScheduleParallel();
 	}
 
@@ -86,6 +87,7 @@ partial struct PlayerVacuumSystem : ISystem {
 	partial struct VacuumHitDetectionJob : IJobEntity {
 		public PlayerVacuum Vacuum;
 		public float3 VacLocation;
+		public float3 VacDirection; // Must be provided normalized
 
 		[BurstCompile]
 		public void Execute(
@@ -103,9 +105,24 @@ partial struct PlayerVacuumSystem : ISystem {
 			// If VacuumKillRadius < VacuumSuckRadius (which should always be the case) then distsq will never be 0 here
 			if (target.CanGetSucked && distsq <= Util.pow2(Vacuum.VacuumSuckRadius + target.VacuumHitboxRadius)) {
 				target.SetEventSucked();
-				ApplySuckForce(ref pv, pm, Vacuum, toPlayer, math.sqrt(distsq));
+				float dist = math.sqrt(distsq);
+				float3 normToPlayer = toPlayer / dist;
+				if (IsInSuckAngle(normToPlayer)) {
+					ApplySuckForce(ref pv, pm, Vacuum, toPlayer, dist);
+				}
 			}
 
+		}
+
+		[BurstCompile]
+		bool IsInSuckAngle(in float3 normToPlayer) {
+			/* Intent: check that v . w >= |v||w|cos(a)
+			 * |v| = |w| = 1, so v . w >= cos(a)
+			 * cos(a) = -VacuumSuckAngleCosined
+			 * so, IsInSuckAngle() == return v . w <= VacuumSuckAngleCosined
+			 * normToPlayer is "to player", hence why VacuumSuckAngleCosined is negative
+			 */
+			return math.dot(normToPlayer, VacDirection) <= Vacuum.VacuumSuckAngleCosined;
 		}
 
 		[BurstCompile]

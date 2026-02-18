@@ -13,6 +13,9 @@ public class PlayerVacuumAuthoring : MonoBehaviour {
 
     public float VacuumSuckRadius = 7f;
     public float VacuumKillRadius = 0.6f;
+    [Tooltip("Full wide angle of vacuum sucking (i.e. max is 180). In degrees.")]
+    [Min(10f)]
+    public float VacuumSuckAngle = 90f;
     
     
     class Baker : Baker<PlayerVacuumAuthoring> {
@@ -24,7 +27,8 @@ public class PlayerVacuumAuthoring : MonoBehaviour {
                 VacuumFuelTime = auth.VacuumFuelTime,
 
                 VacuumSuckRadius = auth.VacuumSuckRadius,
-                VacuumKillRadius = auth.VacuumKillRadius
+                VacuumKillRadius = auth.VacuumKillRadius,
+                VacuumSuckAngleCosined = -Mathf.Cos(auth.VacuumSuckAngle / 2f * Mathf.Deg2Rad)
             };
             vacuum.Init();
 			AddComponent(entity, vacuum);
@@ -42,6 +46,8 @@ public struct PlayerVacuum : IComponentData {
     public float VacuumFuelTime;
     public float VacuumSuckRadius;
     public float VacuumKillRadius;
+    // The cosine of the angle that enemies need to be within (to the forward vector) to get sucked.
+    public float VacuumSuckAngleCosined;
 
     public bool VacuumEnabled;
 

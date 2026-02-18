@@ -2802,7 +2802,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6435131534069462878, guid: 585126b58a7f8a843a0ed38878e01e90, type: 3}
       propertyPath: CountPerSide
-      value: 2
+      value: 4
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
