@@ -9,7 +9,7 @@ using UnityEngine;
 
 public class TestingStuff : MonoBehaviour {
 
-    public GameObject EnemyToSpawn;
+    public EEnemyType EnemyTypeToSpawn;
     public Vector2 Corner1 = new(-55, -9);
     public float SpawnOffset = 2;
     public int CountPerSide = 16;
@@ -20,8 +20,8 @@ public class TestingStuff : MonoBehaviour {
 		public override void Bake(TestingStuff auth) {
 			Entity entity = GetEntity(TransformUsageFlags.None);
             AddComponent(entity, new TestingStuffComponent() {
-                EnemyToSpawn = GetEntity(auth.EnemyToSpawn, TransformUsageFlags.Dynamic),
-                SpawnStartCorner = new(auth.Corner1.x, 0, auth.Corner1.y),
+				EnemyTypeToSpawn = auth.EnemyTypeToSpawn,
+				SpawnStartCorner = new(auth.Corner1.x, 0, auth.Corner1.y),
                 SpawnOffset = auth.SpawnOffset,
                 CountPerSide = auth.CountPerSide
             });
@@ -31,8 +31,8 @@ public class TestingStuff : MonoBehaviour {
 }
 
 public struct TestingStuffComponent : IComponentData {
-    public Entity EnemyToSpawn;
-    public bool HasSpawned;
+    public EEnemyType EnemyTypeToSpawn;
+	public bool HasSpawned;
     public float3 SpawnStartCorner;
     public float SpawnOffset;
     public int CountPerSide;
@@ -45,12 +45,15 @@ partial struct TestingStuffSystem : ISystem {
 	[BurstCompile]
     public void OnCreate(ref SystemState state) {
         state.RequireForUpdate<TestingStuffComponent>();
+        state.RequireForUpdate<EntityBakerSingleton>();
         TransformLookup = SystemAPI.GetComponentLookup<LocalTransform>(false);
 	}
 
     [BurstCompile]
     public void OnUpdate(ref SystemState state) {
         if (!SystemAPI.TryGetSingletonEntity<TestingStuffComponent>(out Entity en))
+            return;
+        if (!SystemAPI.TryGetSingleton(out EntityBakerSingleton ebs))
             return;
         TestingStuffComponent tsc = SystemAPI.GetComponent<TestingStuffComponent>(en);
         if (tsc.HasSpawned)
@@ -60,7 +63,7 @@ partial struct TestingStuffSystem : ISystem {
         TransformLookup.Update(ref state);
         int SpawnCount = Util.pow3(tsc.CountPerSide);
 		Debug.Log($"TestingStuff: Spawning {SpawnCount} entities!");
-		NativeArray<Entity> entities = state.EntityManager.Instantiate(tsc.EnemyToSpawn, SpawnCount, Allocator.TempJob);
+		NativeArray<Entity> entities = state.EntityManager.Instantiate(ebs.GetEntityPrefabById(tsc.EnemyTypeToSpawn), SpawnCount, Allocator.TempJob);
 		TestStuffJob job = new() {
             Entities = entities,
             TransformLookup = TransformLookup,

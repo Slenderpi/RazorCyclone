@@ -3,19 +3,19 @@ using System.Runtime.CompilerServices;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
-using Unity.Transforms;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.Windows;
 
 public class PlayerInputReader : MonoBehaviour {
     
     public static PlayerInputReader Instance;
 
 	public static Action<float3> A_RotationInputChanged; // Current rotation input vector
-	//public static Action<>
+														 //public static Action<>
 
+	public PlayerInputActions AllInputActions { get; private set; }
     public PlayerInputActions.PlayerActions PlayerActions { get; private set; }
+	public PlayerInputActions.PauseMenuActions PauseActions { get; private set; }
 
 	bool noInputFound = true;
 	Entity playerEntity;
@@ -24,8 +24,16 @@ public class PlayerInputReader : MonoBehaviour {
 
 	private void Awake() {
 		Instance = this;
-		PlayerActions = new PlayerInputActions().Player;
+		AllInputActions = new PlayerInputActions();
+		PlayerActions = AllInputActions.Player;
+		PauseActions = AllInputActions.PauseMenu;
 		EnablePlayerActions();
+	}
+
+	private void Start() {
+		GameManager.OnGameResumed += EnablePlayerActions;
+		GameManager.OnGamePaused += DisablePlayerActions;
+		EnablePauseMenuActions();
 	}
 
 	private void Update() {
@@ -73,7 +81,34 @@ public class PlayerInputReader : MonoBehaviour {
 	}
 
 	public void DisablePlayerActions() {
-		// TODO
+		//PlayerActions.TurnInputs.performed -= TurnInputChanged;
+		//PlayerActions.TurnInputs.canceled -= TurnInputChanged;
+		//PlayerActions.VertInputs.started -= VertInputChanged;
+		//PlayerActions.VertInputs.canceled -= VertInputChanged;
+		PlayerActions.RotationInput.performed -= RotationInputChanged;
+		PlayerActions.RotationInput.canceled -= RotationInputChanged;
+
+		PlayerActions.Vacuum.started -= FireVacuumStarted;
+		PlayerActions.Vacuum.canceled -= FireVacuumCanceled;
+		PlayerActions.Cannon.started -= FireCannonStarted;
+		PlayerActions.Cannon.canceled -= FireCannonCanceled;
+
+		/** Features not necessarily meant for final gameplay **/
+		PlayerActions.SlowTime.started -= On_TimeSlowStarted;
+		PlayerActions.SlowTime.canceled -= On_TimeSlowCanceled;
+		PlayerActions._AddFuel.started -= On_AddFuelKey;
+		PlayerActions._AddRicCharges.started -= On_AddRicCharges;
+		PlayerActions._HealHealth.started -= On_HealHealth;
+		PlayerActions._TakeDamage.started -= On_TakeDamage;
+		//PlayerActions._ToggleTP.started -= On_ToggleThirdPerson;
+		//PlayerActions._ToggleMirror.started -= On_ToggleMirrorInput;
+
+		PlayerActions.Disable();
+	}
+
+	public void EnablePauseMenuActions() {
+		PauseActions.Escape.started += OnEscapePressed;
+		PauseActions.Enable();
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -149,6 +184,8 @@ public class PlayerInputReader : MonoBehaviour {
 		PlayerExtraInput extraInput = GetCurrentPlayerExtraInput(em);
 		extraInput.SlowTime = true;
 		WritePlayerExtraInput(extraInput, em);
+
+		GameManager.TimeScale = 0.1f;
 	}
 
 	private void On_TimeSlowCanceled(InputAction.CallbackContext context) {
@@ -157,6 +194,8 @@ public class PlayerInputReader : MonoBehaviour {
 		PlayerExtraInput extraInput = GetCurrentPlayerExtraInput(em);
 		extraInput.SlowTime = false;
 		WritePlayerExtraInput(extraInput, em);
+
+		GameManager.TimeScale = 1f;
 	}
 
 	private void On_AddFuelKey(InputAction.CallbackContext context) {
@@ -189,6 +228,11 @@ public class PlayerInputReader : MonoBehaviour {
 		PlayerExtraInput extraInput = GetCurrentPlayerExtraInput(em);
 		extraInput.TakeDamage = true;
 		WritePlayerExtraInput(extraInput, em);
+	}
+
+	private void OnEscapePressed(InputAction.CallbackContext context) {
+		//if (noInputFound) return;
+		GameManager.OnPauseKeyPressed();
 	}
 
 
