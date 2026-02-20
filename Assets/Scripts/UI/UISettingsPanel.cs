@@ -166,19 +166,19 @@ public class UISettingsPanel : UIPanel {
         case EActiveCategory.Controls:
             ControlsButton.interactable = false;
             CategoryControls.SetActive(true);
-            GameManager.Instance.Audio2D.SetUMastLPTo(true);
+            GameManagerOLD.Instance.Audio2D.SetUMastLPTo(true);
             break;
         case EActiveCategory.Video:
             updateVideoOptions();
             VideoButton.interactable = false;
             CategoryVideo.SetActive(true);
-            GameManager.Instance.Audio2D.SetUMastLPTo(true);
+            GameManagerOLD.Instance.Audio2D.SetUMastLPTo(true);
             break;
         case EActiveCategory.Audio:
             updateAudioOptions();
             AudioButton.interactable = false;
             CategoryAudio.SetActive(true);
-            GameManager.Instance.Audio2D.SetUMastLPTo(false);
+            GameManagerOLD.Instance.Audio2D.SetUMastLPTo(false);
             break;
         }
         currCategory = newCategory;
@@ -230,7 +230,7 @@ public class UISettingsPanel : UIPanel {
     
     void setFOV(int val) {
         val = Math.Clamp(val, GameCamera.MIN_FOV, GameCamera.MAX_FOV);
-        GameManager.Instance.CurrentFOV = val;
+        GameManagerOLD.Instance.CurrentFOV = val;
         fovInputField.SetTextWithoutNotify(val.ToString());
         fovSlider.SetValueWithoutNotify(val);
     }
@@ -273,7 +273,7 @@ public class UISettingsPanel : UIPanel {
         resolutionDropdown.SetValueWithoutNotify(resopi);
         vsyncToggle.SetIsOnWithoutNotify(QualitySettings.vSyncCount > 0);
         setFrameLimit(Application.targetFrameRate <= 0 ? 200 : Application.targetFrameRate);
-        int fov = GameManager.Instance.CurrentFOV;
+        int fov = GameManagerOLD.Instance.CurrentFOV;
         fovInputField.SetTextWithoutNotify(fov.ToString());
         fovSlider.SetValueWithoutNotify(fov);
         int shadresopi = 0;
@@ -309,7 +309,7 @@ public class UISettingsPanel : UIPanel {
     }
 
     void OnEnable() {
-        GameManager.Instance.Audio2D.SetUMastLPTo(currCategory != EActiveCategory.Audio);
+        GameManagerOLD.Instance.Audio2D.SetUMastLPTo(currCategory != EActiveCategory.Audio);
     }
 
 }

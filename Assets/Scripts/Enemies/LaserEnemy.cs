@@ -112,9 +112,9 @@ public class LaserEnemy : EnemyBase {
     }
     
     void Update() {
-        if (GameManager.CurrentPlayer) {
+        if (GameManagerOLD.CurrentPlayer) {
             // rotateTowardsPlayer(GameManager.CurrentPlayer.transform.position, currRotRate);
-            Vector3 toPlayer = GameManager.CurrentPlayer.transform.position - barrelPivot.position;
+            Vector3 toPlayer = GameManagerOLD.CurrentPlayer.transform.position - barrelPivot.position;
             switch (state) {
             case 0: // Weak damage
                 pointAtPlayer(toPlayer);
@@ -162,11 +162,11 @@ public class LaserEnemy : EnemyBase {
     
     protected override void onFixedUpdate() {
         base.onFixedUpdate();
-        if (GameManager.CurrentPlayer) {
+        if (GameManagerOLD.CurrentPlayer) {
             // currStateFunc();
             if (state < 2) {
                 if (fireLaser()) {
-                    GameManager.CurrentPlayer.TakeDamage(currDmg * Time.fixedDeltaTime, EDamageType.Enemy);
+                    GameManagerOLD.CurrentPlayer.TakeDamage(currDmg * Time.fixedDeltaTime, EDamageType.Enemy);
                 } else {
                     // Go to no LOS state
                     state = 4;
@@ -188,7 +188,7 @@ public class LaserEnemy : EnemyBase {
             base.OnTakeDamage(amnt, damageType);
         } else if (damageType == EDamageType.Projectile || damageType == EDamageType.ProjectileRicochet) {
             onStunned();
-            GameManager.Instance.OnEnemyTookDamage(this, damageType, false);
+            GameManagerOLD.Instance.OnEnemyTookDamage(this, damageType, false);
         }
     }
         
@@ -331,7 +331,7 @@ public class LaserEnemy : EnemyBase {
     }
     
     void slerpToPlayer() {
-        Vector3 toPlayer = GameManager.CurrentPlayer.transform.position - barrelPivot.position;
+        Vector3 toPlayer = GameManagerOLD.CurrentPlayer.transform.position - barrelPivot.position;
         float a = (Time.time - lastStateChangeTime) / LaserConfig.ReArmDuration;
         a = a * a * a * a * a;
         revolvePivot.rotation = Quaternion.Slerp(
@@ -350,7 +350,7 @@ public class LaserEnemy : EnemyBase {
     }
     
     bool fireLaser() {
-        Ray ray = new(barrelPivot.position, GameManager.CurrentPlayer.transform.position - barrelPivot.position);
+        Ray ray = new(barrelPivot.position, GameManagerOLD.CurrentPlayer.transform.position - barrelPivot.position);
         if (Physics.Raycast(ray: ray, maxDistance: 500, layerMask: laserMask, hitInfo: out RaycastHit hit)) {
             laserHitPos = hit.point;
             isPlayerInLOS = hit.collider.CompareTag("Player");

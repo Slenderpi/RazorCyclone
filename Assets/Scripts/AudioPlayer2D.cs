@@ -70,8 +70,8 @@ public class AudioPlayer2D : MonoBehaviour {
     
     void Awake() {
         Instance = this;
-        GameManager.A_PlayerSpawned += OnPlayerSpawned;
-        GameManager.A_PlayerDestroying += OnPlayerDestroying;
+        GameManagerOLD.A_PlayerSpawned += OnPlayerSpawned;
+        GameManagerOLD.A_PlayerDestroying += OnPlayerDestroying;
         // TODO: Create multiple sfx players to play sounds from
     }
 

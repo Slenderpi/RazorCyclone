@@ -16,7 +16,7 @@ public class Tutorial : MonoBehaviour
     private bool canTriggerr = true;
 
     void Start(){
-        player = GameManager.CurrentPlayer;
+        player = GameManagerOLD.CurrentPlayer;
     }
 
     void OnTriggerEnter(Collider other){

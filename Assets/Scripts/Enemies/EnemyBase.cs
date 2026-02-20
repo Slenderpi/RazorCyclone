@@ -76,14 +76,14 @@ public class EnemyBase : MonoBehaviour {
     void Start() {
         wasEverStarted = true;
         LateInit();
-        GameManager.Instance.currentSceneRunner.AddEnemyToList(this);
+        GameManagerOLD.Instance.currentSceneRunner.AddEnemyToList(this);
     }
     
     /// <summary>
     /// Called by Start().
     /// </summary>
     protected virtual void LateInit() {
-        lava = GameManager.Instance.currentSceneRunner.lava;
+        lava = GameManagerOLD.Instance.currentSceneRunner.lava;
         if (AmbientAudio)
             AmbientAudio.Play();
     }
@@ -103,7 +103,7 @@ public class EnemyBase : MonoBehaviour {
     public virtual void Attack() {
         if (Dead) return;
         if (EnConfig.Damage <= 0) return;
-        PlayerCharacterCtrlr plr = GameManager.CurrentPlayer;
+        PlayerCharacterCtrlr plr = GameManagerOLD.CurrentPlayer;
         if (!plr) return;
         if (Time.time - lastAttackTime <= EnConfig.AttackDelay) return;
         lastAttackTime = Time.time;
@@ -120,10 +120,10 @@ public class EnemyBase : MonoBehaviour {
     protected virtual void OnTakeDamage(float amnt, EDamageType damageType) {
         health = Mathf.Max(health - amnt, 0);
         if (health == 0) {
-            GameManager.Instance.OnEnemyTookDamage(this, damageType, true);
+            GameManagerOLD.Instance.OnEnemyTookDamage(this, damageType, true);
             OnDefeated(damageType);
         } else {
-            GameManager.Instance.OnEnemyTookDamage(this, damageType, false);
+            GameManagerOLD.Instance.OnEnemyTookDamage(this, damageType, false);
         }
     }
     
@@ -131,7 +131,7 @@ public class EnemyBase : MonoBehaviour {
         if (Dead) return;
         if (damageType == EDamageType.Vacuum) {
             // Give player fuel immediately if killed by vacuum
-            GameManager.CurrentPlayer.AddFuel(100);
+            GameManagerOLD.CurrentPlayer.AddFuel(100);
         } else {
             DropFuel();
         }
@@ -152,7 +152,7 @@ public class EnemyBase : MonoBehaviour {
             boid.enabled = false;
         if (!removedFromEList) {
             removedFromEList = true;
-            GameManager.Instance.currentSceneRunner.RemoveEnemyFromList(this);
+            GameManagerOLD.Instance.currentSceneRunner.RemoveEnemyFromList(this);
         }
         if (suckable)
             suckable.CanGetVacuumSucked = false;
@@ -202,7 +202,7 @@ public class EnemyBase : MonoBehaviour {
     protected virtual void OnDestroying() {
         if (wasEverStarted && !removedFromEList) {
             removedFromEList = true;
-            GameManager.Instance.currentSceneRunner.RemoveEnemyFromList(this);
+            GameManagerOLD.Instance.currentSceneRunner.RemoveEnemyFromList(this);
         }
     }
     

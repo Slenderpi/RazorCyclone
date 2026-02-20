@@ -21,19 +21,19 @@ public class UIMainMenuPanel : UIPanel {
     
     void OnEnable() {
         buttonsEnabled = true;
-        GameManager.Instance.Audio2D.SetUMastLPTo(false);
+        GameManagerOLD.Instance.Audio2D.SetUMastLPTo(false);
         Time.timeScale = 1;
     }
     
     IEnumerator delayLoadScene(bool isEndless) {
         if (buttonsEnabled) {
             buttonsEnabled = false;
-            GameManager.Instance.MainCanvas.FadeToBlack();
+            GameManagerOLD.Instance.MainCanvas.FadeToBlack();
             yield return new WaitForSecondsRealtime(UIMainCanvas.FADER_FADE_DURATION);
             if (isEndless)
-                ((SRMainMenu)GameManager.Instance.currentSceneRunner).LoadLevel_EndlessMode();
+                ((SRMainMenu)GameManagerOLD.Instance.currentSceneRunner).LoadLevel_EndlessMode();
             else
-                ((SRMainMenu)GameManager.Instance.currentSceneRunner).LoadLevel_Tutorial();
+                ((SRMainMenu)GameManagerOLD.Instance.currentSceneRunner).LoadLevel_Tutorial();
         }
     }
     

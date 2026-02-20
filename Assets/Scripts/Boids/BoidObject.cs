@@ -64,10 +64,10 @@ public class BoidObject : MonoBehaviour {
     void Start() {
         if (BoidTargetList == null || BoidTargetList.Length == 0) {
             // print("No targets in listing for this Boid.");
-        } else if (GameManager.CurrentPlayer) {
-            initBoidListReferences(GameManager.CurrentPlayer);
+        } else if (GameManagerOLD.CurrentPlayer) {
+            initBoidListReferences(GameManagerOLD.CurrentPlayer);
         } else {
-            GameManager.A_PlayerSpawned += setTargetsOnPlayerSpawn;
+            GameManagerOLD.A_PlayerSpawned += setTargetsOnPlayerSpawn;
         }
         wanderPoint = transform.forward * WanderLimitRadius;
         stepWanderPoint = AllowFlight ? stepWanderPoint3D : stepWanderPoint2D;
@@ -91,7 +91,7 @@ public class BoidObject : MonoBehaviour {
     }
 
     void FixedUpdate() {
-        if (!GameManager.CurrentPlayer) return;
+        if (!GameManagerOLD.CurrentPlayer) return;
         
         Vector3 totalSteer = AddWander ? Wander() : Vector3.zero;
         if (BoidTargetList != null && BoidTargetList.Length > 0) {
@@ -337,7 +337,7 @@ public class BoidObject : MonoBehaviour {
     }
     
     void setTargetsOnPlayerSpawn(PlayerCharacterCtrlr plr) {
-        GameManager.A_PlayerSpawned -= setTargetsOnPlayerSpawn;
+        GameManagerOLD.A_PlayerSpawned -= setTargetsOnPlayerSpawn;
         initBoidListReferences(plr);
     }
     

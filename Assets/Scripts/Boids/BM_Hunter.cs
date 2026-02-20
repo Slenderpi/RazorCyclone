@@ -14,7 +14,7 @@ public class BM_Hunter : BoidMover {
     
     public override Vector3 CalculateSteering() {
         Vector3 ret = Vector3.zero;
-        Transform plrTrans = GameManager.CurrentPlayer.transform;
+        Transform plrTrans = GameManagerOLD.CurrentPlayer.transform;
         Vector3 toPlayer = plrTrans.position - transform.position;
         // Flee if still fleeing
         if (Time.fixedTime - lastRunawayTime <= HunterData.RunAwayDuration) {

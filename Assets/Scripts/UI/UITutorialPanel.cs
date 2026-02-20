@@ -248,13 +248,13 @@ public class UITutorialPanel : UIPanel {
     }
     
     void showDemoUI() {
-        GameManager.Instance.SetPauseInputActionsEnabled(false);
-        GameManager.CurrentPlayer.SetPlayerControlsEnabled(false);
+        GameManagerOLD.Instance.SetPauseInputActionsEnabled(false);
+        GameManagerOLD.CurrentPlayer.SetPlayerControlsEnabled(false);
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
-        GameManager.Instance.gameTimeScale = Time.timeScale;
+        GameManagerOLD.Instance.gameTimeScale = Time.timeScale;
         Time.timeScale = 0;
-        GameManager.Instance.Audio2D.SetUMastLPTo(true);
+        GameManagerOLD.Instance.Audio2D.SetUMastLPTo(true);
         demoUI.SetActive(true);
         taskUI.SetActive(false);
         controlsPanel.SetActive(false);
@@ -262,12 +262,12 @@ public class UITutorialPanel : UIPanel {
     }
     
     void hideDemoUI() {
-        GameManager.Instance.SetPauseInputActionsEnabled(true);
-        GameManager.CurrentPlayer.SetPlayerControlsEnabled(true);
+        GameManagerOLD.Instance.SetPauseInputActionsEnabled(true);
+        GameManagerOLD.CurrentPlayer.SetPlayerControlsEnabled(true);
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
-        Time.timeScale = GameManager.Instance.gameTimeScale;
-        GameManager.Instance.Audio2D.SetUMastLPTo(false);
+        Time.timeScale = GameManagerOLD.Instance.gameTimeScale;
+        GameManagerOLD.Instance.Audio2D.SetUMastLPTo(false);
         demoUI.SetActive(false);
         taskUI.SetActive(true);
         if (prevVideoClip)

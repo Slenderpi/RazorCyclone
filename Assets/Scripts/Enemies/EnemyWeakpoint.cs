@@ -22,7 +22,7 @@ public class EnemyWeakpoint : EnemyBase {
     protected override void OnDefeated(EDamageType damageType) {
         if (damageType == EDamageType.Vacuum) {
             // Give player fuel immediately if killed by vacuum
-            GameManager.CurrentPlayer.AddFuel(100);
+            GameManagerOLD.CurrentPlayer.AddFuel(100);
         } else {
             DropFuel();
         }

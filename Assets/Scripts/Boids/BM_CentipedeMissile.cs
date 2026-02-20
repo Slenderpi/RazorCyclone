@@ -35,15 +35,15 @@ public class BM_CentipedeMissile : BoidMover {
         } else {
             finalTrackingDirection = BoidSteerer.PredictPosition(
                 transform.position,
-                GameManager.CurrentPlayer.transform.position,
+                GameManagerOLD.CurrentPlayer.transform.position,
                 rb.linearVelocity,
-                GameManager.CurrentPlayer.rb.linearVelocity
+                GameManagerOLD.CurrentPlayer.rb.linearVelocity
             ) - transform.position;
             return BoidSteerer.Pursuit(
                 transform.position,
-                GameManager.CurrentPlayer.transform.position,
+                GameManagerOLD.CurrentPlayer.transform.position,
                 rb.linearVelocity,
-                GameManager.CurrentPlayer.rb.linearVelocity,
+                GameManagerOLD.CurrentPlayer.rb.linearVelocity,
                 centMissileData
             );
         }

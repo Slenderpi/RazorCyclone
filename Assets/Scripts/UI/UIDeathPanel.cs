@@ -47,13 +47,13 @@ public class UIDeathPanel : UIPanel {
     // }
     
     IEnumerator delayLoadScene(bool isRetrying) {
-        GameManager.Instance.MainCanvas.FadeToBlack();
+        GameManagerOLD.Instance.MainCanvas.FadeToBlack();
         yield return new WaitForSecondsRealtime(UIMainCanvas.FADER_FADE_DURATION + 0.05f);
         if (isRetrying)
-            GameManager.Instance.currentSceneRunner.ReloadCurrentScene();
+            GameManagerOLD.Instance.currentSceneRunner.ReloadCurrentScene();
         else {
-            GameManager.Instance.MainCanvas.FadeToClear();
-            GameManager.Instance.currentSceneRunner.SwitchToScene("MainMenuScene");
+            GameManagerOLD.Instance.MainCanvas.FadeToClear();
+            GameManagerOLD.Instance.currentSceneRunner.SwitchToScene("MainMenuScene");
         }
     }
     

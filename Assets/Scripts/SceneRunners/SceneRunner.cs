@@ -90,17 +90,17 @@ public class SceneRunner : MonoBehaviour {
 #endif
     
     protected void SpawnPlayerAndConnect() {
-        GameManager.A_PlayerSpawned += _onPlayerSpawned;
-        GameManager.Instance.SpawnPlayer();
+        GameManagerOLD.A_PlayerSpawned += _onPlayerSpawned;
+        GameManagerOLD.Instance.SpawnPlayer();
     }
     
     protected virtual void OnPlayerDied() {
-        GameManager.Instance.DestroyPlayer();
+        GameManagerOLD.Instance.DestroyPlayer();
         StartCoroutine(delayedRespawn());
     }
     
     protected virtual void onSceneAboutToUnload() {
-        GameManager.A_PlayerSpawned -= _onPlayerSpawned;
+        GameManagerOLD.A_PlayerSpawned -= _onPlayerSpawned;
     }
     
     public virtual void AddEnemyToList(EnemyBase en) {
@@ -165,15 +165,15 @@ public class SceneRunner : MonoBehaviour {
     }
     
     void startScene() {
-        if (GameManager.Instance == null) {
+        if (GameManagerOLD.Instance == null) {
             Debug.LogError("!! SceneRunner awoke before GameManager !!  --  " + 
                            "Did you run the game with the CoreScene already open? " +
                            "If so, double click the CoreScene in the hierarchy to " +
                            "make it the active scene. Its name should become bolded.");
             return;
         }
-        GameManager.Instance.OnSceneStarted(this);
-        GameManager.Instance.MainCanvas.SetCanvasState(UIMainCanvas.ECanvasState.None);
+        GameManagerOLD.Instance.OnSceneStarted(this);
+        GameManagerOLD.Instance.MainCanvas.SetCanvasState(UIMainCanvas.ECanvasState.None);
         BeginScene();
     }
     
@@ -189,14 +189,14 @@ public class SceneRunner : MonoBehaviour {
     }
     
     void _onPlayerDied() {
-        GameManager.CurrentPlayer.A_PlayerDied -= _onPlayerDied;
+        GameManagerOLD.CurrentPlayer.A_PlayerDied -= _onPlayerDied;
         OnPlayerDied();
     }
     
     IEnumerator delayedRespawn() {
         yield return new WaitForSecondsRealtime(2);
-        GameManager.Instance.SetPauseInputActionsEnabled(true);
-        GameManager.Instance.SpawnPlayer();
+        GameManagerOLD.Instance.SetPauseInputActionsEnabled(true);
+        GameManagerOLD.Instance.SpawnPlayer();
     }
     
 }

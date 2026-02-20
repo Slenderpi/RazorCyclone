@@ -58,7 +58,7 @@ public class CrabBasicEnemy : EnemyBase {
     }
 
     protected override void onFixedUpdate() {
-        if (!GameManager.CurrentPlayer) return;
+        if (!GameManagerOLD.CurrentPlayer) return;
         if (Time.fixedTime - lastAttackTime >= EnConfig.AttackDelay) {
             lastAttackTime += randomAtkDly;
             Attack();
@@ -80,12 +80,12 @@ public class CrabBasicEnemy : EnemyBase {
     }
     
     Vector3 calcVToPlr() {
-        return (predictiveFiring ? predictPlrPos() : GameManager.CurrentPlayer.transform.position) - BarrelEndpoint.position;
+        return (predictiveFiring ? predictPlrPos() : GameManagerOLD.CurrentPlayer.transform.position) - BarrelEndpoint.position;
     }
     
     Vector3 predictPlrPos() {
-        Vector3 ppos = GameManager.CurrentPlayer.transform.position;
-        Vector3 pvel = GameManager.CurrentPlayer.rb.linearVelocity;
+        Vector3 ppos = GameManagerOLD.CurrentPlayer.transform.position;
+        Vector3 pvel = GameManagerOLD.CurrentPlayer.rb.linearVelocity;
         // Solve for t in the following: ppos + pspeed * t == cpos + cspeed * t
         float predictTime = (ppos - BarrelEndpoint.position).magnitude / Mathf.Abs(pvel.magnitude - CrabBasicConfig.ProjectileSpeed);
         return ppos + pvel * Mathf.Min(predictTime, maxPredictTime);

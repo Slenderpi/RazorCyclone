@@ -21,7 +21,7 @@ public class EnemyProjectile : MonoBehaviour {
         if (hasHit) return;
         if (collision.collider.CompareTag("Player")) {
             hasHit = true;
-            GameManager.CurrentPlayer.TakeDamage(Damage, EDamageType.Enemy);
+            GameManagerOLD.CurrentPlayer.TakeDamage(Damage, EDamageType.Enemy);
             onHitSomething();
         } else if (collision.collider.CompareTag("Untagged")) {
             hasHit = true;

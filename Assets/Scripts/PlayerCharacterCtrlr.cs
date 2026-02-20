@@ -167,11 +167,11 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     
     void Awake() {
         inputActions = new PlayerInputActions().Player;
-        _gamePanel = GameManager.Instance.MainCanvas.GamePanel;
+        _gamePanel = GameManagerOLD.Instance.MainCanvas.GamePanel;
         
-        GameManager.A_EnemyKilled += onEnemyKilled;
+        GameManagerOLD.A_EnemyKilled += onEnemyKilled;
         
-        mouseSensitivity = GameManager.Instance.CurrentMouseSensitivity;
+        mouseSensitivity = GameManagerOLD.Instance.CurrentMouseSensitivity;
         
         mainCamera = Camera.main;
         rb = GetComponent<Rigidbody>();
@@ -201,8 +201,8 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         currentMuzzleFlashEffect = Instantiate(muzzleFlashEffect, cannonMuzzleTrans);
         currentMuzzleFlashEffect.SetActive(false);
         
-        lava = GameManager.Instance.currentSceneRunner.lava;
-        rearCamera = GameManager.Instance.rearCamera;
+        lava = GameManagerOLD.Instance.currentSceneRunner.lava;
+        rearCamera = GameManagerOLD.Instance.rearCamera;
         
         updateCameraTransform();
     }
@@ -285,7 +285,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         CurrentHealth = Mathf.Max(CurrentHealth - amount, 0);
         
         if (CurrentHealth == 0) {
-            GameManager.A_EnemyKilled -= onEnemyKilled;
+            GameManagerOLD.A_EnemyKilled -= onEnemyKilled;
             A_PlayerDied?.Invoke();
             gameObject.SetActive(false);
         }
@@ -305,7 +305,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     }
     
     void signifyOutOfFuel() {
-        GameManager.Instance.Audio2D.PlayClipSFX(AudioPlayer2D.EClipSFX.Plr_OutOfFuel);
+        GameManagerOLD.Instance.Audio2D.PlayClipSFX(AudioPlayer2D.EClipSFX.Plr_OutOfFuel);
         _gamePanel.OnOutOfFuel();
     }
     
@@ -491,7 +491,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         bikeSpinProgress = 0;
         spinDecayTimer = 0;
         A_SpinCompleted?.Invoke(++currentBikeSpins, isGrounded);
-        GameManager.Instance.Audio2D.PlayClipSFX(AudioPlayer2D.EClipSFX.SpinRev);
+        GameManagerOLD.Instance.Audio2D.PlayClipSFX(AudioPlayer2D.EClipSFX.SpinRev);
     }
     
     void bikeSpinProgressed() {
@@ -520,7 +520,7 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
         ProjectileBase proj = Instantiate(projectilePrefab, cannonProjSpawnTrans.position, Quaternion.LookRotation(projVel));
         proj.rb.linearVelocity = projVel;
         SpendFuel(CannonFuelCost);
-        GameManager.Instance.Audio2D.PlayClipSFX(AudioPlayer2D.EClipSFX.Weapon_CannonShot);
+        GameManagerOLD.Instance.Audio2D.PlayClipSFX(AudioPlayer2D.EClipSFX.Weapon_CannonShot);
         playMuzzleFlashEffect();
     }
     
@@ -622,14 +622,14 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     }
     
     void OnEnable() {
-        GameManager.A_GamePaused += OnPauseGame;
-        GameManager.A_GameResumed += OnResumeGame;
+        GameManagerOLD.A_GamePaused += OnPauseGame;
+        GameManagerOLD.A_GameResumed += OnResumeGame;
         SetPlayerControlsEnabled(true);
     }
     
     void OnDisable() {
-        GameManager.A_GamePaused -= OnPauseGame;
-        GameManager.A_GameResumed -= OnResumeGame;
+        GameManagerOLD.A_GamePaused -= OnPauseGame;
+        GameManagerOLD.A_GameResumed -= OnResumeGame;
         SetPlayerControlsEnabled(false);
     }
     
@@ -731,11 +731,11 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
     /*****  Probably temporary stuff  *****/
     
     void OnTimeSlowStarted(InputAction.CallbackContext context) {
-        GameManager.Instance.SetPreferredTimeScale(0.1f);
+        GameManagerOLD.Instance.SetPreferredTimeScale(0.1f);
     }
     
     void OnTimeSlowCanceled(InputAction.CallbackContext context) {
-        GameManager.Instance.SetPreferredTimeScale(1);
+        GameManagerOLD.Instance.SetPreferredTimeScale(1);
     }
     
     void On_ToggleThirdPerson(InputAction.CallbackContext context) {

@@ -168,7 +168,7 @@ public class ProjectileBase : MonoBehaviour {
     protected virtual void OnRicochetEnemy(EnemyBase enemy) {
         enemyToIgnore = enemy;
         colliderToIgnore = null;
-        EnemyBase closestEn = GameManager.Instance.currentSceneRunner.GetClosestEnemy(transform.position, enemyToIgnore);
+        EnemyBase closestEn = GameManagerOLD.Instance.currentSceneRunner.GetClosestEnemy(transform.position, enemyToIgnore);
         Vector3 ricVel;
 #if DEBUG_RAYS
         if (closestEn && closestEn.rb) {

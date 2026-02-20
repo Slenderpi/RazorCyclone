@@ -40,7 +40,7 @@ public class FuelPickup : MonoBehaviour {
         if (hasBeenCollected) return;
         if (other.CompareTag("Player"))  {
             hasBeenCollected = true;
-            PlayerCharacterCtrlr player = GameManager.CurrentPlayer;
+            PlayerCharacterCtrlr player = GameManagerOLD.CurrentPlayer;
             if (player != null)  {
                 player.AddFuel(FuelValue);
                 Destroy(gameObject);

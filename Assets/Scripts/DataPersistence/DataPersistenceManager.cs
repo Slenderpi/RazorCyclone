@@ -113,19 +113,19 @@ public class DataPersistenceManager : MonoBehaviour {
     }
     
     void loadControlSettings() {
-        float highSens = GameManager.Instance.HighestSensitivity;
-        float lowSens = GameManager.Instance.LowestSensitivity;
+        float highSens = GameManagerOLD.Instance.HighestSensitivity;
+        float lowSens = GameManagerOLD.Instance.LowestSensitivity;
         usettings.MouseSensitivity = Mathf.Clamp(usettings.MouseSensitivity, lowSens, highSens);
-        GameManager.Instance.CurrentMouseSensitivity = usettings.MouseSensitivity;
-        GameManager.Instance.SettingsPanel.MouseSenseSlider.value = (GameManager.Instance.CurrentMouseSensitivity - lowSens) / (highSens - lowSens);
+        GameManagerOLD.Instance.CurrentMouseSensitivity = usettings.MouseSensitivity;
+        GameManagerOLD.Instance.SettingsPanel.MouseSenseSlider.value = (GameManagerOLD.Instance.CurrentMouseSensitivity - lowSens) / (highSens - lowSens);
     }
     
     void loadVideoSettings() {
-        GameManager.Instance.CurrentFOV = Math.Clamp(usettings.FOV, GameCamera.MIN_FOV, GameCamera.MAX_FOV);
+        GameManagerOLD.Instance.CurrentFOV = Math.Clamp(usettings.FOV, GameCamera.MIN_FOV, GameCamera.MAX_FOV);
     }
     
     void loadAudioSettings() {
-        AudioPlayer2D aud = GameManager.Instance.Audio2D;
+        AudioPlayer2D aud = GameManagerOLD.Instance.Audio2D;
         aud.SetMasterVolume(usettings.MasterVolume);
         aud.SetSFXVolume(usettings.SoundVolume);
         aud.SetMusicVolume(usettings.MusicVolume);

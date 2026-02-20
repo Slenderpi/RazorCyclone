@@ -11,7 +11,7 @@ public class BM_CannonFodder : BoidMover {
     }
     
     public override Vector3 CalculateSteering() {
-        Vector3 plrPos = GameManager.CurrentPlayer.transform.position;
+        Vector3 plrPos = GameManagerOLD.CurrentPlayer.transform.position;
         if ((plrPos - transform.position).sqrMagnitude <= CannonFodderData.FleeTriggerDistance * CannonFodderData.FleeTriggerDistance) {
             Vector3 steer = BoidSteerer.Flee(transform.position, plrPos, rb.linearVelocity, CannonFodderData);
             steer.y = 0;

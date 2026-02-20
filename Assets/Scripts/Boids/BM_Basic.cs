@@ -64,10 +64,10 @@ public class BM_Basic : BoidMover {
     public override Vector3 CalculateSteering() {
         checkAndSetForOverride();
         return bt switch {
-            BoidBehaviour.Seek => BoidSteerer.Seek(transform.position, GameManager.CurrentPlayer.transform.position, rb.linearVelocity, msv, msf),
-            BoidBehaviour.Flee => BoidSteerer.Flee(transform.position, GameManager.CurrentPlayer.transform.position, rb.linearVelocity, msv, msf),
-            BoidBehaviour.Pursuit => BoidSteerer.Pursuit(transform.position, GameManager.CurrentPlayer.transform.position, rb.linearVelocity, GameManager.CurrentPlayer.rb.linearVelocity, msv, msf),
-            BoidBehaviour.Evade => BoidSteerer.Evade(transform.position, GameManager.CurrentPlayer.transform.position, rb.linearVelocity, GameManager.CurrentPlayer.rb.linearVelocity, msv, msf),
+            BoidBehaviour.Seek => BoidSteerer.Seek(transform.position, GameManagerOLD.CurrentPlayer.transform.position, rb.linearVelocity, msv, msf),
+            BoidBehaviour.Flee => BoidSteerer.Flee(transform.position, GameManagerOLD.CurrentPlayer.transform.position, rb.linearVelocity, msv, msf),
+            BoidBehaviour.Pursuit => BoidSteerer.Pursuit(transform.position, GameManagerOLD.CurrentPlayer.transform.position, rb.linearVelocity, GameManagerOLD.CurrentPlayer.rb.linearVelocity, msv, msf),
+            BoidBehaviour.Evade => BoidSteerer.Evade(transform.position, GameManagerOLD.CurrentPlayer.transform.position, rb.linearVelocity, GameManagerOLD.CurrentPlayer.rb.linearVelocity, msv, msf),
             BoidBehaviour.Wander => doWander(),
             BoidBehaviour.TestState => testObstAvoid(),
             _ => Vector3.zero,

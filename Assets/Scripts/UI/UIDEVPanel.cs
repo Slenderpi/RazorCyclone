@@ -50,7 +50,7 @@ public class UIDEVPanel : UIPanel {
         DebugPanelContainer.SetActive(ShowPanel);
         ShowHideButtonText.text = (ShowPanel ? "HIDE" : "SHOW") + "\nDebug Panel";
         setWSM();
-        GameManager.A_PlayerSpawned += (PlayerCharacterCtrlr plr) => {
+        GameManagerOLD.A_PlayerSpawned += (PlayerCharacterCtrlr plr) => {
             setWSM();
         };
         inst = this;
@@ -81,20 +81,20 @@ public class UIDEVPanel : UIPanel {
     }
     
     public void OnButton_ToggleInputOverlay() {
-        UIGamePanel gp = GameManager.Instance.MainCanvas.GamePanel;
+        UIGamePanel gp = GameManagerOLD.Instance.MainCanvas.GamePanel;
         gp.InputOverlay.SetActive(!gp.InputOverlay.activeSelf);
         TogIndInputOverlay.SetActive(gp.InputOverlay.activeSelf);
     }
     
     public void OnButton_ToggleInvincible() {
-        PlayerCharacterCtrlr plr = GameManager.CurrentPlayer;
+        PlayerCharacterCtrlr plr = GameManagerOLD.CurrentPlayer;
         if (!plr) return;
         plr.IsInvincible = !plr.IsInvincible;
         TogIndInvincibility.SetActive(plr.IsInvincible);
     }
     
     public void OnButton_ToggleInfFuel() {
-        PlayerCharacterCtrlr plr = GameManager.CurrentPlayer;
+        PlayerCharacterCtrlr plr = GameManagerOLD.CurrentPlayer;
         if (!plr) return;
         plr.NoFuelCost = !plr.NoFuelCost;
         TogIndInfFuel.SetActive(plr.NoFuelCost);
@@ -156,29 +156,29 @@ public class UIDEVPanel : UIPanel {
         // SetTimeScaleText.text = "Set Time Scale (" + scalestr + ")";
         // FieldTimeScale.SetTextWithoutNotify(scalestr);
         TimeScaleTitleText.SetText($"Time Scale ({scalestr})");
-        GameManager.Instance.SetPreferredTimeScale(scale);
+        GameManagerOLD.Instance.SetPreferredTimeScale(scale);
     }
     
     public void OnButton_ReloadLevel() {
-        GameManager.Instance.currentSceneRunner.ReloadCurrentScene();
+        GameManagerOLD.Instance.currentSceneRunner.ReloadCurrentScene();
     }
     
     public void OnButton_ResetPlayer() {
-        if (!GameManager.CurrentPlayer) return;
-        GameManager.Instance.ResumeGame();
-        GameManager.CurrentPlayer.TakeDamage(9999, EDamageType.Any);
+        if (!GameManagerOLD.CurrentPlayer) return;
+        GameManagerOLD.Instance.ResumeGame();
+        GameManagerOLD.CurrentPlayer.TakeDamage(9999, EDamageType.Any);
     }
     
     void setWSM() {
-        SREndlessMode sre = GameManager.Instance.currentSceneRunner as SREndlessMode;
+        SREndlessMode sre = GameManagerOLD.Instance.currentSceneRunner as SREndlessMode;
         wsm = sre ? sre.WaveSpawnManager : null;
         initUI();
     }
     
     void initUI() {
-        PlayerCharacterCtrlr plr = GameManager.CurrentPlayer;
+        PlayerCharacterCtrlr plr = GameManagerOLD.CurrentPlayer;
         if (!plr) return;
-        TogIndInputOverlay.SetActive(GameManager.Instance.MainCanvas.GamePanel.InputOverlay.activeSelf);
+        TogIndInputOverlay.SetActive(GameManagerOLD.Instance.MainCanvas.GamePanel.InputOverlay.activeSelf);
         TogIndInvincibility.SetActive(plr.IsInvincible);
         TogIndInfFuel.SetActive(plr.NoFuelCost);
         if (!wsm) return;

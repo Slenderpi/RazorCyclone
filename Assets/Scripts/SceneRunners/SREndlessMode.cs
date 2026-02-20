@@ -28,13 +28,13 @@ public class SREndlessMode : SceneRunner, IDataPersistence {
     
     
     public override void BeginScene() {
-        GameManager.Instance.MainCanvas.TutorialPanel.SetActive(false);
+        GameManagerOLD.Instance.MainCanvas.TutorialPanel.SetActive(false);
         WaveSpawnManager.OwningEndlessMode = this;
         WaveSpawnManager.A_OnWaveActivated += OnWaveActivated;
         WaveSpawnManager.A_OnWaveFinished += OnWaveFinished;
         WaveSpawnManager.InitWaveSpawner();
-        mainCanvas = GameManager.Instance.MainCanvas;
-        GameManager.A_EnemyKilled += () => { EnemiesKilled++; };
+        mainCanvas = GameManagerOLD.Instance.MainCanvas;
+        GameManagerOLD.A_EnemyKilled += () => { EnemiesKilled++; };
         // mainCanvas.GamePanel.SetReadTimerOn(true);
         mainCanvas.GamePanel.RoundLabel.gameObject.SetActive(true);
         TimesSpentEachWave = new List<float>();
@@ -42,7 +42,7 @@ public class SREndlessMode : SceneRunner, IDataPersistence {
         _SceneStartTime = Time.time;
 #endif
         playerIsDead = false;
-        GameManager.Instance.MainCanvas.FadeToClear();
+        GameManagerOLD.Instance.MainCanvas.FadeToClear();
         SpawnPlayerAndConnect();
         StartCoroutine(delayedBeginEndless());
     }
@@ -54,7 +54,7 @@ public class SREndlessMode : SceneRunner, IDataPersistence {
     
     protected override void OnPlayerDied() {
         playerIsDead = true;
-        GameManager.Instance.SetPauseInputActionsEnabled(false);
+        GameManagerOLD.Instance.SetPauseInputActionsEnabled(false);
         GameData runData = calcCurrentRunResults();
         mainCanvas.DeathPanel.SetEndScreenInfo(recordData, runData, determineAndSetRecords(runData));
         mainCanvas.SetCanvasState(UIMainCanvas.ECanvasState.DiedEndless);

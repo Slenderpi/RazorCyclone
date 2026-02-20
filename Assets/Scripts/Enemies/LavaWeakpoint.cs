@@ -74,7 +74,7 @@ public class LavaWeakpoint : EnemyWeakpoint {
     protected override void OnDefeated(EDamageType damageType) {
         // Same logic as normal OnDeafeated(), but drop fuel at actual weakpoint position
         if (damageType == EDamageType.Vacuum) {
-            GameManager.CurrentPlayer.AddFuel(100);
+            GameManagerOLD.CurrentPlayer.AddFuel(100);
         } else {
             DropFuel(weakpointTransform.position);
         }

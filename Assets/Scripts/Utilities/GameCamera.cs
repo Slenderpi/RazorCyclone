@@ -38,17 +38,17 @@ public class GameCamera : MonoBehaviour {
     void Awake() {
         c = GetComponent<Camera>();
         sodFOV = new SecondOrderDynamicsF(f, z, r, 0);
-        if (GameManager.Instance)
-            c.fieldOfView = GameManager.Instance.CurrentFOV;
+        if (GameManagerOLD.Instance)
+            c.fieldOfView = GameManagerOLD.Instance.CurrentFOV;
     }
     
     void LateUpdate() {
-        if (!GameManager.CurrentPlayer) return;
+        if (!GameManagerOLD.CurrentPlayer) return;
         if (Time.deltaTime > 0) {
 #if UNITY_EDITOR
             sodFOV.SetDynamics(f, z, r);
 #endif
-            updateFOV(sodFOV.Update(Mathf.Lerp(0, MaxAddFOV, GameManager.CurrentPlayer.rb.linearVelocity.magnitude / SpeedForMaxFOV), Time.deltaTime));
+            updateFOV(sodFOV.Update(Mathf.Lerp(0, MaxAddFOV, GameManagerOLD.CurrentPlayer.rb.linearVelocity.magnitude / SpeedForMaxFOV), Time.deltaTime));
         }
     }
     
@@ -63,7 +63,7 @@ public class GameCamera : MonoBehaviour {
     }
     
     void OnDestroy() {
-        GameManager.Instance.GCam = null;
+        GameManagerOLD.Instance.GCam = null;
     }
     
 }

@@ -149,7 +149,7 @@ public class WaveSpawnerManager : MonoBehaviour {
         PrintWaveEntries();
 #endif
 #if UNITY_EDITOR
-        CurrentWaveNumber = GameManager.Instance.StartRound - 1;
+        CurrentWaveNumber = GameManagerOLD.Instance.StartRound - 1;
 #endif
         PreloadWave(CurrentWaveNumber + 1);
     }
@@ -319,7 +319,7 @@ public class WaveSpawnerManager : MonoBehaviour {
         activateWaveFinished = false;
         CurrentWaveNumber = CurrentPreloadedWaveNumber;
         A_OnWaveActivated?.Invoke(CurrentWaveNumber, Time.time);
-        GameManager.Instance.MainCanvas.GamePanel.OnUpdateRoundNumber(CurrentWaveNumber);
+        GameManagerOLD.Instance.MainCanvas.GamePanel.OnUpdateRoundNumber(CurrentWaveNumber);
         hasDefeatedActiveWave = false;
 #if DEBUG_WAVE_STRS && UNITY_EDITOR
         Debug.Log("DEBUG: Activating wave number: " + CurrentWaveNumber);
@@ -429,9 +429,9 @@ public class WaveSpawnerManager : MonoBehaviour {
         if (waveComplete) {
             hasDefeatedActiveWave = true;
             A_OnWaveFinished?.Invoke(CurrentWaveNumber, Time.time);
-            GameManager.Instance.MainCanvas.GamePanel.OnRoundCompleted();
-            GameManager.CurrentPlayer.HealHealth(GameManager.CurrentPlayer.MaxHealth);
-            GameManager.CurrentPlayer.AddFuel(100);
+            GameManagerOLD.Instance.MainCanvas.GamePanel.OnRoundCompleted();
+            GameManagerOLD.CurrentPlayer.HealHealth(GameManagerOLD.CurrentPlayer.MaxHealth);
+            GameManagerOLD.CurrentPlayer.AddFuel(100);
             StartCoroutine(delaySpawnNextWave());
         }
     }

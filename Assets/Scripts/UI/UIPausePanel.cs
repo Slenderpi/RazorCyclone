@@ -9,7 +9,7 @@ public class UIPausePanel : UIPanel {
     
     public void OnButton_ReturnMain() {
         if (isReturningToMain) return;
-        SREndlessMode sre = GameManager.Instance.currentSceneRunner as SREndlessMode;
+        SREndlessMode sre = GameManagerOLD.Instance.currentSceneRunner as SREndlessMode;
         if (sre)
             sre.SaveGameNow();
         StartCoroutine(delayReturnToMenu());
@@ -17,14 +17,14 @@ public class UIPausePanel : UIPanel {
     
     IEnumerator delayReturnToMenu() {
         isReturningToMain = true;
-        GameManager.Instance.MainCanvas.FadeToBlack();
+        GameManagerOLD.Instance.MainCanvas.FadeToBlack();
         yield return new WaitForSecondsRealtime(UIMainCanvas.FADER_FADE_DURATION + 0.05f);
-        GameManager.Instance.MainCanvas.FadeToClear();
-        GameManager.Instance.currentSceneRunner.SwitchToScene("MainMenuScene");
+        GameManagerOLD.Instance.MainCanvas.FadeToClear();
+        GameManagerOLD.Instance.currentSceneRunner.SwitchToScene("MainMenuScene");
     }
     
     public void OnButton_ResumeGame() {
-        GameManager.Instance.ResumeGame();
+        GameManagerOLD.Instance.ResumeGame();
     }
     
     public override void OnGameResumed() {
@@ -36,8 +36,8 @@ public class UIPausePanel : UIPanel {
     }
     
     public override void OnPlayerSpawned(PlayerCharacterCtrlr plr) {
-        if (GameManager.Instance.gameIsPaused) {
-            GameManager.Instance.ResumeGame();
+        if (GameManagerOLD.Instance.gameIsPaused) {
+            GameManagerOLD.Instance.ResumeGame();
         }
         // SetActive(false);
     }
@@ -46,7 +46,7 @@ public class UIPausePanel : UIPanel {
     
     void OnEnable() {
         isReturningToMain = false;
-        GameManager.Instance.Audio2D.SetUMastLPTo(true);
+        GameManagerOLD.Instance.Audio2D.SetUMastLPTo(true);
     }
     
 }

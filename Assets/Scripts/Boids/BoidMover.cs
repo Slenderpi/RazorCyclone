@@ -46,7 +46,7 @@ public abstract class BoidMover : MonoBehaviour {
     }
     
     void FixedUpdate() {
-        PlayerCharacterCtrlr plr = GameManager.CurrentPlayer;
+        PlayerCharacterCtrlr plr = GameManagerOLD.CurrentPlayer;
         if (!plr) return;
         Vector3 steer = CalculateSteering();
         // if (ModelToRotate)

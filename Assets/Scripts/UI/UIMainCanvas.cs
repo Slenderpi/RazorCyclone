@@ -49,8 +49,8 @@ public class UIMainCanvas : UIPanel {
     public void OnButton_Back() {
         switch (CurrentCanvasState) {
         case ECanvasState.Paused:
-            if (GameManager.Instance.gameIsPaused)
-                GameManager.Instance.ResumeGame();
+            if (GameManagerOLD.Instance.gameIsPaused)
+                GameManagerOLD.Instance.ResumeGame();
             break;
         case ECanvasState.Settings:
             DataPersistenceManager.Instance.SaveSettings();
@@ -135,7 +135,7 @@ public class UIMainCanvas : UIPanel {
     }
     
     IEnumerator animateFader(float startAlpha, float endAlpha) {
-        GameManager.Instance.SetPauseInputActionsEnabled(false);
+        GameManagerOLD.Instance.SetPauseInputActionsEnabled(false);
         Color c = Fader.color;
         c.a = startAlpha;
         Fader.color = c;
@@ -151,7 +151,7 @@ public class UIMainCanvas : UIPanel {
         Fader.color = c;
         if (endAlpha < 0.5f) { // Fading to clear
             Fader.gameObject.SetActive(false);
-            GameManager.Instance.SetPauseInputActionsEnabled(true);
+            GameManagerOLD.Instance.SetPauseInputActionsEnabled(true);
         }
     }
     

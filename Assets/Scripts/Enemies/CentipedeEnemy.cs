@@ -64,7 +64,7 @@ public class CentipedeEnemy : EnemyBase {
     protected override void LateInit() {
         base.LateInit();
         // StartCoroutine(initCentipede());
-        randRoamOffset = Random.Range(0, GameManager.Instance.currentSceneRunner.centipedeCircleCompleteTime);
+        randRoamOffset = Random.Range(0, GameManagerOLD.Instance.currentSceneRunner.centipedeCircleCompleteTime);
         samplingLength = BodyLength + 1;
         if (head == null) {
             StartCoroutine(staggerSpawnAndStartBody());
@@ -108,24 +108,24 @@ public class CentipedeEnemy : EnemyBase {
     void Update() {
         if (head == null) {
             if (!headDoneInitializing) return;
-            if (!GameManager.CurrentPlayer) return;
-            Vector3 roamPoint = GameManager.Instance.currentSceneRunner.mapCenter;
+            if (!GameManagerOLD.CurrentPlayer) return;
+            Vector3 roamPoint = GameManagerOLD.Instance.currentSceneRunner.mapCenter;
             float rad = Mathf.LerpUnclamped(
-                GameManager.Instance.currentSceneRunner.minCentipedeRoamRadius,
-                GameManager.Instance.currentSceneRunner.maxCentipedeRoamRadius,
+                GameManagerOLD.Instance.currentSceneRunner.minCentipedeRoamRadius,
+                GameManagerOLD.Instance.currentSceneRunner.maxCentipedeRoamRadius,
                 (float)shrunkenLengthUse / BodyLength
             );
             float height = Mathf.LerpUnclamped(
-                GameManager.Instance.currentSceneRunner.minCentipedeRoamHeightRange,
-                GameManager.Instance.currentSceneRunner.maxCentipedeRoamHeightRange,
+                GameManagerOLD.Instance.currentSceneRunner.minCentipedeRoamHeightRange,
+                GameManagerOLD.Instance.currentSceneRunner.maxCentipedeRoamHeightRange,
                 (float)shrunkenLengthUse / BodyLength
             );
-            float t = (Time.time + randRoamOffset) * 2f * Mathf.PI / GameManager.Instance.currentSceneRunner.centipedeCircleCompleteTime;
+            float t = (Time.time + randRoamOffset) * 2f * Mathf.PI / GameManagerOLD.Instance.currentSceneRunner.centipedeCircleCompleteTime;
             roamPoint.x += rad * Mathf.Cos(t);
             roamPoint.z += rad * Mathf.Sin(t);
-            roamPoint.y += height * Mathf.Sin(Time.time * 2f * Mathf.PI / GameManager.Instance.currentSceneRunner.centipedeHeightCompletionTime);
+            roamPoint.y += height * Mathf.Sin(Time.time * 2f * Mathf.PI / GameManagerOLD.Instance.currentSceneRunner.centipedeHeightCompletionTime);
 #if UNITY_EDITOR && true
-            GameManager.D_DrawPoint(roamPoint, Color.green, Time.deltaTime);
+            GameManagerOLD.D_DrawPoint(roamPoint, Color.green, Time.deltaTime);
             Debug.DrawRay(transform.position, roamPoint - transform.position, Color.cyan, Time.deltaTime);
 #endif
             transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(roamPoint - transform.position), 60 * Time.deltaTime);
@@ -196,7 +196,7 @@ public class CentipedeEnemy : EnemyBase {
         }
         shrunkenLengthUse = trackedShrunkenLength - bodyIndex;
         trackedShrunkenLength = shrunkenLengthUse;
-        randRoamOffset = Random.Range(0, GameManager.Instance.currentSceneRunner.centipedeCircleCompleteTime);
+        randRoamOffset = Random.Range(0, GameManagerOLD.Instance.currentSceneRunner.centipedeCircleCompleteTime);
         bodyIndex = 0;
         modelMeshRenderer.material = CentConfig.HeadMaterial;
         if (ceAft)

@@ -61,7 +61,7 @@ public class SRTutorial : SceneRunner {
     
     
     public override void BeginScene() {
-        TutorialPanel = GameManager.Instance.MainCanvas.TutorialPanel;
+        TutorialPanel = GameManagerOLD.Instance.MainCanvas.TutorialPanel;
         TutorialPanel.srt = this;
         getAndSetSpawnGroups();
         setupTriggers();
@@ -85,18 +85,18 @@ public class SRTutorial : SceneRunner {
     }
 
     protected override void OnPlayerDied() {
-        GameManager.Instance.SetPauseInputActionsEnabled(false);
+        GameManagerOLD.Instance.SetPauseInputActionsEnabled(false);
         TutorialPanel.ShowDeathFuelUI();
         // GameManager.Instance.DestroyPlayer();
     }
     
     public void respawnPlayer() {
-        GameManager.Instance.SetPauseInputActionsEnabled(true);
-        GameManager.Instance.SpawnPlayer();
+        GameManagerOLD.Instance.SetPauseInputActionsEnabled(true);
+        GameManagerOLD.Instance.SpawnPlayer();
     }
     
     IEnumerator delayedStartTutorial() {
-        GameManager.Instance.MainCanvas.FadeToClear();
+        GameManagerOLD.Instance.MainCanvas.FadeToClear();
         yield return new WaitForSecondsRealtime(UIMainCanvas.FADER_FADE_DURATION + 0.1f);
 #if UNITY_EDITOR
         GoToState(StartingState);
@@ -258,7 +258,7 @@ public class SRTutorial : SceneRunner {
         // TutorialPanel.OnTutorialStateChanged(ETutorialState.FINISHED);
         print($"Congratulations! You have completed the tutorial. Now loading the endless level (in 3 seconds).");
         yield return new WaitForSeconds(3);
-        GameManager.Instance.MainCanvas.FadeToBlack();
+        GameManagerOLD.Instance.MainCanvas.FadeToBlack();
         yield return new WaitForSecondsRealtime(UIMainCanvas.FADER_FADE_DURATION);
         SwitchToScene("True Endless");
     }

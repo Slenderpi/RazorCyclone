@@ -148,7 +148,7 @@ public class UIGamePanel : UIPanel {
     }
     
     void Update() {
-        if (!GameManager.CurrentPlayer) return;
+        if (!GameManagerOLD.CurrentPlayer) return;
         if (Time.deltaTime == 0)
             return;
         setFuelSliderFill();
@@ -161,7 +161,7 @@ public class UIGamePanel : UIPanel {
     }
     
     void LateUpdate() {
-        if (!GameManager.CurrentPlayer) return;
+        if (!GameManagerOLD.CurrentPlayer) return;
         if (Time.deltaTime > 0) {
             lerpSway();
             lerpSpeed();
@@ -211,8 +211,8 @@ public class UIGamePanel : UIPanel {
         sodLookY.SetDynamics(swf, swz, swr);
 #endif
         Vector2 newPos = new Vector2(
-            sodLookX.Update(Mathf.Clamp(-GameManager.CurrentPlayer.lookDelta.x / maxLookDelta, -1, 1), Time.deltaTime),
-            sodLookY.Update(Mathf.Clamp(-GameManager.CurrentPlayer.lookDelta.y / maxLookDelta, -1, 1), Time.deltaTime) * swayYExaggerateFactor
+            sodLookX.Update(Mathf.Clamp(-GameManagerOLD.CurrentPlayer.lookDelta.x / maxLookDelta, -1, 1), Time.deltaTime),
+            sodLookY.Update(Mathf.Clamp(-GameManagerOLD.CurrentPlayer.lookDelta.y / maxLookDelta, -1, 1), Time.deltaTime) * swayYExaggerateFactor
         );
         MomentumPanel.anchoredPosition = newPos * maxSwayDist;
     }
@@ -221,7 +221,7 @@ public class UIGamePanel : UIPanel {
 #if UNITY_EDITOR
         sodSpeed.SetDynamics(scf, scz, scr);
 #endif
-        float speed = GameManager.CurrentPlayer.rb.linearVelocity.magnitude;
+        float speed = GameManagerOLD.CurrentPlayer.rb.linearVelocity.magnitude;
         float newScale = Mathf.LerpUnclamped(1, 1 - AdditionalScale, sodSpeed.Update(speed, Time.deltaTime) / HighAdditionalScaleSpeed);
         MomentumPanel.localScale = new Vector3(newScale, newScale, 1);
     }
@@ -298,7 +298,7 @@ public class UIGamePanel : UIPanel {
             FuelOutlineAnimator.SetTrigger("AddFill");
         
         // Temporary?
-        GameManager.Instance.Audio2D.PlayClipSFX(AudioPlayer2D.EClipSFX.Plr_PickupFuel);
+        GameManagerOLD.Instance.Audio2D.PlayClipSFX(AudioPlayer2D.EClipSFX.Plr_PickupFuel);
     }
     
     public void OnFuelSpent(float amnt, float perc, bool spentAsHealth) {
@@ -308,14 +308,14 @@ public class UIGamePanel : UIPanel {
     }
     
     public void OnDamageTaken(float amnt) {
-        PlayerCharacterCtrlr plr = GameManager.CurrentPlayer;
+        PlayerCharacterCtrlr plr = GameManagerOLD.CurrentPlayer;
         if (plr)
             updateHealthUI(plr.CurrentHealth, plr.MaxHealth);
     }
     
     public void OnPlayerHealed(float amnt) {
         if (amnt == 0) return;
-        PlayerCharacterCtrlr plr = GameManager.CurrentPlayer;
+        PlayerCharacterCtrlr plr = GameManagerOLD.CurrentPlayer;
         if (plr && gameObject.activeSelf)
             updateHealthUI(plr.CurrentHealth, plr.MaxHealth);
     }

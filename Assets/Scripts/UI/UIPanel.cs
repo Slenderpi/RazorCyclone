@@ -9,10 +9,10 @@ public abstract class UIPanel : MonoBehaviour {
     public virtual void Init() {
         if (hasInitialized) return;
         hasInitialized = true;
-        GameManager.A_GamePaused += OnGamePaused;
-        GameManager.A_GameResumed += OnGameResumed;
-        GameManager.A_PlayerSpawned += OnPlayerSpawned;
-        GameManager.A_PlayerDestroying += OnPlayerDestroying;
+        GameManagerOLD.A_GamePaused += OnGamePaused;
+        GameManagerOLD.A_GameResumed += OnGameResumed;
+        GameManagerOLD.A_PlayerSpawned += OnPlayerSpawned;
+        GameManagerOLD.A_PlayerDestroying += OnPlayerDestroying;
     }
     
     public virtual void OnGamePaused() {}

@@ -18,7 +18,7 @@ public class Spawner : MonoBehaviour {
     /// Set canSpawn based on spawner-specific criteria, such as distance to player.
     /// </summary>
     public bool ValidateSpawnerSpecificCriteria() {
-        PlayerCharacterCtrlr plr = GameManager.CurrentPlayer;
+        PlayerCharacterCtrlr plr = GameManagerOLD.CurrentPlayer;
         if (!plr) return false;
         return (plr.transform.position - transform.position).sqrMagnitude > playerDetectionRange * playerDetectionRange;
     }

@@ -34,7 +34,7 @@ public class HunterEnemy : EnemyBase {
         if (!isStunned) {
             if (damageType == EDamageType.Projectile || damageType == EDamageType.ProjectileRicochet) {
                 GetStunned();
-                GameManager.Instance.OnEnemyTookDamage(this, damageType, false);
+                GameManagerOLD.Instance.OnEnemyTookDamage(this, damageType, false);
             }
         } else {
             base.OnTakeDamage(amnt, damageType);
