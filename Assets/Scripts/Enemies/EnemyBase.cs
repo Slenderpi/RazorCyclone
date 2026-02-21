@@ -174,7 +174,9 @@ public class EnemyBase : MonoBehaviour {
     }
     
     public void DropFuel(Vector3 position) {
-        Instantiate(EnConfig.FuelPickupPrefab, position, Quaternion.identity);
+        //ADAM CODE
+        //Comented out spawaning fuel
+        //Instantiate(EnConfig.FuelPickupPrefab, position, Quaternion.identity);
     }
     
     protected virtual void onFixedUpdate() {

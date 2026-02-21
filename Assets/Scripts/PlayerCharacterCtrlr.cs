@@ -255,13 +255,17 @@ public class PlayerCharacterCtrlr : MonoBehaviour {
             currentFuel -= amount;
             if (currentFuel < 0) {
                 spentAsHealth = true;
+                
                 TakeDamage(-currentFuel * FuelHelathCostMultiplier, EDamageType.Any);
                 currentFuel = 0;
             }
         } else {
             spentAsHealth = true;
             //StartCoroutine(StartRefillFuelTimer());
-            TakeDamage(amount * FuelHelathCostMultiplier, EDamageType.Any);
+            //ADAM CODE
+            //created "healthPercent" variable, added it to the take damage function call
+            float healthPercent = CurrentHealth/MaxHealth;
+            TakeDamage(amount * FuelHelathCostMultiplier * healthPercent, EDamageType.Any);
         }
         A_FuelSpent?.Invoke(amount, currentFuel / MaxFuel, spentAsHealth);
     }
