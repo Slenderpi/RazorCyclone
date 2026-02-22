@@ -9,8 +9,6 @@ public class GameManager : MonoBehaviour {
 
     public static GameManager Singleton;
 
-	public GameObject PlayerPrefab;
-
 	bool _paused = false;
 	public static bool IsPaused { get { return Singleton._paused; } private set { Singleton._paused = value; } }
 

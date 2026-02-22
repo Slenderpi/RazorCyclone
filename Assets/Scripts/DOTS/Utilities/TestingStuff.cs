@@ -62,8 +62,10 @@ partial struct TestingStuffSystem : ISystem {
         SystemAPI.SetComponent(en, tsc);
         TransformLookup.Update(ref state);
         int SpawnCount = Util.pow3(tsc.CountPerSide);
+        if (!ebs.TryGetEntityPrefabById(tsc.EnemyTypeToSpawn, out Entity entityToSpawn))
+            return;
+		NativeArray<Entity> entities = state.EntityManager.Instantiate(entityToSpawn, SpawnCount, Allocator.TempJob);
 		Debug.Log($"TestingStuff: Spawning {SpawnCount} entities!");
-		NativeArray<Entity> entities = state.EntityManager.Instantiate(ebs.GetEntityPrefabById(tsc.EnemyTypeToSpawn), SpawnCount, Allocator.TempJob);
 		TestStuffJob job = new() {
             Entities = entities,
             TransformLookup = TransformLookup,

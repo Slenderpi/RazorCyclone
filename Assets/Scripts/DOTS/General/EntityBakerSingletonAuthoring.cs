@@ -47,4 +47,21 @@ public struct EntityBakerSingleton : IComponentData {
 			_ => Entity.Null,
 		};
 	}
+
+	/// <summary>
+	/// Given an EEnemyType, try to get the corresponding entity prefab.<br/>
+    /// Prints an error if the provided EEnemyType does not have a spawn-ready DOTS reimplementation yet.
+	/// </summary>
+	/// <param name="enemyType"></param>
+	/// <returns>False if the enemy type has not been given a DOTS implementation yet.</returns>
+	public readonly bool TryGetEntityPrefabById(EEnemyType enemyType, out Entity entity) {
+        switch (enemyType) {
+            case EEnemyType.CannonFodder:
+                entity = CannonFodder;
+                return true;
+		}
+		Debug.LogError($"TestingStuff: the enemy type \"{enemyType}\" does not have a spawn-ready DOTS implementation yet and cannot be spawned.");
+        entity = Entity.Null;
+        return false;
+    }
 }
