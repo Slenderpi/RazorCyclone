@@ -2,7 +2,8 @@ using Unity.Burst;
 using Unity.Entities;
 using UnityEngine;
 
-[UpdateInGroup(typeof(EnemyEndPhysicsGroup))]
+[UpdateInGroup(typeof(SimulationSystemGroup))]
+[UpdateAfter(typeof(EnemyLogicPostUpdateGroup))]
 partial struct CannonFodderHitSystem : ISystem {
     
     [BurstCompile]
@@ -16,7 +17,7 @@ partial struct CannonFodderHitSystem : ISystem {
     public void OnUpdate(ref SystemState state) {
         new CannonFodderJob() {
 			ecb = SystemAPI
-				.GetSingleton<EndFixedStepSimulationEntityCommandBufferSystem.Singleton>()
+				.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>()
 				.CreateCommandBuffer(state.WorldUnmanaged)
                 .AsParallelWriter(),
 		}.ScheduleParallel();

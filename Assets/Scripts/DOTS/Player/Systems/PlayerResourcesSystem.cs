@@ -27,3 +27,19 @@ partial struct PlayerResourcesSystem : ISystem {
     }
 
 }
+
+[UpdateInGroup(typeof(PresentationSystemGroup))]
+partial struct PlayerResourcesFixedStepEventsResetSystem : ISystem {
+
+	[BurstCompile]
+	public void OnCreate(ref SystemState state) {
+		state.RequireForUpdate<PlayerResources>();
+	}
+
+	[BurstCompile]
+	public void OnUpdate(ref SystemState state) {
+        foreach (var resources in SystemAPI.Query<RefRW<PlayerResources>>())
+            resources.ValueRW.ResetEvents();
+	}
+
+}
