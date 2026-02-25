@@ -1,3 +1,4 @@
+using System;
 using System.Runtime.CompilerServices;
 using Unity.Burst;
 using Unity.Entities;
@@ -103,10 +104,11 @@ public struct PlayerResources : IComponentData {
     public float MinHuelRequired;
 
     float lastDamageTime;
+    bool didRefillFuelThisFrame;
 
 
 
-    [BurstCompile]
+	[BurstCompile]
     public void Init() {
         Fuel = 100f;
         Health = 100f;
@@ -115,7 +117,7 @@ public struct PlayerResources : IComponentData {
 
 	[BurstCompile]
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	public bool CanRegenHealth(float time) {
+	public readonly bool CanRegenHealth(float time) {
 		return Health < 100f && time - lastDamageTime >= HealthRegenDelay && Health > 0;
 	}
 
@@ -127,7 +129,7 @@ public struct PlayerResources : IComponentData {
 
 	[BurstCompile]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool CanSpendFuel() {
+    public readonly bool CanSpendFuel() {
         return Fuel > 0 || Health > MinHuelRequired;
     }
 
@@ -143,8 +145,25 @@ public struct PlayerResources : IComponentData {
         } else
             SpendHuel(amount, time);
     }
-
+	
     [BurstCompile]
+	public void RefillFuel() {
+		Fuel = 100f;
+		didRefillFuelThisFrame = true;
+	}
+
+	[BurstCompile]
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public readonly bool DidRefillFuelThisFrame() {
+		return didRefillFuelThisFrame;
+	}
+
+	[BurstCompile]
+	public void ResetEvents() {
+		didRefillFuelThisFrame = false;
+	}
+
+	[BurstCompile]
     public void TakeDamage(float amount, float time) {
         lastDamageTime = time;
         Health -= amount;
@@ -168,6 +187,7 @@ public struct PlayerResources : IComponentData {
             Health = 1f;
         }
     }
+
 }
 
 [BurstCompile]

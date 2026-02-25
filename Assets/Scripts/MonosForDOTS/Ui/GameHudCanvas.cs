@@ -1,4 +1,7 @@
+using Unity.Collections;
 using Unity.Entities;
+using Unity.Transforms;
+using UnityEditor.Search;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -37,12 +40,29 @@ public class GameHudCanvas : MonoBehaviour {
 		//playerEntity = query.GetSingletonEntity();
 	}
 
-	void Update() {
-		if (!TryGetPlayer(out Entity playerEntity))
+	void LateUpdate() {
+		if (!TryGetPlayerResources(out PlayerResources resources))
 			return;
-		PlayerResources resources = entityManager.GetComponentData<PlayerResources>(playerEntity);
 		UpdateFuelUi(resources.Fuel);
 		UpdateHealthUi(resources.Health);
+		EntityManager em = World.DefaultGameObjectInjectionWorld.EntityManager;
+		using (NativeArray<DeadEnemyTag> tags = em.CreateEntityQuery(typeof(DeadEnemyTag)).ToComponentDataArray<DeadEnemyTag>(Allocator.Temp)) {
+			int byVacuum = 0;
+			int byCannon = 0;
+			for (int i = 0; i < tags.Length; i++) {
+				DeadEnemyTag tag = tags[i];
+				if (tag.DeathSource == EEnemyDeathSource.Vacuum) {
+					byVacuum++;
+				} else if (tag.DeathSource == EEnemyDeathSource.Cannon) {
+					byCannon++;
+				}
+			}
+			if (byVacuum > 0 || byCannon > 0)
+				Debug.LogWarning($"Enemies killed! By vac: {byVacuum} | By can: {byCannon}");
+		}
+		if (resources.DidRefillFuelThisFrame()) {
+			Debug.Log("Refilled");
+		}
 	}
 
 	// TODO: current code is written for the sake of just getting something working. Improve it
@@ -95,6 +115,20 @@ public class GameHudCanvas : MonoBehaviour {
 				Toggler.SetActive(false);
 		}
 		return found;
+	}
+
+	/// <summary>
+	/// Internally calls TryGetPlayer().
+	/// </summary>
+	/// <param name="resources"></param>
+	/// <returns></returns>
+	bool TryGetPlayerResources(out PlayerResources resources) {
+		if (!TryGetPlayer(out Entity playerEntity)) {
+			resources = new();
+			return false;
+		}
+		resources = entityManager.GetComponentData<PlayerResources>(playerEntity);
+		return true;
 	}
 
 }

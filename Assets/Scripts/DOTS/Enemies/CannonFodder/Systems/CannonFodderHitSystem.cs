@@ -1,6 +1,7 @@
 using Unity.Burst;
 using Unity.Entities;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 [UpdateInGroup(typeof(EnemyEndPhysicsGroup))]
 partial struct CannonFodderHitSystem : ISystem {
@@ -28,26 +29,24 @@ partial struct CannonFodderHitSystem : ISystem {
 
         [BurstCompile]
         public void Execute(
-			[EntityIndexInQuery] int entityInQueryIndex,
+			[EntityIndexInQuery] int eiiq,
 			ref VacuumTarget vacTargetEvents,
-            in CannonTarget canTargetEvents,
-            in CannonFodder cf,
-            in Entity en
+            ref CannonTarget canTargetEvents,
+            in Entity en,
+            in CannonFodder _
         ) {
             if (vacTargetEvents.TryConsumeKillEvent()) {
-				DeadEnemyTag tag = new() {
-                    EnemyType = EEnemyType.CannonFodder,
+				ecb.AddComponent(eiiq, en, new DeadEnemyTag() {
+					EnemyType = EEnemyType.CannonFodder,
 					DeathSource = EEnemyDeathSource.Vacuum
-				};
-				ecb.AddComponent(entityInQueryIndex, en, tag);
-                return;
+				});
+				return;
             }
             if (canTargetEvents.TryConsumeHitEvent()) {
-				DeadEnemyTag tag = new() {
+				ecb.AddComponent(eiiq, en, new DeadEnemyTag() {
                     EnemyType = EEnemyType.CannonFodder,
-					DeathSource = EEnemyDeathSource.Cannon
-				};
-				ecb.AddComponent(entityInQueryIndex, en, tag);
+                    DeathSource = EEnemyDeathSource.Cannon
+                });
 			}
         }
     }

@@ -30,7 +30,7 @@ partial struct PlayerExtraInputsSystem : ISystem {
 			// TODO
 		}
 		if (input.RefillFuel) {
-			resources.Fuel = 100f;
+			resources.RefillFuel();
 		}
 		if (input.AddRicochets) {
 			spinfo.CurrentSpins += 5;
