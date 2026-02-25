@@ -19,7 +19,7 @@ MonoBehaviour:
   WanderChangeDist: 0.2
   MaxWanderForce: 9
   WanderMinimumDelay: 0
-  AvoidanceTestType: 3
+  AvoidanceTestType: 1
   AvoidanceMaxLookDist: 3
   AvoidanceWhiskerAngle: 30
   AvoidanceMinIntensity: 0.3

@@ -2801,16 +2801,8 @@ PrefabInstance:
       value: TestToolsPrefab
       objectReference: {fileID: 0}
     - target: {fileID: 6435131534069462878, guid: 585126b58a7f8a843a0ed38878e01e90, type: 3}
-      propertyPath: Corner1.x
-      value: -10
-      objectReference: {fileID: 0}
-    - target: {fileID: 6435131534069462878, guid: 585126b58a7f8a843a0ed38878e01e90, type: 3}
-      propertyPath: Corner1.y
-      value: -5
-      objectReference: {fileID: 0}
-    - target: {fileID: 6435131534069462878, guid: 585126b58a7f8a843a0ed38878e01e90, type: 3}
       propertyPath: CountPerSide
-      value: 1
+      value: 22
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
