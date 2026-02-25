@@ -79,8 +79,6 @@ public class GameManagerOLD : MonoBehaviour {
     [Header("Other")]
     [SerializeField]
     PlayerCharacterCtrlr playerPrefab;
-    [SerializeField]
-    EnemyBase enemyPrefab;
     [HideInInspector]
     public Camera rearCamera;
     
