@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using Unity.Entities;
 using UnityEngine;
 
@@ -25,10 +26,13 @@ public class GameManager : MonoBehaviour {
 
 	private void Start() {
 		entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
-		if (TrySpawnPlayer()) {
-			Cursor.lockState = CursorLockMode.Locked;
-			Cursor.visible = false;
-		}
+		StartCoroutine(WaitForEntityBakerSingleton());
+	}
+
+	IEnumerator WaitForEntityBakerSingleton() {
+		while (!TryGetEntityBakerSingleton(out var _))
+			yield return new WaitForEndOfFrame();
+		TrySpawnPlayer();
 	}
 
 	public static void OnPauseKeyPressed() {
@@ -41,7 +45,7 @@ public class GameManager : MonoBehaviour {
 
 	public static bool TrySpawnPlayer() {
 		if (TryGetPlayerEntity(out Entity _)) {
-			Debug.LogWarning("An existing player already exists. TrySpawnPlayer() cancelled.");
+			Debug.LogWarning("An existing player was found. TrySpawnPlayer() cancelled.");
 			return false;
 		}
 		if (!TryGetEntityBakerSingleton(out EntityBakerSingleton entityBakerSingleton)) {
@@ -49,6 +53,10 @@ public class GameManager : MonoBehaviour {
 			return false;
 		}
 		Singleton.entityManager.Instantiate(entityBakerSingleton.Player);
+		if (!IsPaused) {
+			Cursor.lockState = CursorLockMode.Locked;
+			Cursor.visible = false;
+		}
 		return true;
 	}
 
