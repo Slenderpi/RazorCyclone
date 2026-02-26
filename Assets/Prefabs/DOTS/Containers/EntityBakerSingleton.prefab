@@ -45,4 +45,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   PlayerPrefab: {fileID: 1018020868418296100, guid: 35a2ab5a5c0db2e4a9671a72b0a41771, type: 3}
+  FuelPickupPrefab: {fileID: 8934087127753941361, guid: 9cc7e6aa0723c0c4faed75f04b56b10c, type: 3}
   CannonFodderPrefab: {fileID: 5632368010658110814, guid: ea8ba59567ea5e04ca23b8fc8d6613ee, type: 3}

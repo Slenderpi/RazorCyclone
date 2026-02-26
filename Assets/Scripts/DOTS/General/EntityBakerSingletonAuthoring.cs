@@ -10,6 +10,10 @@ public class EntityBakerSingletonAuthoring : MonoBehaviour {
 	GameObject PlayerPrefab;
 
 	[SerializeField]
+	[Tooltip("Prefab of the fuel pickup.")]
+	GameObject FuelPickupPrefab;
+
+	[SerializeField]
     [Tooltip("Prefab of the Cannon Fodder.")]
 	GameObject CannonFodderPrefab;
 
@@ -20,6 +24,7 @@ public class EntityBakerSingletonAuthoring : MonoBehaviour {
             Entity entity = GetEntity(TransformUsageFlags.Dynamic);
             AddComponent(entity, new EntityBakerSingleton() {
                 Player = GetEntity(auth.PlayerPrefab, TransformUsageFlags.Dynamic),
+                FuelPickup = GetEntity(auth.FuelPickupPrefab, TransformUsageFlags.Dynamic),
                 CannonFodder = GetEntity(auth.CannonFodderPrefab, TransformUsageFlags.Dynamic)
             });
         }
@@ -34,6 +39,11 @@ public struct EntityBakerSingleton : IComponentData {
     public Entity Player;
 
     /// <summary>
+    /// Fuel pickup prefab.
+    /// </summary>
+    public Entity FuelPickup;
+
+    /// <summary>
     /// Cannon Fodder prefab.
     /// </summary>
     public Entity CannonFodder;
@@ -43,7 +53,7 @@ public struct EntityBakerSingleton : IComponentData {
     /// </summary>
     /// <param name="enemyType"></param>
     /// <returns></returns>
-    public Entity GetEntityPrefabById(EEnemyType enemyType) {
+    public readonly Entity GetEnemyPrefabById(EEnemyType enemyType) {
 		return enemyType switch {
 			EEnemyType.CannonFodder => CannonFodder,
 			_ => Entity.Null,
@@ -56,7 +66,7 @@ public struct EntityBakerSingleton : IComponentData {
 	/// </summary>
 	/// <param name="enemyType"></param>
 	/// <returns>False if the enemy type has not been given a DOTS implementation yet.</returns>
-	public readonly bool TryGetEntityPrefabById(EEnemyType enemyType, out Entity entity) {
+	public readonly bool TryGetEnemyPrefabById(EEnemyType enemyType, out Entity entity) {
         switch (enemyType) {
             case EEnemyType.CannonFodder:
                 entity = CannonFodder;

@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5143590433627438753}
   - component: {fileID: 5484310257654027552}
+  - component: {fileID: 4949218247566452004}
   - component: {fileID: 4806239723682207848}
   - component: {fileID: 3241105489952449670}
   m_Layer: 0
@@ -48,6 +49,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ImpactVFX: {fileID: 3002241975603437205, guid: 80374ef7d0b981b4cbffdeb0ebf79bc9, type: 3}
   RicochetVFX: {fileID: 3002241975603437205, guid: e79ef6db1d7da914b931e1ea966ac2f6, type: 3}
+--- !u!114 &4949218247566452004
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4473496465658862889}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 94173d4a9215aaf4db355a9e6d8b8386, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  AnimPeakHeight: 0.05
+  AnimCycleDuration: 2
+  SpinRate: 180
+  SpawnJumpVelRange: {x: 1.5, y: 2.5}
 --- !u!114 &4806239723682207848
 MonoBehaviour:
   m_ObjectHideFlags: 0

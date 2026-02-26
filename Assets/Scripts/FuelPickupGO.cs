@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class FuelPickup : MonoBehaviour {
+public class FuelPickupGO : MonoBehaviour {
     
     [HideInInspector]
     public float FuelValue = 100;

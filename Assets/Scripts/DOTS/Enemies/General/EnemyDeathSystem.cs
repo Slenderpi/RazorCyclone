@@ -14,19 +14,23 @@ partial struct EnemyDeathSystem : ISystem {
     public void OnCreate(ref SystemState state) {
         state.RequireForUpdate<EnemyDeathStatics>();
         state.RequireForUpdate<DeadEnemyTag>();
+		state.RequireForUpdate<EntityBakerSingleton>();
 		PlayerQuery = new EntityQueryBuilder(Allocator.Persistent).WithAll<Player, PlayerResources>().Build(ref state);
 	}
 
     [BurstCompile]
     public void OnUpdate(ref SystemState state) {
 		state.Dependency = new EnemyDeathJob() {
-			ecb = SystemAPI.GetSingleton<BeginPresentationEntityCommandBufferSystem.Singleton>()
-						   .CreateCommandBuffer(state.WorldUnmanaged)
-						   .AsParallelWriter(),
+			ecbBegPres = SystemAPI.GetSingleton<BeginPresentationEntityCommandBufferSystem.Singleton>()
+								  .CreateCommandBuffer(state.WorldUnmanaged)
+								  .AsParallelWriter(),
+			ecbEndSim = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>()
+								 .CreateCommandBuffer(state.WorldUnmanaged)
+								 .AsParallelWriter(),
 			DeathStatics = SystemAPI.GetSingleton<EnemyDeathStatics>(),
 			PlrEntity = PlayerQuery.ToEntityArray(Allocator.Temp)[0],
 			PlrResources = PlayerQuery.ToComponentDataArray<PlayerResources>(Allocator.Temp)[0],
-			// TODO: fuel pickup prefab
+			FuelPickupEntity = SystemAPI.GetSingleton<EntityBakerSingleton>().FuelPickup
 		}.ScheduleParallel(state.Dependency);
     }
 
@@ -37,7 +41,8 @@ partial struct EnemyDeathSystem : ISystem {
 
 	[BurstCompile]
 	partial struct EnemyDeathJob : IJobEntity {
-		public EntityCommandBuffer.ParallelWriter ecb;
+		public EntityCommandBuffer.ParallelWriter ecbBegPres;
+		public EntityCommandBuffer.ParallelWriter ecbEndSim;
 		public EnemyDeathStatics DeathStatics;
 		public Entity PlrEntity;
 		public PlayerResources PlrResources;
@@ -50,45 +55,35 @@ partial struct EnemyDeathSystem : ISystem {
 			in LocalTransform transform,
 			in Entity en
 		) {
+			LocalTransform effectSpawnTransform = LocalTransform.FromPositionRotation(
+				new() {
+					x = transform.Position.x,
+					y = transform.Position.y + 1f,
+					z = transform.Position.z
+				},
+				quaternion.identity
+			);
 			if (tag.DeathSource == EEnemyDeathSource.Vacuum) {
-				PlayerResources refilled = PlrResources;
-				refilled.RefillFuel();
-				ecb.SetComponent(eiiq, PlrEntity, refilled);
-				Debug.Log("EnemyDeathSystem: An enemy was killed by the Vacuum!");
+				PlayerResources rscs = PlrResources;
+				rscs.RefillFuel();
+				rscs.HealHealth(rscs.HealOnKillAmount);
+				ecbEndSim.SetComponent(eiiq, PlrEntity, rscs);
 			} else if (tag.DeathSource == EEnemyDeathSource.Cannon) {
-				Debug.Log("EnemyDeathSystem: An enemy was killed by the Cannon!"); // After Update()
-				//SpawnFuelPickup(eiiq, transform); // TODO
+				PlayerResources rscs = PlrResources;
+				rscs.HealHealth(rscs.HealOnKillAmount);
+				ecbEndSim.SetComponent(eiiq, PlrEntity, rscs);
+				SpawnPrefab(eiiq, FuelPickupEntity, effectSpawnTransform);
 			}
 
-			SpawnDeathVfx(eiiq, transform);
+			SpawnPrefab(eiiq, DeathStatics.DeathVfx, effectSpawnTransform);
 
-			ecb.DestroyEntity(eiiq, en);
+			ecbBegPres.DestroyEntity(eiiq, en);
 		}
 
 		[BurstCompile]
-		void SpawnDeathVfx([EntityIndexInQuery] int eiiq, in LocalTransform transform) {
-			Entity vfx = ecb.Instantiate(eiiq, DeathStatics.DeathVfx);
-			ecb.SetComponent(eiiq, vfx, LocalTransform.FromPositionRotation(
-				new() {
-					x = transform.Position.x,
-					y = transform.Position.y + 1f,
-					z = transform.Position.z
-				},
-				quaternion.identity
-			));
-		}
-
-		[BurstCompile]
-		void SpawnFuelPickup([EntityIndexInQuery] int eiiq, in LocalTransform transform) {
-			Entity vfx = ecb.Instantiate(eiiq, FuelPickupEntity);
-			ecb.SetComponent(eiiq, vfx, LocalTransform.FromPositionRotation(
-				new() {
-					x = transform.Position.x,
-					y = transform.Position.y + 1f,
-					z = transform.Position.z
-				},
-				quaternion.identity
-			));
+		void SpawnPrefab([EntityIndexInQuery] int eiiq, in Entity en, in LocalTransform spawnTrans) {
+			Entity spawned = ecbEndSim.Instantiate(eiiq, en);
+			ecbEndSim.SetComponent(eiiq, spawned, spawnTrans);
 		}
 	}
 

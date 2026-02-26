@@ -57,11 +57,11 @@ public class GameHudCanvas : MonoBehaviour {
 					byCannon++;
 				}
 			}
-			if (byVacuum > 0 || byCannon > 0)
-				Debug.LogWarning($"Enemies killed! By vac: {byVacuum} | By can: {byCannon}");
+			//if (byVacuum > 0 || byCannon > 0)
+			//	Debug.LogWarning($"Enemies killed! By vac: {byVacuum} | By can: {byCannon}");
 		}
 		if (resources.DidRefillFuelThisFrame()) {
-			Debug.Log("Refilled");
+			// TODO
 		}
 	}
 

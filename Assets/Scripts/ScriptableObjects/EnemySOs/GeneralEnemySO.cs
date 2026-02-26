@@ -4,7 +4,7 @@ using UnityEngine;
 public class GeneralEnemySO : ScriptableObject {
     
     [Header("Consistent")]
-    public FuelPickup FuelPickupPrefab;
+    public FuelPickupGO FuelPickupPrefab;
     public GameObject EnemyDeathVFX;
     
     [Header("Enemy Configuration")]
