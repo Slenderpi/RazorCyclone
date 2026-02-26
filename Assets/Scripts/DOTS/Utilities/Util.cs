@@ -1,7 +1,9 @@
+using System;
 using System.Runtime.CompilerServices;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Mathematics;
+using Unity.VisualScripting;
 using UnityEngine;
 
 [BurstCompile]
@@ -173,6 +175,28 @@ public static class Util {
 	[BurstCompile]
 	public static bool IsNearZero(in float3 v) {
 		return math.lengthsq(v) <= 1e-9f;
+	}
+
+	/// <summary>
+	/// A burst-compatible way to get the name of an EEnemyType enum.
+	/// </summary>
+	/// <param name="e"></param>
+	/// <returns></returns>
+	public static FixedString32Bytes EEnemyTypeName(EEnemyType e) {
+		return e switch {
+			EEnemyType.CannonFodder => "Cannon Fodder",
+			EEnemyType.HunterBasic => "Hunter Basic",
+			EEnemyType.Hunter => "Hunter Empowered",
+			EEnemyType.CrabBasic => "Crab Basic",
+			EEnemyType.Crab => "Crab Empowered",
+			EEnemyType.Turtle => "Turtle",
+			EEnemyType.Centipede => "Centipede",
+			EEnemyType.COUNT => "COUNT",
+			EEnemyType.EnemyBase => "EnemyBase",
+			EEnemyType.Weakpoint => "Weakpoint",
+			EEnemyType.CentipedeMissile => "Centipede Missile",
+			_ => "Unknown",
+		};
 	}
 
 

@@ -1,4 +1,6 @@
+using Unity.Collections;
 using Unity.Entities;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class EntityBakerSingletonAuthoring : MonoBehaviour {
@@ -60,7 +62,7 @@ public struct EntityBakerSingleton : IComponentData {
                 entity = CannonFodder;
                 return true;
 		}
-		Debug.LogError($"TestingStuff: the enemy type \"{enemyType}\" does not have a spawn-ready DOTS implementation yet and cannot be spawned.");
+		Debug.LogError($"TestingStuff: the enemy type \"{Util.EEnemyTypeName(enemyType)}\" does not have a spawn-ready DOTS implementation yet and cannot be spawned.");
         entity = Entity.Null;
         return false;
     }

@@ -1,4 +1,5 @@
 using System.Linq;
+using System.Runtime.CompilerServices;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
@@ -107,6 +108,8 @@ partial struct CannonFodderBoidSystem : ISystem {
 			//}
 		}
 
+		[BurstCompile]
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		bool HasLos(in float3 myPos, in CollisionFilter losFilter) {
 			return !pw.CastRay(new() {
 				Start = PlayerPosition,
