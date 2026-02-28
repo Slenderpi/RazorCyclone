@@ -205,7 +205,7 @@ public static class Util {
 
 	[BurstCompile]
 	public static void D_DrawPoint(in float3 position, in Color c) {
-		D_DrawPoint(position, c, 9999999f);
+		D_DrawPoint(position, c, 0);
 	}
 
 	[BurstCompile]
@@ -219,9 +219,41 @@ public static class Util {
 		Debug.DrawRay(position + math.right() * radius, 2 * radius * math.left(), c, t, depthTest);
 	}
 
+	/// <summary>
+	/// Draws a point using rays in x, y, z, and all diagonals.<br/>
+	/// <br/>
+	/// depthTest=false
+	/// </summary>
+	[BurstCompile]
+	public static void D_DrawStarPoint(in float3 position, in Color c, float t, float radius) {
+		D_DrawStarPoint(position, c, t, radius, false);
+	}
+
+	/// <summary>
+	/// Draws a point using rays in x, y, z, and all pure diagonals.
+	/// </summary>
+	[BurstCompile]
+	public static void D_DrawStarPoint(in float3 position, in Color c, float t, float radius, bool depthTest) {
+		// Draw cardinal directions
+		Debug.DrawRay(position + new float3(0, 0, radius), new float3(0, 0, 2 * -radius), c, t, depthTest);
+		Debug.DrawRay(position + new float3(radius, 0, 0), new float3(2 * -radius, 0, 0), c, t, depthTest);
+		Debug.DrawRay(position + new float3(0, radius, 0), new float3(0, 2 * -radius, 0), c, t, depthTest);
+
+		// Draw diagonals
+		float normRad = 0.577350269f * radius; // 1/sqrt(3) * radius
+		float3 XYZ = new(normRad, normRad, normRad);
+		float3 XyZ = new(normRad, -normRad, normRad);
+		float3 XYz = new(normRad, normRad, -normRad);
+		float3 Xyz = new(normRad, -normRad, -normRad);
+		Debug.DrawRay(position + XYZ, -XYZ * 2, c, t, depthTest);
+		Debug.DrawRay(position + XyZ, -XyZ * 2, c, t, depthTest);
+		Debug.DrawRay(position + XYz, -XYz * 2, c, t, depthTest);
+		Debug.DrawRay(position + Xyz, -Xyz * 2, c, t, depthTest);
+	}
+
 	[BurstCompile]
 	public static void D_DrawBox(in float3 centerPosition, in float3 size, in Color c) {
-		D_DrawBox(centerPosition, size, c, 9999999f);
+		D_DrawBox(centerPosition, size, c, 0);
 	}
 
 	[BurstCompile]
@@ -259,7 +291,46 @@ public static class Util {
 		Debug.DrawLine(topLeftBack, botLeftBack, c, t, depthTest); // back left
 	}
 
+	/// <summary>
+	/// Same as D_DrawBox(), but the size is constant.
+	/// </summary>
+	/// <param name="centerPosition"></param>
+	/// <param name="size"></param>
+	/// <param name="c"></param>
+	/// <param name="t"></param>
+	/// <param name="depthTest"></param>
 	[BurstCompile]
+	public static void D_DrawCube(in float3 centerPosition, float size, in Color c) {
+		D_DrawBox(centerPosition, new(size), c);
+	}
+
+	/// <summary>
+	/// Same as D_DrawBox(), but the size is constant.
+	/// </summary>
+	/// <param name="centerPosition"></param>
+	/// <param name="size"></param>
+	/// <param name="c"></param>
+	/// <param name="t"></param>
+	/// <param name="depthTest"></param>
+	[BurstCompile]
+	public static void D_DrawCube(in float3 centerPosition, float size, in Color c, float t) {
+		D_DrawBox(centerPosition, new(size), c, t);
+	}
+
+	/// <summary>
+	/// Same as D_DrawBox(), but the size is constant.
+	/// </summary>
+	/// <param name="centerPosition"></param>
+	/// <param name="size"></param>
+	/// <param name="c"></param>
+	/// <param name="t"></param>
+	/// <param name="depthTest"></param>
+	[BurstCompile]
+	public static void D_DrawCube(in float3 centerPosition, float size, in Color c, float t, bool depthTest) {
+		D_DrawBox(centerPosition, new(size), c, t, depthTest);
+	}
+
+		[BurstCompile]
 	public static void D_DrawArrowCenteredAt(in float3 position, in float3 direction, float length, in Color c) {
 		D_DrawArrowCenteredAt(position, direction, length, c, 9999999f);
 	}
