@@ -76,7 +76,7 @@ partial struct PlayerCannonSystem : ISystem {
         em.AddComponentData(
             projectile,
             new PhysicsVelocity {
-                Linear = -input.aimDirection * cannon.ProjectileSpeed // TODO: Add player velocity
+                Linear = -input.aimDirection * cannon.ProjectileSpeed + pv.Linear
             }
         );
 

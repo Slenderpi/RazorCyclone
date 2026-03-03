@@ -73,7 +73,7 @@ partial struct PlayerRotationSystem : ISystem {
 			pivotTrans.ValueRW.Rotation = math.slerp(
                 pivotTrans.ValueRO.Rotation,
 				pivotRot,
-                SystemAPI.Time.DeltaTime * 24f
+                math.min(1f, SystemAPI.Time.DeltaTime * 24f)
             );
             SystemAPI.SetComponent(eqPlayer.ToEntityArray(Allocator.Temp)[0], input);
 		}

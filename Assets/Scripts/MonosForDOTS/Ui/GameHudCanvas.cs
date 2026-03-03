@@ -1,7 +1,9 @@
+using System.Runtime.CompilerServices;
 using Unity.Collections;
 using Unity.Entities;
+using Unity.Mathematics;
+using Unity.Physics;
 using Unity.Transforms;
-using UnityEditor.Search;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -21,12 +23,20 @@ public class GameHudCanvas : MonoBehaviour {
 	public RectTransform HealthSliderLevel;
 	public RawImage HealthVignette;
 
+	[Header("Crosshairs")]
+	public RectTransform MainVacuumCrosshair;
+	public RectTransform MainCannonCrosshair;
+
 	const float BENT_BAR_MAX_FILL = 0.2f;
 	// RAD = SLIDER_BG.Width / 2 * SLIDER_BG.Scale - SLIDER_LEVEL.Width / 2
 	const float BENT_BAR_CENTERED_RADIUS = 115f * 1.927799f - 22.16969f / 2f;
 
+	Camera mainCamera;
+
 	EntityManager entityManager;
-	//Entity playerEntity;
+	EntityQuery eqPlayer;
+	EntityQuery eqPlayerPivot;
+	EntityQuery eqPlayerCannon;
 
 
 
@@ -35,14 +45,57 @@ public class GameHudCanvas : MonoBehaviour {
 	}
 
 	void Start() {
+		mainCamera = Camera.main;
+
 		entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
-		//EntityQuery query = entityManager.CreateEntityQuery(ComponentType.ReadOnly<Player>());
-		//playerEntity = query.GetSingletonEntity();
+		eqPlayer = entityManager.CreateEntityQuery(ComponentType.ReadOnly<Player>(), ComponentType.ReadOnly<PhysicsVelocity>(), ComponentType.ReadOnly<PlayerInput>());
+		eqPlayerPivot = entityManager.CreateEntityQuery(ComponentType.ReadOnly<PlayerPivot>(), ComponentType.ReadOnly<LocalTransform>());
+		eqPlayerCannon = entityManager.CreateEntityQuery(ComponentType.ReadOnly<PlayerCannon>());
 	}
 
 	void LateUpdate() {
-		if (!TryGetPlayerResources(out PlayerResources resources))
+		if (!TryGetPlayer(out Entity playerEntity))
 			return;
+		PhysicsVelocity playerVelocity = entityManager.GetComponentData<PhysicsVelocity>(playerEntity);
+		HandleCrosshairUi(playerVelocity);
+		HandleResourceUi(entityManager.GetComponentData<PlayerResources>(playerEntity));
+	}
+
+	private void HandleCrosshairUi(in PhysicsVelocity playerVelocity) {
+		if (!TryGetPlayerCannon(out PlayerCannon playerCannon))
+			return;
+		if (!TryGetPlayerPivotLocalTrans(out LocalTransform pivotTrans))
+			return;
+
+		const float InheritedVelocityFactor = 1f; // TODO ? unsure if this feature from the past will be kept.
+
+		float3 rbVelocityCompensation = !Util.IsNearZero(math.lengthsq(playerVelocity.Linear)) ? playerVelocity.Linear * InheritedVelocityFactor / playerCannon.ProjectileSpeed : float3.zero;
+		float3 camPos = mainCamera.transform.position;
+		float3 pivotForward = pivotTrans.Forward();
+		// The vacuum does not account for the player's velocity
+		Vector3 screenPointVacuum = mainCamera.WorldToScreenPoint(camPos + pivotForward);
+		// The cannon does account for the player's velocity
+		Vector3 screenPointCannon = mainCamera.WorldToScreenPoint(camPos - pivotForward + rbVelocityCompensation);
+
+		if (screenPointVacuum.z > 0.01f) {
+			if (!MainVacuumCrosshair.gameObject.activeSelf)
+				MainVacuumCrosshair.gameObject.SetActive(true);
+			MainVacuumCrosshair.position = screenPointVacuum;
+		} else {
+			if (MainVacuumCrosshair.gameObject.activeSelf)
+				MainVacuumCrosshair.gameObject.SetActive(false);
+		}
+		if (screenPointCannon.z > 0.01f) {
+			if (!MainCannonCrosshair.gameObject.activeSelf)
+				MainCannonCrosshair.gameObject.SetActive(true);
+			MainCannonCrosshair.position = screenPointCannon;
+		} else {
+			if (MainCannonCrosshair.gameObject.activeSelf)
+				MainCannonCrosshair.gameObject.SetActive(false);
+		}
+	}
+
+	private void HandleResourceUi(in PlayerResources resources) {
 		UpdateFuelUi(resources.Fuel);
 		UpdateHealthUi(resources.Health);
 		EntityManager em = World.DefaultGameObjectInjectionWorld.EntityManager;
@@ -106,7 +159,7 @@ public class GameHudCanvas : MonoBehaviour {
 	}
 
 	bool TryGetPlayer(out Entity playerEntity) {
-		bool found = entityManager.CreateEntityQuery(ComponentType.ReadOnly<Player>()).TryGetSingletonEntity<Player>(out playerEntity);
+		bool found = eqPlayer.TryGetSingletonEntity<Player>(out playerEntity);
 		if (found) {
 			if (!Toggler.activeSelf)
 				Toggler.SetActive(true);
@@ -115,6 +168,16 @@ public class GameHudCanvas : MonoBehaviour {
 				Toggler.SetActive(false);
 		}
 		return found;
+	}
+
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	bool TryGetPlayerPivotLocalTrans(out LocalTransform trans) {
+		return eqPlayerPivot.TryGetSingleton(out trans);
+	}
+
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	bool TryGetPlayerCannon(out PlayerCannon playerCannon) {
+		return eqPlayerCannon.TryGetSingleton(out playerCannon);
 	}
 
 	/// <summary>

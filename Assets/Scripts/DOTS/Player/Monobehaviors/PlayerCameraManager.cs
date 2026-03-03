@@ -48,7 +48,6 @@ public class PlayerCameraManager : MonoBehaviour {
 	void LateUpdate() {
 		EntityManager em = World.DefaultGameObjectInjectionWorld.EntityManager;
 		EntityQuery eq = new EntityQueryBuilder(Allocator.Temp).WithAll<PlayerCameraTransform, LocalToWorld>().Build(em);
-		NativeArray<Entity> camtransEntities = eq.ToEntityArray(Allocator.Temp);
 		NativeArray<LocalToWorld> transforms = eq.ToComponentDataArray<LocalToWorld>(Allocator.Temp);
 		if (transforms.Length == 0)
 			return;
@@ -72,6 +71,8 @@ public class PlayerCameraManager : MonoBehaviour {
 				)
 			);
 		}
+		eq.Dispose();
+		transforms.Dispose();
 	}
 
 	public void SetFOV(float fov) {
