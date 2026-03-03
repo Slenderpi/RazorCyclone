@@ -25,9 +25,9 @@ public class SparseVoxelOctreeGeneratorGO : MonoBehaviour {
 	float _algoDebugDrawTime = 0;
 	bool done = false;
 
-	OctreeNode svoRoot;
-	Stack<OctreeExploreRequest> exploreStack;
-	OctreeExploreRequest currRequest;
+	OctreeNodeManaged svoRoot;
+	Stack<OctreeExploreRequestManaged> exploreStack;
+	OctreeExploreRequestManaged currRequest;
 	bool currIsFilled;
 	float currVoxelSize;
 
@@ -125,7 +125,7 @@ public class SparseVoxelOctreeGeneratorGO : MonoBehaviour {
 			return;
 		}
 		float quartSize = halfSize / 2f;
-		currRequest.Node.children = new OctreeNode[8];
+		currRequest.Node.children = new OctreeNodeManaged[8];
 		int index = 7;
 		for (int y = -1; y <= 1; y += 2) { // One at -y, one at +y
 			for (int x = -1; x <= 1; x += 2) { // One at -x, one at +x
@@ -133,7 +133,7 @@ public class SparseVoxelOctreeGeneratorGO : MonoBehaviour {
 					float3 offset = new float3(x, y, z) * quartSize;
 					float3 splitPosition = currRequest.PhysicalPosition + offset;
 
-					OctreeNode child = new();
+					OctreeNodeManaged child = new();
 					child.PhysicalPosition = splitPosition;
 					child.PhysicalSize = halfSize;
 
@@ -161,13 +161,13 @@ public class SparseVoxelOctreeGeneratorGO : MonoBehaviour {
 	int timesCalled = 0;
 
 	// Return false if curr is not pure collision
-	bool GroupFilledNodes_Internal(OctreeNode curr) {
+	bool GroupFilledNodes_Internal(OctreeNodeManaged curr) {
 		if (!curr.IsFilled)
 			return false;
 		if (curr.children == null)
 			return true;
 		bool allChildrenAreFilled = true;
-		foreach (OctreeNode n in curr.children)
+		foreach (OctreeNodeManaged n in curr.children)
 			allChildrenAreFilled &= GroupFilledNodes_Internal(n);
 		if (allChildrenAreFilled)
 			curr.children = null;
@@ -178,7 +178,7 @@ public class SparseVoxelOctreeGeneratorGO : MonoBehaviour {
 		VisualizeOctree_Internal(svoRoot, BoundingVolumeCenter, BoundingVolumeSideLength);
 	}
 
-	void VisualizeOctree_Internal(OctreeNode node, float3 position, float size) {
+	void VisualizeOctree_Internal(OctreeNodeManaged node, float3 position, float size) {
 		if (node == null) {
 			Debug.LogWarning("Null reached");
 			return;
@@ -210,13 +210,13 @@ public class SparseVoxelOctreeGeneratorGO : MonoBehaviour {
 			VisualizeOctree2_Internal(svoRoot);
 	}
 
-	void VisualizeOctree2_Internal(OctreeNode node) {
+	void VisualizeOctree2_Internal(OctreeNodeManaged node) {
 		if (node.IsFilled) {
 			if (node.children == null) {
 				if (DrawFilledSpaces)
 					Util.D_DrawCube(node.PhysicalPosition, node.PhysicalSize, Color.red);
 			} else {
-				foreach (OctreeNode n in node.children)
+				foreach (OctreeNodeManaged n in node.children)
 					VisualizeOctree2_Internal(n);
 			}
 		} else {
@@ -226,26 +226,26 @@ public class SparseVoxelOctreeGeneratorGO : MonoBehaviour {
 	}
 }
 
-class OctreeNode {
+class OctreeNodeManaged {
 	public bool IsFilled;
-	public OctreeNode[] children;
+	public OctreeNodeManaged[] children;
 
 	public float3 PhysicalPosition;
 	public float PhysicalSize;
 
-	public OctreeNode() { }
+	public OctreeNodeManaged() { }
 
-	public OctreeNode(bool isFilled) {
+	public OctreeNodeManaged(bool isFilled) {
 		IsFilled = isFilled;
 	}
 }
 
-class OctreeExploreRequest {
+class OctreeExploreRequestManaged {
 	public float PhysicalSize;
 	public float3 PhysicalPosition;
-	public OctreeNode Node;
+	public OctreeNodeManaged Node;
 
-	public OctreeExploreRequest(float physicalSize, float3 physicalPosition, OctreeNode node) {
+	public OctreeExploreRequestManaged(float physicalSize, float3 physicalPosition, OctreeNodeManaged node) {
 		PhysicalSize = physicalSize;
 		PhysicalPosition = physicalPosition;
 		Node = node;
