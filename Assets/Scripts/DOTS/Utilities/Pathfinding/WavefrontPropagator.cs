@@ -38,10 +38,12 @@ public partial struct WavefrontPropagator : ISystem {
 		lastWavefrontUpdateTime = WavefrontUpdateDelay * -2;
 
 		if (!SystemAPI.HasSingleton<WavefrontPointCloudSingleton>()) {
-			BufferEntity = state.EntityManager.CreateEntity();
-			state.EntityManager.AddComponent<WavefrontPointCloudSingleton>(BufferEntity);
-			state.EntityManager.AddBuffer<PointCloudValue>(BufferEntity).EnsureCapacity(PointCloud.Length);
-			state.EntityManager.AddBuffer<WavefrontValue>(BufferEntity).EnsureCapacity(PointCloud.Length);
+			EntityManager em = state.EntityManager;
+			BufferEntity = em.CreateEntity();
+			em.AddComponent<WavefrontPointCloudSingleton>(BufferEntity);
+			em.AddBuffer<PointCloudValue>(BufferEntity).EnsureCapacity(PointCloud.Length);
+			em.AddBuffer<WavefrontValue>(BufferEntity).EnsureCapacity(PointCloud.Length);
+			//em.AddComponentData(BufferEntity, pcc);
 		} else {
 			Debug.LogWarning("WARN: A WavefrontPointCloudSingleton was found. This shouldn't be occuring. Using found value.");
 		}
@@ -93,11 +95,11 @@ public partial struct WavefrontPropagator : ISystem {
 		//}.ScheduleParallel();
 		NativeArray<byte> diagonals = new(new byte[] { 5, 6, 9, 10, 17, 18, 20, 21, 22, 24, 25, 26, 33, 34, 36, 37, 38, 40, 41, 42 }, Allocator.Temp);
 		foreach (var (reader, transform) in SystemAPI.Query<RefRW<WavefrontReader>, RefRO<LocalTransform>>()) {
-			int3 currPoint = PositionToPoint(transform.ValueRO.Position);
+			int3 currPoint = pcc.PositionToPoint(transform.ValueRO.Position);
 			if (IsPointInWall(currPoint, PointCloudValueBuffer))
 				continue;
 			float3 pos = transform.ValueRO.Position;
-			int ind = PositionToIndex(pos);
+			int ind = pcc.PositionToIndex(pos);
 			reader.ValueRW.DescentDirection = GetDescentDirection(currPoint, diagonals, WavefrontValueBuffer);
 		}
 	}
@@ -105,15 +107,15 @@ public partial struct WavefrontPropagator : ISystem {
 	[BurstCompile]
 	public void DoWavefront(ref SystemState state, in float3 GoalPosition, in DynamicBuffer<PointCloudValue> PointCloudValueBuffer, ref DynamicBuffer<WavefrontValue> WavefrontValueBuffer) {
 		// Get the point associated with this position
-		int3 startPoint = PositionToPoint(GoalPosition);
+		int3 startPoint = pcc.PositionToPoint(GoalPosition);
 
 		// Surface the point if it's in a wall
 		if (!SurfacePoint(ref startPoint, PointCloudValueBuffer)) {
 			//Debug.LogWarning($"WARN: The position ({GoalPosition.x}, {GoalPosition.y}, {GoalPosition.z}) was surfaced out of bounds. Wavefront will be skipped this frame.");
 			return;
 		}
-		Util.D_DrawBox(PointToPosition(startPoint), new(pcc.DistBetweenPoints), Color.white, (float)WavefrontUpdateDelay);
-		int startIndex = PointToIndex(startPoint);
+		Util.D_DrawBox(pcc.PointToPosition(startPoint), new(pcc.DistBetweenPoints), Color.white, (float)WavefrontUpdateDelay);
+		int startIndex = pcc.PointToIndex(startPoint);
 
 		// Reset wavefront values
 		for (int i = 0; i < WavefrontValueBuffer.Length; i++)
@@ -148,7 +150,7 @@ public partial struct WavefrontPropagator : ISystem {
 	public (NativeArray<int>, int) UpdateAndGetNeighbors(int index, ref DynamicBuffer<WavefrontValue> WavefrontValueBuffer) {
 		NativeArray<int> neighbors = new(6, Allocator.Temp); // There can be up to 6 neighbors
 		int currIndex = 0;
-		int3 point = IndexToPoint(index);
+		int3 point = pcc.IndexToPoint(index);
 		int newCost = WavefrontValueBuffer[index].DistCost + 1;
 
 		/*
@@ -196,7 +198,7 @@ public partial struct WavefrontPropagator : ISystem {
 				point.z + orthogonal switch { 1 => -1, 2 => 1, _ => 0 }
 			);
 			if (TryUpdateNeighbor(neighborPoint, newCost, ref WavefrontValueBuffer))
-				neighbors[currIndex++] = PointToIndex(neighborPoint);
+				neighbors[currIndex++] = pcc.PointToIndex(neighborPoint);
 			orthogonal <<= 1;
 		}
 
@@ -213,8 +215,8 @@ public partial struct WavefrontPropagator : ISystem {
 	/// <returns>False if neighborPoint was valid (in bounds, not a wall, and unvisited)</returns>
 	[BurstCompile]
 	public bool TryUpdateNeighbor(in int3 neighborPoint, int newCost, ref DynamicBuffer<WavefrontValue> WavefrontValueBuffer) {
-		int index = PointToIndex(neighborPoint);
-		if (IsPointInBounds(neighborPoint) && WavefrontValueBuffer[index].DistCost == 0) {
+		int index = pcc.PointToIndex(neighborPoint);
+		if (pcc.IsPointInBounds(neighborPoint) && WavefrontValueBuffer[index].DistCost == 0) {
 			WavefrontValueBuffer[index] = new WavefrontValue(newCost);
 			return true;
 		}
@@ -233,7 +235,7 @@ public partial struct WavefrontPropagator : ISystem {
 	/// <returns>If currPoint is trapped in a wall, int3.zero is returned.<br/>
 	/// Otherwise, the neighboring point with the least DistCost is returned.</returns>
 	[BurstCompile]
-	public int3 GetNeighborPointWithLeastCost(in int3 currPoint, in NativeArray<byte> diagonals, in DynamicBuffer<WavefrontValue> wavefrontValueBuffer) {
+	public readonly int3 GetNeighborPointWithLeastCost(in int3 currPoint, in NativeArray<byte> diagonals, in DynamicBuffer<WavefrontValue> wavefrontValueBuffer) {
 		int leastCost = 99999999;
 		int3 leastPoint = int3.zero;
 		byte orthogonal = 1; // Bit shift left for each orthogonal
@@ -246,8 +248,8 @@ public partial struct WavefrontPropagator : ISystem {
 				currPoint.y + orthogonal switch { 4 => -1, 8 => 1, _ => 0},
 				currPoint.z + orthogonal switch { 1 => -1, 2 => 1, _ => 0}
 			);
-			if (IsPointInBounds(neighborPoint)) {
-				int cost = wavefrontValueBuffer[PointToIndex(neighborPoint)].DistCost;
+			if (pcc.IsPointInBounds(neighborPoint)) {
+				int cost = wavefrontValueBuffer[pcc.PointToIndex(neighborPoint)].DistCost;
 				if (cost != -1) {
 					valids |= orthogonal;
 					if (cost < leastCost) {
@@ -278,9 +280,9 @@ public partial struct WavefrontPropagator : ISystem {
 				currPoint.y + (possibleDir & 12) switch { 4 => -1, 8 => 1, _ => 0 },
 				currPoint.z + (possibleDir & 3) switch { 1 => -1, 2 => 1, _ => 0 }
 			);
-			if (!IsPointInBounds(neighborPoint))
+			if (!pcc.IsPointInBounds(neighborPoint))
 				continue;
-			int cost = wavefrontValueBuffer[PointToIndex(neighborPoint)].DistCost;
+			int cost = wavefrontValueBuffer[pcc.PointToIndex(neighborPoint)].DistCost;
 			if (cost != -1 && cost <= leastCost) {
 				leastCost = cost;
 				leastPoint = neighborPoint;
@@ -309,40 +311,14 @@ public partial struct WavefrontPropagator : ISystem {
 	}
 
 	/// <summary>
-	/// Determines if a point is in the bounds of the point cloud/wavefront as determined by
-	/// the pcc.<br/>
-	/// Bound limits include 0 and exclude the num. I.e. for x, the limit interval is [0, pcc.numX).
-	/// </summary>
-	/// <param name="point">A point to test.</param>
-	/// <returns>True if in bounds (e.g. for x, true if within [0, pcc.numX)).</returns>
-	[BurstCompile]
-	public bool IsPointInBounds(in int3 point) {
-		return IsPointInBounds(point.x, point.y, point.z);
-	}
-
-	/// <summary>
-	/// Determines if a point is in the bounds of the point cloud/wavefront as determined by
-	/// the pcc.<br/>
-	/// Bound limits include 0 and exclude the num. I.e. for x, the limit interval is [0, pcc.numX).
-	/// </summary>
-	/// <param name="x">X value of a point to test.</param>
-	/// <param name="y">Y value of a point to test.</param>
-	/// <param name="z">Z value of a point to test.</param>
-	/// <returns>True if in bounds (e.g. for x, true if within [0, pcc.numX)).</returns>
-	[BurstCompile]
-	public bool IsPointInBounds(int x, int y, int z) {
-		return x >= 0 && y >= 0 && z >= 0 && x < pcc.numX && y < pcc.numY && z < pcc.numZ;
-	}
-
-	/// <summary>
 	/// Determines if a point in the point cloud/wavefront is a wall point.
 	/// </summary>
 	/// <param name="point">The point to test.</param>
 	/// <param name="PointCloudValueBuffer">The point cloud.</param>
 	/// <returns>True if the point represents a wall point.</returns>
 	[BurstCompile]
-	public bool IsPointInWall(in int3 point, in DynamicBuffer<PointCloudValue> PointCloudValueBuffer) {
-		return !IsIndexInAir(PointToIndex(point), PointCloudValueBuffer);
+	public readonly bool IsPointInWall(in int3 point, in DynamicBuffer<PointCloudValue> PointCloudValueBuffer) {
+		return !IsIndexInAir(pcc.PointToIndex(point), PointCloudValueBuffer);
 	}
 
 	/// <summary>
@@ -353,137 +329,10 @@ public partial struct WavefrontPropagator : ISystem {
 	/// <returns>Simply returns the IsUnobstructed value of the respective
 	/// PointCloudValue in the point cloud.</returns>
 	[BurstCompile]
-	public bool IsIndexInAir(int index, in DynamicBuffer<PointCloudValue> PointCloudValueBuffer) {
-		return PointCloudValueBuffer[index].IsUnobstructed;
-	}
-
-	/// <summary>
-	/// Given a position in the world, determines its point in a point cloud/wavefront.<br/>
-	/// The position will be clamped to the bounds of the point cloud/wavefront.
-	/// </summary>
-	/// <param name="pos">Position in world</param>
-	/// <returns>Closest position in a point cloud/wavefront represented by the PointCloudConfig</returns>
-	[BurstCompile]
-	public int3 PositionToPoint(in float3 pos) {
-		return PositionToPoint(pos.x, pos.y, pos.z);
-	}
-
-	/// <summary>
-	/// Given a position in the world, determines its point in a point cloud/wavefront.<br/>
-	/// The position will be clamped to the bounds of the point cloud/wavefront.
-	/// </summary>
-	/// <param name="x">X position in world</param>
-	/// <param name="y">Y position in world</param>
-	/// <param name="z">Z position in world</param>
-	/// <returns>Closest position in a point cloud/wavefront represented by the PointCloudConfig</returns>
-	[BurstCompile]
-	public int3 PositionToPoint(float x, float y, float z) {
-		return new(
-			(int)math.clamp((x - pcc.cornerPosition.x) / pcc.DistBetweenPoints, 0, pcc.numX - 1),
-			(int)math.clamp((y - pcc.cornerPosition.y) / pcc.DistBetweenPoints, 0, pcc.numY - 1),
-			(int)math.clamp((z - pcc.cornerPosition.z) / pcc.DistBetweenPoints, 0, pcc.numZ - 1)
-		);
-	}
-
-	/// <summary>
-	/// Given a point in the point cloud/wavefront, determines the position in the world it represents.
-	/// </summary>
-	/// <param name="point">Point in the point cloud/wavefront</param>
-	/// <returns>Associated position in the world</returns>
-	[BurstCompile]
-	public float3 PointToPosition(in int3 point) {
-		return PointToPosition(point.x, point.y, point.z);
-	}
-
-	/// <summary>
-	/// Given a point in the point cloud/wavefront, determines the position in the world it represents.
-	/// </summary>
-	/// <param name="x">The X of the point in the point cloud/wavefront</param>
-	/// <param name="y">The Y of the point in the point cloud/wavefront</param>
-	/// <param name="z">The Z of the point in the point cloud/wavefront</param>
-	/// <returns>Associated position in the world</returns>
-	[BurstCompile]
-	public float3 PointToPosition(int x, int y, int z) {
-		return new(
-			x * pcc.DistBetweenPoints + pcc.cornerPosition.x + pcc.DistBetweenPoints / 2f,
-			y * pcc.DistBetweenPoints + pcc.cornerPosition.y + pcc.DistBetweenPoints / 2f,
-			z * pcc.DistBetweenPoints + pcc.cornerPosition.z + pcc.DistBetweenPoints / 2f
-		);
-	}
-
-	/// <summary>
-	/// Given a point in the point cloud, determines the respective index in the PointCloudValue/WavefrontValue list.<br/>
-	/// The math for it is: i = x * YZ + y * Z + z
-	/// </summary>
-	/// <param name="point">Point in the point cloud/wavefront</param>
-	/// <returns>Index in the point cloud/wavefront list</returns>
-	[BurstCompile]
-	public int PointToIndex(in int3 point) {
-		return PointToIndex(point.x, point.y, point.z);
-	}
-
-	/// <summary>
-	/// Given a point in the point cloud, determines the respective index in the PointCloudValue/WavefrontValue list.<br/>
-	/// The math for it is: i = x * YZ + y * Z + z
-	/// </summary>
-	/// <param name="point">Point in the point cloud/wavefront</param>
-	/// <returns>Index in the point cloud/wavefront list</returns>
-	[BurstCompile]
-	public int PointToIndex(int x, int y, int z) {
-		return x * pcc.numY * pcc.numZ + y * pcc.numZ + z;
-	}
-
-	/// <summary>
-	/// Given an index in the PointCloudValue/WavefrontValue list, determines the point location.<br/>
-	/// x = i / YZ<br/>
-	/// y = i % YZ / Z<br/>
-	/// z = i % Z
-	/// </summary>
-	/// <param name="index">Index in the point cloud/wavefront list</param>
-	/// <returns>Point in the point cloud/wavefront</returns>
-	[BurstCompile]
-	public int3 IndexToPoint(int index) {
-		/*
-		  Y				Z
-		X 0  3  6  9  | 1  4  7  10 | 2  5  8  11
-		  12 15 18 21 | 13 16 19 22 | 14 17 20 23
-		X = {0, 1}			|2|
-		Y = {0, 1, 2, 3}	|4|
-		Z = {0, 1, 2}		|3|
-		Array is:
-		0		  1			 2			3		   4		  5			 6
-		(0, 0, 0) (0, 0, 1), (0, 0, 2), (0, 1, 0), (0, 1, 1), (0, 1, 2), (0, 2, 0)
-
-		YZ = 12
-
-		x = i / YZ		// each point increases by YZ when moving only on x
-		y = i % YZ / Z	// each point increases by Z after looping it with YZ when moving only on y
-		z = i % Z		// each point increases by Z when moving only on z
-		3  should be (0, 1, 0) | x = 3  / 12 = 0 | y = (3  % 12) / 3 = 1 | z = 3  % 3 = 0
-		6  should be (0, 2, 0) | x = 6  / 12 = 0 | y = (6  % 12) / 3 = 2 | z = 6  % 3 = 0
-		7  should be (0, 2, 1) | x = 7  / 12 = 0 | y = (7  % 12) / 3 = 2 | z = 7  % 3 = 1
-		19 should be (1, 2, 1) | x = 19 / 12 = 1 | y = (19 % 12) / 3 = 2 | z = 19 % 3 = 1
-		 */
-		int YZ = pcc.numY * pcc.numZ;
-		return new(
-			index / YZ,
-			index % YZ / pcc.numZ,
-			index % pcc.numZ
-		);
-	}
-
-	/// <summary>
-	/// Converts a world position to the corresponding index in the point cloud/wavefront buffer.
-	/// </summary>
-	/// <param name="position">Position in the world</param>
-	/// <returns>Corresponding index in the point cloud/wavefront buffer</returns>
-	[BurstCompile]
-	public int PositionToIndex(in float3 position) {
-		return PointToIndex(PositionToPoint(position));
-	}
+	public readonly bool IsIndexInAir(int index, in DynamicBuffer<PointCloudValue> PointCloudValueBuffer) => PointCloudValueBuffer[index].IsUnobstructed;
 
 	[BurstCompile]
-	public int3 GetDescentDirection(in int3 point, in NativeArray<byte> diagonals, in DynamicBuffer<WavefrontValue> WavefrontValueBuffer) {
+	public readonly int3 GetDescentDirection(in int3 point, in NativeArray<byte> diagonals, in DynamicBuffer<WavefrontValue> WavefrontValueBuffer) {
 		int3 leastPoint = GetNeighborPointWithLeastCost(point, diagonals, WavefrontValueBuffer);
 		return math.lengthsq(leastPoint) == 0 ? new(0, 1, 0) : leastPoint - point;
 	}
@@ -495,7 +344,7 @@ public partial struct WavefrontPropagator : ISystem {
 		for (int i = 0; i < WavefrontValueBuffer.Length; i++) {
 			if (WavefrontValueBuffer[i].DistCost <= 0) // Ignore walls and the goal point
 				continue;
-			int3 currPoint = IndexToPoint(i);
+			int3 currPoint = pcc.IndexToPoint(i);
 			DescentDirections[i] = GetDescentDirection(currPoint, diagonals, WavefrontValueBuffer);
 		}
 		return DescentDirections;
@@ -528,10 +377,10 @@ public partial struct WavefrontPropagator : ISystem {
 		for (int x = 0; x < pcc.numX; x++)
 			for (int y = 0; y < pcc.numY; y++)
 				for (int z = 0; z < pcc.numZ; z++) {
-					int ind = PointToIndex(x, y, z);
+					int ind = pcc.PointToIndex(x, y, z);
 					int cost = WavefrontValueBuffer[ind].DistCost;
 					int3 descDir = DescentDirections[ind];
-					float3 position = PointToPosition(x, y, z);
+					float3 position = pcc.PointToPosition(x, y, z);
 					if (cost == -1) {
 						// Visualize wall
 						//Util.D_DrawPoint(

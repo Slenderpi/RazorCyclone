@@ -2,6 +2,7 @@ using System;
 using System.Runtime.CompilerServices;
 using Unity.Burst;
 using Unity.Collections;
+using Unity.Entities;
 using Unity.Mathematics;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -92,6 +93,39 @@ public static class Util {
 	/// <returns>x * x * x</returns>
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static int pow3(int x) { return x * x * x; }
+
+	/// <summary>
+	/// Alternative to math.sign() for checking sign of float but returning as int.
+	/// </summary>
+	/// <param name="x"></param>
+	/// <returns></returns>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public static int sign(float x) {
+		return (x > 0.0f ? 1 : 0) - (x < 0.0f ? 1 : 0);
+	}
+
+	/// <summary>
+	/// Alternative method to math.sign() for checking sign of float3 but returning as int3.
+	/// </summary>
+	/// <param name="v">Vector to get signs of.</param>
+	/// <returns>new int3(sign(x), sign(y), sign(z))</returns>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public static int3 sign(float3 v) {
+		return new int3(sign(v.x), sign(v.y), sign(v.z));
+	}
+
+	/// <summary>
+	/// Checks if too float3s are equal. Returns the result as a boolean.<br/>
+	/// <br/>
+	/// The normal float3= operator returns a bool3. Man wtf
+	/// </summary>
+	/// <param name="u"></param>
+	/// <param name="v"></param>
+	/// <returns></returns>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public static bool equal(float3 u, float3 v) {
+		return IsNearZero(u - v);
+	}
 #pragma warning restore IDE1006 // Naming Styles
 
 	public static uint GenerateSeed(Transform transform) {
@@ -204,33 +238,13 @@ public static class Util {
 	///////////////////////////////////////////////////// DEBUGGING
 
 	[BurstCompile]
-	public static void D_DrawPoint(in float3 position, in Color c) {
-		D_DrawPoint(position, c, 9999999f);
-	}
-
-	[BurstCompile]
-	public static void D_DrawPoint(in float3 position, in Color c, float t) {
-		D_DrawPoint(position, c, t, 0.15f, false);
-	}
-
-	[BurstCompile]
-	public static void D_DrawPoint(in float3 position, in Color c, float t, float radius, bool depthTest) {
+	public static void D_DrawPoint(in float3 position, in Color c, float t=0f, float radius=0.15f, bool depthTest=false) {
 		Debug.DrawRay(position + math.forward() * radius, 2 * radius * math.back(), c, t, depthTest);
 		Debug.DrawRay(position + math.right() * radius, 2 * radius * math.left(), c, t, depthTest);
 	}
 
 	[BurstCompile]
-	public static void D_DrawBox(in float3 centerPosition, in float3 size, in Color c) {
-		D_DrawBox(centerPosition, size, c, 9999999f);
-	}
-
-	[BurstCompile]
-	public static void D_DrawBox(in float3 centerPosition, in float3 size, in Color c, float t) {
-		D_DrawBox(centerPosition, size, c, t, true);
-	}
-
-	[BurstCompile]
-	public static void D_DrawBox(in float3 centerPosition, in float3 size, in Color c, float t, bool depthTest) {
+	public static void D_DrawBox(in float3 centerPosition, in float3 size, in Color c, float t=0f, bool depthTest=true) {
 		float3 topRightFront = centerPosition + size / 2f;
 		float3 topLeftFront = topRightFront + math.left() * size.x;
 		float3 topRightBack = topRightFront + math.back() * size.z;
@@ -363,6 +377,23 @@ public static class Util {
 					if (!isVisible)
 						D_DrawBox(pos, pointBoxSize, Color.red);
 				}
+	}
+
+	[BurstCompile]
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public static void D_VisualizePointAsBox(in PointCloudConfig pcc, in int3 point, bool isUnobstructed) {
+		D_VisualizePointAsBox(pcc, point, isUnobstructed ? Color.green : Color.red);
+	}
+
+	[BurstCompile]
+	public static void D_VisualizePointAsBox(in PointCloudConfig pcc, in int3 point, in Color c, bool depthTest=true, float t=0f) {
+		D_DrawBox(
+			pcc.cornerPosition + new float3(point) * pcc.DistBetweenPoints + pcc.DistBetweenPoints / 2f,
+			pcc.DistBetweenPoints,
+			c,
+			t,
+			depthTest
+		);
 	}
 
 }

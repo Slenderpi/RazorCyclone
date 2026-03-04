@@ -2,6 +2,7 @@
 //#define FORCE_DISABLE_POINT_CLOUD_GENERATOR
 
 using System.IO;
+using System.Runtime.CompilerServices;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
@@ -66,6 +67,7 @@ public class PointCloudGenerator : MonoBehaviour {
 
 }
 
+[BurstCompile]
 public struct PointCloudConfig : IComponentData {
 	// Input
 	public int IsEnabled;
@@ -77,6 +79,168 @@ public struct PointCloudConfig : IComponentData {
 	public int numY;
 	public int numZ;
 	public float3 cornerPosition;
+
+
+
+	/// <summary>
+	/// Determines if a point is in the bounds of the point cloud/wavefront as determined by
+	/// the pcc.<br/>
+	/// Bound limits include 0 and exclude the num. I.e. for x, the limit interval is [0, pcc.numX).
+	/// </summary>
+	/// <param name="point">A point to test.</param>
+	/// <returns>True if in bounds (e.g. for x, true if within [0, pcc.numX)).</returns>
+	[BurstCompile]
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public readonly bool IsPointInBounds(in int3 point) {
+		return IsPointInBounds(point.x, point.y, point.z);
+	}
+
+	/// <summary>
+	/// Determines if a point is in the bounds of the point cloud/wavefront as determined by
+	/// the pcc.<br/>
+	/// Bound limits include 0 and exclude the num. I.e. for x, the limit interval is [0, pcc.numX).
+	/// </summary>
+	/// <param name="x">X value of a point to test.</param>
+	/// <param name="y">Y value of a point to test.</param>
+	/// <param name="z">Z value of a point to test.</param>
+	/// <returns>True if in bounds (e.g. for x, true if within [0, pcc.numX)).</returns>
+	[BurstCompile]
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public readonly bool IsPointInBounds(int x, int y, int z) {
+		return x >= 0 && y >= 0 && z >= 0 && x < numX && y < numY && z < numZ;
+	}
+
+	/// <summary>
+	/// Given a position in the world, determines its point in a point cloud/wavefront.<br/>
+	/// The position will be clamped to the bounds of the point cloud/wavefront.
+	/// </summary>
+	/// <param name="pos">Position in world</param>
+	/// <returns>Closest position in a point cloud/wavefront represented by the PointCloudConfig</returns>
+	[BurstCompile]
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public readonly int3 PositionToPoint(in float3 pos) {
+		return PositionToPoint(pos.x, pos.y, pos.z);
+	}
+
+	/// <summary>
+	/// Given a position in the world, determines its point in a point cloud/wavefront.<br/>
+	/// The position will be clamped to the bounds of the point cloud/wavefront.
+	/// </summary>
+	/// <param name="x">X position in world</param>
+	/// <param name="y">Y position in world</param>
+	/// <param name="z">Z position in world</param>
+	/// <returns>Closest position in a point cloud/wavefront represented by the PointCloudConfig</returns>
+	[BurstCompile]
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public readonly int3 PositionToPoint(float x, float y, float z) {
+		return new(
+			(int)math.clamp((x - cornerPosition.x) / DistBetweenPoints, 0, numX - 1),
+			(int)math.clamp((y - cornerPosition.y) / DistBetweenPoints, 0, numY - 1),
+			(int)math.clamp((z - cornerPosition.z) / DistBetweenPoints, 0, numZ - 1)
+		);
+	}
+
+	/// <summary>
+	/// Given a point in the point cloud/wavefront, determines the position in the world it represents.
+	/// </summary>
+	/// <param name="point">Point in the point cloud/wavefront</param>
+	/// <returns>Associated position in the world</returns>
+	[BurstCompile]
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public readonly float3 PointToPosition(in int3 point) {
+		return PointToPosition(point.x, point.y, point.z);
+	}
+
+	/// <summary>
+	/// Given a point in the point cloud/wavefront, determines the position in the world it represents.
+	/// </summary>
+	/// <param name="x">The X of the point in the point cloud/wavefront</param>
+	/// <param name="y">The Y of the point in the point cloud/wavefront</param>
+	/// <param name="z">The Z of the point in the point cloud/wavefront</param>
+	/// <returns>Associated position in the world</returns>
+	[BurstCompile]
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public readonly float3 PointToPosition(int x, int y, int z) {
+		return new(
+			x * DistBetweenPoints + cornerPosition.x + DistBetweenPoints / 2f,
+			y * DistBetweenPoints + cornerPosition.y + DistBetweenPoints / 2f,
+			z * DistBetweenPoints + cornerPosition.z + DistBetweenPoints / 2f
+		);
+	}
+
+	/// <summary>
+	/// Given a point in the point cloud, determines the respective index in the PointCloudValue/WavefrontValue list.<br/>
+	/// The math for it is: i = x * YZ + y * Z + z
+	/// </summary>
+	/// <param name="point">Point in the point cloud/wavefront</param>
+	/// <returns>Index in the point cloud/wavefront list</returns>
+	[BurstCompile]
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public readonly int PointToIndex(in int3 point) {
+		return PointToIndex(point.x, point.y, point.z);
+	}
+
+	/// <summary>
+	/// Given a point in the point cloud, determines the respective index in the PointCloudValue/WavefrontValue list.<br/>
+	/// The math for it is: i = x * YZ + y * Z + z
+	/// </summary>
+	/// <param name="point">Point in the point cloud/wavefront</param>
+	/// <returns>Index in the point cloud/wavefront list</returns>
+	[BurstCompile]
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public readonly int PointToIndex(int x, int y, int z) {
+		return x * numY * numZ + y * numZ + z;
+	}
+
+	/// <summary>
+	/// Given an index in the PointCloudValue/WavefrontValue list, determines the point location.<br/>
+	/// x = i / YZ<br/>
+	/// y = i % YZ / Z<br/>
+	/// z = i % Z
+	/// </summary>
+	/// <param name="index">Index in the point cloud/wavefront list</param>
+	/// <returns>Point in the point cloud/wavefront</returns>
+	[BurstCompile]
+	public readonly int3 IndexToPoint(int index) {
+		/*
+		  Y				Z
+		X 0  3  6  9  | 1  4  7  10 | 2  5  8  11
+		  12 15 18 21 | 13 16 19 22 | 14 17 20 23
+		X = {0, 1}			|2|
+		Y = {0, 1, 2, 3}	|4|
+		Z = {0, 1, 2}		|3|
+		Array is:
+		0		  1			 2			3		   4		  5			 6
+		(0, 0, 0) (0, 0, 1), (0, 0, 2), (0, 1, 0), (0, 1, 1), (0, 1, 2), (0, 2, 0)
+
+		YZ = 12
+
+		x = i / YZ		// each point increases by YZ when moving only on x
+		y = i % YZ / Z	// each point increases by Z after looping it with YZ when moving only on y
+		z = i % Z		// each point increases by Z when moving only on z
+		3  should be (0, 1, 0) | x = 3  / 12 = 0 | y = (3  % 12) / 3 = 1 | z = 3  % 3 = 0
+		6  should be (0, 2, 0) | x = 6  / 12 = 0 | y = (6  % 12) / 3 = 2 | z = 6  % 3 = 0
+		7  should be (0, 2, 1) | x = 7  / 12 = 0 | y = (7  % 12) / 3 = 2 | z = 7  % 3 = 1
+		19 should be (1, 2, 1) | x = 19 / 12 = 1 | y = (19 % 12) / 3 = 2 | z = 19 % 3 = 1
+		 */
+		int YZ = numY * numZ;
+		return new(
+			index / YZ,
+			index % YZ / numZ,
+			index % numZ
+		);
+	}
+
+	/// <summary>
+	/// Converts a world position to the corresponding index in the point cloud/wavefront buffer.
+	/// </summary>
+	/// <param name="position">Position in the world</param>
+	/// <returns>Corresponding index in the point cloud/wavefront buffer</returns>
+	[BurstCompile]
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public readonly int PositionToIndex(in float3 position) {
+		return PointToIndex(PositionToPoint(position));
+	}
 }
 
 /*

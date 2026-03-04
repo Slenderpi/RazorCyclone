@@ -3895,6 +3895,18 @@ MonoBehaviour:
   HealthVignette: {fileID: 8869714809585293828}
   MainVacuumCrosshair: {fileID: 4970277975598895517}
   MainCannonCrosshair: {fileID: 174587239325691186}
+  MomentumPanel: {fileID: 7240881614767816283}
+  swf: 2
+  swz: 0.6
+  swr: 2
+  maxLookDelta: 7
+  maxSwayDist: 30
+  swayYExaggerateFactor: 2
+  scf: 3
+  scz: 1
+  scr: 1
+  AdditionalScale: 0.17
+  HighAdditionalScaleSpeed: 50
 --- !u!223 &3402543896492937785
 Canvas:
   m_ObjectHideFlags: 0

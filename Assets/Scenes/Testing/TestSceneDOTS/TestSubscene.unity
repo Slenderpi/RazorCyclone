@@ -2289,6 +2289,7 @@ GameObject:
   - component: {fileID: 1682812785}
   - component: {fileID: 1682812784}
   - component: {fileID: 1682812783}
+  - component: {fileID: 1682812787}
   m_Layer: 0
   m_Name: WavefrontTestTarget
   m_TagString: Untagged
@@ -2356,7 +2357,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1682812781}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c5a01126c36a0204aa6ccc7aebbb8c51, type: 3}
   m_Name: 
@@ -2373,12 +2374,24 @@ Transform:
   m_GameObject: {fileID: 1682812781}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.69, y: 15.9, z: 43.63}
+  m_LocalPosition: {x: 40.02, y: 8, z: 48.46}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1682812787
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1682812781}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1b622fc9acfdd54385ac5b9e1310c47, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1873162571
 GameObject:
   m_ObjectHideFlags: 0
