@@ -1,4 +1,3 @@
-using System.Runtime.CompilerServices;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Transforms;
@@ -11,24 +10,27 @@ public class PlayerVacuumVFX : MonoBehaviour {
 	GameObject vacuumVFX;
 	bool isPlayingVFX = false;
 	ParticleSystem[] vacuumParticles;
+	
+	EntityQuery eqVacuum;
 
 
 
 	private void Awake() {
 		vacuumVFX = Instantiate(vacuumVFXPrefab);
-		vacuumVFX.SetActive(false);
 		vacuumParticles = vacuumVFX.GetComponentsInChildren<ParticleSystem>();
-	}
-
-	private void Start() {
 		StopVacuumVFX();
+		vacuumVFX.SetActive(false);
+
+		eqVacuum = World.DefaultGameObjectInjectionWorld
+						.EntityManager
+						.CreateEntityQuery(
+							ComponentType.ReadOnly<PlayerVacuum>(),
+							ComponentType.ReadOnly<LocalToWorld>()
+						);
 	}
 
 	private void LateUpdate() {
-		EntityManager em = World.DefaultGameObjectInjectionWorld.EntityManager;
-		EntityQuery eq = new EntityQueryBuilder(Allocator.Temp).WithAll<PlayerVacuum, LocalToWorld>().Build(em);
-		NativeArray<PlayerVacuum> vacuumArr = eq.ToComponentDataArray<PlayerVacuum>(Allocator.Temp);
-		if (vacuumArr.Length == 0) {
+		if (!eqVacuum.TryGetSingleton(out PlayerVacuum pv)) {
 			// No vacuum in the world right now, so ensure the vfx object as a whole is disabled
 			if (vacuumVFX.activeSelf)
 				vacuumVFX.SetActive(false);
@@ -36,9 +38,7 @@ public class PlayerVacuumVFX : MonoBehaviour {
 		} else if (!vacuumVFX.activeSelf)
 			vacuumVFX.SetActive(true);
 
-		// Play/stop vacuum vfx accordingly
-		PlayerVacuum vacuum = vacuumArr[0];
-		if (vacuum.VacuumEnabled) {
+		if (pv.VacuumEnabled) {
 			if (!isPlayingVFX)
 				PlayVacuumVFX();
 		} else {
@@ -46,7 +46,9 @@ public class PlayerVacuumVFX : MonoBehaviour {
 				StopVacuumVFX();
 		}
 
-		UpdateVacuumVFXPositionRotation(eq);
+		// Update Vacuum vfx transform
+		LocalToWorld ltw = eqVacuum.ToComponentDataArray<LocalToWorld>(Allocator.Temp)[0];
+		vacuumVFX.transform.SetPositionAndRotation(ltw.Position, ltw.Rotation);
 	}
 
 	void PlayVacuumVFX() {
@@ -60,11 +62,5 @@ public class PlayerVacuumVFX : MonoBehaviour {
 			p.Stop();
 		isPlayingVFX = false;
 	}
-
-	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	void UpdateVacuumVFXPositionRotation(in EntityQuery vacuumQuery) {
-		LocalToWorld ltw = vacuumQuery.ToComponentDataArray<LocalToWorld>(Allocator.Temp)[0];
-		vacuumVFX.transform.SetPositionAndRotation(ltw.Position, ltw.Rotation);
-	}
-
+	
 }

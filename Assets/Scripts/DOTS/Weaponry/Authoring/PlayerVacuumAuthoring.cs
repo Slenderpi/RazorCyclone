@@ -1,8 +1,6 @@
 using System.Runtime.CompilerServices;
 using Unity.Burst;
-using Unity.Collections;
 using Unity.Entities;
-using Unity.Transforms;
 using UnityEngine;
 
 public class PlayerVacuumAuthoring : MonoBehaviour {

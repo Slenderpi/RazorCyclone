@@ -5,7 +5,6 @@ using Unity.Mathematics;
 using Unity.Physics;
 using Unity.Physics.Extensions;
 using Unity.Transforms;
-using UnityEngine;
 
 [UpdateInGroup(typeof(PlayerPostUpdateGroup))]
 [UpdateBefore(typeof(PlayerResourcesSystem))]
