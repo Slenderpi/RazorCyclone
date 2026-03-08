@@ -33,6 +33,7 @@ public partial struct WavefrontPropagator : ISystem {
 			Allocator.Temp
 		);
 		/** ------------------------------------- **/
+		pcc.count = pcc.numX * pcc.numY * pcc.numZ;
 
 		WavefrontUpdateDelay = 0.4f;
 		lastWavefrontUpdateTime = WavefrontUpdateDelay * -2;

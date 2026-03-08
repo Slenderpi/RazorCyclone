@@ -12,6 +12,7 @@ public class CannonFodderAuthoring : MonoBehaviour {
             Entity entity = GetEntity(TransformUsageFlags.None);
             AddComponent(entity, new CannonFodder());
 			AddComponent(entity, BoidUtil.BoidBuilder.CannonFodder());
+            AddComponent(entity, new PointCloudRaycast());
 		}
     }
     

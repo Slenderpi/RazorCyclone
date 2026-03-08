@@ -50,7 +50,7 @@ public class PointCloudGenerator : MonoBehaviour {
 			//	rng = new Unity.Mathematics.Random(Util.GenerateSeed(auth.transform))
 			//});
 			float3 dims = new(auth.DimensionX, auth.DimensionY, auth.DimensionZ);
-			AddComponent(entity, new PointCloudConfig() {
+			PointCloudConfig pcc = new() {
 				IsEnabled = auth.GENERATE_POINT_CLOUD ? 1 : 0,
 
 				DistBetweenPoints = auth.DistanceBetweenPoints,
@@ -60,7 +60,9 @@ public class PointCloudGenerator : MonoBehaviour {
 				numY = (int)(auth.DimensionY / auth.DistanceBetweenPoints),
 				numZ = (int)(auth.DimensionZ / auth.DistanceBetweenPoints),
 				cornerPosition = auth.CenterPosition - dims / 2f
-			});
+			};
+			pcc.count = pcc.numX * pcc.numY * pcc.numZ;
+			AddComponent(entity, pcc);
 #endif
 		}
 	}
@@ -79,6 +81,10 @@ public struct PointCloudConfig : IComponentData {
 	public int numY;
 	public int numZ;
 	public float3 cornerPosition;
+	/// <summary>
+	/// Total number of points in the point cloud.
+	/// </summary>
+	public int count;
 
 
 

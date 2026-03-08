@@ -4,6 +4,7 @@ using UnityEngine;
 using Unity.Transforms;
 using Unity.Mathematics;
 using Unity.Collections;
+using System.Linq;
 
 [UpdateBefore(typeof(PlayerPostUpdateGroup))]
 partial struct PointCloudRaycastSystem : ISystem {
@@ -33,11 +34,17 @@ partial struct PointCloudRaycastSystem : ISystem {
             pcc = SystemAPI.GetSingleton<PointCloudConfig>();
             BufferEntity = SystemAPI.GetSingletonEntity<WavefrontPointCloudSingleton>();
 		}
-        state.Dependency = new PointCloudRaycastJob() {
+        float3 PlayerPos = state.EntityManager.GetComponentData<LocalTransform>(eqPlayer.GetSingletonEntity()).Position; // eqPlayer.GetSingleton<LocalTransform>().Position
+        NativeArray<byte> CachedLosChecks = new(pcc.count, Allocator.TempJob);
+        Debug.Log($"CachedLosChecks should have length {pcc.count}. It has {CachedLosChecks.Length}");
+		state.Dependency = new PointCloudRaycastJob() {
+            CachedLosChecks = CachedLosChecks,
             pc = state.EntityManager.GetBuffer<PointCloudValue>(BufferEntity).AsNativeArray(),
             pcc = pcc,
-            PlayerPos = state.EntityManager.GetComponentData<LocalTransform>(eqPlayer.GetSingletonEntity()).Position // eqPlayer.GetSingleton<LocalTransform>().Position
+			PlayerPos = PlayerPos,
+            goalPoint = pcc.PositionToPoint(PlayerPos)
         }.Schedule(state.Dependency);
+        state.Dependency = CachedLosChecks.Dispose(state.Dependency);
     }
 
     [BurstCompile]
@@ -48,23 +55,30 @@ partial struct PointCloudRaycastSystem : ISystem {
 
     [BurstCompile]
     partial struct PointCloudRaycastJob : IJobEntity {
+        // 0=unset, 1=HasLos, other=NoLos
+        public NativeArray<byte> CachedLosChecks;
         [ReadOnly]
         public NativeArray<PointCloudValue> pc;
         public PointCloudConfig pcc;
         public float3 PlayerPos;
+        public int3 goalPoint; // temp?
 
-        [BurstCompile]
+		[BurstCompile]
         public void Execute(
             ref PointCloudRaycast cast,
             in LocalTransform trans
         ) {
-			/**
+            /**
              * THE BELOW ALGORITHM IS BASED ON "A Fast Voxel Traversal Algorithm" (http://www.cse.yorku.ca/~amana/research/grid.pdf)
              */
+            int currIndex = CachedLosChecks[pcc.PositionToIndex(trans.Position)];
+			if (CachedLosChecks[currIndex] != 0) {
+                cast.HasLos = CachedLosChecks[currIndex] == 1;
+                return;
+            }
+			int3 currPoint = pcc.PositionToPoint(trans.Position);
 			float3 toPlayer = PlayerPos - trans.Position;
 			int3 step = Util.sign(toPlayer);
-			int3 currPoint = pcc.PositionToPoint(trans.Position);
-			int3 goalPoint = pcc.PositionToPoint(PlayerPos); // temp
             float halfDist = pcc.DistBetweenPoints / 2f;
 			float3 currPointPos = pcc.PointToPosition(currPoint);
 			float3 tMax = new(
@@ -97,6 +111,7 @@ partial struct PointCloudRaycastSystem : ISystem {
 				}
             }
             cast.HasLos = hasLos;
+            CachedLosChecks[currIndex] = hasLos ? (byte)1 : (byte)2;
         }
     }
     

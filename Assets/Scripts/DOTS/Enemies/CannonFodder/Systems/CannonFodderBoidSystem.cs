@@ -24,16 +24,17 @@ partial struct CannonFodderBoidSystem : ISystem {
 		new CannonFodderBoidJob() {
 			DeltaTime = SystemAPI.Time.DeltaTime,
 			Statics = SystemAPI.GetSingleton<CannonFodderStatics>(),
-			pw = SystemAPI.GetSingleton<PhysicsWorldSingleton>().PhysicsWorld,
+			//pw = SystemAPI.GetSingleton<PhysicsWorldSingleton>().PhysicsWorld,
 			PlayerPosition = SystemAPI.GetComponent<LocalToWorld>(SystemAPI.GetSingletonEntity<Player>()).Position
 		}.ScheduleParallel();
 	}
 
 	[BurstCompile]
+	[WithOptions(EntityQueryOptions.IgnoreComponentEnabledState)]
 	partial struct CannonFodderBoidJob : IJobEntity {
 		public float DeltaTime;
 		public CannonFodderStatics Statics;
-		[ReadOnly] public PhysicsWorld pw;
+		//[ReadOnly] public PhysicsWorld pw;
 		public float3 PlayerPosition;
 
 		[BurstCompile]
@@ -43,7 +44,9 @@ partial struct CannonFodderBoidSystem : ISystem {
 			ref LocalTransform localTransform,
 			ref RandomGenerator randomGenerator,
 			in PhysicsMass physicsMass,
-			in WavefrontReader wavefrontReader
+			in WavefrontReader wavefrontReader,
+			in PointCloudRaycast pccast,
+			EnabledRefRO<PointCloudRaycast> castEnabled
 		) {
 			float3 vel = Util.IsNearZero(physicsVelocity.Linear) ? new float3(0f, 0f, 0.1f) : physicsVelocity.Linear;
 			float distCheck = math.lengthsq(PlayerPosition - localTransform.Position);
@@ -57,7 +60,7 @@ partial struct CannonFodderBoidSystem : ISystem {
 			//			DeltaTime
 			//		);
 			//}
-			if (distCheck <= Statics.FleeTriggerDistance * Statics.FleeTriggerDistance && HasLos(localTransform.Position, Statics.LosFilterForFleeing)) {
+			if (castEnabled.ValueRO && pccast.HasLos) {// HasLos(localTransform.Position, Statics.LosFilterForFleeing)) {
 				cannonFodderBoid.steerForce = math.normalizesafe(
 					distCheck <= 4f * 4f ? // At short distances, just run from the player directly
 					localTransform.Position - PlayerPosition :
@@ -108,14 +111,50 @@ partial struct CannonFodderBoidSystem : ISystem {
 			//}
 		}
 
+		//[BurstCompile]
+		//[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		//bool HasLos(in float3 myPos, in CollisionFilter losFilter) {
+		//	return !pw.CastRay(new() {
+		//		Start = PlayerPosition,
+		//		End = myPos,
+		//		Filter = losFilter
+		//	});
+		//}
+	}
+
+}
+
+[UpdateBefore(typeof(PointCloudRaycastSystem))]
+partial struct CannonFodderDistCheckSystem : ISystem {
+	
+	[BurstCompile]
+	public void OnCreate(ref SystemState state) {
+		state.RequireForUpdate<CannonFodderStatics>();
+		state.RequireForUpdate<CannonFodderBoid>();
+		state.RequireForUpdate<Player>();
+	}
+
+	[BurstCompile]
+	public void OnUpdate(ref SystemState state) {
+		new CannonFodderDistCheckJob() {
+			Statics = SystemAPI.GetSingleton<CannonFodderStatics>(),
+			PlayerPosition = SystemAPI.GetComponent<LocalToWorld>(SystemAPI.GetSingletonEntity<Player>()).Position
+		}.ScheduleParallel();
+	}
+
+	[BurstCompile]
+	[WithOptions(EntityQueryOptions.IgnoreComponentEnabledState)]
+	partial struct CannonFodderDistCheckJob : IJobEntity {
+		public CannonFodderStatics Statics;
+		public float3 PlayerPosition;
+
 		[BurstCompile]
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		bool HasLos(in float3 myPos, in CollisionFilter losFilter) {
-			return !pw.CastRay(new() {
-				Start = PlayerPosition,
-				End = myPos,
-				Filter = losFilter
-			});
+		public void Execute(in CannonFodder _, in LocalTransform localTransform, EnabledRefRW<PointCloudRaycast> pccast) {
+			if (math.lengthsq(PlayerPosition - localTransform.Position) <= Util.pow2(Statics.FleeTriggerDistance)) {
+				if (!pccast.ValueRO)
+					pccast.ValueRW = true;
+			} else if (pccast.ValueRO)
+				pccast.ValueRW = false;
 		}
 	}
 
