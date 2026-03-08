@@ -101,6 +101,7 @@ public class GameHudCanvas : MonoBehaviour {
 		} else {
 			if (Toggler.activeSelf)
 				Toggler.SetActive(false);
+			return;
 		}
 		PhysicsVelocity pv = eqPlayer.GetSingleton<PhysicsVelocity>();
 		HandleCrosshairUi(pv);

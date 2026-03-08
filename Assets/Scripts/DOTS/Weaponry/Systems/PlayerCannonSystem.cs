@@ -3,15 +3,14 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Physics;
-using Unity.Physics.Extensions;
 using Unity.Transforms;
-using UnityEngine;
-using static UnityEngine.EventSystems.EventTrigger;
 
 [UpdateInGroup(typeof(PlayerPostUpdateGroup))]
 [UpdateAfter(typeof(PlayerRotationSystem))]
 [UpdateBefore(typeof(PlayerResourcesSystem))]
 partial struct PlayerCannonSystem : ISystem {
+
+    EntityQuery eqPlayer;
 
     [BurstCompile]
     public void OnCreate(ref SystemState state) {
@@ -19,23 +18,29 @@ partial struct PlayerCannonSystem : ISystem {
         state.RequireForUpdate<PlayerInput>();
         state.RequireForUpdate<PlayerCannon>();
         state.RequireForUpdate<PlayerResources>();
+
+        using var eqb = new EntityQueryBuilder(Allocator.Temp);
+        eqPlayer = eqb.WithAll<PlayerInput, PhysicsVelocity, PhysicsMass, LocalToWorld, PlayerResources, PlayerSpinfo>().Build(ref state);
 	}
 
     [BurstCompile]
     public void OnUpdate(ref SystemState state) {
-        EntityQuery eqPlayer = SystemAPI
-            .QueryBuilder()
-            .WithAll<PlayerInput, PhysicsVelocity, PhysicsMass, LocalToWorld, PlayerResources, PlayerSpinfo>().Build();
-        PlayerInput input = eqPlayer.ToComponentDataArray<PlayerInput>(Allocator.Temp)[0];
+        using var pinputArr = eqPlayer.ToComponentDataArray<PlayerInput>(Allocator.Temp);
+        PlayerInput input = pinputArr[0];
 		if (!input.FireCannon)
             return;
-		PlayerResources resources = eqPlayer.ToComponentDataArray<PlayerResources>(Allocator.Temp)[0];
+        using var rsrcsArr = eqPlayer.ToComponentDataArray<PlayerResources>(Allocator.Temp);
+		PlayerResources resources = rsrcsArr[0];
         if (!resources.CanSpendFuel())
             return;
-        PhysicsVelocity pv = eqPlayer.ToComponentDataArray<PhysicsVelocity>(Allocator.Temp)[0];
-        PhysicsMass pm = eqPlayer.ToComponentDataArray<PhysicsMass>(Allocator.Temp)[0];
-		PlayerSpinfo spinfo = eqPlayer.ToComponentDataArray<PlayerSpinfo>(Allocator.Temp)[0];
-		Entity playerEntity = eqPlayer.ToEntityArray(Allocator.Temp)[0];
+        using var pvArr = eqPlayer.ToComponentDataArray<PhysicsVelocity>(Allocator.Temp);
+        using var pmArr = eqPlayer.ToComponentDataArray<PhysicsMass>(Allocator.Temp);
+        using var spinArr = eqPlayer.ToComponentDataArray<PlayerSpinfo>(Allocator.Temp);
+        using var enArr = eqPlayer.ToEntityArray(Allocator.Temp);
+		PhysicsVelocity pv = pvArr[0];
+        PhysicsMass pm = pmArr[0];
+		PlayerSpinfo spinfo = spinArr[0];
+		Entity playerEntity = enArr[0];
         LocalToWorld camtransWorld = SystemAPI
             .QueryBuilder()
             .WithAll<PlayerCameraTransform, LocalToWorld>()

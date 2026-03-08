@@ -12,18 +12,22 @@ using UnityEngine;
 [UpdateBefore(typeof(PlayerResourcesSystem))]
 partial struct PlayerRotationSystem : ISystem {
 
-    [BurstCompile]
+    EntityQuery eqPlayer;
+
+	[BurstCompile]
     public void OnCreate(ref SystemState state) {
         state.RequireForUpdate<Player>();
         state.RequireForUpdate<PlayerInput>();
         state.RequireForUpdate<PlayerPivot>();
         state.RequireForUpdate<PlayerCameraTransform>();
-    }
+
+		// Let's just assume there's only one player entity
+		using var eqb = new EntityQueryBuilder(Allocator.Temp);
+        eqPlayer = eqb.WithAll<Player, PlayerInput, PlayerControlsSettings>().Build(ref state);
+	}
 
     [BurstCompile]
     public void OnUpdate(ref SystemState state) {
-        // Let's just assume there's only one player entity
-        EntityQuery eqPlayer = SystemAPI.QueryBuilder().WithAll<Player, PlayerInput, PlayerControlsSettings>().Build();
         PlayerInput input = eqPlayer.ToComponentDataArray<PlayerInput>(Allocator.Temp)[0];
         PlayerControlsSettings settings = eqPlayer.ToComponentDataArray<PlayerControlsSettings>(Allocator.Temp)[0];
 

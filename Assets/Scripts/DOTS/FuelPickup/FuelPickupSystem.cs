@@ -18,7 +18,9 @@ partial struct FuelPickupSystem : ISystem {
         state.RequireForUpdate<FuelPickup>();
         state.RequireForUpdate<FuelPickupPivot>();
 
-		PlayerQuery = new EntityQueryBuilder(Allocator.Persistent).WithAll<Player, PlayerResources, LocalToWorld>().Build(ref state);
+        var eqb = new EntityQueryBuilder(Allocator.Temp);
+		PlayerQuery = eqb.WithAll<Player, PlayerResources, LocalToWorld>().Build(ref state);
+        eqb.Dispose();
 
 		uint seed = (uint)(SystemAPI.Time.ElapsedTime * 1000f) * 0x9E3779B9;
 		rng = new NativeReference<Unity.Mathematics.Random>(
@@ -30,25 +32,32 @@ partial struct FuelPickupSystem : ISystem {
     [BurstCompile]
     public void OnUpdate(ref SystemState state) {
         FuelPickupStatics statics = SystemAPI.GetSingleton<FuelPickupStatics>();
-        new FuelPickupJob() {
-            PlayerEntity = PlayerQuery.ToEntityArray(Allocator.Temp)[0],
-            PlayerResources = PlayerQuery.ToComponentDataArray<PlayerResources>(Allocator.Temp)[0],
-            PlayerPosition = PlayerQuery.ToComponentDataArray<LocalToWorld>(Allocator.Temp)[0].Position,
+		var plrArr = PlayerQuery.ToEntityArray(Allocator.TempJob);
+        var rsrcsArr = PlayerQuery.ToComponentDataArray<PlayerResources>(Allocator.TempJob);
+        var ltwArr = PlayerQuery.ToComponentDataArray<LocalToWorld>(Allocator.TempJob);
+
+		state.Dependency = new FuelPickupJob() {
+            PlayerEntity = plrArr[0],
+            PlayerResources = rsrcsArr[0],
+            PlayerPosition = ltwArr[0].Position,
             ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(state.WorldUnmanaged),
             Statics = statics,
             PlayerHitboxRadius = 0.5f, // Based on the player prefab's sphere collider
 			rng = rng
-		}.Schedule();
-        new FuelPickupPivotJob() {
+		}.Schedule(state.Dependency);
+		state.Dependency = new FuelPickupPivotJob() {
             et = (float)SystemAPI.Time.ElapsedTime,
             dt = SystemAPI.Time.DeltaTime,
             Statics = statics
-        }.Schedule();
-    }
+        }.Schedule(state.Dependency);
+
+		state.Dependency = plrArr.Dispose(state.Dependency);
+		state.Dependency = rsrcsArr.Dispose(state.Dependency);
+		state.Dependency = ltwArr.Dispose(state.Dependency);
+	}
 
     [BurstCompile]
     public void OnDestroy(ref SystemState state) {
-        //PlayerQuery.Dispose();
         if (rng.IsCreated)
             rng.Dispose();
     }

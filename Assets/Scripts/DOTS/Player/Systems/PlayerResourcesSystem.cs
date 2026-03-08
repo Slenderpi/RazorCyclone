@@ -6,24 +6,25 @@ using UnityEngine;
 [UpdateInGroup(typeof(PlayerPostUpdateGroup))]
 partial struct PlayerResourcesSystem : ISystem {
 
+    EntityQuery eqPlayer;
+
     [BurstCompile]
     public void OnCreate(ref SystemState state) {
         state.RequireForUpdate<Player>();
         state.RequireForUpdate<PlayerResources>();
+
+        using var eqb = new EntityQueryBuilder(Allocator.Temp);
+        eqPlayer = eqb.WithAll<PlayerResources>().Build(ref state);
 	}
 
     [BurstCompile]
     public void OnUpdate(ref SystemState state) {
-        EntityQuery eq = SystemAPI
-            .QueryBuilder()
-            .WithAll<PlayerResources>()
-            .Build();
-		PlayerResources resources = eq.ToComponentDataArray<PlayerResources>(Allocator.Temp)[0];
+		PlayerResources resources = eqPlayer.ToComponentDataArray<PlayerResources>(Allocator.Temp)[0];
 
         if (resources.CanRegenHealth((float)SystemAPI.Time.ElapsedTime))
             resources.RegenerateHealth(SystemAPI.Time.DeltaTime);
 
-		SystemAPI.SetComponent(eq.ToEntityArray(Allocator.Temp)[0], resources);
+		SystemAPI.SetComponent(eqPlayer.ToEntityArray(Allocator.Temp)[0], resources);
     }
 
 }

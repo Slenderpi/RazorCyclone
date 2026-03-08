@@ -22,7 +22,8 @@ partial struct PointCloudRaycastSystem : ISystem {
         state.RequireForUpdate<PointCloudRaycast>();
         state.RequireForUpdate<Player>();
 
-        eqPlayer = new EntityQueryBuilder(Allocator.Persistent).WithAll<Player, LocalTransform>().Build(ref state);
+        using var eqb = new EntityQueryBuilder(Allocator.Temp);
+		eqPlayer = eqb.WithAll<Player, LocalTransform>().Build(ref state);
 		hasFoundPointCloudSingleton = false;
     }
     

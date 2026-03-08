@@ -7,19 +7,26 @@ using UnityEngine;
 
 [UpdateInGroup(typeof(LateSimulationSystemGroup))]
 partial struct EnemyDeathSystem : ISystem {
-
-    EntityQuery PlayerQuery;
+	
+	EntityQuery PlayerQuery;
 
     [BurstCompile]
     public void OnCreate(ref SystemState state) {
         state.RequireForUpdate<EnemyDeathStatics>();
         state.RequireForUpdate<DeadEnemyTag>();
 		state.RequireForUpdate<EntityBakerSingleton>();
-		PlayerQuery = new EntityQueryBuilder(Allocator.Persistent).WithAll<Player, PlayerResources>().Build(ref state);
+
+		using var eqb = new EntityQueryBuilder(Allocator.Temp);
+		PlayerQuery = eqb
+			.WithAll<Player, PlayerResources>()
+			.Build(ref state);
 	}
 
     [BurstCompile]
     public void OnUpdate(ref SystemState state) {
+		var plrArr = PlayerQuery.ToEntityArray(Allocator.TempJob);
+		var rsrcsArr = PlayerQuery.ToComponentDataArray<PlayerResources>(Allocator.TempJob);
+
 		state.Dependency = new EnemyDeathJob() {
 			ecbBegPres = SystemAPI.GetSingleton<BeginPresentationEntityCommandBufferSystem.Singleton>()
 								  .CreateCommandBuffer(state.WorldUnmanaged)
@@ -28,15 +35,13 @@ partial struct EnemyDeathSystem : ISystem {
 								 .CreateCommandBuffer(state.WorldUnmanaged)
 								 .AsParallelWriter(),
 			DeathStatics = SystemAPI.GetSingleton<EnemyDeathStatics>(),
-			PlrEntity = PlayerQuery.ToEntityArray(Allocator.Temp)[0],
-			PlrResources = PlayerQuery.ToComponentDataArray<PlayerResources>(Allocator.Temp)[0],
+			PlrEntity = plrArr[0],
+			PlrResources = rsrcsArr[0],
 			FuelPickupEntity = SystemAPI.GetSingleton<EntityBakerSingleton>().FuelPickup
 		}.ScheduleParallel(state.Dependency);
-    }
 
-	[BurstCompile]
-	public void OnDestroy() {
-		PlayerQuery.Dispose();
+		state.Dependency = plrArr.Dispose(state.Dependency);
+		state.Dependency = rsrcsArr.Dispose(state.Dependency);
 	}
 
 	[BurstCompile]
