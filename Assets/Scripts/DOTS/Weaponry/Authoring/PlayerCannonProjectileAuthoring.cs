@@ -15,7 +15,8 @@ public class PlayerCannonProjectileAuthoring : MonoBehaviour {
 			Projectile proj = new() { Radius = auth.ProjectileRadius };
 			proj.SetFilter(
 				(1u << LayerMask.NameToLayer("Default")) |
-				(1u << LayerMask.NameToLayer("EnemyHitbox"))
+				(1u << LayerMask.NameToLayer("EnemyHitbox")) |
+                (1u << LayerMask.NameToLayer("EnemyToWorld"))
             );
             AddComponent(entity, proj);
             AddComponent<PlayerCannonProjectileTrailAttachment>(entity);

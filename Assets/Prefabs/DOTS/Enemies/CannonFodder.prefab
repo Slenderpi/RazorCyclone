@@ -107,9 +107,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3930fae6c4e3cfc46aa9a1050afb2969, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  EnableTester: 0
-  TesterMoveSpeed: 0
-  TesterRotateSpeed: 0
 --- !u!114 &3709569421634412367
 MonoBehaviour:
   m_ObjectHideFlags: 0
