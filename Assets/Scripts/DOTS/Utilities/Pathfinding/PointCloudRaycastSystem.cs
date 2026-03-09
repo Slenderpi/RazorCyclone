@@ -80,6 +80,12 @@ partial struct PointCloudRaycastSystem : ISystem {
 			);
             bool hasLos = true;
             while (!Util.equal(currPoint, goalPoint)) { // temp sentinel
+                if (!pcc.IsPointInBounds(currPoint)) {
+					// This check shouldn't be necessary due to clamping, but to prevent errors, it will temporarily be here.
+					// The line `!pc[pcc.PointToIndex(currPoint)]` has an index out of bounds error when the player is in certain areas.
+					hasLos = false;
+                    break;
+                }
                 // UNCOMMENT BELOW FOR RAYCAST DEBUGGING
 				//Util.D_VisualizePointAsBox(pcc, currPoint, pc[pcc.PointToIndex(currPoint)].IsUnobstructed);
 				if (!pc[pcc.PointToIndex(currPoint)].IsUnobstructed) {

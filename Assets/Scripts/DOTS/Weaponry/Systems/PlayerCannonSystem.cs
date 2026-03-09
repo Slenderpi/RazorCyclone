@@ -67,8 +67,7 @@ partial struct PlayerCannonSystem : ISystem {
         Entity projectile = em.Instantiate(cannon.ProjectilePrefab);
         PlayerCannonProjectile pcp = em.GetComponentData<PlayerCannonProjectile>(projectile);
         //Debug.Log($"Spins: {spinfo.CurrentSpins} | Mult: {spinfo.CurrentRicochetMultiplier} | Total: {spinfo.CurrentSpins * spinfo.CurrentRicochetMultiplier}");
-        pcp.SetMaxRicochets(spinfo.CurrentSpins * spinfo.CurrentRicochetMultiplier);
-        spinfo.CurrentSpins = 0; // Consume spins
+        pcp.SetMaxRicochets(spinfo.SpendSpinsAsRicochet());
         SystemAPI.SetComponent(playerEntity, spinfo);
 		em.AddComponentData(projectile, pcp);
 		em.AddComponentData(

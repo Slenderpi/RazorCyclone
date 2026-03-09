@@ -199,10 +199,32 @@ public struct PlayerSpinfo : IComponentData {
     public float2 prevSpinDir;
     public int spinProgress;
 
+    // If true, then the last time CurrentSpins got set to 0, it was because of a cannon shot
+    // If false, then was because timeout
+    bool spinsWereSpentAsRicochet;
+
+    public int SpendSpinsAsRicochet() {
+        spinsWereSpentAsRicochet = true;
+        int rics = CurrentSpins * CurrentRicochetMultiplier;
+        CurrentSpins = 0;
+        return rics;
+    }
+
+    /// <summary>
+    /// When CurrentSpins gets set to 0, use this method to determine if the cause was from spending them 
+    /// in a Cannon shot or from running out of time.
+    /// </summary>
+    /// <returns>True if spent by Cannon.</returns>
+    public readonly bool WereSpinsSpentAsRicochet() {
+        return spinsWereSpentAsRicochet;
+    }
+
     [BurstCompile]
     public void ProcessAimDirection(float3 aimDir) {
         // TODO: update spinProgress, maybe update CurrentSpins, maybe update CurrentRicochetMultiplier, etc.
     }
+
+    // TODO: process spin timeout
 }
 
 public struct PlayerInput : IComponentData {

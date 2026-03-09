@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.CompilerServices;
+using TMPro;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -14,24 +15,27 @@ public class GameHudCanvas : MonoBehaviour {
 	GameObject Toggler;
 
 	[Header("MomentumAffectable")]
+	public RectTransform MomentumPanel;
+	[Space(5)]
 	public Animator FuelOutlineAnimator; // TODO: use
 	public Image FuelSliderFill;
 	public RectTransform FuelSliderLevel;
-
+	[Space(5)]
 	public Animator HealthFillAnimator; // TODO: use
 	public Animator HealthOutlineAnimator; // TODO: use
 	public Image HealthSliderFill;
 	public RectTransform HealthSliderLevel;
 	public RawImage HealthVignette;
+	[Space(5)]
+	public Image SpinCounterOutline;
+	public TMP_Text SpinCounterText;
 
 	[Header("Crosshairs")]
 	public RectTransform MainVacuumCrosshair;
 	public RectTransform MainCannonCrosshair;
 
-	[Header("Misc")]
-	public RectTransform MomentumPanel;
-
 	// TODO: Organize this stuff
+	[Header("NEEDS ORGANIZING")]
 	[Range(0.01f, 10)]
 	public float swf = 2;
 	[Range(0, 1)]
@@ -61,9 +65,9 @@ public class GameHudCanvas : MonoBehaviour {
 	// RAD = SLIDER_BG.Width / 2 * SLIDER_BG.Scale - SLIDER_LEVEL.Width / 2
 	const float BENT_BAR_CENTERED_RADIUS = 115f * 1.927799f - 22.16969f / 2f;
 
-	SecondOrderDynamicsF sodLookX;
-	SecondOrderDynamicsF sodLookY;
-	SecondOrderDynamicsF sodSpeed;
+	SecondOrderDynamics sodLookX;
+	SecondOrderDynamics sodLookY;
+	SecondOrderDynamics sodSpeed;
 
 	Camera mainCamera;
 
@@ -72,13 +76,18 @@ public class GameHudCanvas : MonoBehaviour {
 	EntityQuery eqPlayerPivot;
 	EntityQuery eqPlayerCannon;
 
+	int lastSpinCount = 0;
+
 
 
 	private void Awake() {
 		Toggler.SetActive(false);
-		sodLookX = new SecondOrderDynamicsF(swf, swz, swr, 0);
-		sodLookY = new SecondOrderDynamicsF(swf, swz, swr, 0);
-		sodSpeed = new SecondOrderDynamicsF(scf, scz, scr, 0);
+		sodLookX = new(swf, swz, swr, 0);
+		sodLookY = new(swf, swz, swr, 0);
+		sodSpeed = new(scf, scz, scr, 0);
+
+		SpinCounterOutline.gameObject.SetActive(false);
+		SpinCounterText.text = "0";
 	}
 
 	void Start() {
@@ -89,6 +98,7 @@ public class GameHudCanvas : MonoBehaviour {
 			ComponentType.ReadOnly<Player>(),
 			ComponentType.ReadOnly<PlayerResources>(),
 			ComponentType.ReadOnly<PlayerInput>(),
+			ComponentType.ReadOnly<PlayerSpinfo>(),
 			ComponentType.ReadOnly<PhysicsVelocity>());
 		eqPlayerPivot = entityManager.CreateEntityQuery(ComponentType.ReadOnly<PlayerPivot>(), ComponentType.ReadOnly<LocalTransform>());
 		eqPlayerCannon = entityManager.CreateEntityQuery(ComponentType.ReadOnly<PlayerCannon>());
@@ -106,24 +116,11 @@ public class GameHudCanvas : MonoBehaviour {
 		PhysicsVelocity pv = eqPlayer.GetSingleton<PhysicsVelocity>();
 		HandleCrosshairUi(pv);
 		HandleResourceUi(eqPlayer.GetSingleton<PlayerResources>());
-		//HandleMomentumSway(eqPlayer.GetSingleton<PlayerInput>());
-		//HandleMomentumSpeed(pv);
-	}
-
-	// TODO: Clean code
-	private void HandleMomentumSway(in PlayerInput pinput) {
-		Vector2 newPos = new Vector2(
-			sodLookX.Update(Mathf.Clamp(-pinput.LookInputDelta.x / maxLookDelta, -1, 1), Time.deltaTime),
-			sodLookY.Update(Mathf.Clamp(-pinput.LookInputDelta.y / maxLookDelta, -1, 1), Time.deltaTime) * swayYExaggerateFactor
-		);
-		MomentumPanel.anchoredPosition = newPos * maxSwayDist;
-	}
-
-	// TODO: Clean code
-	private void HandleMomentumSpeed(in PhysicsVelocity pv) {
-		Debug.Log($"Speed: {pv.Linear}");
-		float newScale = Mathf.LerpUnclamped(1, 1 - AdditionalScale, sodSpeed.Update(math.length(pv.Linear), Time.deltaTime) / HighAdditionalScaleSpeed);
-		MomentumPanel.localScale = new Vector3(newScale, newScale, 1);
+		if (Time.deltaTime > 0) {
+			HandleMomentumSway(eqPlayer.GetSingleton<PlayerInput>());
+			HandleMomentumSpeed(pv);
+		}
+		HandleSpinUi();
 	}
 
 	private void HandleCrosshairUi(in PhysicsVelocity playerVelocity) {
@@ -180,6 +177,42 @@ public class GameHudCanvas : MonoBehaviour {
 		}
 		if (resources.DidRefillFuelThisFrame()) {
 			// TODO
+		}
+	}
+
+	// TODO: Clean code
+	private void HandleMomentumSway(in PlayerInput pinput) {
+		Vector2 newPos = new(
+			sodLookX.Update(Mathf.Clamp(-pinput.LookInputDelta.x / maxLookDelta, -1, 1), Time.deltaTime),
+			sodLookY.Update(Mathf.Clamp(-pinput.LookInputDelta.y / maxLookDelta, -1, 1), Time.deltaTime) * swayYExaggerateFactor
+		);
+		MomentumPanel.anchoredPosition = newPos * maxSwayDist;
+	}
+
+	// TODO: Clean code
+	private void HandleMomentumSpeed(in PhysicsVelocity pv) {
+		float newScale = Mathf.LerpUnclamped(1, 1 - AdditionalScale, sodSpeed.Update(math.length(pv.Linear), Time.deltaTime) / HighAdditionalScaleSpeed);
+		MomentumPanel.localScale = new Vector3(newScale, newScale, 1);
+	}
+
+	private void HandleSpinUi() {
+		PlayerSpinfo spinfo = eqPlayer.GetSingleton<PlayerSpinfo>();
+		if (lastSpinCount != spinfo.CurrentSpins) {
+			if (spinfo.CurrentSpins == 0) {
+				if (spinfo.WereSpinsSpentAsRicochet()) {
+					// TODO: effect for spending spins
+				} else {
+					// TODO: effect for running out
+				}
+				SpinCounterOutline.gameObject.SetActive(false);
+			} else {
+				if (!SpinCounterOutline.gameObject.activeSelf)
+					SpinCounterOutline.gameObject.SetActive(true);
+				// Effect for gaining a spin (unless spins decay one by one instead of all at once, then will need to check)
+
+				SpinCounterText.text = spinfo.CurrentSpins.ToString();
+			}
+			lastSpinCount = spinfo.CurrentSpins;
 		}
 	}
 

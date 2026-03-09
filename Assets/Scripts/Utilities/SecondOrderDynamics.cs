@@ -1,4 +1,65 @@
+using Unity.Mathematics;
 using UnityEngine;
+
+/// <summary>
+/// Struct for animations using second order dynamics for floats.<br/>
+/// <br/>
+/// From video "Giving Personality to Procedural Animations using Math":<br/>
+/// https://www.youtube.com/watch?v=KPoeNZZ6H4s
+/// </summary>
+public struct SecondOrderDynamics {
+
+	float k1, k2, k3;
+	float px; // Prevoius x
+	float y, dy; // Current y, change in y
+
+	public SecondOrderDynamics(float x0) {
+		k1 = 0;
+		k2 = 0;
+		k3 = 0;
+		px = 0;
+		y = 0;
+		dy = 0;
+		Reset(x0);
+	}
+
+	public SecondOrderDynamics(float f, float z, float r, float x0) {
+        k1 = 0;
+        k2 = 0;
+        k3 = 0;
+        px = 0;
+        y = 0;
+        dy = 0;
+		SetDynamics(f, z, r);
+		Reset(x0);
+	}
+
+	public float Update(float x, float dt) {
+		float dx = (x - px) / dt;
+		px = x;
+		float k2Stable = math.max(k2, 1.1f * (dt * dt / 4 + dt * k1 / 2)); // Clamp k2 for stability
+		y += dt * dy; // Integrate position by velocity
+		dy += dt * (x + k3 * dx - y - k1 * dy) / k2Stable; // Integrate velocity by acceleration
+		return y;
+	}
+
+	public readonly float GetNoUpdate() {
+		return y;
+	}
+
+	public void Reset(float x0) {
+		px = x0;
+		y = x0;
+		dy = 0;
+	}
+
+	void SetDynamics(float f, float z, float r) {
+		float temp = math.PI2 * f;
+		k1 = z / (math.PI * f);
+		k2 = 1 / (temp * temp);
+		k3 = r * z / temp;
+	}
+}
 
 /// <summary>
 /// Class for animations using second order dynamics for floats.<br/>
