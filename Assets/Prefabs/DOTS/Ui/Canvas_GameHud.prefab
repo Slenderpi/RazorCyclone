@@ -1747,7 +1747,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 26.900024, y: -295.6}
+  m_AnchoredPosition: {x: 61.5, y: -657.9}
   m_SizeDelta: {x: -1030, y: 250}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &885453266517326522
@@ -3885,6 +3885,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Toggler: {fileID: 1142841955745712068}
+  MomentumPanel: {fileID: 7240881614767816283}
   FuelOutlineAnimator: {fileID: 2242877669391749605}
   FuelSliderFill: {fileID: 2598018547583145388}
   FuelSliderLevel: {fileID: 6981844439660424067}
@@ -3893,9 +3894,19 @@ MonoBehaviour:
   HealthSliderFill: {fileID: 2381937965397602812}
   HealthSliderLevel: {fileID: 7283632594502234513}
   HealthVignette: {fileID: 8869714809585293828}
+  SpinCounterOutline: {fileID: 2964421573465956504}
+  SpinCounterText: {fileID: 7591844064152732457}
+  KillfeedImpactAnimator: {fileID: 8178516691013035430}
+  KillfeedArea: {fileID: 8562290806635552824}
+  KillfeedElements:
+  - {fileID: 3937078774073037160}
+  - {fileID: 326394389561331532}
+  - {fileID: 5226655332903118110}
+  - {fileID: 4804647568319656746}
+  killColorKF: {r: 0.85882354, g: 0.22745098, b: 0.24705882, a: 0}
+  hitColorKF: {r: 1, g: 0.9647059, b: 0.9372549, a: 0}
   MainVacuumCrosshair: {fileID: 4970277975598895517}
   MainCannonCrosshair: {fileID: 174587239325691186}
-  MomentumPanel: {fileID: 7240881614767816283}
   swf: 2
   swz: 0.6
   swr: 2
@@ -3907,6 +3918,9 @@ MonoBehaviour:
   scr: 1
   AdditionalScale: 0.17
   HighAdditionalScaleSpeed: 50
+  fillf: 5
+  fillz: 1
+  fillr: 1
 --- !u!223 &3402543896492937785
 Canvas:
   m_ObjectHideFlags: 0

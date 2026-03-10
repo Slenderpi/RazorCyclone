@@ -68,17 +68,15 @@ partial struct EnemyDeathSystem : ISystem {
 				},
 				quaternion.identity
 			);
+
+			PlayerResources rscs = PlrResources;
+			rscs.HealHealth(rscs.HealOnKillAmount);
 			if (tag.DeathSource == EEnemyDeathSource.Vacuum) {
-				PlayerResources rscs = PlrResources;
 				rscs.RefillFuel();
-				rscs.HealHealth(rscs.HealOnKillAmount);
-				ecbEndSim.SetComponent(eiiq, PlrEntity, rscs);
-			} else if (tag.DeathSource == EEnemyDeathSource.Cannon) {
-				PlayerResources rscs = PlrResources;
-				rscs.HealHealth(rscs.HealOnKillAmount);
-				ecbEndSim.SetComponent(eiiq, PlrEntity, rscs);
+			} else if (tag.DeathSource != EEnemyDeathSource.Lava) {
 				SpawnPrefab(eiiq, FuelPickupEntity, effectSpawnTransform);
 			}
+			ecbEndSim.SetComponent(eiiq, PlrEntity, rscs);
 
 			SpawnPrefab(eiiq, DeathStatics.DeathVfx, effectSpawnTransform);
 

@@ -96,30 +96,66 @@ public struct VacuumTarget : IComponentData {
 
 
 public struct CannonTarget : IComponentData {
-    private bool isHitThisFrame;
+    /// <summary>
+    /// 0 = Not hit.<br/>
+    /// 1 = Hit, no ricochet.<br/>
+    /// 2 = Hit, ricochet.
+    /// </summary>
+    private byte hitStatusThisFrame;
 
-    public void SetEventHit() {
-        isHitThisFrame = true;
+    public void SetEventHit(bool wasAsRicochet) {
+        hitStatusThisFrame = wasAsRicochet ? (byte)2 : (byte)1;
     }
 
-    public bool IsHit() {
-        return isHitThisFrame;
+    /// <summary>
+    /// Returns true if this target was hit by a Cannon Projectile, regardless of if by ricochet or not.<br/>
+    /// </summary>
+    /// <returns></returns>
+    public readonly bool IsHit() {
+        return hitStatusThisFrame > 0;
+    }
+
+    /// <summary>
+    /// Returns true if this target was hit by a Cannon Projectile ricochet.
+    /// </summary>
+    /// <returns></returns>
+    public readonly bool IsHitAsRicochet() {
+        return hitStatusThisFrame == 2;
+    }
+
+    /// <summary>
+    /// Convenience method for getting the hit status of this target as an EEnemyDeathSource enum.<br/>
+    /// NOTE: This function must be used <em>after</em> checking if the target has actually been hit.
+    /// </summary>
+    /// <returns>EEnemyDeathSource.Cannon if hit by Cannon w/ NO ricochet,<br/>
+    /// EEnemyDeathSource.CannonRicochet OTHERWISE.</returns>
+    public readonly EEnemyDeathSource GetHitAsDeathSource() {
+        return hitStatusThisFrame == 1 ? EEnemyDeathSource.Cannon : EEnemyDeathSource.CannonRicochet;
     }
 
 	/// <summary>
 	/// This function can be used to both check and consume the Hit event.
-	/// To only check the Hit event, use IsHit().
+    /// This is regardless of if the hit is by ricochet or not.<br/>
+	/// To only check the Hit event, use IsHit().<br/>
+    /// To only check the Hit as ricochet event, use IsHitAsRicochet().
 	/// </summary>
-	/// <returns></returns>
-	public bool TryConsumeHitEvent() {
-        if (isHitThisFrame) {
-            isHitThisFrame = false;
-            return true;
-        }
-        return false;
+	/// <returns>Hit status. 0 for hit, 1 for hit no ric, 2 for hit as ric.</returns>
+	public byte TryConsumeHitEvent() {
+        byte ret = hitStatusThisFrame;
+        if (hitStatusThisFrame > 0)
+            hitStatusThisFrame = 0;
+        return ret;
+    }
+
+    /// <summary>
+    /// Consumes the hit event without checking if the hit event was set in the first place.<br/>
+    /// Use TryConsumeHitEvent() instead if you want to only consume the event when it's actually set.
+    /// </summary>
+    public void ConsumeHitEvent() {
+        hitStatusThisFrame = 0;
     }
 
     public void ResetEvents() {
-        isHitThisFrame = false;
+        hitStatusThisFrame = 0;
     }
 }

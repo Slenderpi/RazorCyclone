@@ -57,8 +57,15 @@ partial struct PlayerCannonProjectileSystem : ISystem {
 			float3 vfxLookDir = math.normalize(pv.Linear);
 			transform.Position = proj.Hit.Position + vfxLookDir * -0.1f;
 
-            // Determine specifics regarding ricochet/not ricochet
-            Entity vfx;
+			// If hit a cannon target, set its hit event and try to deal damage
+			if (CannonTargetLookup.HasComponent(proj.Hit.Entity)) {
+				CannonTarget target = CannonTargetLookup[proj.Hit.Entity];
+				target.SetEventHit(cannonProjectile.RemainingRicochets > 0);
+				CannonTargetLookup[proj.Hit.Entity] = target;
+			}
+
+			// Determine specifics regarding ricochet/not ricochet
+			Entity vfx;
 			Util.UpForLookRotation(vfxLookDir, out float3 upVector);
 			if (cannonProjectile.RemainingRicochets <= 0) {
                 vfx = ecb.Instantiate(pcps.ImpactEffect);
@@ -80,13 +87,6 @@ partial struct PlayerCannonProjectileSystem : ISystem {
 					quaternion.LookRotation(vfxLookDir, upVector)
 				)
 			);
-
-            // If hit a cannon target, set its hit event and try to deal damage
-            if (CannonTargetLookup.HasComponent(proj.Hit.Entity)) {
-                CannonTarget target = CannonTargetLookup[proj.Hit.Entity];
-                target.SetEventHit();
-                CannonTargetLookup[proj.Hit.Entity] = target;
-            }
         }
     }
 

@@ -42,11 +42,12 @@ partial struct CannonFodderHitSystem : ISystem {
 				});
 				return;
             }
-            if (canTargetEvents.TryConsumeHitEvent()) {
+			if (canTargetEvents.IsHit()) {
 				ecb.AddComponent(eiiq, en, new DeadEnemyTag() {
                     EnemyType = EEnemyType.CannonFodder,
-                    DeathSource = EEnemyDeathSource.Cannon
+                    DeathSource = canTargetEvents.GetHitAsDeathSource()
                 });
+                canTargetEvents.ConsumeHitEvent();
 			}
         }
     }

@@ -8,5 +8,6 @@ public struct DeadEnemyTag : IComponentData {
 public enum EEnemyDeathSource {
 	Vacuum,
 	Cannon,
+	CannonRicochet,
 	Lava
 }

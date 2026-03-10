@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Runtime.CompilerServices;
 using TMPro;
 using Unity.Collections;
@@ -29,6 +30,17 @@ public class GameHudCanvas : MonoBehaviour {
 	[Space(5)]
 	public Image SpinCounterOutline;
 	public TMP_Text SpinCounterText;
+	[Space(5)]
+	public Animator KillfeedImpactAnimator;
+	public RectTransform KillfeedArea;
+	float killFeedElemHeight;
+	int currKillElem;
+	public RectTransform[] KillfeedElements;
+	Image[] killfeedEntryImages; // Groups of 4: card bg, wp icon, kill type icon, enemy icon
+	Sprite[] killfeedSprites; // Weapon, Weapon, Weapon, KillType, KillType, Enemies...
+	Animator[] killfeedCardAnimators;
+	[SerializeField] Color killColorKF;
+	[SerializeField] Color hitColorKF;
 
 	[Header("Crosshairs")]
 	public RectTransform MainVacuumCrosshair;
@@ -60,7 +72,14 @@ public class GameHudCanvas : MonoBehaviour {
 	float AdditionalScale = 0.17f; // The scale will reach this amount at a speed of HighAdditionalScaleSpeed
 	[SerializeField]
 	float HighAdditionalScaleSpeed = 50; // The scale will reach AdditionalScale at this speed
-
+	[Range(0.01f, 10)]
+	public float fillf = 5;
+	[Range(0, 1)]
+	public float fillz = 1;
+	[Range(0, 1)]
+	public float fillr = 1;
+	SecondOrderDynamics sodFuelFill;
+	SecondOrderDynamics sodHealthFill;
 	const float BENT_BAR_MAX_FILL = 0.2f;
 	// RAD = SLIDER_BG.Width / 2 * SLIDER_BG.Scale - SLIDER_LEVEL.Width / 2
 	const float BENT_BAR_CENTERED_RADIUS = 115f * 1.927799f - 22.16969f / 2f;
@@ -81,13 +100,18 @@ public class GameHudCanvas : MonoBehaviour {
 
 
 	private void Awake() {
-		Toggler.SetActive(false);
 		sodLookX = new(swf, swz, swr, 0);
 		sodLookY = new(swf, swz, swr, 0);
 		sodSpeed = new(scf, scz, scr, 0);
+		sodFuelFill = new(fillf, fillz, fillr, 1);
+		sodHealthFill = new(fillf, fillz, fillr, 1);
 
 		SpinCounterOutline.gameObject.SetActive(false);
 		SpinCounterText.text = "0";
+
+		InitKillfeed();
+
+		Toggler.SetActive(false);
 	}
 
 	void Start() {
@@ -102,6 +126,8 @@ public class GameHudCanvas : MonoBehaviour {
 			ComponentType.ReadOnly<PhysicsVelocity>());
 		eqPlayerPivot = entityManager.CreateEntityQuery(ComponentType.ReadOnly<PlayerPivot>(), ComponentType.ReadOnly<LocalTransform>());
 		eqPlayerCannon = entityManager.CreateEntityQuery(ComponentType.ReadOnly<PlayerCannon>());
+
+		StartCoroutine(loadKFIconsAsync());
 	}
 
 	void LateUpdate() {
@@ -115,12 +141,61 @@ public class GameHudCanvas : MonoBehaviour {
 		}
 		PhysicsVelocity pv = eqPlayer.GetSingleton<PhysicsVelocity>();
 		HandleCrosshairUi(pv);
-		HandleResourceUi(eqPlayer.GetSingleton<PlayerResources>());
 		if (Time.deltaTime > 0) {
+			HandleResourceUi(eqPlayer.GetSingleton<PlayerResources>());
 			HandleMomentumSway(eqPlayer.GetSingleton<PlayerInput>());
 			HandleMomentumSpeed(pv);
+			HandleSpinUi();
+			HandleKillfeedUi();
 		}
-		HandleSpinUi();
+	}
+
+	private void HandleKillfeedUi() {
+		EntityManager em = World.DefaultGameObjectInjectionWorld.EntityManager;
+		using NativeArray<DeadEnemyTag> tags = em.CreateEntityQuery(typeof(DeadEnemyTag)).ToComponentDataArray<DeadEnemyTag>(Allocator.Temp);
+		if (tags.Length > 0) {
+			for (int i = 0; i < tags.Length; i++) {
+				DeadEnemyTag tag = tags[i];
+				OnPlayerDamagedEnemy(true, tag.DeathSource, tag.EnemyType);
+			}
+		}
+		LerpKillfeedElemPosns();
+	}
+
+	void OnPlayerDamagedEnemy(bool wasKill, EEnemyDeathSource dtype, EEnemyType etype) {
+		// TODO: Hitmarker UI
+		//if (wasKill) {
+		//	CannonHitmarkerAnim.SetTrigger("Hit");
+		//} else {
+		//	if (dtype == EDamageType.Vacuum) {
+		//		VacuumHitmarkerAnim.SetTrigger("Kill");
+		//	} else {
+		//		CannonHitmarkerAnim.SetTrigger("Kill");
+		//	}
+		//}
+
+		// Increment current card index
+		currKillElem = (currKillElem + 1) % KillfeedElements.Length;
+
+		// Position card directly at the bottom
+		KillfeedElements[currKillElem].anchoredPosition = Vector2.zero;
+
+		// Set color of card background
+		killfeedEntryImages[currKillElem * 4].color = wasKill ? killColorKF : hitColorKF;
+
+		// Set images for card icons
+		killfeedEntryImages[currKillElem * 4 + 1].sprite = killfeedSprites[dtype switch {
+			EEnemyDeathSource.Vacuum => 0,
+			EEnemyDeathSource.Cannon => 1,
+			EEnemyDeathSource.CannonRicochet => 2,
+			_ => throw new Exception($"ERROR: Player damage type when damaging enemy is invalid. Type given: {dtype}.")
+		}];
+		// killfeedEntryImages[currKillElem * 4 + 2].texture = killfeedTextures[3];
+		killfeedEntryImages[currKillElem * 4 + 3].sprite = killfeedSprites[etype < EEnemyType.COUNT ? (int)etype + 4 : 4];
+
+		// Start animators
+		killfeedCardAnimators[currKillElem].SetTrigger("Activate");
+		KillfeedImpactAnimator.SetTrigger("Activate");
 	}
 
 	private void HandleCrosshairUi(in PhysicsVelocity playerVelocity) {
@@ -158,23 +233,8 @@ public class GameHudCanvas : MonoBehaviour {
 	}
 
 	private void HandleResourceUi(in PlayerResources resources) {
-		UpdateFuelUi(resources.Fuel);
-		UpdateHealthUi(resources.Health);
-		EntityManager em = World.DefaultGameObjectInjectionWorld.EntityManager;
-		using (NativeArray<DeadEnemyTag> tags = em.CreateEntityQuery(typeof(DeadEnemyTag)).ToComponentDataArray<DeadEnemyTag>(Allocator.Temp)) {
-			int byVacuum = 0;
-			int byCannon = 0;
-			for (int i = 0; i < tags.Length; i++) {
-				DeadEnemyTag tag = tags[i];
-				if (tag.DeathSource == EEnemyDeathSource.Vacuum) {
-					byVacuum++;
-				} else if (tag.DeathSource == EEnemyDeathSource.Cannon) {
-					byCannon++;
-				}
-			}
-			//if (byVacuum > 0 || byCannon > 0)
-			//	Debug.LogWarning($"Enemies killed! By vac: {byVacuum} | By can: {byCannon}");
-		}
+		UpdateFuelUi(Mathf.Clamp(sodFuelFill.Update(resources.Fuel / 100f, Time.deltaTime), 0, 1));
+		UpdateHealthUi(Mathf.Clamp(sodHealthFill.Update(resources.Health / 100f, Time.deltaTime), 0, 1));
 		if (resources.DidRefillFuelThisFrame()) {
 			// TODO
 		}
@@ -217,9 +277,7 @@ public class GameHudCanvas : MonoBehaviour {
 	}
 
 	// TODO: current code is written for the sake of just getting something working. Improve it
-	void UpdateFuelUi(float fuel) {
-		float fill = fuel / 100f;
-		//float fill = Mathf.Clamp(sodFuelFill.Update(currFuel, Time.deltaTime), 0, 1);
+	void UpdateFuelUi(float fill) {
 		FuelSliderFill.fillAmount = fill * BENT_BAR_MAX_FILL;
 		if (fill >= 0.001 && fill <= 0.999) {
 			if (!FuelSliderLevel.gameObject.activeSelf)
@@ -236,9 +294,7 @@ public class GameHudCanvas : MonoBehaviour {
 	}
 
 	// TODO: current code is written for the sake of just getting something working. Improve it
-	void UpdateHealthUi(float health) {
-		float fill = health / 100f;
-		//float fill = Mathf.Clamp(sodFuelFill.Update(currFuel, Time.deltaTime), 0, 1);
+	void UpdateHealthUi(float fill) {
 		HealthSliderFill.fillAmount = fill * BENT_BAR_MAX_FILL;
 		if (fill >= 0.001 && fill <= 0.999) {
 			if (!HealthSliderLevel.gameObject.activeSelf)
@@ -256,40 +312,87 @@ public class GameHudCanvas : MonoBehaviour {
 		HealthVignette.color = new Color(0.65f, 0, 0, 1 - fill);
 	}
 
-	//bool TryGetPlayer(out Entity playerEntity) {
-	//	bool found = eqPlayer.TryGetSingletonEntity<Player>(out playerEntity);
-	//	if (found) {
-	//		if (!Toggler.activeSelf)
-	//			Toggler.SetActive(true);
-	//	} else {
-	//		if (Toggler.activeSelf)
-	//			Toggler.SetActive(false);
-	//	}
-	//	return found;
-	//}
+	void LerpKillfeedElemPosns() {
+		int curr = (currKillElem - 1 + KillfeedElements.Length) % KillfeedElements.Length;
+		Vector2 secondCardPos = Vector2.Lerp(
+			KillfeedElements[curr].anchoredPosition,
+			new(0, -killFeedElemHeight),
+			0.1f
+		);
+		for (int i = 1; i < 4; i++) {
+			curr = (currKillElem - i + KillfeedElements.Length) % KillfeedElements.Length;
+			KillfeedElements[curr].anchoredPosition = secondCardPos;
+			secondCardPos.y -= killFeedElemHeight;
+		}
+	}
 
-	//[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	//bool TryGetPlayerPivotLocalTrans(out LocalTransform trans) {
-	//	return eqPlayerPivot.TryGetSingleton(out trans);
-	//}
+	void InitKillfeed() {
+		if (!KillfeedArea.gameObject.activeSelf)
+			KillfeedArea.gameObject.SetActive(true);
+		int numKFElems = KillfeedElements.Length;
+		currKillElem = numKFElems - 1;
+		killFeedElemHeight = KillfeedElements[0].rect.height;
+		killfeedEntryImages = new Image[numKFElems * 4];
+		killfeedCardAnimators = new Animator[numKFElems];
+		for (int i = 0; i < numKFElems; i++) {
+			// GetComponentsInChildren() is supposed to only look in children but for some reason this one includes the current gameObject
+			Image[] elemImages = KillfeedElements[i].GetComponentsInChildren<Image>();
+			for (int ri = 0; ri < 4; ri++)
+				killfeedEntryImages[i * 4 + ri] = elemImages[ri];
+			killfeedCardAnimators[i] = KillfeedElements[i].GetComponent<Animator>();
+			if (killfeedCardAnimators[i].gameObject.activeSelf) killfeedCardAnimators[i].SetTrigger("Default");
+		}
+		if (!KillfeedImpactAnimator.gameObject.activeSelf)
+			KillfeedImpactAnimator.gameObject.SetActive(true);
+	}
 
-	//[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	//bool TryGetPlayerCannon(out PlayerCannon playerCannon) {
-	//	return eqPlayerCannon.TryGetSingleton(out playerCannon);
-	//}
+	IEnumerator loadKFIconsAsync() {
+		string[] iconPaths = {
+            // Weapons
+            "Killfeed Icons/Vacuum",
+			"Killfeed Icons/Cannon",
+			"Killfeed Icons/Ricochet",
+            // Arrow
+            "Killfeed Icons/S_Arrow",
+            // Enemy icons
+            "Killfeed Icons/Bug",
+			"Killfeed Icons/Bird",
+			"Killfeed Icons/Bird+",
+			"Killfeed Icons/Crab",
+			"Killfeed Icons/Crab+",
+			"Killfeed Icons/Turtle",
+			"Killfeed Icons/Centipede"
+		};
+		int numIcons = iconPaths.Length;
+#if UNITY_EDITOR
+		int successes = 0;
+#endif
+		killfeedSprites = new Sprite[numIcons];
+		ResourceRequest rr;
+		for (int i = 0; i < numIcons; i++) {
+			rr = Resources.LoadAsync<Sprite>(iconPaths[i]);
+			yield return rr;
+			killfeedSprites[i] = rr.asset as Sprite;
+#if UNITY_EDITOR
+			if (killfeedSprites[i])
+				successes++;
+#endif
+		}
+#if UNITY_EDITOR
+		if (successes != numIcons)
+			Debug.LogWarning($"WARN: UIGamePanel failed to load all required Killfeed Icons (successfully loaded: {successes} / {numIcons}).");
+#endif
+		currKillElem = 0;
+		foreach (Animator kfanim in killfeedCardAnimators)
+			if (kfanim.gameObject.activeSelf)
+				kfanim.SetTrigger("Default");
+	}
 
-	///// <summary>
-	///// Internally calls TryGetPlayer().
-	///// </summary>
-	///// <param name="resources"></param>
-	///// <returns></returns>
-	//bool TryGetPlayerResources(out PlayerResources resources) {
-	//	if (!TryGetPlayer(out Entity playerEntity)) {
-	//		resources = new();
-	//		return false;
-	//	}
-	//	resources = entityManager.GetComponentData<PlayerResources>(playerEntity);
-	//	return true;
-	//}
+	void unloadKFIcons() {
+		if (killfeedSprites == null) return;
+		for (int i = 0; i < killfeedSprites.Length; i++) {
+			Resources.UnloadAsset(killfeedSprites[i]);
+		}
+	}
 
 }
