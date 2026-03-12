@@ -11,8 +11,9 @@ GameObject:
   - component: {fileID: 5143590433627438753}
   - component: {fileID: 5484310257654027552}
   - component: {fileID: 4949218247566452004}
-  - component: {fileID: 4806239723682207848}
   - component: {fileID: 3241105489952449670}
+  - component: {fileID: 4806239723682207848}
+  - component: {fileID: 2825076616156059668}
   m_Layer: 0
   m_Name: StaticsContainer
   m_TagString: Untagged
@@ -65,19 +66,6 @@ MonoBehaviour:
   AnimCycleDuration: 2
   SpinRate: 180
   SpawnJumpVelRange: {x: 1.5, y: 2.5}
---- !u!114 &4806239723682207848
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4473496465658862889}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7e05b2c0e8d3ac24d823ddfcd765a366, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  CannonFodderSO: {fileID: 11400000, guid: ecc3839188a02c94d9336aaa5c36ab9b, type: 2}
 --- !u!114 &3241105489952449670
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -91,3 +79,30 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   DeathVfx: {fileID: 4047081791222228257, guid: 47c23860d36ccec4db2bbfa95cfacfc4, type: 3}
+--- !u!114 &4806239723682207848
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4473496465658862889}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7e05b2c0e8d3ac24d823ddfcd765a366, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CannonFodderSO: {fileID: 11400000, guid: ecc3839188a02c94d9336aaa5c36ab9b, type: 2}
+--- !u!114 &2825076616156059668
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4473496465658862889}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 24b60448cf4bf9c4ba9d4f50d1a031e3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  HunterBasicSO: {fileID: 11400000, guid: 9537ee31c0506ef489891840fe041eb9, type: 2}
+  HunterEmpoweredSO: {fileID: 11400000, guid: eb940b3ce6e212f4289f1868724c692c, type: 2}

@@ -73,6 +73,12 @@ public static class BoidUtil {
 			};
 		}
 
+		public static HunterBoid HunterBoid() {
+			return new() {
+				steerForce = float3.zero
+			};
+		}
+
 	}
 
 	/// <summary>
@@ -90,6 +96,20 @@ public static class BoidUtil {
 					CollidesWith = 1u | (1u << 17) | (1u << 18), // Collide with environment only
 					GroupIndex = 0
 				}
+			};
+		}
+
+		public static HunterBasicStatics HunterBasic(SO_Hunter so) {
+			// TODO
+			return new() {
+				BoidProperties = GeneralBoid(so)
+			};
+		}
+
+		public static HunterEmpoweredStatics HunterEmpowered(SO_Hunter so) {
+			// TODO
+			return new() {
+				BoidProperties = GeneralBoid(so)
 			};
 		}
 

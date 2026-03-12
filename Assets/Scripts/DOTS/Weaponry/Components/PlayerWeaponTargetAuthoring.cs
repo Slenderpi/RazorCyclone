@@ -5,7 +5,7 @@ public class PlayerWeaponTargetAuthoring : MonoBehaviour {
 
     [Header("Vacuum target properties")]
     [Tooltip("Determines if this entity is a VacuumTarget")]
-    public bool CanGetHitByVacuum = true;
+    public bool IsVacuumTarget = true;
     [Tooltip("Starting suck state")]
 	public bool CanGetSuckedByVacuum = true;
     [Tooltip("Starting vacuum kill state")]
@@ -15,20 +15,20 @@ public class PlayerWeaponTargetAuthoring : MonoBehaviour {
     public float VacuumHitboxRadius;
 
 	[Header("Cannon target properties")]
-	public bool CanGetHitByCannon = true;
+	public bool IsCannonTarget = true;
 
 
 
 	class Baker : Baker<PlayerWeaponTargetAuthoring> {
         public override void Bake(PlayerWeaponTargetAuthoring auth) {
             Entity entity = GetEntity(TransformUsageFlags.Dynamic);
-            if (auth.CanGetHitByVacuum)
+            if (auth.IsVacuumTarget)
                 AddComponent(entity, new VacuumTarget() {
                     CanGetSucked = auth.CanGetSuckedByVacuum,
                     CanGetKilled = auth.CanGetKilledByVacuum,
                     VacuumHitboxRadius = auth.VacuumHitboxRadius
                 });
-            if (auth.CanGetHitByCannon)
+            if (auth.IsCannonTarget)
                 AddComponent(entity, new CannonTarget());
         }
     }
