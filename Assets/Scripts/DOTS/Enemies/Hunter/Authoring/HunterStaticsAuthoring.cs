@@ -21,11 +21,22 @@ public class HunterStaticsAuthoring : MonoBehaviour {
 
 }
 
+public struct HunterSharedStatics {
+	public float RunAwayMaxSteerVelocity;
+	public float RunAwayMaxSteerForce;
+	public float RunAwayDuration;
+	public float RunAwayRequiredSpeed;
+	public float RunAwayRequiredDist;
+	public float WanderTriggerDist;
+}
+
 public struct HunterBasicStatics : IComponentData {
 	public GeneralBoidProperties BoidProperties;
+	public HunterSharedStatics Hunter;
 }
 
 public struct HunterEmpoweredStatics : IComponentData {
 	public GeneralBoidProperties BoidProperties;
+	public HunterSharedStatics Hunter;
 
 }

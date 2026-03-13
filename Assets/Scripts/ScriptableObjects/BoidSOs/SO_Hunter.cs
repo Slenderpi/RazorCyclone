@@ -15,7 +15,7 @@ public class SO_Hunter : GeneralBoidSO {
     [Tooltip("The Hunter must be within this distance to the player before checking if they've passed the player.")]
     public float RunAwayRequiredDist = 3;
     [Tooltip("If disabled, the Hunter will not include Wander.")]
-    public bool IncludeWander = false;
+    public bool IncludeWander = false; // DEPRECATED. Wander will always be included.
     [Tooltip("When the Hunter is GREATER than this distance, enable wander.")]
     public float WanderTriggerDist = 7;
     [Tooltip("If the Hunter is within this distance (inclusive) to the player, obstacle avoidance will be disabled to make sure they actually hit the player.")]

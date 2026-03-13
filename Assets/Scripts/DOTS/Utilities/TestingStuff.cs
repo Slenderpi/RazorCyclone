@@ -18,7 +18,7 @@ public class TestingStuff : MonoBehaviour {
     [Min(0)]
     [Tooltip("Distance between each enemy when spawning them.")]
     public float SpawnOffset = 2;
-    [Min(1)]
+    [Min(0)]
     [Tooltip("TestingStuff spawns a cube of enemies.\nThe number of enemies per side is CountPerSide, meaning it will spawn a total of CountPerSide ^ 3 enemies.\n\nExample: CountPerSide=4, Total=64.")]
     public int CountPerSide = 16;
 
@@ -37,8 +37,8 @@ public class TestingStuff : MonoBehaviour {
 		public override void Bake(TestingStuff auth) {
 			Entity entity = GetEntity(TransformUsageFlags.None);
             int cps = auth.CountPerSide;
-            if (cps <= 0) {
-                Debug.LogError($"TestingStuff: CountPerSide cannot be a non-positive value. Was provided: {cps}. Defaulting to CountPerSide=1");
+            if (cps < 0) {
+                Debug.LogError($"TestingStuff: CountPerSide cannot be a negative value. Was provided: {cps}. Defaulting to CountPerSide=1");
                 cps = 1;
             }
 			AddComponent(entity, new TestingStuffComponent() {
@@ -91,6 +91,10 @@ partial struct TestingStuffSystem : ISystem {
 		if (!tsc.HasSpawned) {
 			tsc.HasSpawned = true;
 			SystemAPI.SetComponent(tscEntity, tsc);
+			if (tsc.CountPerSide == 0) {
+                Debug.Log($"TestingStuff: the SpawnCount was set to 0. No enemies will be spawned.");
+				return;
+			}
 			SpawnEnemiesToSpawn(ref state, ebs, tsc);
         }
         if (tsc.ShouldSpawnFuelPickups) {

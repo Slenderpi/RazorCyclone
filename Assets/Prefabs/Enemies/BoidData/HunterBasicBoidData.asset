@@ -28,7 +28,7 @@ MonoBehaviour:
   AvoidInvisBoidWalls: 0
   RunAwayMaxSteerVelocity: 10
   RunAwayMaxSteerForce: 10
-  RunAwayDuration: 0.5
+  RunAwayDuration: 0.75
   RunAwayRequiredSpeed: 1
   RunAwayRequiredDist: 3
   IncludeWander: 0

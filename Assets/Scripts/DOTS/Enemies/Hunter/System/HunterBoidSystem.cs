@@ -10,24 +10,24 @@ using UnityEngine;
 
 [UpdateInGroup(typeof(PrePhysicsGroup))]
 partial struct HunterBoidSystem : ISystem {
-    
-    [BurstCompile]
-    public void OnCreate(ref SystemState state) {
+	
+	[BurstCompile]
+	public void OnCreate(ref SystemState state) {
 		state.RequireForUpdate<HunterBasicStatics>();
 		state.RequireForUpdate<HunterEmpoweredStatics>();
 		state.RequireForUpdate<HunterBoid>();
 		state.RequireForUpdate<Player>();
 	}
-    
-    [BurstCompile]
-    public void OnUpdate(ref SystemState state) {
-		new HunterBoidJob() {
+	
+	[BurstCompile]
+	public void OnUpdate(ref SystemState state) {
+		state.Dependency = new HunterBoidJob() {
 			DeltaTime = SystemAPI.Time.DeltaTime,
 			StaticsBasic = SystemAPI.GetSingleton<HunterBasicStatics>(),
 			StaticsEmpowered = SystemAPI.GetSingleton<HunterEmpoweredStatics>(),
 			pw = SystemAPI.GetSingleton<PhysicsWorldSingleton>().PhysicsWorld,
 			PlayerPosition = SystemAPI.GetComponent<LocalToWorld>(SystemAPI.GetSingletonEntity<Player>()).Position
-		}.ScheduleParallel();
+		}.ScheduleParallel(state.Dependency);
 	}
 
 	[BurstCompile]
@@ -43,84 +43,84 @@ partial struct HunterBoidSystem : ISystem {
 			ref HunterBoid boid,
 			ref PhysicsVelocity pv,
 			ref LocalTransform trans,
-			//ref RandomGenerator randomGenerator,
+			ref RandomGenerator randomGenerator,
 			in PhysicsMass pm,
 			in WavefrontReader wfReader,
 			in Hunter hunterTag
 		) {
-			float3 vel = Util.IsNearZero(pv.Linear) ? new float3(0f, 0f, 0.1f) : pv.Linear;
-			float distCheck = math.lengthsq(PlayerPosition - trans.Position);
-			pv.Linear = math.normalize(PlayerPosition - trans.Position) * 2f;
-			//{
-			//	//{ // VISUALIZER FOR FLEEING
-			//	//	if (distCheck <= Statics.FleeTriggerDistance * Statics.FleeTriggerDistance)
-			//	//		Util.D_DrawArrowStartingAt(
-			//	//			localTransform.Position,
-			//	//			PlayerPosition - localTransform.Position,
-			//	//			Statics.FleeTriggerDistance,
-			//	//			HasLos(localTransform.Position, Statics.LosFilterForFleeing) ? Color.red : Color.magenta,
-			//	//			DeltaTime
-			//	//		);
-			//	//}
-			//	if (distCheck <= Statics.FleeTriggerDistance * Statics.FleeTriggerDistance && HasLos(localTransform.Position, Statics.LosFilterForFleeing)) {
-			//		boid.steerForce = math.normalizesafe(
-			//			distCheck <= 4f * 4f ? // At short distances, just run from the player directly
-			//			localTransform.Position - PlayerPosition :
-			//			new float3(-wavefrontReader.DescentDirection.x, 0, -wavefrontReader.DescentDirection.z
-			//		)) * Statics.FleeForce;
-			//	} else {
-			//		if (boid.timeSinceLastWanderStep >= Statics.BoidProperties.WanderMinimumDelay) {
-			//			boid.timeSinceLastWanderStep = 0;
-			//			//float3 newWanderDelta = new(randomGenerator.rng.NextFloat(-1f, 1f), 0f, randomGenerator.rng.NextFloat(-1f, 1f));
-			//			//newWanderDelta = (Util.IsNearZero(newWanderDelta) ? math.forward() : math.normalize(newWanderDelta)) * Statics.BoidProperties.WanderChangeDist;
-			//			//boid.lastWanderDelta = newWanderDelta;
-			//			//boid.wanderVector = math.normalizesafe(cannonFodderBoid.wanderVector + newWanderDelta) * Statics.BoidProperties.WanderLimitRadius;
-			//			boid.wanderVector = BoidUtil.StepWanderVector2D(
-			//				boid.wanderVector,
-			//				Statics.BoidProperties.WanderChangeDist,
-			//				Statics.BoidProperties.WanderLimitRadius,
-			//				ref randomGenerator.rng
-			//			);
-			//		}
-			//		cannonFodderBoid.steerForce = BoidUtil.SeekWander(
-			//			localTransform.Position,
-			//			vel,
-			//			cannonFodderBoid.wanderVector,
-			//			Statics.BoidProperties.WanderLimitDist,
-			//			Statics.BoidProperties.MaxSteeringVelocity,
-			//			Statics.BoidProperties.MaxSteeringForce
-			//		);
-			//	}
-			//	cannonFodderBoid.timeSinceLastWanderStep += DeltaTime;
-			//	physicsVelocity.ApplyLinearImpulse(physicsMass, cannonFodderBoid.steerForce);
-			//	physicsVelocity.Angular = float3.zero;
-			//	localTransform.Rotation = math.slerp(
-			//		localTransform.Rotation,
-			//		quaternion.LookRotationSafe(cannonFodderBoid.steerForce, math.up()),
-			//		DeltaTime
-			//	);
-			//	//{ // VISUALIZER FOR BOID VECTORS
-			//	//  // Steering force visual
-			//	//	Util.D_DrawArrowStartingAt(localTransform.Position, cannonFodderBoid.steerForce, math.length(cannonFodderBoid.steerForce) / 5f, Color.cyan, DeltaTime);
-			//	//	float3 wanderVelEnd = localTransform.Position + math.normalizesafe(vel) * Statics.BoidProperties.WanderLimitDist;
-			//	//	float3 wanderVectorEnd = wanderVelEnd + cannonFodderBoid.wanderVector;
-			//	//	//float3 wanderDeltaEnd = wanderVectorEnd + cannonFodderBoid.lastWanderDelta;
-			//	//	// Visual for velocity limited by WanderLimitDist
-			//	//	Util.D_DrawArrowFromTo(localTransform.Position, wanderVelEnd, Color.yellow, DeltaTime);
-			//	//	// Visual for wanderVector
-			//	//	Util.D_DrawArrowFromTo(wanderVelEnd, wanderVectorEnd, new Color(1f, 165f / 255f, 0f), DeltaTime);
-			//	//	//Util.D_DrawArrowFromTo(wanderVectorEnd, wanderDeltaEnd, Color.red, DeltaTime);
-			//	//}
-			//}
+			HunterSharedStatics hsStatics = hunterTag.Form == EEnemyForm.Basic ? StaticsBasic.Hunter : StaticsEmpowered.Hunter;
+			GeneralBoidProperties gbProps = hunterTag.Form == EEnemyForm.Basic ? StaticsBasic.BoidProperties : StaticsEmpowered.BoidProperties;
+			float3 newSteerForce = float3.zero;
+			float3 vel = Util.IsNearZero(pv.Linear) ? new float3(0f, 0f, 0.01f) : pv.Linear;
+			float3 toPlayer = PlayerPosition - trans.Position;
+			float distCheck = math.lengthsq(toPlayer);
+			boid.timeSinceLastWanderStep += DeltaTime;
+			boid.timeSinceBeganFleeing += DeltaTime;
+
+			if (boid.timeSinceBeganFleeing <= hsStatics.RunAwayDuration) {
+				// Still in fleeing state, so keep fleeing
+				newSteerForce = distCheck < 4f ?
+					// Very close to player--use flee
+					BoidUtil.Flee(
+						trans.Position, PlayerPosition, vel, gbProps.MaxSteeringVelocity, gbProps.MaxSteeringForce
+					) :
+					// Farther away--use pathfinding
+					BoidUtil.FleeDirection(
+						new float3(wfReader.DescentDirection), vel, gbProps.MaxSteeringVelocity, gbProps.MaxSteeringForce
+					);
+			} else {
+				// If greater than WanderTriggerDist, include wander
+				if (distCheck > Util.pow2(hsStatics.WanderTriggerDist)) {
+					// Wander
+					if (boid.timeSinceLastWanderStep >= gbProps.WanderMinimumDelay) {
+						boid.timeSinceLastWanderStep = 0;
+						boid.wanderVector = BoidUtil.StepWanderVector2D(
+							boid.wanderVector, gbProps.WanderChangeDist, gbProps.WanderLimitRadius, ref randomGenerator.rng
+						);
+					}
+					newSteerForce = BoidUtil.SeekWander(
+						trans.Position, vel, boid.wanderVector, gbProps.WanderLimitDist, gbProps.MaxSteeringVelocity, gbProps.MaxSteeringForce
+					);
+				}
+
+				if (JustPassedPlayer(vel, toPlayer, distCheck, hsStatics, gbProps)) {
+					// Hunter just passed player, so change to flee state
+					boid.timeSinceBeganFleeing = 0f;
+					newSteerForce += BoidUtil.Flee(
+						trans.Position, PlayerPosition, vel, gbProps.MaxSteeringVelocity, gbProps.MaxSteeringForce
+					);
+				} else {
+					// Hunter in chase state, so seek player
+					//if (distCheck >= Util.pow2(hsStatics.WanderTriggerDist + 3f))
+					//	Debug.Log("Using pathfinding!");
+					if (distCheck < Util.pow2(hsStatics.WanderTriggerDist + 3f)) // TODO: add property for 'pathfinding trigger dist'
+						// NOTE: this method currently does not account for when the player is outside of the PointCloud
+						newSteerForce += BoidUtil.Seek(
+							trans.Position, PlayerPosition, vel, gbProps.MaxSteeringVelocity, gbProps.MaxSteeringForce
+						);
+					else
+						newSteerForce += BoidUtil.SeekDirection(new float3(wfReader.DescentDirection), vel, gbProps.MaxSteeringVelocity, gbProps.MaxSteeringForce);
+				}
+			}
+			boid.steerForce = newSteerForce;
+			pv.ApplyLinearImpulse(pm, boid.steerForce);
 		}
 
 		[BurstCompile]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		bool HasLos(in float3 myPos, in CollisionFilter losFilter) {
+		readonly bool JustPassedPlayer(in float3 vel, in float3 toPlayer, float distCheck, in HunterSharedStatics hsStatics, in GeneralBoidProperties gbProps) {
+			return math.lengthsq(vel) > Util.pow2(hsStatics.RunAwayRequiredSpeed) &&
+				distCheck <= Util.pow2(hsStatics.RunAwayRequiredDist) &&
+				math.dot(toPlayer, vel) <= 0;
+		}
+
+		[BurstCompile]
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		bool HasLos(in float3 myPos) {
 			return !pw.CastRay(new() {
 				Start = PlayerPosition,
 				End = myPos,
-				Filter = losFilter
+				//Filter = StaticsBasic.los
 			});
 		}
 	}

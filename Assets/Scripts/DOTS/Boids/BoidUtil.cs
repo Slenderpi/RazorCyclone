@@ -14,13 +14,59 @@ public static class BoidUtil {
 
 	///////////////////////////////////////////////////// BOID STEERING
 
-	public static float3 Seek(float3 pos, float3 targetPos, float3 velocity, float maxSteeringVelocity, float maxSteeringForce) {
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public static float3 Seek(in float3 pos, in float3 targetPos, in float3 velocity, float maxSteeringVelocity, float maxSteeringForce) {
 		// Find desired velocity via |targ - pos| * maxSteerVel
 		// Steer force is then desired - currVel, clamped by maxSteerForce
-		float3 steeringForce = math.normalize(targetPos - pos) * maxSteeringVelocity - velocity;
-		if (math.lengthsq(steeringForce) > maxSteeringForce * maxSteeringForce)
-			steeringForce = math.normalize(steeringForce) * maxSteeringForce;
-		return steeringForce;
+		return SeekDirectionNormalized(math.normalize(targetPos - pos), velocity, maxSteeringVelocity, maxSteeringForce);
+	}
+
+	/// <summary>
+	/// Seek, but instead of seeking a position, this seeks a deired velocity.<br/>
+	/// The provied direction does not need to be normalized.
+	/// </summary>
+	/// <param name="desiredDir"></param>
+	/// <param name="velocity"></param>
+	/// <param name="maxSteeringVelocity"></param>
+	/// <param name="maxSteeringForce"></param>
+	/// <returns></returns>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public static float3 SeekDirection(in float3 desiredDir, in float3 velocity, float maxSteeringVelocity, float maxSteeringForce) {
+		return SeekDirectionNormalized(math.normalize(desiredDir), velocity, maxSteeringVelocity, maxSteeringForce);
+	}
+
+	/// <summary>
+	/// Seek, but instead of seeking a position, this seeks a deired velocity.<br/>
+	/// The provied direction must already be normalized.
+	/// </summary>
+	/// <param name="desiredDir"></param>
+	/// <param name="velocity"></param>
+	/// <param name="maxSteeringVelocity"></param>
+	/// <param name="maxSteeringForce"></param>
+	/// <returns></returns>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public static float3 SeekDirectionNormalized(in float3 desiredDirNormalized, in float3 velocity, float maxSteeringVelocity, float maxSteeringForce) {
+		return ClampSteeringForce(desiredDirNormalized * maxSteeringVelocity - velocity, maxSteeringForce);
+	}
+
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	static float3 ClampSteeringForce(in float3 steeringForce, float maxSteeringForce) {
+		return math.lengthsq(steeringForce) > Util.pow2(maxSteeringForce) ? math.normalize(steeringForce) * maxSteeringForce : steeringForce;
+	}
+
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public static float3 Flee(in float3 pos, in float3 targetPos, in float3 velocity, float maxSteeringVelocity, float maxSteeringForce) {
+		return -Seek(pos, targetPos, velocity, maxSteeringVelocity, maxSteeringForce);
+	}
+
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public static float3 FleeDirection(in float3 desiredDir, in float3 velocity, float maxSteeringVelocity, float maxSteeringForce) {
+		return FleeDirectionNormalized(math.normalize(desiredDir), velocity, maxSteeringVelocity, maxSteeringForce);
+	}
+
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public static float3 FleeDirectionNormalized(in float3 desiredDirNormalized, in float3 velocity, float maxSteeringVelocity, float maxSteeringForce) {
+		return -SeekDirectionNormalized(desiredDirNormalized, velocity, maxSteeringVelocity, maxSteeringForce);
 	}
 
 	/// <summary>
@@ -75,7 +121,10 @@ public static class BoidUtil {
 
 		public static HunterBoid HunterBoid() {
 			return new() {
-				steerForce = float3.zero
+				steerForce = float3.zero,
+				wanderVector = math.forward(),
+				timeSinceLastWanderStep = 0f,
+				timeSinceBeganFleeing = 1000f // Don't start at a fleeing state
 			};
 		}
 
@@ -102,14 +151,27 @@ public static class BoidUtil {
 		public static HunterBasicStatics HunterBasic(SO_Hunter so) {
 			// TODO
 			return new() {
-				BoidProperties = GeneralBoid(so)
+				BoidProperties = GeneralBoid(so),
+				Hunter = HunterShared(so)
 			};
 		}
 
 		public static HunterEmpoweredStatics HunterEmpowered(SO_Hunter so) {
 			// TODO
 			return new() {
-				BoidProperties = GeneralBoid(so)
+				BoidProperties = GeneralBoid(so),
+				Hunter = HunterShared(so)
+			};
+		}
+
+		static HunterSharedStatics HunterShared(SO_Hunter so) {
+			return new() {
+				RunAwayMaxSteerVelocity = so.RunAwayMaxSteerVelocity,
+				RunAwayMaxSteerForce = so.RunAwayMaxSteerForce,
+				RunAwayDuration = so.RunAwayDuration,
+				RunAwayRequiredSpeed = so.RunAwayRequiredSpeed,
+				RunAwayRequiredDist = so.RunAwayRequiredDist,
+				WanderTriggerDist = so.WanderTriggerDist
 			};
 		}
 
