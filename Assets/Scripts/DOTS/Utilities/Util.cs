@@ -13,54 +13,7 @@ public static class Util {
 	public readonly static Unity.Mathematics.Random rng = new Unity.Mathematics.Random(1);
 
 
-
-	//readonly static GeneralBoid DEFAULT_GENERAL_BOID = new GeneralBoid() {
-	//	MaxSteeringVelocity = 15,
-	//	MaxSteeringForce = 10,
-	//	WanderLimitRadius = 0.5f,
-	//	WanderLimitDist = 0.5f,
-	//	WanderChangeDist = 0.15f,
-	//	MaxWanderForce = 5,
-	//	WanderMinimumDelay = 0,
-	//	AvoidanceTestType = AvoidanceTestMode.None,
-	//	AvoidanceMaxLookDist = 4,
-	//	AvoidanceWhiskerAngle = 30f,
-	//	AvoidanceMinIntensity = 1,
-	//	AvoidanceMaxIntensity = 10,
-	//	AvoidanceMaxSteeringForce = 10,
-	//	AvoidInvisBoidWalls = false
-	//};
-
-	//public static GeneralBoid BuildGeneralBoidComponentDataDefault(GeneralBoidSO so) {
-	//	return DEFAULT_GENERAL_BOID;
-	//}
-
-	//public static GeneralBoid BuildGeneralBoidComponentDataFromSO(GeneralBoidSO so) {
-	//	return new GeneralBoid() {
-	//		MaxSteeringVelocity = so.MaxSteeringVelocity,
-	//		MaxSteeringForce = so.MaxSteeringForce,
-	//		WanderLimitRadius = so.WanderLimitRadius,
-	//		WanderLimitDist = so.WanderLimitDist,
-	//		WanderChangeDist = so.WanderChangeDist,
-	//		MaxWanderForce = so.MaxWanderForce,
-	//		WanderMinimumDelay = so.WanderMinimumDelay,
-	//		AvoidanceTestType = so.AvoidanceTestType,
-	//		AvoidanceMaxLookDist = so.AvoidanceMaxLookDist,
-	//		AvoidanceWhiskerAngle = so.AvoidanceWhiskerAngle,
-	//		AvoidanceMinIntensity = so.AvoidanceMinIntensity,
-	//		AvoidanceMaxIntensity = so.AvoidanceMaxIntensity,
-	//		AvoidanceMaxSteeringForce = so.MaxSteeringForce,
-	//		AvoidInvisBoidWalls = so.AvoidInvisBoidWalls,
-
-	//		wanderPoint = float3.zero,
-	//		lastWanderStepTime = -1000f
-	//	};
-	//}
-
-	//public static float3 StepWanderPoint2D(float3 prevWanderPoint, float lastWanderStepTime, float wanderMinimumDelay, float wanderLimitRadius, float wanderChangeDist) {
-	//	return BoidSteerer.StepWanderPoint2D(prevWanderPoint, wanderLimitRadius, wanderChangeDist);
-	//}
-
+	
 #pragma warning disable IDE1006 // Naming Styles
 	/// <summary>
 	/// Convenience method for squaring a float.
@@ -110,7 +63,7 @@ public static class Util {
 	/// <param name="v">Vector to get signs of.</param>
 	/// <returns>new int3(sign(x), sign(y), sign(z))</returns>
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	public static int3 sign(float3 v) {
+	public static int3 sign(in float3 v) {
 		return new int3(sign(v.x), sign(v.y), sign(v.z));
 	}
 
@@ -123,8 +76,31 @@ public static class Util {
 	/// <param name="v"></param>
 	/// <returns></returns>
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	public static bool equal(float3 u, float3 v) {
+	public static bool equal(in float3 u, in float3 v) {
 		return IsNearZero(u - v);
+	}
+
+	/// <summary>
+	/// Lerps between two normalized vectors, than normalize result.<br/>
+	/// If the provided vectors are the same length, the effect is similar to slerping a vector.
+	/// </summary>
+	/// <param name="u">Initial vector.</param>
+	/// <param name="v">Final vector.</param>
+	/// <param name="t">Lerp alpha.</param>
+	/// <returns>norm(lerp(u, v, t))</returns>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public static float3 nlerp(in float3 u, in float3 v, float t) {
+		// NOTE: Consider using the below commented code in an `nlerpSafe()` version
+		//if (math.dot(u, v) < -0.9999f) {
+		//	// If u an v are near equal, we return a default direction.
+		//	float3 axis = math.abs(u.x) < 0.9f
+		//		? new float3(1, 0, 0)
+		//		: new float3(0, 1, 0);
+		//	axis = math.normalize(math.cross(u, axis));
+		//	quaternion rot = quaternion.AxisAngle(axis, math.PI * t);
+		//	return math.mul(rot, u);
+		//}
+		return math.normalize(math.lerp(u, v, t));
 	}
 #pragma warning restore IDE1006 // Naming Styles
 

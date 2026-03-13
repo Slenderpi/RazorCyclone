@@ -104,6 +104,21 @@ public static class BoidUtil {
 		);
 	}
 
+	[BurstCompile]
+	public static class Rotator {
+		public static quaternion Airplane(in float3 forward, in float3 steer) {
+			// Find cos(theta) where theta is the angle between forward and steer strictly in the x-z plane
+			// cos(th) = f . s / (|f||s|) == f . s / sqrt(f.sqrMag * s.sqrMag)
+			float c = 1 - (forward.x * steer.x + forward.z * steer.z) / math.sqrt(
+				(forward.x * forward.x + forward.z * forward.z) *
+				(steer.x * steer.x + steer.z * steer.z)
+			);
+			float3 right = math.normalize(math.cross(forward, math.up()));
+			// To check leftness/rightness, use dot product of steer and right
+			return quaternion.LookRotation(forward, Util.nlerp(math.up(), math.dot(steer, right) > 0 ? right : -right, c));
+		}
+	}
+
 
 
 	/// <summary>

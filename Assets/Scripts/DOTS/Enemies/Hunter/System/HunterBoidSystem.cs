@@ -104,6 +104,13 @@ partial struct HunterBoidSystem : ISystem {
 			}
 			boid.steerForce = newSteerForce;
 			pv.ApplyLinearImpulse(pm, boid.steerForce);
+
+			// If steer is 0, don't change currentDesiredRot (i.e. maintain previous deired rotation)
+			if (Util.IsNearZero(math.lengthsq(boid.steerForce)))
+				return;
+			// If velocity is near 0, use transform's current forward
+			float3 forward = Util.IsNearZero(math.lengthsq(pv.Linear)) ? trans.Forward() : pv.Linear;
+			boid.currentDesiredRot = BoidUtil.Rotator.Airplane(forward, boid.steerForce);
 		}
 
 		[BurstCompile]
