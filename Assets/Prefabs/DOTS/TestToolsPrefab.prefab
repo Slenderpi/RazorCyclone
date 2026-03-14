@@ -45,7 +45,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   EnemyTypeToSpawn: 0
-  Corner1: {x: -55, y: -9}
+  Corner1: {x: -55, y: 1, z: -9}
   SpawnOffset: 2
   CountPerSide: 16
   ShouldSpawnFuelPickups: 1

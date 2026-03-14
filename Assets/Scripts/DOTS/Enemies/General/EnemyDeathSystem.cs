@@ -63,7 +63,7 @@ partial struct EnemyDeathSystem : ISystem {
 			LocalTransform effectSpawnTransform = LocalTransform.FromPositionRotation(
 				new() {
 					x = transform.Position.x,
-					y = transform.Position.y + 1f,
+					y = transform.Position.y,
 					z = transform.Position.z
 				},
 				quaternion.identity

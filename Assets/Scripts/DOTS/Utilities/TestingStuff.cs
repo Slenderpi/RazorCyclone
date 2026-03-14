@@ -13,8 +13,8 @@ public class TestingStuff : MonoBehaviour {
     [Header("Enemy spawning")]
     [Tooltip("TestingStuff spawns a cube of enemies.\nThis value determines which enemy to spawn.\nNote: an error will be printed if the selected value is currently unspawnable.")]
     public EEnemyType EnemyTypeToSpawn;
-    [Tooltip("TestingStuff spawns a cube of enemies.\nThe position of this cube starts at this corner and expands in the positive global axes. The Y value of Corner1 is meant to be the Z position of the cube.")]
-    public Vector2 Corner1 = new(-55, -9);
+    [Tooltip("TestingStuff spawns a cube of enemies.\nThe position of this cube starts at this corner and expands in the positive global axes.")]
+    public Vector3 Corner1 = new(-55, 1, -9);
     [Min(0)]
     [Tooltip("Distance between each enemy when spawning them.")]
     public float SpawnOffset = 2;
@@ -43,7 +43,7 @@ public class TestingStuff : MonoBehaviour {
             }
 			AddComponent(entity, new TestingStuffComponent() {
 				EnemyTypeToSpawn = auth.EnemyTypeToSpawn,
-				SpawnStartCorner = new(auth.Corner1.x, 0, auth.Corner1.y),
+				SpawnStartCorner = new(auth.Corner1),
                 SpawnOffset = auth.SpawnOffset,
                 CountPerSide = cps,
 
