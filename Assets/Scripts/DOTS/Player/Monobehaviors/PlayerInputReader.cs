@@ -31,8 +31,8 @@ public class PlayerInputReader : MonoBehaviour {
 	}
 
 	private void Start() {
-		GameManager.OnGameResumed += EnablePlayerActions;
-		GameManager.OnGamePaused += DisablePlayerActions;
+		GameManager.A_OnGameResumed += EnablePlayerActions;
+		GameManager.A_OnGamePaused += DisablePlayerActions;
 		EnablePauseMenuActions();
 	}
 

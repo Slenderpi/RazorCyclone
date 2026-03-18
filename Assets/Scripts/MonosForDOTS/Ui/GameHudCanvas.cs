@@ -12,7 +12,7 @@ using UnityEngine.UI;
 public class GameHudCanvas : MonoBehaviour {
 
 	[SerializeField]
-	GameObject Toggler;
+	Canvas canvasComp;
 
 	[Header("MomentumAffectable")]
 	public RectTransform MomentumPanel;
@@ -110,10 +110,13 @@ public class GameHudCanvas : MonoBehaviour {
 
 		InitKillfeed();
 
-		Toggler.SetActive(false);
+		canvasComp.enabled = false;
 	}
 
 	void Start() {
+		GameManager.A_OnGamePaused += OnGamePaused;
+		GameManager.A_OnGameResumed += OnGameResumed;
+
 		mainCamera = Camera.main;
 
 		entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
@@ -130,12 +133,14 @@ public class GameHudCanvas : MonoBehaviour {
 	}
 
 	void LateUpdate() {
+		if (GameManager.IsPaused)
+			return;
 		if (eqPlayer.HasSingleton<Player>()) {
-			if (!Toggler.activeSelf)
-				Toggler.SetActive(true);
+			if (!canvasComp.enabled)
+				canvasComp.enabled = true;
 		} else {
-			if (Toggler.activeSelf)
-				Toggler.SetActive(false);
+			if (canvasComp.enabled)
+				canvasComp.enabled = false;
 			return;
 		}
 		PhysicsVelocity pv = eqPlayer.GetSingleton<PhysicsVelocity>();
@@ -324,6 +329,16 @@ public class GameHudCanvas : MonoBehaviour {
 			secondCardPos.y -= killFeedElemHeight;
 		}
 	}
+
+	void OnGamePaused() {
+		canvasComp.enabled = false;
+	}
+
+	void OnGameResumed() {
+		canvasComp.enabled = true;
+	}
+
+	/*************   --   INITIALIZATION AND LOADING   --   ****************/
 
 	void InitKillfeed() {
 		if (!KillfeedArea.gameObject.activeSelf)

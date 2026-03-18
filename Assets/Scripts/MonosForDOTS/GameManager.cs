@@ -6,8 +6,8 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour {
 
-	public static Action OnGameResumed;
-	public static Action OnGamePaused;
+	public static Action A_OnGameResumed;
+	public static Action A_OnGamePaused;
 
     public static GameManager Singleton;
 
@@ -107,14 +107,14 @@ public class GameManager : MonoBehaviour {
 		_paused = false;
 		HideMouse();
 		Time.timeScale = _timeScale;
-		OnGameResumed?.Invoke();
+		A_OnGameResumed?.Invoke();
 	}
 
 	void PauseGame() {
 		_paused = true;
 		ShowMouse();
 		Time.timeScale = 0f;
-		OnGamePaused?.Invoke();
+		A_OnGamePaused?.Invoke();
 	}
 
 }
