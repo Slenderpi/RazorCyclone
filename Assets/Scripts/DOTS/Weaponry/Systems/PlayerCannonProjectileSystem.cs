@@ -4,7 +4,6 @@ using Unity.Mathematics;
 using Unity.Physics;
 using Unity.Physics.Systems;
 using Unity.Transforms;
-using UnityEngine;
 
 /// <summary>
 /// Processes every CannonProjectile that hit something this frame.
@@ -25,13 +24,13 @@ partial struct PlayerCannonProjectileSystem : ISystem {
     [BurstCompile]
     public void OnUpdate(ref SystemState state) {
         CannonTargetLookup.Update(ref state);
-        new CannonProjectileJob() {
+        state.Dependency = new CannonProjectileJob() {
             ecb = SystemAPI
-                .GetSingleton<BeginFixedStepSimulationEntityCommandBufferSystem.Singleton>()
+                .GetSingleton<EndFixedStepSimulationEntityCommandBufferSystem.Singleton>()
                 .CreateCommandBuffer(state.WorldUnmanaged),
             pcps = SystemAPI.GetSingleton<PlayerCannonProjectileStatics>(),
             CannonTargetLookup = CannonTargetLookup
-        }.Schedule(); // Not necessary to be parallel. Very unlikely for there to be enough cannon projectiles to warrant that
+        }.Schedule(state.Dependency); // Not necessary to be parallel. Very unlikely for there to be enough cannon projectiles to warrant that
     }
 
     [BurstCompile]
@@ -58,9 +57,8 @@ partial struct PlayerCannonProjectileSystem : ISystem {
 			transform.Position = proj.Hit.Position + vfxLookDir * -0.1f;
 
 			// If hit a cannon target, set its hit event and try to deal damage
-			if (CannonTargetLookup.HasComponent(proj.Hit.Entity)) {
-				CannonTarget target = CannonTargetLookup[proj.Hit.Entity];
-				target.SetEventHit(cannonProjectile.RemainingRicochets > 0);
+            if (CannonTargetLookup.TryGetComponent(proj.Hit.Entity, out CannonTarget target)) {
+                target.SetEventHit(cannonProjectile.RemainingRicochets > 0);
 				CannonTargetLookup[proj.Hit.Entity] = target;
 			}
 

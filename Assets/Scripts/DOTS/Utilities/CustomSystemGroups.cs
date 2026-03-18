@@ -1,7 +1,6 @@
 using Unity.Entities;
 using Unity.Physics.Systems;
 using Unity.Transforms;
-using UnityEngine;
 
 [UpdateInGroup(typeof(SimulationSystemGroup))]
 [UpdateBefore(typeof(TransformSystemGroup))]
@@ -41,4 +40,8 @@ public partial class PrePhysicsGroup : ComponentSystemGroup { }
 /// </summary>
 [UpdateInGroup(typeof(FixedStepSimulationSystemGroup))]
 [UpdateAfter(typeof(PhysicsSystemGroup))]
-public partial class EnemyEndPhysicsGroup : ComponentSystemGroup { }
+public partial class EnemyHitPhysicsGroup : ComponentSystemGroup { }
+
+[UpdateInGroup(typeof(FixedStepSimulationSystemGroup))]
+[UpdateAfter(typeof(HurtboxColliderSystem))]
+public partial class EnemyDamagePhysicsGroup : ComponentSystemGroup { }

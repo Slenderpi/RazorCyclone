@@ -3,7 +3,7 @@ using Unity.Entities;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-[UpdateInGroup(typeof(EnemyEndPhysicsGroup))]
+[UpdateInGroup(typeof(EnemyHitPhysicsGroup))]
 partial struct CannonFodderHitSystem : ISystem {
 	
 	[BurstCompile]

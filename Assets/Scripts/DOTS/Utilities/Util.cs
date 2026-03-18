@@ -182,9 +182,70 @@ public static class Util {
 			upVector = math.back();
 	}
 
+	/// <summary>
+	/// Checks if the provided vector's (squared) length is less than a small hardcoded float.
+	/// </summary>
+	/// <param name="v">Vector to test.</param>
+	/// <returns>True if less than 1e-9.</returns>
 	[BurstCompile]
 	public static bool IsNearZero(in float3 v) {
 		return math.lengthsq(v) <= 1e-9f;
+	}
+
+	/// <summary>
+	/// Checks if the distance between two vectors is less than or equal to a specific maximum.<br/>
+	/// Useful for checking if two positions are within a certain distance of each other.
+	/// </summary>
+	/// <param name="pos0">First position (vector).</param>
+	/// <param name="pos1">Second position (vector).</param>
+	/// <param name="maxDist">Maximum distance.</param>
+	/// <returns>lengthsq(pos0 - pos1) <= maxDist^2</returns>
+	/// <exception cref="NotImplementedException"></exception>
+	[BurstCompile]
+	public static bool DistLeq(in float3 pos0, in float3 pos1, float maxDist) {
+		return math.lengthsq(pos0 - pos1) <= pow2(maxDist);
+	}
+
+	/// <summary>
+	/// Checks if the distance between two vectors is strictly less than a specific maximum.<br/>
+	/// Useful for checking if two positions are within a certain distance of each other.
+	/// </summary>
+	/// <param name="pos0">First position (vector).</param>
+	/// <param name="pos1">Second position (vector).</param>
+	/// <param name="maxDist">Maximum distance.</param>
+	/// <returns>lengthsq(pos0 - pos1) < maxDist^2</returns>
+	/// <exception cref="NotImplementedException"></exception>
+	[BurstCompile]
+	public static bool DistLt(in float3 pos0, in float3 pos1, float maxDist) {
+		return math.lengthsq(pos0 - pos1) < pow2(maxDist);
+	}
+
+	/// <summary>
+	/// Checks if the distance between two vectors is greater than or equal to a specific minimum.<br/>
+	/// Useful for checking if two positions are greater than a certain distance of each other.
+	/// </summary>
+	/// <param name="pos0">First position (vector).</param>
+	/// <param name="pos1">Second position (vector).</param>
+	/// <param name="maxDist">Minimum distance.</param>
+	/// <returns>lengthsq(pos0 - pos1) >= minDist^2</returns>
+	/// <exception cref="NotImplementedException"></exception>
+	[BurstCompile]
+	public static bool DistGeq(in float3 pos0, in float3 pos1, float minDist) {
+		return math.lengthsq(pos0 - pos1) >= pow2(minDist);
+	}
+
+	/// <summary>
+	/// Checks if the distance between two vectors is strictly greater than a specific minimum.<br/>
+	/// Useful for checking if two positions are greater than a certain distance of each other.
+	/// </summary>
+	/// <param name="pos0">First position (vector).</param>
+	/// <param name="pos1">Second position (vector).</param>
+	/// <param name="maxDist">Minimum distance.</param>
+	/// <returns>lengthsq(pos0 - pos1) > minDist^2</returns>
+	/// <exception cref="NotImplementedException"></exception>
+	[BurstCompile]
+	public static bool DistGt(in float3 pos0, in float3 pos1, float minDist) {
+		return math.lengthsq(pos0 - pos1) > pow2(minDist);
 	}
 
 	/// <summary>
@@ -206,6 +267,19 @@ public static class Util {
 			EEnemyType.Weakpoint => "Weakpoint",
 			EEnemyType.CentipedeMissile => "Centipede Missile",
 			_ => "Unknown",
+		};
+	}
+
+	/// <summary>
+	/// A burst-compatible way to get the name of an EEnemyType enum.
+	/// </summary>
+	/// <param name="e"></param>
+	/// <returns></returns>
+	public static FixedString32Bytes EEnemyFormName(EEnemyForm e) {
+		return e switch {
+			EEnemyForm.Basic => "Basic",
+			EEnemyForm.Empowered => "Empowered",
+			_ => "Invalid",
 		};
 	}
 
@@ -250,17 +324,7 @@ public static class Util {
 	}
 
 	[BurstCompile]
-	public static void D_DrawArrowCenteredAt(in float3 position, in float3 direction, float length, in Color c) {
-		D_DrawArrowCenteredAt(position, direction, length, c, 9999999f);
-	}
-
-	[BurstCompile]
-	public static void D_DrawArrowCenteredAt(in float3 position, in float3 direction, float length, in Color c, float t) {
-		D_DrawArrowCenteredAt(position, direction, length, c, t, false);
-	}
-
-	[BurstCompile]
-	public static void D_DrawArrowCenteredAt(in float3 position, in float3 direction, float length, in Color c, float t, bool depthTest) {
+	public static void D_DrawArrowCenteredAt(in float3 position, in float3 direction, float length, in Color c, float t=0f, bool depthTest=false) {
 		if (math.lengthsq(direction) == 0) {
 			D_DrawPoint(position, Color.white, t, length, depthTest);
 			return;
@@ -283,17 +347,7 @@ public static class Util {
 	}
 
 	[BurstCompile]
-	public static void D_DrawArrowStartingAt(in float3 position, in float3 direction, float length, in Color c) {
-		D_DrawArrowStartingAt(position, direction, length, c, 9999999f);
-	}
-
-	[BurstCompile]
-	public static void D_DrawArrowStartingAt(in float3 position, in float3 direction, float length, in Color c, float t) {
-		D_DrawArrowStartingAt(position, direction, length, c, t, false);
-	}
-
-	[BurstCompile]
-	public static void D_DrawArrowStartingAt(in float3 position, in float3 direction, float length, in Color c, float t, bool depthTest) {
+	public static void D_DrawArrowStartingAt(in float3 position, in float3 direction, float length, in Color c, float t=0f, bool depthTest=false) {
 		if (math.lengthsq(direction) == 0) {
 			D_DrawPoint(position, Color.white, t, length, depthTest);
 			return;
@@ -314,17 +368,7 @@ public static class Util {
 	}
 
 	[BurstCompile]
-	public static void D_DrawArrowFromTo(in float3 arrowStartPosition, in float3 arrowHeadPosition, in Color c) {
-		D_DrawArrowFromTo(arrowStartPosition, arrowHeadPosition, c, 9999999f, false);
-	}
-
-	[BurstCompile]
-	public static void D_DrawArrowFromTo(in float3 arrowStartPosition, in float3 arrowHeadPosition, in Color c, float t) {
-		D_DrawArrowFromTo(arrowStartPosition, arrowHeadPosition, c, t, false);
-	}
-
-	[BurstCompile]
-	public static void D_DrawArrowFromTo(in float3 arrowStartPosition, in float3 arrowHeadPosition, in Color c, float t, bool depthTest) {
+	public static void D_DrawArrowFromTo(in float3 arrowStartPosition, in float3 arrowHeadPosition, in Color c, float t=0f, bool depthTest=false) {
 		float3 v = arrowHeadPosition - arrowStartPosition;
 		D_DrawArrowStartingAt(arrowStartPosition, v, math.length(v), c, t, depthTest);
 	}

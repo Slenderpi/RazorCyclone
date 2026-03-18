@@ -17,10 +17,10 @@ partial struct ProjectileSystem : ISystem {
 
     [BurstCompile]
     public void OnUpdate(ref SystemState state) {
-		new ProjectileJob() {
+		state.Dependency = new ProjectileJob() {
 			dt = SystemAPI.Time.DeltaTime,
 			pw = SystemAPI.GetSingleton<PhysicsWorldSingleton>().PhysicsWorld
-		}.Schedule();
+		}.Schedule(state.Dependency);
 	}
 
 	[BurstCompile]

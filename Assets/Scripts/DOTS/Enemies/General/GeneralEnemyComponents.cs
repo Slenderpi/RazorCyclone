@@ -1,3 +1,4 @@
+using System;
 using Unity.Entities;
 
 public struct DeadEnemyTag : IComponentData {
@@ -13,9 +14,12 @@ public enum EEnemyDeathSource {
 }
 
 /// <summary>
-/// For differentiating between a 'basic' and an 'empowered' version of an enemy.
+/// For differentiating between a 'basic' and an 'empowered' version of an enemy.<br/>
+/// This enum is in bitflags, but is not meant to be used as so.
+/// This is more for compression of memory that some enemies can take advantage of.
 /// </summary>
+[Flags]
 public enum EEnemyForm {
-	Basic,
-	Empowered
+	Basic = 1,
+	Empowered = 2,
 }
