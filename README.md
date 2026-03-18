@@ -30,7 +30,7 @@ Sound and Music - [Owen Fischer](https://www.linkedin.com/in/owen-fischer/)
 
 # DOTS x _Razor Cyclone_ - Boosting framerates by over 1000%
 In this branch, I will utilize Unity's [Data-Oriented Technology Stack](https://unity.com/dots), or DOTS, to optimize many features of *Razor Cyclone*. \
-The current version of *Razor Cyclone* has performance issues in some areas. This is more noticeable in later waves of the game where the enemy count becomes quite high.
+The current version of *Razor Cyclone* has performance issues in some areas. This is more noticeable on lower-end devices and in later waves of the game where the enemy count becomes quite high.
 
 Unfortunately, a feature implemented using GameObjects is not immediately compatible with DOTS, both in terms of the technology and also the fundamental principles regarding implementation (OOP vs DOD). This means that I will have to ***recreate over 90% of the game.***
 
@@ -45,6 +45,10 @@ However, as stated earlier, usage of DOTS would require me to redo almost the en
 Furthermore, *Razor Cyclone* has a lot of messy code (e.g. overly-coupled classes, poor implementation of the Centipede (though it's more poor in the sense that Heap Sort is theoretically fast but practically slow), mistakes regarding usage of Unity's UI). Restarting is a simple way of fixing old code.
 
 ## Features
+### Unity 6.0
+The main branch uses Unity 2021.3.10f1, which is not compatible with DOTS.
+
+This version of *Razor Cyclone* is developed in Unity 6000.0.67f1. In addition to better DOTS support, Unity 6.0 contains features that I will try to utilize to further improve the performance, development process, and gameplay experience of *Razor Cyclone*.
 ### Pathfinding
 In the main branch, enemies do not have pathfinding. They instead rely on Boid Wander (random movement) and the level's layout to hopefully not get stuck on walls too often. However, they still occasionally do get stuck, and that is neither good looking nor fun to play against.
 
@@ -61,6 +65,11 @@ The pathfinding roughly works as follows:
 
 ### Optimized Enemies
 All enemies will be optimized to work with DOTS, the Burst compiler, and be multithreaded.
+
+### Better UI implementation
+The main branch's implementation of UI is improper, and can cause unecessary performance hickups in some scenarios. As an example, I had placed all UI windows (in-game UI, pause menus, the main menu, the tutorial UI, etc.) under a single Canvas. However, the in-game UI contains a lot of UI that reacts to the Player's mouse movements and velocity. This lead to the in-game UI constantly dirtying the canvas, which in turn caused the entire Canvas to be redrawn every frame. Unity recommends splitting certain groups of UI into multiple canvases to prevent this issue from occuring.
+
+I will reimplement and restructure the UI to reduce such issues.
 
 ## Experimental experimental branches
 There will be some branches that are derived from the main DOTS branch. Such branches will be named "DOTS-SomeIdea". These branches are ideas I have for further optimization in specific areas of the game, but am unsure of if it's worthwhile or how to best approach it. Such branches may never be completed and only left as an idea.
