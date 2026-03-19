@@ -1,6 +1,7 @@
 // UNCOMMENT THE LINE BELOW TO DISABLE THE GENERATOR. This will also stop the authoring of the PointCloudConfig
 //#define FORCE_DISABLE_POINT_CLOUD_GENERATOR
 
+using System.Drawing;
 using System.IO;
 using System.Runtime.CompilerServices;
 using Unity.Burst;
@@ -11,6 +12,7 @@ using Unity.Physics;
 using Unity.Scenes;
 using Unity.Transforms;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class PointCloudGenerator : MonoBehaviour {
 
@@ -84,7 +86,7 @@ public struct PointCloudConfig : IComponentData {
 
 	/// <summary>
 	/// Determines if a point is in the bounds of the point cloud/wavefront as determined by
-	/// the pcc.<br/>
+	/// this pcc.<br/>
 	/// Bound limits include 0 and exclude the num. I.e. for x, the limit interval is [0, pcc.numX).
 	/// </summary>
 	/// <param name="point">A point to test.</param>
@@ -97,7 +99,7 @@ public struct PointCloudConfig : IComponentData {
 
 	/// <summary>
 	/// Determines if a point is in the bounds of the point cloud/wavefront as determined by
-	/// the pcc.<br/>
+	/// this pcc.<br/>
 	/// Bound limits include 0 and exclude the num. I.e. for x, the limit interval is [0, pcc.numX).
 	/// </summary>
 	/// <param name="x">X value of a point to test.</param>
@@ -108,6 +110,30 @@ public struct PointCloudConfig : IComponentData {
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public readonly bool IsPointInBounds(int x, int y, int z) {
 		return x >= 0 && y >= 0 && z >= 0 && x < numX && y < numY && z < numZ;
+	}
+
+	/// <summary>
+	/// Determines if a position is in the bounds of the point cloud/wavefront as determined by this pcc.<br/>
+	/// </summary>
+	/// <param name="position">Position in the world.</param>
+	/// <returns>True if in bounds.</returns>
+	[BurstCompile]
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public readonly bool IsPositionInBounds(in float3 position) {
+		return IsPointInBounds(PositionToPointUnclamped(position.x, position.y, position.z));
+	}
+
+	/// <summary>
+	/// Determines if a position is in the bounds of the point cloud/wavefront as determined by this pcc.<br/>
+	/// </summary>
+	/// <param name="x">X position in the world.</param>
+	/// <param name="y">Y position in the world.</param>
+	/// <param name="z">Z position in the world.</param>
+	/// <returns>True if in bounds.</returns>
+	[BurstCompile]
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public readonly bool IsPositionInBounds(float x, float y, float z) {
+		return IsPointInBounds(PositionToPointUnclamped(x, y, z));
 	}
 
 	/// <summary>
@@ -138,6 +164,34 @@ public struct PointCloudConfig : IComponentData {
 			(int)math.clamp((y - cornerPosition.y) / DistBetweenPoints, 0, numY - 1),
 			(int)math.clamp((z - cornerPosition.z) / DistBetweenPoints, 0, numZ - 1)
 		);
+	}
+
+	/// <summary>
+	/// Given a position in the world, determines its point in a point cloud/wavefront.
+	/// </summary>
+	/// <param name="x">X position in world</param>
+	/// <param name="y">Y position in world</param>
+	/// <param name="z">Z position in world</param>
+	/// <returns>The point this position equates to in this PointCloudConfig</returns>
+	[BurstCompile]
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public readonly int3 PositionToPointUnclamped(float x, float y, float z) {
+		return new(
+			(int)((x - cornerPosition.x) / DistBetweenPoints),
+			(int)((y - cornerPosition.y) / DistBetweenPoints),
+			(int)((z - cornerPosition.z) / DistBetweenPoints)
+		);
+	}
+
+	/// <summary>
+	/// Given a position in the world, determines its point in a point cloud/wavefront.
+	/// </summary>
+	/// <param name="position">Position in world</param>
+	/// <returns>The point this position equates to in this PointCloudConfig</returns>
+	[BurstCompile]
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public readonly int3 PositionToPointUnclamped(float3 position) {
+		return PositionToPointUnclamped(position.x, position.y, position.z);
 	}
 
 	/// <summary>

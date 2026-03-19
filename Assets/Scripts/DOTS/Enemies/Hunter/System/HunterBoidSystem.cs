@@ -1,4 +1,5 @@
 using System.Runtime.CompilerServices;
+using System.Threading;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
@@ -6,9 +7,14 @@ using Unity.Mathematics;
 using Unity.Physics;
 using Unity.Physics.Extensions;
 using Unity.Transforms;
+using UnityEngine;
 
 [UpdateInGroup(typeof(PrePhysicsGroup))]
 partial struct HunterBoidSystem : ISystem {
+
+	EntityQuery eqPlayer;
+	EntityQuery eqWavefrontGoalTarget;
+	EntityQuery eqPcc;
 	
 	[BurstCompile]
 	public void OnCreate(ref SystemState state) {
@@ -16,17 +22,30 @@ partial struct HunterBoidSystem : ISystem {
 		state.RequireForUpdate<HunterEmpoweredStatics>();
 		state.RequireForUpdate<HunterBoid>();
 		state.RequireForUpdate<Player>();
+		state.RequireForUpdate<WavefrontGoalTarget>();
+		state.RequireForUpdate<PointCloudConfig>();
+
+		using var eqb = new EntityQueryBuilder(Allocator.Temp);
+		eqPlayer = eqb.WithAll<Player, LocalToWorld>().Build(ref state);
+		eqWavefrontGoalTarget = eqb.Reset().WithAll<WavefrontGoalTarget>().Build(ref state);
+		eqPcc = eqb.Reset().WithAll<PointCloudConfig>().Build(ref state);
 	}
 	
 	[BurstCompile]
 	public void OnUpdate(ref SystemState state) {
+		PointCloudConfig pcc = eqPcc.GetSingleton<PointCloudConfig>();
+		var CachedLosChecks = new NativeArray<byte>(pcc.numX * pcc.numY * pcc.numZ, Allocator.TempJob);
 		state.Dependency = new HunterBoidJob() {
 			DeltaTime = SystemAPI.Time.DeltaTime,
 			StaticsBasic = SystemAPI.GetSingleton<HunterBasicStatics>(),
 			StaticsEmpowered = SystemAPI.GetSingleton<HunterEmpoweredStatics>(),
-			pw = SystemAPI.GetSingleton<PhysicsWorldSingleton>().PhysicsWorld,
-			PlayerPosition = SystemAPI.GetComponent<LocalToWorld>(SystemAPI.GetSingletonEntity<Player>()).Position
+			cw = SystemAPI.GetSingleton<PhysicsWorldSingleton>().CollisionWorld,
+			PlayerPosition = eqPlayer.GetSingleton<LocalToWorld>().Position,
+			IsPlayerInPointCloud = eqWavefrontGoalTarget.ToComponentDataArray<WavefrontGoalTarget>(Allocator.Temp)[0].IsInPointCloud,
+			pcc = pcc,
+			CachedLosChecks = CachedLosChecks
 		}.ScheduleParallel(state.Dependency);
+		state.Dependency = CachedLosChecks.Dispose(state.Dependency);
 	}
 
 	[BurstCompile]
@@ -34,8 +53,17 @@ partial struct HunterBoidSystem : ISystem {
 		public float DeltaTime;
 		public HunterBasicStatics StaticsBasic;
 		public HunterEmpoweredStatics StaticsEmpowered;
-		[ReadOnly] public PhysicsWorld pw;
+		[ReadOnly] public CollisionWorld cw;
 		public float3 PlayerPosition;
+		public bool IsPlayerInPointCloud;
+		[ReadOnly] public PointCloudConfig pcc;
+		/// <summary>
+		/// 0: Not checked<br/>
+		/// 1: Has NO LOS<br/>
+		/// _: Has LOS
+		/// </summary>
+		[NativeDisableParallelForRestriction]
+		public NativeArray<byte> CachedLosChecks;
 
 		[BurstCompile]
 		public void Execute(
@@ -69,7 +97,7 @@ partial struct HunterBoidSystem : ISystem {
 					);
 			} else {
 				// If greater than WanderTriggerDist, include wander
-				if (distCheck > Util.pow2(hsStatics.WanderTriggerDist)) {
+				if (distCheck > hsStatics.WanderTriggerDistSq) {
 					// Wander
 					if (boid.timeSinceLastWanderStep >= gbProps.WanderMinimumDelay) {
 						boid.timeSinceLastWanderStep = 0;
@@ -89,16 +117,12 @@ partial struct HunterBoidSystem : ISystem {
 						trans.Position, PlayerPosition, vel, gbProps.MaxSteeringVelocity, gbProps.MaxSteeringForce
 					);
 				} else {
-					// Hunter in chase state, so seek player
-					//if (distCheck >= Util.pow2(hsStatics.WanderTriggerDist + 3f))
-					//	Debug.Log("Using pathfinding!");
-					if (distCheck < Util.pow2(hsStatics.WanderTriggerDist + 3f)) // TODO: add property for 'pathfinding trigger dist'
-						// NOTE: this method currently does not account for when the player is outside of the PointCloud
+					if (ShouldFollowWavefront(trans.Position, distCheck, hsStatics))
+						newSteerForce += BoidUtil.SeekDirection(new float3(wfReader.DescentDirection), vel, gbProps.MaxSteeringVelocity, gbProps.MaxSteeringForce);
+					else
 						newSteerForce += BoidUtil.Seek(
 							trans.Position, PlayerPosition, vel, gbProps.MaxSteeringVelocity, gbProps.MaxSteeringForce
 						);
-					else
-						newSteerForce += BoidUtil.SeekDirection(new float3(wfReader.DescentDirection), vel, gbProps.MaxSteeringVelocity, gbProps.MaxSteeringForce);
 				}
 			}
 			boid.steerForce = newSteerForce;
@@ -115,19 +139,47 @@ partial struct HunterBoidSystem : ISystem {
 		[BurstCompile]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		readonly bool JustPassedPlayer(in float3 vel, in float3 toPlayer, float distCheck, in HunterSharedStatics hsStatics, in GeneralBoidProperties gbProps) {
-			return math.lengthsq(vel) > Util.pow2(hsStatics.RunAwayRequiredSpeed) &&
-				distCheck <= Util.pow2(hsStatics.RunAwayRequiredDist) &&
+			return math.lengthsq(vel) > hsStatics.RunAwayRequiredSpeedSq &&
+				distCheck <= hsStatics.RunAwayRequiredDistSq &&
 				math.dot(toPlayer, vel) <= 0;
 		}
 
+		/// <summary>
+		/// Returns true if:
+		/// - Player is inside of pointcloud
+		///		- && Player is far
+		///	- || (
+		///		- Hunter inside PointCloud && has no LOS
+		///	)
+		/// </summary>
+		/// <param name="myPos"></param>
+		/// <param name="distCheck"></param>
+		/// <param name="hsStatics"></param>
+		/// <returns></returns>
 		[BurstCompile]
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		bool HasLos(in float3 myPos) {
-			return !pw.CastRay(new() {
-				Start = PlayerPosition,
-				End = myPos,
-				//Filter = StaticsBasic.los
-			});
+		bool ShouldFollowWavefront(in float3 myPos, float distCheck, in HunterSharedStatics hsStatics) {
+			if (IsPlayerInPointCloud)
+				return distCheck > hsStatics.PathfindTriggerDistSq;
+			else {
+				int3 point = pcc.PositionToPointUnclamped(myPos);
+				if (!pcc.IsPointInBounds(point))
+					return false;
+				int index = pcc.PointToIndex(point);
+				// Nothing fancy in terms of race condition prevention. Testing shows it still saves a ton of time even with possible race conditions.
+				if (CachedLosChecks[index] != 0)
+					// Return cached result instead
+					return CachedLosChecks[index] == 1;
+				else {
+					// Perform raycast, then cache result
+					bool hasNoLos = cw.CastRay(new() {
+						Start = PlayerPosition,
+						End = myPos,
+						Filter = hsStatics.LosFilterForChasing
+					});
+					CachedLosChecks[index] = hasNoLos ? (byte)1 : (byte)2;
+					return hasNoLos;
+				}
+			}
 		}
 	}
 

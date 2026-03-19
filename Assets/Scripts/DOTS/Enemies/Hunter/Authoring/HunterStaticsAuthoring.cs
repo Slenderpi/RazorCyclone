@@ -1,4 +1,5 @@
 using Unity.Entities;
+using Unity.Physics;
 using UnityEngine;
 
 /// <summary>
@@ -25,9 +26,18 @@ public struct HunterSharedStatics {
 	public float RunAwayMaxSteerVelocity;
 	public float RunAwayMaxSteerForce;
 	public float RunAwayDuration;
-	public float RunAwayRequiredSpeed;
-	public float RunAwayRequiredDist;
-	public float WanderTriggerDist;
+	public float RunAwayRequiredSpeedSq;
+	public float RunAwayRequiredDistSq;
+	public float WanderTriggerDistSq;
+
+	/// <summary>
+	/// If the Hunter's dist from the Player is > sqrt(PathfindTriggerDistSq) (and the Player is in the PointCloud), the Hunter
+	/// will follow the Wavefront to reach the Player.<br/>
+	/// Otherwise, the Hunter will perform Seek towards the Player's position.
+	/// </summary>
+	public float PathfindTriggerDistSq;
+
+	public CollisionFilter LosFilterForChasing;
 }
 
 public struct HunterBasicStatics : IComponentData {

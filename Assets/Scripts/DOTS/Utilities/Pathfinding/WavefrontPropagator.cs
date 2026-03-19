@@ -13,6 +13,8 @@ public partial struct WavefrontPropagator : ISystem {
 	PointCloudConfig pcc;
 	Entity BufferEntity;
 
+	EntityQuery eqWavefrontGoalTarget;
+
 	double lastWavefrontUpdateTime;
 
 
@@ -60,6 +62,11 @@ public partial struct WavefrontPropagator : ISystem {
 		WavefrontValueBuffer = SystemAPI.GetBuffer<WavefrontValue>(BufferEntity);
 
 		DoWavefront(ref state, new(0, 5, 0), PointCloudValueBuffer, ref WavefrontValueBuffer);
+
+		state.RequireForUpdate<WavefrontGoalTarget>();
+		using var eqb = new EntityQueryBuilder(Allocator.Temp);
+		eqWavefrontGoalTarget = eqb.WithAll<WavefrontGoalTarget, LocalTransform>().Build(ref state);
+
 		//VisualizeWavefrontHeatmap(WavefrontUpdateDelay, WavefrontValueBuffer);
 		//Util.D_VisualizePointCloud(PointCloud, pcc)
 	}
@@ -71,15 +78,18 @@ public partial struct WavefrontPropagator : ISystem {
 			lastWavefrontUpdateTime = SystemAPI.Time.ElapsedTime;
 
 			// Find a WavefrontGoalTarget. If there a multiple, the first one found is chosen.
-			EntityQuery eq = SystemAPI.QueryBuilder().WithAll<LocalTransform, WavefrontGoalTarget>().Build();
-			NativeArray<WavefrontGoalTarget> wgtarr = eq.ToComponentDataArray<WavefrontGoalTarget>(Allocator.Temp);
+			NativeArray<WavefrontGoalTarget> wgtarr = eqWavefrontGoalTarget.ToComponentDataArray<WavefrontGoalTarget>(Allocator.Temp);
 			if (wgtarr.Length == 0)
 				return;
 #if UNITY_EDITOR
 			bool shouldVisualizeHeatmap = wgtarr[0].VisualizeWavefrontHeatmap;
 			WavefrontUpdateDelay = wgtarr[0].WavefrontUpdateDelay;
 #endif
-			float3 goalPosition = eq.ToComponentDataArray<LocalTransform>(Allocator.Temp)[0].Position;
+			float3 goalPosition = eqWavefrontGoalTarget.ToComponentDataArray<LocalTransform>(Allocator.Temp)[0].Position;
+			WavefrontGoalTarget wgt = wgtarr[0];
+			wgt.IsInPointCloud = pcc.IsPositionInBounds(goalPosition);
+			if (wgt.IsInPointCloud != wgtarr[0].IsInPointCloud)
+				SystemAPI.SetComponent(eqWavefrontGoalTarget.ToEntityArray(Allocator.Temp)[0], wgt);
 
 			// Do wavefront propagation
 			DoWavefront(ref state, goalPosition, PointCloudValueBuffer, ref WavefrontValueBuffer);

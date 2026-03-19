@@ -20,5 +20,9 @@ public class SO_Hunter : GeneralBoidSO {
     public float WanderTriggerDist = 7;
     [Tooltip("If the Hunter is within this distance (inclusive) to the player, obstacle avoidance will be disabled to make sure they actually hit the player.")]
     public float AvoidanceDisableDist = 5;
-    
+    [Min(1)]
+    [Tooltip("If the Hunter's distance to the Player is greater than this value, the Hunter will begin to use pathfinding.")]
+    public float PathfindTriggerDist = 6f;
+
+
 }

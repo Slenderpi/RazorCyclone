@@ -184,9 +184,16 @@ public static class BoidUtil {
 				RunAwayMaxSteerVelocity = so.RunAwayMaxSteerVelocity,
 				RunAwayMaxSteerForce = so.RunAwayMaxSteerForce,
 				RunAwayDuration = so.RunAwayDuration,
-				RunAwayRequiredSpeed = so.RunAwayRequiredSpeed,
-				RunAwayRequiredDist = so.RunAwayRequiredDist,
-				WanderTriggerDist = so.WanderTriggerDist
+				RunAwayRequiredSpeedSq = Util.pow2(so.RunAwayRequiredSpeed),
+				RunAwayRequiredDistSq = Util.pow2(so.RunAwayRequiredDist),
+				WanderTriggerDistSq = Util.pow2(so.WanderTriggerDist),
+				PathfindTriggerDistSq = Util.pow2(so.PathfindTriggerDist),
+
+				LosFilterForChasing = new() {
+					BelongsTo = 1u << 8, // Projectile
+					CollidesWith = 1u | (1u << 17) | (1u << 18), // Collide with environment only
+					GroupIndex = 0
+				}
 			};
 		}
 
