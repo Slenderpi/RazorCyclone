@@ -28,18 +28,19 @@ partial struct HunterDamageSystem : ISystem {
 	
 	[BurstCompile]
 	public void OnUpdate(ref SystemState state) {
-		// If the Player's Vacuum is on, contact-based damage is disabled.
-		if (eqVacuum.GetSingleton<PlayerVacuum>().VacuumEnabled)
-			return;
 		Entity playerEntity = eqPlayer.GetSingletonEntity();
 		luPlayerResources.Update(ref state);
 
-		state.Dependency = new HunterBasicDamageJob() {
-			ElapsedTime = (float)SystemAPI.Time.ElapsedTime,
-			luPlayerResources = luPlayerResources,
-			PlayerEntity = playerEntity,
-			Damage = eqStatics.GetSingleton<HunterBasicStatics>().HunterGameplay.Damage
-		}.Schedule(state.Dependency);
+		// If the Player's Vacuum is on, contact-based damage by the Hunter Basic is disabled.
+		if (!eqVacuum.GetSingleton<PlayerVacuum>().VacuumEnabled)
+			state.Dependency = new HunterBasicDamageJob() {
+				ElapsedTime = (float)SystemAPI.Time.ElapsedTime,
+				luPlayerResources = luPlayerResources,
+				PlayerEntity = playerEntity,
+				Damage = eqStatics.GetSingleton<HunterBasicStatics>().HunterGameplay.Damage
+			}.Schedule(state.Dependency);
+
+		// Hunter Empowered does not care if the Player's Vacuum is on or off
 		state.Dependency = new HunterEmpoweredDamageJob() {
 			ElapsedTime = (float)SystemAPI.Time.ElapsedTime,
 			luPlayerResources = luPlayerResources,
