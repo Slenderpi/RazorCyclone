@@ -9,7 +9,6 @@ partial struct HunterRotationSystem : ISystem {
 
 	[BurstCompile]
 	public void OnCreate(ref SystemState state) {
-		state.RequireForUpdate<Hunter>();
 		state.RequireForUpdate<HunterBoid>();
 	}
 

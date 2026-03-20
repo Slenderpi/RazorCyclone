@@ -73,10 +73,10 @@ partial struct HunterBoidSystem : ISystem {
 			ref RandomGenerator randomGenerator,
 			in PhysicsMass pm,
 			in WavefrontReader wfReader,
-			in Hunter hunterTag
+			in EnemyForm eform
 		) {
-			HunterSharedStatics hsStatics = hunterTag.Form == EEnemyForm.Basic ? StaticsBasic.Hunter : StaticsEmpowered.Hunter;
-			GeneralBoidProperties gbProps = hunterTag.Form == EEnemyForm.Basic ? StaticsBasic.BoidProperties : StaticsEmpowered.BoidProperties;
+			HunterBoidSharedStatics hsStatics = eform.Form == EEnemyForm.Basic ? StaticsBasic.HunterBoid : StaticsEmpowered.HunterBoid;
+			GeneralBoidProperties gbProps = eform.Form == EEnemyForm.Basic ? StaticsBasic.BoidProperties : StaticsEmpowered.BoidProperties;
 			float3 newSteerForce = float3.zero;
 			float3 vel = Util.IsNearZero(pv.Linear) ? new float3(0f, 0f, 0.01f) : pv.Linear;
 			float3 toPlayer = PlayerPosition - trans.Position;
@@ -138,7 +138,7 @@ partial struct HunterBoidSystem : ISystem {
 
 		[BurstCompile]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		readonly bool JustPassedPlayer(in float3 vel, in float3 toPlayer, float distCheck, in HunterSharedStatics hsStatics, in GeneralBoidProperties gbProps) {
+		readonly bool JustPassedPlayer(in float3 vel, in float3 toPlayer, float distCheck, in HunterBoidSharedStatics hsStatics, in GeneralBoidProperties gbProps) {
 			return math.lengthsq(vel) > hsStatics.RunAwayRequiredSpeedSq &&
 				distCheck <= hsStatics.RunAwayRequiredDistSq &&
 				math.dot(toPlayer, vel) <= 0;
@@ -157,7 +157,7 @@ partial struct HunterBoidSystem : ISystem {
 		/// <param name="hsStatics"></param>
 		/// <returns></returns>
 		[BurstCompile]
-		bool ShouldFollowWavefront(in float3 myPos, float distCheck, in HunterSharedStatics hsStatics) {
+		bool ShouldFollowWavefront(in float3 myPos, float distCheck, in HunterBoidSharedStatics hsStatics) {
 			if (IsPlayerInPointCloud)
 				return distCheck > hsStatics.PathfindTriggerDistSq;
 			else {

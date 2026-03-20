@@ -1,7 +1,7 @@
 using Unity.Entities;
 using Unity.Mathematics;
 
-public struct HunterBoid : IComponentData {
+public struct HunterBoid : IComponentData, IEnableableComponent {
 	public float3 steerForce;
 	public float3 wanderVector;
 	/// <summary>

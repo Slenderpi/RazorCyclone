@@ -47,7 +47,7 @@ public class EntityBakerSingletonAuthoring : MonoBehaviour {
                 FuelPickup = GetEntity(auth.FuelPickupPrefab, TransformUsageFlags.Dynamic),
                 CannonFodder = GetEntity(auth.CannonFodderPrefab, TransformUsageFlags.Dynamic),
 				HunterBasic = GetEntity(auth.HunterBasicPrefab, TransformUsageFlags.Dynamic),
-				//HunterEmpowered = GetEntity(auth.HunterEmpoweredPrefab, TransformUsageFlags.Dynamic),
+				HunterEmpowered = GetEntity(auth.HunterEmpoweredPrefab, TransformUsageFlags.Dynamic),
 				//CrabBasic = GetEntity(auth.CrabBasicPrefab, TransformUsageFlags.Dynamic),
 				//CrabEmpowered = GetEntity(auth.CrabEmpoweredPrefab, TransformUsageFlags.Dynamic),
 				//Turtle = GetEntity(auth.TurtlePrefab, TransformUsageFlags.Dynamic),
@@ -77,9 +77,12 @@ public struct EntityBakerSingleton : IComponentData {
 	/// <summary>
 	/// Hunter Basic prefab.
 	/// </summary>
-    public Entity HunterBasic; // TODO
+    public Entity HunterBasic;
 
-    public Entity HunterEmpowered; // TODO
+	/// <summary>
+	/// Hunter Empowered prefab.
+	/// </summary>
+	public Entity HunterEmpowered;
 
     public Entity CrabBasic; // TODO
 
@@ -98,7 +101,7 @@ public struct EntityBakerSingleton : IComponentData {
 		return enemyType switch {
 			EEnemyType.CannonFodder => CannonFodder,
             EEnemyType.HunterBasic => HunterBasic,
-            //EEnemyType.Hunter => HunterEmpowered, // TODO
+            EEnemyType.Hunter => HunterEmpowered,
 			//EEnemyType.CrabBasic => CrabBasic, // TODO
 			//EEnemyType.Crab => CrabEmpowered, // TODO
 			//EEnemyType.Turtle => Turtle, // TODO
@@ -121,7 +124,9 @@ public struct EntityBakerSingleton : IComponentData {
 			case EEnemyType.HunterBasic:
 				entity = HunterBasic;
 				return true;
-			case EEnemyType.Hunter: // TODO
+			case EEnemyType.Hunter:
+				entity = HunterEmpowered;
+				return true;
 			case EEnemyType.CrabBasic: // TODO
 			case EEnemyType.Crab: // TODO
 			case EEnemyType.Turtle: // TODO

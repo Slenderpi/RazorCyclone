@@ -1,6 +1,7 @@
-using Unity.Entities;
 using Unity.Burst;
 using Unity.Collections;
+using Unity.Entities;
+using UnityEngine;
 
 [UpdateInGroup(typeof(EnemyDamagePhysicsGroup))]
 partial struct HunterDamageSystem : ISystem {
@@ -12,7 +13,7 @@ partial struct HunterDamageSystem : ISystem {
 
 	[BurstCompile]
 	public void OnCreate(ref SystemState state) {
-		state.RequireForUpdate<Hunter>();
+		state.RequireForUpdate<HunterBoid>();
 		state.RequireForUpdate<HurtboxCollider>();
 		state.RequireForUpdate<HunterBasicStatics>();
 		state.RequireForUpdate<HunterEmpoweredStatics>();
@@ -30,34 +31,55 @@ partial struct HunterDamageSystem : ISystem {
 		// If the Player's Vacuum is on, contact-based damage is disabled.
 		if (eqVacuum.GetSingleton<PlayerVacuum>().VacuumEnabled)
 			return;
+		Entity playerEntity = eqPlayer.GetSingletonEntity();
 		luPlayerResources.Update(ref state);
 
-		state.Dependency = new HunterDamageJob() {
+		state.Dependency = new HunterBasicDamageJob() {
 			ElapsedTime = (float)SystemAPI.Time.ElapsedTime,
 			luPlayerResources = luPlayerResources,
-			PlayerEntity = eqPlayer.GetSingletonEntity(),
-			StaticsBasic = eqStatics.GetSingleton<HunterBasicStatics>(),
-			StaticsEmpowered = eqStatics.GetSingleton<HunterEmpoweredStatics>()
+			PlayerEntity = playerEntity,
+			Damage = eqStatics.GetSingleton<HunterBasicStatics>().HunterGameplay.Damage
+		}.Schedule(state.Dependency);
+		state.Dependency = new HunterEmpoweredDamageJob() {
+			ElapsedTime = (float)SystemAPI.Time.ElapsedTime,
+			luPlayerResources = luPlayerResources,
+			PlayerEntity = playerEntity,
+			Damage = eqStatics.GetSingleton<HunterEmpoweredStatics>().HunterGameplay.Damage
 		}.Schedule(state.Dependency);
 	}
 
 	[BurstCompile]
-	partial struct HunterDamageJob : IJobEntity {
+	partial struct HunterBasicDamageJob : IJobEntity {
 		public float ElapsedTime;
 		public ComponentLookup<PlayerResources> luPlayerResources;
 		public Entity PlayerEntity;
-		public HunterBasicStatics StaticsBasic;
-		public HunterEmpoweredStatics StaticsEmpowered;
+		public float Damage;
 
 		[BurstCompile]
-		public void Execute(in Hunter hunterTag, in HurtboxCollider collider) {
+		public void Execute(in HunterBasic hunterTag, in HurtboxCollider collider) {
 			if (!collider.DidBeginTouchThisFrame())
 				return;
 			PlayerResources rsrcs = luPlayerResources[PlayerEntity];
-			// TODO: Add damage to Hunter statics, then read from them here
-			rsrcs.TakeDamage(hunterTag.Form == EEnemyForm.Basic ? 10f : 50f, ElapsedTime);
+			rsrcs.TakeDamage(Damage, ElapsedTime);
 			luPlayerResources[PlayerEntity] = rsrcs;
 		}
 	}
-	
+
+	[BurstCompile]
+	partial struct HunterEmpoweredDamageJob : IJobEntity {
+		public float ElapsedTime;
+		public ComponentLookup<PlayerResources> luPlayerResources;
+		public Entity PlayerEntity;
+		public float Damage;
+
+		[BurstCompile]
+		public void Execute(in HunterEmpowered hunterTag, in HurtboxCollider collider) {
+			if (!collider.DidBeginTouchThisFrame() || hunterTag.IsStunned)
+				return;
+			PlayerResources rsrcs = luPlayerResources[PlayerEntity];
+			rsrcs.TakeDamage(Damage, ElapsedTime);
+			luPlayerResources[PlayerEntity] = rsrcs;
+		}
+	}
+
 }

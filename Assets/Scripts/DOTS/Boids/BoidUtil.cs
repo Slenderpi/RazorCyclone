@@ -163,23 +163,30 @@ public static class BoidUtil {
 			};
 		}
 
-		public static HunterBasicStatics HunterBasic(SO_Hunter so) {
+		public static HunterBasicStatics HunterBasic(SO_Hunter so, float Damage) {
 			// TODO
 			return new() {
 				BoidProperties = GeneralBoid(so),
-				Hunter = HunterShared(so)
+				HunterBoid = HunterShared(so),
+				HunterGameplay = new HunterGameplaySharedStatics() {
+					Damage = Damage
+				}
 			};
 		}
 
-		public static HunterEmpoweredStatics HunterEmpowered(SO_Hunter so) {
+		public static HunterEmpoweredStatics HunterEmpowered(SO_Hunter so, float Damage, float StunDuration) {
 			// TODO
 			return new() {
 				BoidProperties = GeneralBoid(so),
-				Hunter = HunterShared(so)
+				HunterBoid = HunterShared(so),
+				HunterGameplay = new HunterGameplaySharedStatics() {
+					Damage = Damage
+				},
+				StunDuration = StunDuration
 			};
 		}
 
-		static HunterSharedStatics HunterShared(SO_Hunter so) {
+		static HunterBoidSharedStatics HunterShared(SO_Hunter so) {
 			return new() {
 				RunAwayMaxSteerVelocity = so.RunAwayMaxSteerVelocity,
 				RunAwayMaxSteerForce = so.RunAwayMaxSteerForce,
