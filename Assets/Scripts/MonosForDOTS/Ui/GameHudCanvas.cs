@@ -114,8 +114,7 @@ public class GameHudCanvas : MonoBehaviour {
 	}
 
 	void Start() {
-		GameManager.A_OnGamePaused += OnGamePaused;
-		GameManager.A_OnGameResumed += OnGameResumed;
+		GameManager.A_OnMenuChanged += OnMenuChanged;
 
 		mainCamera = Camera.main;
 
@@ -330,12 +329,8 @@ public class GameHudCanvas : MonoBehaviour {
 		}
 	}
 
-	void OnGamePaused() {
-		canvasComp.enabled = false;
-	}
-
-	void OnGameResumed() {
-		canvasComp.enabled = true;
+	void OnMenuChanged(EMenu newMenu) {
+		canvasComp.enabled = newMenu == EMenu.Gameplay;
 	}
 
 	/*************   --   INITIALIZATION AND LOADING   --   ****************/
