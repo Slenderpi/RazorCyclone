@@ -357,14 +357,14 @@ public class GameHudCanvas : MonoBehaviour {
 
 	IEnumerator loadKFIconsAsync() {
 		string[] iconPaths = {
-            // Weapons
-            "Killfeed Icons/Vacuum",
+			// Weapons
+			"Killfeed Icons/Vacuum",
 			"Killfeed Icons/Cannon",
 			"Killfeed Icons/Ricochet",
-            // Arrow
-            "Killfeed Icons/S_Arrow",
-            // Enemy icons
-            "Killfeed Icons/Bug",
+			// Arrow
+			"Killfeed Icons/S_Arrow",
+			// Enemy icons
+			"Killfeed Icons/Bug",
 			"Killfeed Icons/Bird",
 			"Killfeed Icons/Bird+",
 			"Killfeed Icons/Crab",

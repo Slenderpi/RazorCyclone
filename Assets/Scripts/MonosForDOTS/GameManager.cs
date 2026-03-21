@@ -23,7 +23,7 @@ public class GameManager : MonoBehaviour {
 	/// </summary>
 	public static Action<EMenu> A_OnMenuChanged;
 
-    public static GameManager Singleton;
+	public static GameManager Singleton;
 
 	bool _paused = false;
 	public static bool IsPaused { get { return Singleton._paused; } private set { Singleton._paused = value; } }
@@ -60,7 +60,11 @@ public class GameManager : MonoBehaviour {
 
 	public static void OnPauseKeyPressed() {
 		if (IsPaused) {
-			ResumeGame();
+			if (CurrentMenu == EMenu.Settings) {
+				ChangeMenuTo(EMenu.Pause);
+			} else {
+				ResumeGame();
+			}
 		} else {
 			PauseGame();
 		}

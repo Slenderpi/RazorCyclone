@@ -2,12 +2,12 @@ using UnityEngine;
 
 public class PauseMenuCanvas : MonoBehaviour {
 
-    Canvas canvasComp;
+	[SerializeField]
+	Canvas canvasComp;
 
 
 
 	private void Awake() {
-		canvasComp = GetComponent<Canvas>();
 		canvasComp.enabled = false;
 	}
 
