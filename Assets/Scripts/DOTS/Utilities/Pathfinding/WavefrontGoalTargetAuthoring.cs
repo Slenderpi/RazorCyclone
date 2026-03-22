@@ -15,9 +15,7 @@ public class WavefrontGoalTargetAuthoring : MonoBehaviour {
 			Entity entity = GetEntity(TransformUsageFlags.Dynamic);
 			AddComponent(entity, new WavefrontGoalTarget(
 				auth.WavefrontUpdateDelay
-#if UNITY_EDITOR
-				, auth.VisualizeWavefrontHeatmap
-#endif
+				//, auth.VisualizeWavefrontHeatmap
 			));
 			if (auth.DISABLE_THIS_TARGET)
 				SetComponentEnabled<WavefrontGoalTarget>(entity, false);
@@ -39,24 +37,18 @@ public struct WavefrontGoalTarget : IComponentData, IEnableableComponent {
 	/// </summary>
 	public bool IsInPointCloud;
 
-#if UNITY_EDITOR
-	public bool VisualizeWavefrontHeatmap;
-#endif
+	//public bool VisualizeWavefrontHeatmap;
 
 	public WavefrontGoalTarget(float wavefrontUpdateDelay) {
 		WavefrontUpdateDelay = wavefrontUpdateDelay;
 		IsInPointCloud = true;
-#if UNITY_EDITOR
-		VisualizeWavefrontHeatmap = false;
-#endif
+		//VisualizeWavefrontHeatmap = false;
 	}
 
 
-#if UNITY_EDITOR
 	public WavefrontGoalTarget(float wavefrontUpdateDelay, bool visualizeWavefrontHeatmap) {
 		WavefrontUpdateDelay = wavefrontUpdateDelay;
 		IsInPointCloud = true;
-		VisualizeWavefrontHeatmap = visualizeWavefrontHeatmap;
+		//VisualizeWavefrontHeatmap = visualizeWavefrontHeatmap;
 	}
-#endif
 }

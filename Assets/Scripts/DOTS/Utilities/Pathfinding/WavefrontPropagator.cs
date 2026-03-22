@@ -81,10 +81,10 @@ public partial struct WavefrontPropagator : ISystem {
 			NativeArray<WavefrontGoalTarget> wgtarr = eqWavefrontGoalTarget.ToComponentDataArray<WavefrontGoalTarget>(Allocator.Temp);
 			if (wgtarr.Length == 0)
 				return;
-#if UNITY_EDITOR
-			bool shouldVisualizeHeatmap = wgtarr[0].VisualizeWavefrontHeatmap;
-			WavefrontUpdateDelay = wgtarr[0].WavefrontUpdateDelay;
-#endif
+			//{ // WAVEFRONT VISUALIZATION
+			//	bool shouldVisualizeHeatmap = wgtarr[0].VisualizeWavefrontHeatmap;
+			//	WavefrontUpdateDelay = wgtarr[0].WavefrontUpdateDelay;
+			//}
 			float3 goalPosition = eqWavefrontGoalTarget.ToComponentDataArray<LocalTransform>(Allocator.Temp)[0].Position;
 			WavefrontGoalTarget wgt = wgtarr[0];
 			wgt.IsInPointCloud = pcc.IsPositionInBounds(goalPosition);
@@ -93,10 +93,10 @@ public partial struct WavefrontPropagator : ISystem {
 
 			// Do wavefront propagation
 			DoWavefront(ref state, goalPosition, PointCloudValueBuffer, ref WavefrontValueBuffer);
-#if UNITY_EDITOR
-			if (shouldVisualizeHeatmap)
-				VisualizeWavefrontHeatmap((float)WavefrontUpdateDelay + 0.001f, WavefrontValueBuffer);
-#endif
+			//{ // WAVEFRONT VISUALIZATION
+			//	if (shouldVisualizeHeatmap)
+			//		VisualizeWavefrontHeatmap((float)WavefrontUpdateDelay + 0.001f, WavefrontValueBuffer);
+			//}
 		}
 
 		// Update readers

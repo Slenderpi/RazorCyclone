@@ -52,7 +52,7 @@ public class DevMenuCanvas : MonoBehaviour {
 			Debug.LogWarning("DevMenuCanvas: Attempt to spawn 0 enemies. Make sure you have a valid number of enemies to spawn.");
 			return;
 		}
-		Debug.Log($"DevMenuCanvas: Spawning {spawnEnemy_Count} instances of {spawnEnemy_Type.DisplayName()}");
+		Debug.Log($"DevMenuCanvas: Spawning {spawnEnemy_Count} instances of {spawnEnemy_Type}");
 		Vector3 spawnLocation = mainCamera.transform.position + mainCamera.transform.forward * 3f;
 		EntityManager em = World.DefaultGameObjectInjectionWorld.EntityManager;
 		NativeArray<Entity> entities = em.Instantiate(
