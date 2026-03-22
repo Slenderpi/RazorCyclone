@@ -49,9 +49,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dffd1a4e52291ab418586fd5491c2421, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ProjectileRadius: 0.5
-  ImpactVFX: {fileID: 3002241975603437205, guid: 80374ef7d0b981b4cbffdeb0ebf79bc9, type: 3}
-  RicochetVFX: {fileID: 3002241975603437205, guid: e79ef6db1d7da914b931e1ea966ac2f6, type: 3}
+  ProjectileRadius: 0.4
 --- !u!114 &3523908557062486647
 MonoBehaviour:
   m_ObjectHideFlags: 0

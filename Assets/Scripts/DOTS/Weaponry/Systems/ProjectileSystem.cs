@@ -29,21 +29,21 @@ partial struct ProjectileSystem : ISystem {
 		public PhysicsWorld pw;
 
 		[BurstCompile]
-		public void Execute(ref Projectile proj, in LocalToWorld ltw, in PhysicsVelocity pv) {
+		public void Execute(ref Projectile proj, in LocalTransform trans, in PhysicsVelocity pv) {
 			if (proj.DidHitThisFrame) return;
 			//RaycastHit hit;
 			//if (proj.Radius == 0) {
 			//	RaycastInput rayInput = new() {
-			//		Start = ltw.Position,
-			//		End = ltw.Position - pv.Linear,
+			//		Start = trans.Position,
+			//		End = trans.Position - pv.Linear,
 			//		Filter = CollisionFilter.Default
 			//	};
 			//	proj.DidHitThisFrame = pw.CastRay(rayInput, out hit);
 			//} else {
 			float speed = math.length(pv.Linear);
-			if (speed <= 0.00001f) return;
+			if (Util.IsNearZero(speed)) return;
 			proj.DidHitThisFrame = pw.SphereCast(
-				ltw.Position,
+				trans.Position,
 				proj.Radius,
 				pv.Linear / speed,
 				speed * dt,
@@ -53,7 +53,6 @@ partial struct ProjectileSystem : ISystem {
 			//}
 			if (proj.DidHitThisFrame)
 				proj.Hit = hit;
-			//	proj.Hit = hit;
 		}
 	}
 

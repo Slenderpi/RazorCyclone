@@ -56,20 +56,12 @@ partial struct PlayerCannonSystem : ISystem {
         resources.SpendFuel(cannon.FuelCost, (float)SystemAPI.Time.ElapsedTime);
         SystemAPI.SetComponent(playerEntity, resources);
 
-        // Apply velocity
-        pm.InverseInertia = float3.zero;
-        SystemAPI.SetComponent(playerEntity, pm);
-        SystemAPI.SetComponent(playerEntity, new PhysicsVelocity {
-            Linear = cannon.RecoilForce * input.aimDirection + pv.Linear
-        });
-
         // Spawn and setup projectile
         Entity projectile = em.Instantiate(cannon.ProjectilePrefab);
-        PlayerCannonProjectile pcp = em.GetComponentData<PlayerCannonProjectile>(projectile);
+        RefRW<PlayerCannonProjectile> pcp = SystemAPI.GetComponentRW<PlayerCannonProjectile>(projectile);
         //Debug.Log($"Spins: {spinfo.CurrentSpins} | Mult: {spinfo.CurrentRicochetMultiplier} | Total: {spinfo.CurrentSpins * spinfo.CurrentRicochetMultiplier}");
-        pcp.SetMaxRicochets(spinfo.SpendSpinsAsRicochet());
+        pcp.ValueRW.SetMaxRicochets(spinfo.SpendSpinsAsRicochet());
         SystemAPI.SetComponent(playerEntity, spinfo);
-		em.AddComponentData(projectile, pcp);
 		em.AddComponentData(
             projectile,
             LocalTransform.FromPositionRotation(
@@ -84,8 +76,15 @@ partial struct PlayerCannonSystem : ISystem {
             }
         );
 
-        // Spawn muzzle flash vfx
-        em.AddComponentData(
+		// Apply velocity
+		pm.InverseInertia = float3.zero;
+		SystemAPI.SetComponent(playerEntity, pm);
+		SystemAPI.SetComponent(playerEntity, new PhysicsVelocity {
+			Linear = cannon.RecoilForce * input.aimDirection + pv.Linear
+		});
+
+		// Spawn muzzle flash vfx
+		em.AddComponentData(
             em.Instantiate(cannon.MuzzleFlashVFX),
             new Parent { Value = cannonEntity }
         );
