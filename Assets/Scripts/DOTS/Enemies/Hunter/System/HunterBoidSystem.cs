@@ -1,5 +1,4 @@
 using System.Runtime.CompilerServices;
-using System.Threading;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
@@ -33,8 +32,20 @@ partial struct HunterBoidSystem : ISystem {
 	
 	[BurstCompile]
 	public void OnUpdate(ref SystemState state) {
-		PointCloudConfig pcc = eqPcc.GetSingleton<PointCloudConfig>();
-		var CachedLosChecks = new NativeArray<byte>(pcc.numX * pcc.numY * pcc.numZ, Allocator.TempJob);
+		// The pcc is used for raycasting. We can sacrifice accuracy to save on time.
+		// Hence, we can group the points into chunks of FACTORxFACTORxFACTOR.
+		// Effeciency of this value depends on the size of a Point. A larger factor is better if Points are small,
+		// but a larger factor on big Points would cause too much inaccuracy and may allow Hunters that clearly
+		// don't have LOS to move like they do.
+		const int CHUNK_FACTOR = 3;
+
+		PointCloudConfig pccChunked = eqPcc.GetSingleton<PointCloudConfig>();
+		pccChunked.numX /= CHUNK_FACTOR;
+		pccChunked.numY /= CHUNK_FACTOR;
+		pccChunked.numZ /= CHUNK_FACTOR;
+		pccChunked.DistBetweenPoints *= CHUNK_FACTOR;
+
+		var CachedLosChecks = new NativeArray<byte>(pccChunked.numX * pccChunked.numY * pccChunked.numZ, Allocator.TempJob);
 		state.Dependency = new HunterBoidJob() {
 			DeltaTime = SystemAPI.Time.DeltaTime,
 			StaticsBasic = SystemAPI.GetSingleton<HunterBasicStatics>(),
@@ -42,7 +53,7 @@ partial struct HunterBoidSystem : ISystem {
 			cw = SystemAPI.GetSingleton<PhysicsWorldSingleton>().CollisionWorld,
 			PlayerPosition = eqPlayer.GetSingleton<LocalToWorld>().Position,
 			IsPlayerInPointCloud = eqWavefrontGoalTarget.ToComponentDataArray<WavefrontGoalTarget>(Allocator.Temp)[0].IsInPointCloud,
-			pcc = pcc,
+			pccChunked = pccChunked,
 			CachedLosChecks = CachedLosChecks
 		}.ScheduleParallel(state.Dependency);
 		state.Dependency = CachedLosChecks.Dispose(state.Dependency);
@@ -51,12 +62,13 @@ partial struct HunterBoidSystem : ISystem {
 	[BurstCompile]
 	partial struct HunterBoidJob : IJobEntity {
 		public float DeltaTime;
-		public HunterBasicStatics StaticsBasic;
-		public HunterEmpoweredStatics StaticsEmpowered;
+		[ReadOnly] public HunterBasicStatics StaticsBasic;
+		[ReadOnly] public HunterEmpoweredStatics StaticsEmpowered;
 		[ReadOnly] public CollisionWorld cw;
 		public float3 PlayerPosition;
 		public bool IsPlayerInPointCloud;
-		[ReadOnly] public PointCloudConfig pcc;
+		[ReadOnly] public PointCloudConfig pccChunked;
+
 		/// <summary>
 		/// 0: Not checked<br/>
 		/// 1: Has NO LOS<br/>
@@ -161,10 +173,15 @@ partial struct HunterBoidSystem : ISystem {
 			if (IsPlayerInPointCloud)
 				return distCheck > hsStatics.PathfindTriggerDistSq;
 			else {
-				int3 point = pcc.PositionToPointUnclamped(myPos);
-				if (!pcc.IsPointInBounds(point))
+				int3 point = pccChunked.PositionToPointUnclamped(myPos);
+				if (!pccChunked.IsPointInBounds(point))
 					return false;
-				int index = pcc.PointToIndex(point);
+				int index = pccChunked.PointToIndex(point);
+				//{ // VISUALIZE LOS CHECK
+				//	if (CachedLosChecks[index] != 0) {
+				//		Util.D_DrawBox(pccChunked.PointToPosition(point), pccChunked.DistBetweenPoints, CachedLosChecks[index] == 1 ? Color.red : Color.green, depthTest: false);
+				//	}
+				//}
 				// Nothing fancy in terms of race condition prevention. Testing shows it still saves a ton of time even with possible race conditions.
 				if (CachedLosChecks[index] != 0)
 					// Return cached result instead
@@ -177,6 +194,9 @@ partial struct HunterBoidSystem : ISystem {
 						Filter = hsStatics.LosFilterForChasing
 					});
 					CachedLosChecks[index] = hasNoLos ? (byte)1 : (byte)2;
+					//{ // VISUALIZE LOS CHECK
+					//	Util.D_DrawBox(pccChunked.PointToPosition(point), pccChunked.DistBetweenPoints, hasNoLos ? Color.red : Color.green, depthTest: false);
+					//}
 					return hasNoLos;
 				}
 			}
