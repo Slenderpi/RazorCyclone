@@ -106,6 +106,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   StartEnabled: 1
+  RicochetPriority: 900
 --- !u!54 &7675750269132818160
 Rigidbody:
   m_ObjectHideFlags: 0

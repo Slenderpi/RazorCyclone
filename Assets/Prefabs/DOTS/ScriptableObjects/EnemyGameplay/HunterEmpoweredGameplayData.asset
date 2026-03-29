@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Damage: 30
   StunDuration: 5
-  NormalRicochetPriority: 2100
-  StunnedRicochetPriority: 2000
+  NormalRicochetPriority: 1000
+  StunnedRicochetPriority: 900
