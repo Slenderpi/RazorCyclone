@@ -654,9 +654,7 @@ GameObject:
   - component: {fileID: -7351658550385972929}
   - component: {fileID: 6654360931698686151}
   - component: {fileID: 1761682500925003073}
-  - component: {fileID: -1261992107006566908}
-  - component: {fileID: 7510554508798159381}
-  - component: {fileID: 6776544896198288600}
+  - component: {fileID: 2355472121632836195}
   - component: {fileID: 9113617427949065013}
   - component: {fileID: 2503785346218859380}
   m_Layer: 14
@@ -742,74 +740,20 @@ MonoBehaviour:
   CanGetKilledByVacuum: 1
   VacuumHitboxRadius: 0.8
   IsCannonTarget: 1
---- !u!114 &-1261992107006566908
+--- !u!114 &2355472121632836195
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3890492832594851018}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bb82134f8cd7747d0b5bd957acc9f81e, type: 3}
+  m_Script: {fileID: 11500000, guid: 750a8c4bfc562f543a3efe7e977c181a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  etypeid: 2
-  EnConfig: {fileID: 11400000, guid: 52c1642a7706cf64da79d8ccf4fb58a8, type: 2}
-  Hitboxes: {fileID: 0}
-  EnemyTrigger: {fileID: 0}
-  Model: {fileID: 6010201284731712776}
-  TransformForRicochetToAimAt: {fileID: 0}
-  AmbientAudio: {fileID: 8268740968797698787}
-  DeathAudio: {fileID: 6281550223031759357}
-  Dead: 0
-  MaxHealth: 50
-  health: 0
-  rb: {fileID: 0}
-  boid: {fileID: 0}
-  suckable: {fileID: 0}
-  RicochetCannon: 1
-  ConsiderForRicochet: 1
-  invincible: 0
-  HunterConfig: {fileID: 11400000, guid: 74cb069c5b0f5884b8cddab4f13d13c1, type: 2}
-  trails:
-  - {fileID: 5732429602740313467}
-  - {fileID: 1947362092219490658}
-  lrenderers:
-  - {fileID: 5579865964749157898}
-  - {fileID: 8283159935928620414}
-  ModelMeshRenderer: {fileID: 8411783404293788885}
-  StunAudio: {fileID: 6037845220613051612}
---- !u!114 &7510554508798159381
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3890492832594851018}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1d31415e6bc34b341b01f43f62e0e874, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ModelToRotate: {fileID: 1737118453480132617}
-  handleRotation: 1
-  rotationPerFrameLerpAlpha: 0.1
-  HunterData: {fileID: 11400000, guid: eb940b3ce6e212f4289f1868724c692c, type: 2}
---- !u!114 &6776544896198288600
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3890492832594851018}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 99dea5d3584f2cc4387264d49f2af21e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  CanGetVacuumSucked: 1
-  rb: {fileID: 0}
+  StartEnabled: 1
+  RicochetPriority: 2000
 --- !u!54 &9113617427949065013
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1534,10 +1478,5 @@ GameObject:
 --- !u!4 &7295278615652546643 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: bd4ea59942c4d194e843a167aebab711, type: 3}
-  m_PrefabInstance: {fileID: 7112503512424275896}
-  m_PrefabAsset: {fileID: 0}
---- !u!23 &8411783404293788885 stripped
-MeshRenderer:
-  m_CorrespondingSourceObject: {fileID: -7635826562936255635, guid: bd4ea59942c4d194e843a167aebab711, type: 3}
   m_PrefabInstance: {fileID: 7112503512424275896}
   m_PrefabAsset: {fileID: 0}
