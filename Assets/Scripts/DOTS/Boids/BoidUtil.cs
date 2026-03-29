@@ -1,3 +1,4 @@
+using System;
 using System.Runtime.CompilerServices;
 using Unity.Burst;
 using Unity.Mathematics;
@@ -163,26 +164,25 @@ public static class BoidUtil {
 			};
 		}
 
-		public static HunterBasicStatics HunterBasic(SO_Hunter so, float Damage) {
-			// TODO
+		public static HunterBasicStatics HunterBasic(SO_Hunter so, SO_HunterBasic soGameplay) {
 			return new() {
 				BoidProperties = GeneralBoid(so),
 				HunterBoid = HunterShared(so),
 				HunterGameplay = new HunterGameplaySharedStatics() {
-					Damage = Damage
+					Damage = soGameplay.Damage
 				}
 			};
 		}
-
-		public static HunterEmpoweredStatics HunterEmpowered(SO_Hunter so, float Damage, float StunDuration) {
-			// TODO
+		internal static HunterEmpoweredStatics HunterEmpowered(SO_Hunter so, SO_HunterEmpowered soGameplay) {
 			return new() {
 				BoidProperties = GeneralBoid(so),
 				HunterBoid = HunterShared(so),
 				HunterGameplay = new HunterGameplaySharedStatics() {
-					Damage = Damage
+					Damage = soGameplay.Damage
 				},
-				StunDuration = StunDuration
+				StunDuration = soGameplay.StunDuration,
+				NormalRicochetPriority = soGameplay.NormalRicochetPriority,
+				StunnedRicochetPriority = soGameplay.StunnedRicochetPriority
 			};
 		}
 

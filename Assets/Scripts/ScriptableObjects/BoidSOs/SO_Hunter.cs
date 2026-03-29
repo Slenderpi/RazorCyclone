@@ -24,5 +24,4 @@ public class SO_Hunter : GeneralBoidSO {
     [Tooltip("If the Hunter's distance to the Player is greater than this value, the Hunter will begin to use pathfinding.")]
     public float PathfindTriggerDist = 6f;
 
-
 }

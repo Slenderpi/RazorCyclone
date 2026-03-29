@@ -163,18 +163,16 @@ partial struct PlayerCannonProjectileSystem : ISystem {
 				if (lastEntityHit == RicTargetEntities[i])
 					continue;
 				RicochetTarget currRt = RicTargets[i];
-				// If a valid target has already been found, skip lower priority targets
 				uint currPriority = currRt.Priority;
-				if (currPriority < bestPriority && bestIndex != -1)
-					continue;
-				float distSq = math.distancesq(myPos, currRt.LocalPosition);
-				// If farther away, continue
-				// If closer but has no LOS, continue.
-				// If has LOS but is (strictly) lower priority than current best, continue (equal priority is allowed)
-				if (distSq >= bestDistSq && !HasLos(myPos, currRt.LocalPosition) && currPriority < bestPriority)
+				float currDistsq = math.distancesq(myPos, currRt.LocalPosition);
+				// If priority is lower, skip
+				// If priority is equal, check that currDist is better than bestDist. If not better, skip
+				// When priority is greater, don't bother checking distance. We will just greedily take higher priority
+				// By this point, priority is either equal or greater. Now check LOS, and skip if no LOS
+				if (currPriority < bestPriority || (currPriority == bestPriority && currDistsq >= bestDistSq) || HasNoLos(myPos, currRt.LocalPosition))
 					continue;
 				bestIndex = i;
-				bestDistSq = distSq;
+				bestDistSq = currDistsq;
 				bestPriority = currPriority;
 			}
 			return bestIndex;
@@ -182,10 +180,10 @@ partial struct PlayerCannonProjectileSystem : ISystem {
 
 		[BurstCompile]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		readonly bool HasLos(in float3 myPos, in float3 otherPos) {
-			return !cw.CastRay(new() {
-				Start = otherPos,
-				End = myPos,
+		readonly bool HasNoLos(in float3 myPos, in float3 otherPos) {
+			return cw.CastRay(new() {
+				Start = myPos,
+				End = otherPos,
 				Filter = RicochetLosFilter
 			});
 		}

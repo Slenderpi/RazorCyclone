@@ -24,7 +24,8 @@ partial struct HunterStunRecoverySystem : ISystem {
 		}
 		state.Dependency = new HunterEmpoweredStunRecoveryJob() {
 			ElapsedTime = (float)SystemAPI.Time.ElapsedTime,
-			StunDuration = heStatics.StunDuration
+			StunDuration = heStatics.StunDuration,
+			NormalRicPrio = heStatics.NormalRicochetPriority
 		}.Schedule(state.Dependency);
 	}
 
@@ -33,11 +34,13 @@ partial struct HunterStunRecoverySystem : ISystem {
 	partial struct HunterEmpoweredStunRecoveryJob : IJobEntity {
 		public float ElapsedTime;
 		public float StunDuration;
+		public uint NormalRicPrio;
 
 		[BurstCompile]
 		public void Execute(
 			ref HunterEmpowered hunter,
 			ref VacuumTarget vtarget,
+			ref RicochetTarget rtarget,
 			ref PhysicsGravityFactor gravityFactor,
 			EnabledRefRW<HurtboxCollider> enrHurtboxCollider,
 			EnabledRefRW<HunterBoid> enrHunterBoid
@@ -49,6 +52,7 @@ partial struct HunterStunRecoverySystem : ISystem {
 			gravityFactor.Value = 0f;
 			enrHurtboxCollider.ValueRW = true;
 			enrHunterBoid.ValueRW = true;
+			rtarget.Priority = NormalRicPrio;
 		}
 	}
 	
