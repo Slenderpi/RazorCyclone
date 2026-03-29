@@ -32,7 +32,8 @@ partial struct HunterHitSystem : ISystem {
 		state.Dependency = new HunterEmpoweredHitJob() {
 			ecb = ecb,
 			ElapsedTime = (float)SystemAPI.Time.ElapsedTime,
-			StunDuration = heStatics.StunDuration
+			StunDuration = heStatics.StunDuration,
+			StunRicPrio = heStatics.StunnedRicochetPriority
 		}.ScheduleParallel(state.Dependency);
 	}
 
@@ -75,12 +76,14 @@ partial struct HunterHitSystem : ISystem {
 		public EntityCommandBuffer.ParallelWriter ecb;
 		public float ElapsedTime;
 		public float StunDuration;
+		public uint StunRicPrio;
 
 		[BurstCompile]
 		public void Execute(
 			[EntityIndexInQuery] int eiiq,
 			ref VacuumTarget vtarget,
 			ref CannonTarget ctarget,
+			ref RicochetTarget rtarget,
 			in Entity en,
 			ref HunterEmpowered hunterTag,
 			EnabledRefRW<HurtboxCollider> enrHurtboxCollider
@@ -107,6 +110,7 @@ partial struct HunterHitSystem : ISystem {
 					hunterTag.IsStunned = true;
 					hunterTag.LastStunTime = ElapsedTime;
 					vtarget.CanGetSucked = true;
+					rtarget.Priority = StunRicPrio;
 				}
 				ctarget.ConsumeHitEvent();
 				enrHurtboxCollider.ValueRW = false;

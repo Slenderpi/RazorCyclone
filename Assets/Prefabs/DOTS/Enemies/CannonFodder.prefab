@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 7953469162371633779}
   - component: {fileID: 6831953770576045758}
   - component: {fileID: 3709569421634412367}
+  - component: {fileID: 6863532124761911930}
   - component: {fileID: 7675750269132818160}
   - component: {fileID: 2776419072895067914}
   m_Layer: 14
@@ -92,6 +93,20 @@ MonoBehaviour:
   CanGetKilledByVacuum: 1
   VacuumHitboxRadius: 0.6
   IsCannonTarget: 1
+--- !u!114 &6863532124761911930
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5632368010658110814}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 750a8c4bfc562f543a3efe7e977c181a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  StartEnabled: 1
+  RicochetPriority: 900
 --- !u!54 &7675750269132818160
 Rigidbody:
   m_ObjectHideFlags: 0

@@ -19,14 +19,14 @@ partial struct ProjectileSystem : ISystem {
     public void OnUpdate(ref SystemState state) {
 		state.Dependency = new ProjectileJob() {
 			dt = SystemAPI.Time.DeltaTime,
-			pw = SystemAPI.GetSingleton<PhysicsWorldSingleton>().PhysicsWorld
+			cw = SystemAPI.GetSingleton<PhysicsWorldSingleton>().CollisionWorld
 		}.Schedule(state.Dependency);
 	}
 
 	[BurstCompile]
 	partial struct ProjectileJob : IJobEntity {
 		public float dt;
-		public PhysicsWorld pw;
+		public CollisionWorld cw;
 
 		[BurstCompile]
 		public void Execute(ref Projectile proj, in LocalTransform trans, in PhysicsVelocity pv) {
@@ -42,7 +42,7 @@ partial struct ProjectileSystem : ISystem {
 			//} else {
 			float speed = math.length(pv.Linear);
 			if (Util.IsNearZero(speed)) return;
-			proj.DidHitThisFrame = pw.SphereCast(
+			proj.DidHitThisFrame = cw.SphereCast(
 				trans.Position,
 				proj.Radius,
 				pv.Linear / speed,

@@ -522,6 +522,7 @@ GameObject:
   - component: {fileID: 8650747619156574859}
   - component: {fileID: 3216699209406036502}
   - component: {fileID: 7024370614075174935}
+  - component: {fileID: 3078225027878591267}
   - component: {fileID: 9113617427949065013}
   - component: {fileID: 1813267751219974835}
   m_Layer: 14
@@ -564,6 +565,8 @@ MonoBehaviour:
   Form: 1
   HurtboxColliderRadius: 1.1
   HurtboxStartsEnabled: 1
+  HunterEmpoweredGameplayData: {fileID: 0}
+  LightsMesh: {fileID: 0}
 --- !u!114 &8650747619156574859
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -605,6 +608,20 @@ MonoBehaviour:
   CanGetKilledByVacuum: 1
   VacuumHitboxRadius: 0.6
   IsCannonTarget: 1
+--- !u!114 &3078225027878591267
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3890492832594851018}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 750a8c4bfc562f543a3efe7e977c181a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  StartEnabled: 1
+  RicochetPriority: 1000
 --- !u!54 &9113617427949065013
 Rigidbody:
   m_ObjectHideFlags: 0

@@ -15,6 +15,9 @@ public class HunterAuthoring : MonoBehaviour {
 	[Tooltip("Whether or not the Hunter's HurtboxCollider should start enabled.")]
 	public bool HurtboxStartsEnabled = true;
 
+	[Tooltip("Only necessary if Form is set to Empowered.\n\nReference to the SO_HunterEmpowered used in HunterStaticsAuthoring. Required to be the same.")]
+	public SO_HunterEmpowered HunterEmpoweredGameplayData;
+
 	public GameObject LightsMesh;
 
 	// TEMP
@@ -28,12 +31,18 @@ public class HunterAuthoring : MonoBehaviour {
 			Entity entity = GetEntity(TransformUsageFlags.Dynamic);
 			if (auth.Form == EEnemyForm.Basic)
 				AddComponent(entity, new HunterBasic());
-			else
+			else {
 				AddComponent(entity, new HunterEmpowered() {
 					IsStunned = false,
 					LastStunTime = -1000f,
 					LightsEntity = GetEntity(auth.LightsMesh, TransformUsageFlags.Dynamic)
 				});
+				RicochetTarget ricTarg = new() {
+					HasPhysicsVelocity = true,
+					Priority = auth.HunterEmpoweredGameplayData.NormalRicochetPriority
+				};
+				AddComponent(entity, ricTarg);
+			}
 			AddComponent(entity, new EnemyForm() {
 				Form = auth.Form
 			});
@@ -43,7 +52,6 @@ public class HunterAuthoring : MonoBehaviour {
 			AddComponent(entity, hc);
 			if (!auth.HurtboxStartsEnabled)
 				SetComponentEnabled<HurtboxCollider>(entity, false);
-
 		}
 	}
 	

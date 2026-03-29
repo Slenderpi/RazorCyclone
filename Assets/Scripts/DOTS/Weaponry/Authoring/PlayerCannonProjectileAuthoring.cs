@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using Unity.Burst;
 using Unity.Entities;
 using UnityEngine;
@@ -56,6 +57,12 @@ public struct PlayerCannonProjectile : IComponentData {
             return true;
         lastEntityHitFromRicochet = entity;
         return false;
+    }
+
+    [BurstCompile]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public readonly Entity GetLastEntityHit() {
+        return lastEntityHitFromRicochet;
     }
 
     //[Header("Projectile Config")]

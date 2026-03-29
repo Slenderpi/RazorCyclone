@@ -106,3 +106,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   HunterBasicSO: {fileID: 11400000, guid: 9537ee31c0506ef489891840fe041eb9, type: 2}
   HunterEmpoweredSO: {fileID: 11400000, guid: eb940b3ce6e212f4289f1868724c692c, type: 2}
+  HunterBasicGameplaySO: {fileID: 11400000, guid: 1431f8a83c24e3b4a8ec0fefe0f07b77, type: 2}
+  HunterEmpoweredGameplaySO: {fileID: 11400000, guid: 54073f5e99ac995408d401e722ca3291, type: 2}
+  HunterEmpoweredNormalMaterial: {fileID: 0}
+  HunterEmpoweredStunnedMaterial: {fileID: 0}

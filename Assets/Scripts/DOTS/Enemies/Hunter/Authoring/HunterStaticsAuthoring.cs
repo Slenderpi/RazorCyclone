@@ -11,10 +11,8 @@ public class HunterStaticsAuthoring : MonoBehaviour {
 	public SO_Hunter HunterBasicSO;
 	public SO_Hunter HunterEmpoweredSO;
 
-	// TODO: Consider wrapping this data into a scriptable object
-	public float HunterBasicDamage = 15f;
-	public float HunterEmpoweredDamage = 30f;
-	public float HunterEmpoweredStunDuration = 5f;
+	public SO_HunterBasic HunterBasicGameplaySO;
+	public SO_HunterEmpowered HunterEmpoweredGameplaySO;
 
 	public UnityEngine.Material HunterEmpoweredNormalMaterial;
 	public UnityEngine.Material HunterEmpoweredStunnedMaterial;
@@ -24,9 +22,13 @@ public class HunterStaticsAuthoring : MonoBehaviour {
 	class Baker : Baker<HunterStaticsAuthoring> {
 		public override void Bake(HunterStaticsAuthoring auth) {
 			Entity entity = GetEntity(TransformUsageFlags.Dynamic);
-			AddComponent(entity, BoidUtil.StaticsBuilder.HunterBasic(auth.HunterBasicSO, auth.HunterBasicDamage));
+			AddComponent(entity, BoidUtil.StaticsBuilder.HunterBasic(auth.HunterBasicSO, auth.HunterBasicGameplaySO));
 			// TODO: adjust StaticsBuilder structuring stuff
-			var heStatics = BoidUtil.StaticsBuilder.HunterEmpowered(auth.HunterEmpoweredSO, auth.HunterEmpoweredDamage, auth.HunterEmpoweredStunDuration);
+			//var heStatics = BoidUtil.StaticsBuilder.HunterEmpowered(
+			//	auth.HunterEmpoweredSO, auth.HunterEmpoweredDamage, auth.HunterEmpoweredStunDuration,
+			//	auth.HunterEmpoweredNormalRicochetPriority, auth.HunterEmpoweredStunnedRicochetPriority
+			//);
+			var heStatics = BoidUtil.StaticsBuilder.HunterEmpowered(auth.HunterEmpoweredSO, auth.HunterEmpoweredGameplaySO);
 			//heStatics.NormalMaterialIndex = indexOf(auth.HunterEmpoweredNormalMaterial);
 			AddComponent(entity, heStatics);
 		}
@@ -73,6 +75,9 @@ public struct HunterEmpoweredStatics : IComponentData {
 	public float StunDuration;
 	public int NormalMaterialIndex;
 	public int StunMaterialIndex;
+
+	public uint NormalRicochetPriority;
+	public uint StunnedRicochetPriority;
 
 	//[BurstCompile]
 	//[MethodImpl(MethodImplOptions.AggressiveInlining)]

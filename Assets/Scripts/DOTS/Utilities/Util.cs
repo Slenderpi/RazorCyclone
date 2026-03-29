@@ -104,6 +104,32 @@ public static class Util {
 	}
 #pragma warning restore IDE1006 // Naming Styles
 
+	/// <summary>
+	/// Predict the position of a target.
+	/// </summary>
+	/// <param name="pos">Position of predictor.</param>
+	/// <param name="targetPos">Position of predicted (target).</param>
+	/// <param name="velocity">Velocity of predictor.</param>
+	/// <param name="targetVel">Velocity of predicted (target).</param>
+	/// <returns>The predicted position of the target.</returns>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public static float3 PredictPosition(in float3 pos, in float3 targetPos, in float3 velocity, in float3 targetVel) {
+		return IsNearZero(targetVel) ? targetPos : targetPos + targetVel * CalculatePredictTime(pos, targetPos, velocity, targetVel);
+	}
+
+	/// <summary>
+	/// Math function for use by PredictPosition(). 
+	/// </summary>
+	/// <param name="pos">Position of predictor.</param>
+	/// <param name="targetPos">Position of predicted (target).</param>
+	/// <param name="velocity">Velocity of predictor.</param>
+	/// <param name="targetVel">Velocity of predicted (target).</param>
+	/// <returns></returns>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	static float CalculatePredictTime(in float3 pos, in float3 targetPos, in float3 velocity, in float3 targetVel) {
+		return math.sqrt(math.distancesq(targetPos, pos) / math.distancesq(velocity, targetVel));
+	}
+
 	public static uint GenerateSeed(Transform transform) {
 		// uh um random weird code go
 		float3 pos = transform.position;
