@@ -47,7 +47,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b97f55c56a86bbd4eb2f1c9ff6ff5b39, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  VacuumPullForce: 2.6
+  VacuumPullForce: 26
   VacuumSuckForce: 8500
   VacuumFuelTime: 10
   VacuumSuckRadius: 7

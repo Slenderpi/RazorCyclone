@@ -10,27 +10,27 @@ using Unity.Transforms;
 [UpdateBefore(typeof(PlayerResourcesSystem))]
 partial struct PlayerVacuumSystem : ISystem {
 
+	EntityQuery eqPlayer;
+	EntityQuery eqVacuum;
+
     [BurstCompile]
-    public readonly void OnCreate(ref SystemState state) {
+    public void OnCreate(ref SystemState state) {
 		state.RequireForUpdate<Player>();
 		state.RequireForUpdate<PlayerInput>();
 		state.RequireForUpdate<PlayerVacuum>();
 		state.RequireForUpdate<PlayerResources>();
+
+		using var eqb = new EntityQueryBuilder(Allocator.Temp);
+		eqPlayer = eqb.WithAll<PlayerInput, PhysicsVelocity, PhysicsMass, PlayerResources>().Build(ref state);
+		eqVacuum = eqb.Reset().WithAll<PlayerVacuum>().Build(ref state);
 	}
 
     [BurstCompile]
     public void OnUpdate(ref SystemState state) {
-		EntityQuery eqPlayer = SystemAPI
-			.QueryBuilder()
-			.WithAll<PlayerInput, PhysicsVelocity, PhysicsMass, PlayerResources>().Build();
-		PlayerInput input = eqPlayer.ToComponentDataArray<PlayerInput>(Allocator.Temp)[0];
-		PlayerResources resources = eqPlayer.ToComponentDataArray<PlayerResources>(Allocator.Temp)[0];
-		EntityQuery eqVacuum = SystemAPI
-			.QueryBuilder()
-			.WithAll<PlayerVacuum>()
-			.Build();
-		PlayerVacuum vacuum = eqVacuum.ToComponentDataArray<PlayerVacuum>(Allocator.Temp)[0];
-		Entity vacuumEntity = eqVacuum.ToEntityArray(Allocator.Temp)[0];
+		PlayerInput input = eqPlayer.GetSingleton<PlayerInput>();
+		PlayerResources resources = eqPlayer.GetSingleton<PlayerResources>();
+		PlayerVacuum vacuum = eqVacuum.GetSingleton<PlayerVacuum>();
+		Entity vacuumEntity = eqVacuum.GetSingletonEntity();
 
 		// Determine the enabled/disabled state of the vacuum
 		if (input.EnableVacuum) {
@@ -52,9 +52,9 @@ partial struct PlayerVacuumSystem : ISystem {
 
 		// Reaching this point means the vacuum is supposed to be enabled.
 		// Get necessary components
-		PhysicsMass pm = eqPlayer.ToComponentDataArray<PhysicsMass>(Allocator.Temp)[0];
-		PhysicsVelocity pv = eqPlayer.ToComponentDataArray<PhysicsVelocity>(Allocator.Temp)[0];
-		Entity playerEntity = eqPlayer.ToEntityArray(Allocator.Temp)[0];
+		PhysicsMass pm = eqPlayer.GetSingleton<PhysicsMass>();
+		PhysicsVelocity pv = eqPlayer.GetSingleton<PhysicsVelocity>();
+		Entity playerEntity = eqPlayer.GetSingletonEntity();
 
 		// Spend fuel
 		resources.SpendFuel(vacuum.GetFuelRate() * SystemAPI.Time.DeltaTime, (float)SystemAPI.Time.ElapsedTime);
@@ -64,15 +64,15 @@ partial struct PlayerVacuumSystem : ISystem {
 		pm.InverseInertia = float3.zero;
 		SystemAPI.SetComponent(playerEntity, pm);
 		SystemAPI.SetComponent(playerEntity, new PhysicsVelocity {
-			Linear = vacuum.VacuumPullForce * input.aimDirection + pv.Linear
+			Linear = SystemAPI.Time.DeltaTime * vacuum.VacuumPullForce * input.aimDirection + pv.Linear
 		});
 
 		// Suck/kill enemies
-		new VacuumHitDetectionJob() {
+		state.Dependency = new VacuumHitDetectionJob() {
 			Vacuum = vacuum,
 			VacLocation = SystemAPI.GetComponent<LocalToWorld>(vacuumEntity).Position,
 			VacDirection = input.aimDirection
-		}.ScheduleParallel();
+		}.ScheduleParallel(state.Dependency);
 	}
 
 #pragma warning disable IDE0251 // Make member 'readonly'
