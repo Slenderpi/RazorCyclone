@@ -5,6 +5,7 @@ using Unity.Mathematics;
 using Unity.Physics;
 using Unity.Physics.Extensions;
 using Unity.Transforms;
+using UnityEngine;
 
 [UpdateInGroup(typeof(PlayerPostUpdateGroup))]
 [UpdateBefore(typeof(PlayerResourcesSystem))]
@@ -62,7 +63,11 @@ partial struct PlayerVacuumSystem : ISystem {
 		pm.InverseInertia = float3.zero;
 		SystemAPI.SetComponent(playerEntity, pm);
 		SystemAPI.SetComponent(playerEntity, new PhysicsVelocity {
-			Linear = SystemAPI.Time.DeltaTime * vacuum.ValueRO.VacuumPullForce * input.aimDirection + pv.Linear
+			Linear = SystemAPI.Time.DeltaTime * (
+				math.lengthsq(pv.Linear) <= vacuum.ValueRO.PullForceThresholdSq ?
+				vacuum.ValueRO.PullForceWhenSlow :
+				vacuum.ValueRO.PullForceWhenFast
+			) * input.aimDirection + pv.Linear
 		});
 
 		// Suck/kill enemies
