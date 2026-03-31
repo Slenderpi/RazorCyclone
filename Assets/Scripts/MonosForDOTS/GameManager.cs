@@ -97,7 +97,7 @@ public class GameManager : MonoBehaviour {
 
 	public static bool TrySpawnPlayer() {
 		if (TryGetPlayerEntity(out Entity _)) {
-			Debug.LogWarning("An existing player was found. TrySpawnPlayer() cancelled.");
+			//Debug.LogWarning("An existing player was found. TrySpawnPlayer() cancelled.");
 			HideMouse();
 			return false;
 		}

@@ -5,83 +5,80 @@ using Unity.Mathematics;
 using Unity.Physics;
 using Unity.Physics.Extensions;
 using Unity.Transforms;
+using UnityEngine;
 
 [UpdateInGroup(typeof(PlayerPostUpdateGroup))]
 [UpdateBefore(typeof(PlayerResourcesSystem))]
 partial struct PlayerVacuumSystem : ISystem {
 
+	EntityQuery eqPlayer;
+	EntityQuery eqVacuum;
+
     [BurstCompile]
-    public readonly void OnCreate(ref SystemState state) {
+    public void OnCreate(ref SystemState state) {
 		state.RequireForUpdate<Player>();
 		state.RequireForUpdate<PlayerInput>();
 		state.RequireForUpdate<PlayerVacuum>();
 		state.RequireForUpdate<PlayerResources>();
+
+		using var eqb = new EntityQueryBuilder(Allocator.Temp);
+		eqPlayer = eqb.WithAll<PlayerInput, PhysicsVelocity, PhysicsMass, PlayerResources>().Build(ref state);
+		eqVacuum = eqb.Reset().WithAllRW<PlayerVacuum>().WithAll<LocalToWorld>().Build(ref state);
 	}
 
     [BurstCompile]
     public void OnUpdate(ref SystemState state) {
-		EntityQuery eqPlayer = SystemAPI
-			.QueryBuilder()
-			.WithAll<PlayerInput, PhysicsVelocity, PhysicsMass, PlayerResources>().Build();
-		PlayerInput input = eqPlayer.ToComponentDataArray<PlayerInput>(Allocator.Temp)[0];
-		PlayerResources resources = eqPlayer.ToComponentDataArray<PlayerResources>(Allocator.Temp)[0];
-		EntityQuery eqVacuum = SystemAPI
-			.QueryBuilder()
-			.WithAll<PlayerVacuum>()
-			.Build();
-		PlayerVacuum vacuum = eqVacuum.ToComponentDataArray<PlayerVacuum>(Allocator.Temp)[0];
-		Entity vacuumEntity = eqVacuum.ToEntityArray(Allocator.Temp)[0];
+		PlayerInput input = eqPlayer.GetSingleton<PlayerInput>();
+		PlayerResources resources = eqPlayer.GetSingleton<PlayerResources>();
+		RefRW<PlayerVacuum> vacuum = eqVacuum.GetSingletonRW<PlayerVacuum>();
 
 		// Determine the enabled/disabled state of the vacuum
 		if (input.EnableVacuum) {
 			if (!resources.CanSpendFuel()) {
 				// If not enough fuel, disable vacuum if necessary
-				if (vacuum.VacuumEnabled)
-					DisableVacuum(vacuumEntity, vacuum, ref state);
+				if (vacuum.ValueRO.VacuumEnabled)
+					vacuum.ValueRW.VacuumEnabled = false;
 				return;
-			} else if (!vacuum.VacuumEnabled) {
+			} else if (!vacuum.ValueRO.VacuumEnabled) {
 				// There's enough fuel. If the vacuum isn't already enabled, enable it
-				vacuum.VacuumEnabled = true;
-				SystemAPI.SetComponent(vacuumEntity, vacuum);
+				vacuum.ValueRW.VacuumEnabled = true;
 			}
 		} else {
-			if (!vacuum.VacuumEnabled)
-				return;
-			DisableVacuum(vacuumEntity, vacuum, ref state);
+			if (vacuum.ValueRO.VacuumEnabled)
+				vacuum.ValueRW.VacuumEnabled = false;
+			return;
 		}
 
 		// Reaching this point means the vacuum is supposed to be enabled.
 		// Get necessary components
-		PhysicsMass pm = eqPlayer.ToComponentDataArray<PhysicsMass>(Allocator.Temp)[0];
-		PhysicsVelocity pv = eqPlayer.ToComponentDataArray<PhysicsVelocity>(Allocator.Temp)[0];
-		Entity playerEntity = eqPlayer.ToEntityArray(Allocator.Temp)[0];
+		PhysicsMass pm = eqPlayer.GetSingleton<PhysicsMass>();
+		PhysicsVelocity pv = eqPlayer.GetSingleton<PhysicsVelocity>();
+		Entity playerEntity = eqPlayer.GetSingletonEntity();
 
 		// Spend fuel
-		resources.SpendFuel(vacuum.GetFuelRate() * SystemAPI.Time.DeltaTime, (float)SystemAPI.Time.ElapsedTime);
+		resources.SpendFuel(vacuum.ValueRO.GetFuelRate() * SystemAPI.Time.DeltaTime, (float)SystemAPI.Time.ElapsedTime);
 		SystemAPI.SetComponent(playerEntity, resources);
 
 		// Pull the player by applying the vacuum's pull force
 		pm.InverseInertia = float3.zero;
 		SystemAPI.SetComponent(playerEntity, pm);
 		SystemAPI.SetComponent(playerEntity, new PhysicsVelocity {
-			Linear = vacuum.VacuumPullForce * input.aimDirection + pv.Linear
+			Linear = SystemAPI.Time.DeltaTime * (
+				math.lengthsq(pv.Linear) <= vacuum.ValueRO.PullForceThresholdSq ?
+				vacuum.ValueRO.PullForceWhenSlow :
+				vacuum.ValueRO.PullForceWhenFast
+			) * input.aimDirection + pv.Linear
 		});
 
 		// Suck/kill enemies
-		new VacuumHitDetectionJob() {
-			Vacuum = vacuum,
-			VacLocation = SystemAPI.GetComponent<LocalToWorld>(vacuumEntity).Position,
+		state.Dependency = new VacuumHitDetectionJob() {
+			Vacuum = vacuum.ValueRO,
+			VacLocation = eqVacuum.GetSingleton<LocalToWorld>().Position,
 			VacDirection = input.aimDirection
-		}.ScheduleParallel();
+		}.ScheduleParallel(state.Dependency);
 	}
 
 #pragma warning disable IDE0251 // Make member 'readonly'
-	[BurstCompile]
-	void DisableVacuum(in Entity vacuumEntity, PlayerVacuum vacuum, ref SystemState state) {
-		vacuum.VacuumEnabled = false;
-		SystemAPI.SetComponent(vacuumEntity, vacuum);
-	}
-
 	[BurstCompile]
 	partial struct VacuumHitDetectionJob : IJobEntity {
 		public PlayerVacuum Vacuum;
