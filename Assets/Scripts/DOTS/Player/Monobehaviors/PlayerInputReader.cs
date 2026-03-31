@@ -32,15 +32,14 @@ public class PlayerInputReader : MonoBehaviour {
 
 	private void Start() {
 		GameManager.A_OnGameResumed += EnablePlayerActions;
-		GameManager.A_OnGamePaused += DisablePlayerActions;
+		GameManager.A_OnGamePaused += OnGamePaused;
 		EnablePauseMenuActions();
 	}
 
 	private void Update() {
 		EntityManager em = GetEntityManager();
-		EntityQuery eq = new EntityQueryBuilder(Allocator.Temp)
-			.WithAll<PlayerInput>()
-			.Build(em);
+		using var eqb = new EntityQueryBuilder(Allocator.Temp);
+		EntityQuery eq = eqb.WithAll<PlayerInput>().Build(em);
 		NativeArray<PlayerInput> inputArr = eq.ToComponentDataArray<PlayerInput>(Allocator.Temp);
 		NativeArray<Entity> entityArr = eq.ToEntityArray(Allocator.Temp);
 		if (inputArr.Length == 0 || entityArr.Length == 0) {
@@ -109,6 +108,19 @@ public class PlayerInputReader : MonoBehaviour {
 	public void EnablePauseMenuActions() {
 		PauseActions.Escape.started += OnEscapePressed;
 		PauseActions.Enable();
+	}
+
+	void OnGamePaused() {
+		if (!noInputFound) {
+			// Disable Vacuum if it's enabled, to prevent it from being stuck on when the player resumes the game
+			EntityManager em = GetEntityManager();
+			PlayerInput input = GetCurrentPlayerInput(em);
+			if (input.EnableVacuum) {
+				input.EnableVacuum = false;
+				WritePlayerInput(input, em);
+			}
+		}
+		DisablePlayerActions();
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -245,11 +257,6 @@ public class PlayerInputReader : MonoBehaviour {
 	private EntityManager GetEntityManager() {
 		return World.DefaultGameObjectInjectionWorld.EntityManager;
 	}
-
-	//[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	//private PlayerInput GetCurrentPlayerInput() {
-	//	return GetCurrentPlayerInput(GetEntityManager());
-	//}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	private PlayerInput GetCurrentPlayerInput(EntityManager em) {

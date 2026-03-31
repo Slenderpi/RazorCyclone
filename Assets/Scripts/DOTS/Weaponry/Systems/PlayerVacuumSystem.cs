@@ -22,32 +22,30 @@ partial struct PlayerVacuumSystem : ISystem {
 
 		using var eqb = new EntityQueryBuilder(Allocator.Temp);
 		eqPlayer = eqb.WithAll<PlayerInput, PhysicsVelocity, PhysicsMass, PlayerResources>().Build(ref state);
-		eqVacuum = eqb.Reset().WithAll<PlayerVacuum>().Build(ref state);
+		eqVacuum = eqb.Reset().WithAllRW<PlayerVacuum>().WithAll<LocalToWorld>().Build(ref state);
 	}
 
     [BurstCompile]
     public void OnUpdate(ref SystemState state) {
 		PlayerInput input = eqPlayer.GetSingleton<PlayerInput>();
 		PlayerResources resources = eqPlayer.GetSingleton<PlayerResources>();
-		PlayerVacuum vacuum = eqVacuum.GetSingleton<PlayerVacuum>();
-		Entity vacuumEntity = eqVacuum.GetSingletonEntity();
+		RefRW<PlayerVacuum> vacuum = eqVacuum.GetSingletonRW<PlayerVacuum>();
 
 		// Determine the enabled/disabled state of the vacuum
 		if (input.EnableVacuum) {
 			if (!resources.CanSpendFuel()) {
 				// If not enough fuel, disable vacuum if necessary
-				if (vacuum.VacuumEnabled)
-					DisableVacuum(vacuumEntity, vacuum, ref state);
+				if (vacuum.ValueRO.VacuumEnabled)
+					vacuum.ValueRW.VacuumEnabled = false;
 				return;
-			} else if (!vacuum.VacuumEnabled) {
+			} else if (!vacuum.ValueRO.VacuumEnabled) {
 				// There's enough fuel. If the vacuum isn't already enabled, enable it
-				vacuum.VacuumEnabled = true;
-				SystemAPI.SetComponent(vacuumEntity, vacuum);
+				vacuum.ValueRW.VacuumEnabled = true;
 			}
 		} else {
-			if (!vacuum.VacuumEnabled)
-				return;
-			DisableVacuum(vacuumEntity, vacuum, ref state);
+			if (vacuum.ValueRO.VacuumEnabled)
+				vacuum.ValueRW.VacuumEnabled = false;
+			return;
 		}
 
 		// Reaching this point means the vacuum is supposed to be enabled.
@@ -57,31 +55,25 @@ partial struct PlayerVacuumSystem : ISystem {
 		Entity playerEntity = eqPlayer.GetSingletonEntity();
 
 		// Spend fuel
-		resources.SpendFuel(vacuum.GetFuelRate() * SystemAPI.Time.DeltaTime, (float)SystemAPI.Time.ElapsedTime);
+		resources.SpendFuel(vacuum.ValueRO.GetFuelRate() * SystemAPI.Time.DeltaTime, (float)SystemAPI.Time.ElapsedTime);
 		SystemAPI.SetComponent(playerEntity, resources);
 
 		// Pull the player by applying the vacuum's pull force
 		pm.InverseInertia = float3.zero;
 		SystemAPI.SetComponent(playerEntity, pm);
 		SystemAPI.SetComponent(playerEntity, new PhysicsVelocity {
-			Linear = SystemAPI.Time.DeltaTime * vacuum.VacuumPullForce * input.aimDirection + pv.Linear
+			Linear = SystemAPI.Time.DeltaTime * vacuum.ValueRO.VacuumPullForce * input.aimDirection + pv.Linear
 		});
 
 		// Suck/kill enemies
 		state.Dependency = new VacuumHitDetectionJob() {
-			Vacuum = vacuum,
-			VacLocation = SystemAPI.GetComponent<LocalToWorld>(vacuumEntity).Position,
+			Vacuum = vacuum.ValueRO,
+			VacLocation = eqVacuum.GetSingleton<LocalToWorld>().Position,
 			VacDirection = input.aimDirection
 		}.ScheduleParallel(state.Dependency);
 	}
 
 #pragma warning disable IDE0251 // Make member 'readonly'
-	[BurstCompile]
-	void DisableVacuum(in Entity vacuumEntity, PlayerVacuum vacuum, ref SystemState state) {
-		vacuum.VacuumEnabled = false;
-		SystemAPI.SetComponent(vacuumEntity, vacuum);
-	}
-
 	[BurstCompile]
 	partial struct VacuumHitDetectionJob : IJobEntity {
 		public PlayerVacuum Vacuum;
