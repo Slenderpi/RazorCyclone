@@ -3,7 +3,6 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
-using UnityEngine;
 
 /// <summary>
 /// Handles camtrans and pivot rotation based on their respective look and rotation inputs.

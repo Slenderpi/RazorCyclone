@@ -125,7 +125,7 @@ public class PlayerInputReader : MonoBehaviour {
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	private void ReadLookInput(PlayerInput input, EntityManager em) {
-		input.LookInputDelta = PlayerActions.Look.ReadValue<Vector2>() * GetPlayerComponent<PlayerControlsSettings>(em).MouseSensitivity * 0.5f;
+		input.LookInputDelta = PlayerActions.Look.ReadValue<Vector2>();
 		WritePlayerInput(input, em);
 	}
 

@@ -1,4 +1,3 @@
-using System;
 using System.Runtime.CompilerServices;
 using Unity.Burst;
 using Unity.Entities;
@@ -228,6 +227,9 @@ public struct PlayerSpinfo : IComponentData {
 }
 
 public struct PlayerInput : IComponentData {
+    /// <summary>
+    /// The distance the mouse moved this frame. Does NOT include mouse sensitivity scaling.
+    /// </summary>
     public float2 LookInputDelta;
     public float3 RotationInput;
     public bool FireCannon;
@@ -256,9 +258,24 @@ public struct PlayerExtraInput : IComponentData {
 }
 
 public struct PlayerControlsSettings : IComponentData {
+    /// <summary>
+    /// THIS VALUE MUST BE SET BY CALLING SetMouseSensitivity(). DO NOT SET DIRECTLY.<br/>
+    /// <br/>
+    /// Mouse sensitivity. This value is not the Player's exact desired mouse sensitivity. It is instead the quotient of the Player's
+    /// value divided by MOUSE_SENSE_FACTOR.
+    /// </summary>
     public float MouseSensitivity;
+    /// <summary>
+    /// The MouseSensitivity's true value is the quotient of the Player's desired mouse sensitivity value divided by this factor.
+    /// </summary>
+    public const float MOUSE_SENSE_FACTOR = 10000f;
 
     public PlayerControlsSettings(float mouseSensitivity) {
-        MouseSensitivity = mouseSensitivity;
+        MouseSensitivity = mouseSensitivity / MOUSE_SENSE_FACTOR;
     }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void SetMouseSensitivity(float newMouseSense) {
+		MouseSensitivity = newMouseSense / MOUSE_SENSE_FACTOR;
+	}
 }

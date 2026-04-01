@@ -1,5 +1,5 @@
-using System;
 using System.Runtime.CompilerServices;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -24,6 +24,10 @@ public class SettingsMenuCanvas : MonoBehaviour {
 	public Button ButtonVideo;
 	public Button ButtonAudio;
 
+	[Header("Controls references")]
+	public TMP_InputField MouseSenseInputField;
+	public Slider MouseSenseSlider;
+
 	ESettingsCategory currentCategory = ESettingsCategory.Controls;
 
 
@@ -40,12 +44,58 @@ public class SettingsMenuCanvas : MonoBehaviour {
 
 	private void Start() {
 		GameManager.A_OnMenuChanged += OnMenuChanged;
+		GameManager.A_OnPlayerSpawned += OnPlayerSpawned;
 	}
 
 	public void OnBackButtonClicked() {
 		GameManager.ChangeMenuTo(EMenu.Pause);
 	}
 
+	/****************************************************************************************/
+	/*																						*/
+	/*									   CONTROLS											*/
+	/*																						*/
+	/****************************************************************************************/
+
+	public void OnMouseSenseSliderValueChanged(float val) {
+		GameManager.MouseSensitivity = val;
+		MouseSenseInputField.SetTextWithoutNotify($"{Mathf.RoundToInt(val)}");
+	}
+
+	public void OnMouseSenseInputEndEdit(string val) {
+		float desiredMouseSense = float.Parse(val);
+		if (desiredMouseSense <= 0f || desiredMouseSense >= 10000f) {
+			// Invalid values are ignored and the input field gets reset
+			MouseSenseInputField.SetTextWithoutNotify($"{GameManager.MouseSensitivity}");
+			return;
+		}
+		GameManager.MouseSensitivity = desiredMouseSense;
+		MouseSenseSlider.SetValueWithoutNotify(Mathf.Clamp(desiredMouseSense, MouseSenseSlider.minValue, MouseSenseSlider.maxValue));
+	}
+
+	//======================================================================================//
+
+	/****************************************************************************************/
+	/*																						*/
+	/*										VIDEO											*/
+	/*																						*/
+	/****************************************************************************************/
+
+
+
+	//======================================================================================//
+
+	/****************************************************************************************/
+	/*																						*/
+	/*										AUDIO											*/
+	/*																						*/
+	/****************************************************************************************/
+
+
+
+	//======================================================================================//
+
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	void ChangeCategoryTo(ESettingsCategory newCategory) {
 		SetCategoryEnabled(currentCategory, false);
 		currentCategory = newCategory;
@@ -72,6 +122,11 @@ public class SettingsMenuCanvas : MonoBehaviour {
 				ButtonAudio.interactable = !newEnabled;
 				break;
 		}
+	}
+
+	void OnPlayerSpawned() {
+		MouseSenseInputField.SetTextWithoutNotify($"{Mathf.RoundToInt(GameManager.MouseSensitivity)}");
+		MouseSenseSlider.SetValueWithoutNotify(Mathf.Clamp(GameManager.MouseSensitivity, MouseSenseSlider.minValue, MouseSenseSlider.maxValue));
 	}
 
 	private void InitCategoryAndCategoryButtonStates() {
