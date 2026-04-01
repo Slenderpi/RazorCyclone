@@ -9,9 +9,6 @@ using UnityEngine;
 /// </summary>
 public class PlayerAuthoring : MonoBehaviour {
 
-    [Header("Controls")]
-    public float MouseSensitivity = 0.11f;
-
     [Header("Fuel")]
     public float HuelFactor = 2f;
     public float MinHuelRequired = 5f;
@@ -34,9 +31,7 @@ public class PlayerAuthoring : MonoBehaviour {
                 RotationInput = math.forward()
             });
             AddComponent(entity, new PlayerExtraInput());
-            AddComponent(entity, new PlayerControlsSettings(
-                auth.MouseSensitivity
-            ));
+            AddComponent(entity, new PlayerControlsSettings(40f)); // Will get set by GameManager on spawn
             //AddComponent(entity, new PlayerMovement());
 			PlayerResources resources = new() {
                 HealthRegenRate = auth.HealthRegenRate,
@@ -268,7 +263,7 @@ public struct PlayerControlsSettings : IComponentData {
     /// <summary>
     /// The MouseSensitivity's true value is the quotient of the Player's desired mouse sensitivity value divided by this factor.
     /// </summary>
-    public const float MOUSE_SENSE_FACTOR = 10000f;
+    public const float MOUSE_SENSE_FACTOR = 15000f;
 
     public PlayerControlsSettings(float mouseSensitivity) {
         MouseSensitivity = mouseSensitivity / MOUSE_SENSE_FACTOR;

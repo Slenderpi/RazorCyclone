@@ -111,11 +111,11 @@ public class GameHudCanvas : MonoBehaviour {
 		InitKillfeed();
 
 		canvasComp.enabled = false;
+
+		GameManager.A_OnMenuChanged += OnMenuChanged;
 	}
 
 	void Start() {
-		GameManager.A_OnMenuChanged += OnMenuChanged;
-
 		mainCamera = Camera.main;
 
 		entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;

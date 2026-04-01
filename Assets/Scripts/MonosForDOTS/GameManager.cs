@@ -37,7 +37,7 @@ public class GameManager : MonoBehaviour {
 	/// </summary>
 	public static float TimeScale { get { return Singleton._timeScale; } set { SetTimeScale(value); } }
 
-	float _mouseSensitivity = 60f;
+	float _mouseSensitivity = 45f;
 	public static float MouseSensitivity {
 		get {
 			return Singleton._mouseSensitivity;

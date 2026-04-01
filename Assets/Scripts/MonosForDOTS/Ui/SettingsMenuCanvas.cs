@@ -40,9 +40,7 @@ public class SettingsMenuCanvas : MonoBehaviour {
 		ButtonAudio.onClick.AddListener(() => ChangeCategoryTo(ESettingsCategory.Audio));
 
 		InitCategoryAndCategoryButtonStates();
-	}
 
-	private void Start() {
 		GameManager.A_OnMenuChanged += OnMenuChanged;
 		GameManager.A_OnPlayerSpawned += OnPlayerSpawned;
 	}
