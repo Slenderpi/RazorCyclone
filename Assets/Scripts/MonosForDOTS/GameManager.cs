@@ -17,6 +17,7 @@ public class GameManager : MonoBehaviour {
 
 	public static Action A_OnGameResumed;
 	public static Action A_OnGamePaused;
+	public static Action A_OnPlayerSpawned;
 
 	/// <summary>
 	/// EMenu: newMenu
@@ -35,6 +36,23 @@ public class GameManager : MonoBehaviour {
 	/// Use this property to set Time.timeScale. Do not set Time.timeScale manually.
 	/// </summary>
 	public static float TimeScale { get { return Singleton._timeScale; } set { SetTimeScale(value); } }
+
+	float _mouseSensitivity = 60f;
+	public static float MouseSensitivity {
+		get {
+			return Singleton._mouseSensitivity;
+		}
+		set {
+			Singleton._mouseSensitivity = value;
+			if (IsPlayerSpawned)
+				Singleton.UpdatePlayerControlsSettings();
+		}
+	}
+
+	Entity _playerEntity;
+	public static Entity PlayerEntity { get { return Singleton._playerEntity; } private set { Singleton._playerEntity = value; } }
+	bool _isPlayerSpawned = false;
+	public static bool IsPlayerSpawned { get { return Singleton._isPlayerSpawned; } private set { Singleton._isPlayerSpawned = value; } }
 
 	EMenu _currentMenu;
 	public static EMenu CurrentMenu { get { return Singleton._currentMenu; } private set { Singleton._currentMenu = value; } }
@@ -96,8 +114,8 @@ public class GameManager : MonoBehaviour {
 	}
 
 	public static bool TrySpawnPlayer() {
-		if (TryGetPlayerEntity(out Entity _)) {
-			//Debug.LogWarning("An existing player was found. TrySpawnPlayer() cancelled.");
+		if (TryGetPlayerEntity(out Singleton._playerEntity)) {
+			Debug.LogWarning("An existing player was found. TrySpawnPlayer() cancelled.");
 			HideMouse();
 			return false;
 		}
@@ -105,17 +123,22 @@ public class GameManager : MonoBehaviour {
 			Debug.LogWarning("The EntityBakerSingleton could not be found.");
 			return false;
 		}
-		Singleton.entityManager.Instantiate(entityBakerSingleton.Player);
+		Singleton._playerEntity = Singleton.entityManager.Instantiate(entityBakerSingleton.Player);
+		IsPlayerSpawned = true;
 		if (!IsPaused) {
 			HideMouse();
 		}
+		Singleton.InitPlayer();
+		A_OnPlayerSpawned?.Invoke();
 		return true;
 	}
 
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	private static bool TryGetPlayerEntity(out Entity playerEntity) {
 		return Singleton.entityManager.CreateEntityQuery(ComponentType.ReadOnly<Player>()).TryGetSingletonEntity<Player>(out playerEntity);
 	}
-
+	
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static bool TryGetEntityBakerSingleton(out EntityBakerSingleton entityBakerSingleton) {
 		return Singleton.entityManager.CreateEntityQuery(ComponentType.ReadOnly<EntityBakerSingleton>()).TryGetSingleton(out entityBakerSingleton);
 	}
@@ -128,6 +151,11 @@ public class GameManager : MonoBehaviour {
 	public static void ChangeMenuTo(EMenu newMenu) {
 		CurrentMenu = newMenu;
 		A_OnMenuChanged?.Invoke(CurrentMenu);
+	}
+
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	void UpdatePlayerControlsSettings() {
+		entityManager.SetComponentData(_playerEntity, new PlayerControlsSettings(_mouseSensitivity));
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -157,6 +185,10 @@ public class GameManager : MonoBehaviour {
 	static void ShowMouse() {
 		Cursor.lockState = CursorLockMode.None;
 		Cursor.visible = true;
+	}
+
+	void InitPlayer() {
+		Singleton.UpdatePlayerControlsSettings();
 	}
 
 }

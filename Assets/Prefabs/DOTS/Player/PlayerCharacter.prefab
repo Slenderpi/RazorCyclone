@@ -96,7 +96,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 016d4335d97c14949b0e9da42a52be24, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MouseSensitivity: 0.11
+  MouseSensitivity: 60.5
   HuelFactor: 2
   MinHuelRequired: 5
   HealthRegenRate: 15

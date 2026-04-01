@@ -54,8 +54,8 @@ public class GameHudCanvas : MonoBehaviour {
 	[Range(-2, 2)]
 	public float swr = 2;
 	[SerializeField]
-	[Range(5, 25)]
-	float maxLookDelta = 7;
+	[Range(500, 2500)]
+	float maxLookDelta = 700;
 	[Range(5, 50)]
 	[SerializeField]
 	float maxSwayDist = 30;
@@ -246,8 +246,8 @@ public class GameHudCanvas : MonoBehaviour {
 	// TODO: Clean code
 	private void HandleMomentumSway(in PlayerInput pinput) {
 		Vector2 newPos = new(
-			sodLookX.Update(Mathf.Clamp(-pinput.LookInputDelta.x / maxLookDelta, -1, 1), Time.deltaTime),
-			sodLookY.Update(Mathf.Clamp(-pinput.LookInputDelta.y / maxLookDelta, -1, 1), Time.deltaTime) * swayYExaggerateFactor
+			sodLookX.Update(Mathf.Clamp(-pinput.LookInputDelta.x * GameManager.MouseSensitivity / maxLookDelta, -1, 1), Time.deltaTime),
+			sodLookY.Update(Mathf.Clamp(-pinput.LookInputDelta.y * GameManager.MouseSensitivity / maxLookDelta, -1, 1), Time.deltaTime) * swayYExaggerateFactor
 		);
 		MomentumPanel.anchoredPosition = newPos * maxSwayDist;
 	}
