@@ -19,6 +19,8 @@ public class GameManager : MonoBehaviour {
 	public static Action A_OnGamePaused;
 	public static Action A_OnPlayerSpawned;
 
+	//public static Action A_OnGameSettingsChanged;
+
 	/// <summary>
 	/// EMenu: newMenu
 	/// </summary>
@@ -37,18 +39,6 @@ public class GameManager : MonoBehaviour {
 	/// </summary>
 	public static float TimeScale { get { return Singleton._timeScale; } set { SetTimeScale(value); } }
 
-	float _mouseSensitivity = 45f;
-	public static float MouseSensitivity {
-		get {
-			return Singleton._mouseSensitivity;
-		}
-		set {
-			Singleton._mouseSensitivity = value;
-			if (IsPlayerSpawned)
-				Singleton.UpdatePlayerControlsSettings();
-		}
-	}
-
 	Entity _playerEntity;
 	public static Entity PlayerEntity { get { return Singleton._playerEntity; } private set { Singleton._playerEntity = value; } }
 	bool _isPlayerSpawned = false;
@@ -57,12 +47,17 @@ public class GameManager : MonoBehaviour {
 	EMenu _currentMenu;
 	public static EMenu CurrentMenu { get { return Singleton._currentMenu; } private set { Singleton._currentMenu = value; } }
 
+	GameSettings _settings;
+
 	EntityManager entityManager;
 
 
 
 	private void Awake() {
 		Singleton = this;
+		// TODO: Load settings
+		_settings = GameSettings.Default;
+		_settings.ScreenSettings.SetValuesBasedOnCurrentScreen();
 	}
 
 	private void Start() {
@@ -134,6 +129,48 @@ public class GameManager : MonoBehaviour {
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public static GameSettings GetGameSettings() {
+		return Singleton._settings;
+	}
+
+	/// <summary>
+	/// Update and apply new control settings.
+	/// </summary>
+	/// <param name="newSettings">New controls settings.</param>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public static void ChangeControlSettings(GameControlSettings newSettings) {
+		Singleton.ApplyNewControlSettings(newSettings);
+	}
+
+	/// <summary>
+	/// Update and apply new screen settings.
+	/// </summary>
+	/// <param name="newSettings">New screen settings.</param>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public static void ChangeScreenSettings(GameScreenSettings newSettings) {
+		Debug.Log("Screen settings changed!");
+		Singleton.ApplyNewScreenSettings(newSettings);
+	}
+	
+	/// <summary>
+	/// Update and apply new quality settings.
+	/// </summary>
+	/// <param name="newSettings">New quality settings.</param>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public static void ChangeQualitySettings(GameQualitySettings newSettings) {
+		Singleton.ApplyNewQualitySettings(newSettings);
+	}
+	
+	/// <summary>
+	/// Update and apply new audio settings.
+	/// </summary>
+	/// <param name="newSettings">New audio settings.</param>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public static void ChangeAudioSettings(GameAudioSettings newSettings) {
+		Singleton.ApplyNewAudioSettings(newSettings);
+	}
+
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	private static bool TryGetPlayerEntity(out Entity playerEntity) {
 		return Singleton.entityManager.CreateEntityQuery(ComponentType.ReadOnly<Player>()).TryGetSingletonEntity<Player>(out playerEntity);
 	}
@@ -155,7 +192,34 @@ public class GameManager : MonoBehaviour {
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	void UpdatePlayerControlsSettings() {
-		entityManager.SetComponentData(_playerEntity, new PlayerControlsSettings(_mouseSensitivity));
+		entityManager.SetComponentData(_playerEntity, new PlayerControlsSettings(_settings.ControlSettings.MouseSensitivity));
+	}
+
+	void ApplyNewControlSettings(GameControlSettings newSettings) {
+		_settings.ControlSettings.SetFrom(newSettings);
+		if (IsPlayerSpawned) {
+			UpdatePlayerControlsSettings();
+		}
+	}
+
+	void ApplyNewScreenSettings(GameScreenSettings newSettings) {
+		_settings.ScreenSettings.SetFrom(newSettings);
+		GameScreenSettings s = _settings.ScreenSettings;
+		Screen.SetResolution(
+			s.ScreenResolution.width,
+			s.ScreenResolution.height,
+			s.IsFullscreen ? FullScreenMode.FullScreenWindow : FullScreenMode.Windowed,
+			s.ScreenResolution.refreshRateRatio
+		);
+		QualitySettings.vSyncCount = s.IsVsyncEnabled ? 1 : 0;
+	}
+
+	void ApplyNewQualitySettings(GameQualitySettings newSettings) {
+		_settings.QualitySettings.SetFrom(newSettings);
+	}
+
+	void ApplyNewAudioSettings(GameAudioSettings newSettings) {
+		_settings.AudioSettings.SetFrom(newSettings);
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
