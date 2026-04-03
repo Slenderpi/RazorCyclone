@@ -5,7 +5,7 @@ public class GameScreenSettings {
 
 	public bool IsFullscreen;
 	public Resolution ScreenResolution;
-	public bool IsCustomResolution;
+	public bool IsUsingCustomResolution;
 	public bool IsVsyncEnabled;
 	public float FpsLimit;
 	public float FieldOfView;
@@ -20,7 +20,7 @@ public class GameScreenSettings {
 				denominator = 1
 			}
 		},
-		IsCustomResolution = false,
+		IsUsingCustomResolution = false,
 		IsVsyncEnabled = true,
 		FpsLimit = 0f,
 		FieldOfView = 90f
@@ -34,7 +34,7 @@ public class GameScreenSettings {
 		return new() {
 			IsFullscreen = IsFullscreen,
 			ScreenResolution = ScreenResolution,
-			IsCustomResolution = IsCustomResolution,
+			IsUsingCustomResolution = IsUsingCustomResolution,
 			IsVsyncEnabled = IsVsyncEnabled,
 			FpsLimit = FpsLimit,
 			FieldOfView = FieldOfView
@@ -53,7 +53,7 @@ public class GameScreenSettings {
 	public void SetFrom(GameScreenSettings other) {
 		IsFullscreen = other.IsFullscreen;
 		ScreenResolution = other.ScreenResolution;
-		IsCustomResolution = other.IsCustomResolution;
+		IsUsingCustomResolution = other.IsUsingCustomResolution;
 		IsVsyncEnabled = other.IsVsyncEnabled;
 		FpsLimit = other.FpsLimit;
 		FieldOfView = other.FieldOfView;
@@ -65,7 +65,7 @@ public class GameScreenSettings {
 		return Mathf.Approximately(a.FpsLimit, b.FpsLimit)
 			&& Mathf.Approximately(a.FieldOfView, b.FieldOfView)
 			&& a.IsFullscreen == b.IsFullscreen
-			&& a.IsCustomResolution == b.IsCustomResolution
+			&& a.IsUsingCustomResolution == b.IsUsingCustomResolution
 			&& a.IsVsyncEnabled == b.IsVsyncEnabled
 			&& a.ScreenResolution.width == b.ScreenResolution.width
 			&& a.ScreenResolution.height == b.ScreenResolution.height
@@ -77,6 +77,6 @@ public class GameScreenSettings {
 
 	public override bool Equals(object other) => this == other as GameScreenSettings;
 
-	public override int GetHashCode() => HashCode.Combine(IsFullscreen, ScreenResolution, IsCustomResolution, IsVsyncEnabled, FpsLimit, FieldOfView);
+	public override int GetHashCode() => HashCode.Combine(IsFullscreen, ScreenResolution, IsUsingCustomResolution, IsVsyncEnabled, FpsLimit, FieldOfView);
 
 }

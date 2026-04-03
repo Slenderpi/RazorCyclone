@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using TMPro;
 using UnityEngine;
@@ -47,7 +48,9 @@ public class SettingsMenuCanvas : MonoBehaviour {
 	[SerializeField]
 	Toggle FullscreenToggle;
 	[SerializeField]
-	Image CustomResolutionDisabler;
+	TMP_Dropdown ResolutionDropdown;
+	[SerializeField]
+	GameObject CustomResolutionDisabler;
 	[SerializeField]
 	Slider FovSlider;
 	[SerializeField]
@@ -115,6 +118,31 @@ public class SettingsMenuCanvas : MonoBehaviour {
 
 	public void OnFullscreenValueChanged(bool isOn) {
 		pendingChanges.ScreenSettings.IsFullscreen = isOn;
+		CustomResolutionDisabler.SetActive(isOn || !pendingChanges.ScreenSettings.IsUsingCustomResolution);
+		OnScreenSettingsChanged();
+	}
+
+	public void OnResolutionDropdownValueChanged(int index) {
+		if (index == 0) {
+			pendingChanges.ScreenSettings.IsUsingCustomResolution = true;
+			// TODO: Custom resolution input fields
+			pendingChanges.ScreenSettings.ScreenResolution = new() {
+				width = 1, // TODO
+				height = 1, // TODO
+				refreshRateRatio = pendingChanges.ScreenSettings.ScreenResolution.refreshRateRatio
+			};
+			CustomResolutionDisabler.SetActive(pendingChanges.ScreenSettings.IsFullscreen);
+			Debug.Log("Selected resolution: CUSTOM");
+		} else {
+			pendingChanges.ScreenSettings.IsUsingCustomResolution = false;
+			pendingChanges.ScreenSettings.ScreenResolution = new() {
+				width = GameManager.Resolutions.GetAllResolutions()[index - 1].width,
+				height = GameManager.Resolutions.GetAllResolutions()[index - 1].height,
+				refreshRateRatio = pendingChanges.ScreenSettings.ScreenResolution.refreshRateRatio
+			};
+			CustomResolutionDisabler.SetActive(true);
+			Debug.Log($"Selected resolution: {pendingChanges.ScreenSettings.ScreenResolution.width} x {pendingChanges.ScreenSettings.ScreenResolution.height}");
+		}
 		OnScreenSettingsChanged();
 	}
 
@@ -265,7 +293,19 @@ public class SettingsMenuCanvas : MonoBehaviour {
 		/** SCREEN **/
 		GameScreenSettings ssettings = GameManager.GetGameSettings().ScreenSettings;
 		FullscreenToggle.SetIsOnWithoutNotify(ssettings.IsFullscreen);
-		CustomResolutionDisabler.enabled = ssettings.IsFullscreen;
+		{ // INIT RESOLUTION OPTIONS
+			Resolution[] resOps = GameManager.Resolutions.GetAllResolutions();
+			List<string> resOptStrs = new(resOps.Length + 1) { "Custom" };
+			for (int i = 0; i < resOps.Length; i++)
+				resOptStrs.Add($"{resOps[i].width} x {resOps[i].height}");
+			ResolutionDropdown.ClearOptions();
+			ResolutionDropdown.AddOptions(resOptStrs);
+			int currentResOption = GameManager.Resolutions.IndexOf(ssettings.ScreenResolution);
+			Debug.Log($"Current resolution ({ssettings.ScreenResolution.width} x {ssettings.ScreenResolution.height}) is " + (currentResOption == -1 ? "custom." : $"option {currentResOption + 1}."));
+			// Set to either Custom or the found resolution option
+			ResolutionDropdown.SetValueWithoutNotify(currentResOption == -1 ? 0 : currentResOption + 1);
+		}
+		CustomResolutionDisabler.SetActive(ssettings.IsFullscreen || !ssettings.IsUsingCustomResolution);
 		FovSlider.SetValueWithoutNotify(ssettings.FieldOfView);
 		FovInputField.SetTextWithoutNotify($"{ssettings}");
 

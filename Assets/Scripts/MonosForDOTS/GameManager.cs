@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Unity.Entities;
 using UnityEngine;
@@ -47,6 +48,9 @@ public class GameManager : MonoBehaviour {
 	EMenu _currentMenu;
 	public static EMenu CurrentMenu { get { return Singleton._currentMenu; } private set { Singleton._currentMenu = value; } }
 
+	static ResolutionOptions _resolutionOptions;
+	public static ResolutionOptions Resolutions => _resolutionOptions;
+
 	GameSettings _settings;
 
 	EntityManager entityManager;
@@ -55,6 +59,7 @@ public class GameManager : MonoBehaviour {
 
 	private void Awake() {
 		Singleton = this;
+		_resolutionOptions = new();
 		// TODO: Load settings
 		_settings = GameSettings.Default;
 		_settings.ScreenSettings.SetValuesBasedOnCurrentScreen();

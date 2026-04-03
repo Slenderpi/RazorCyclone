@@ -1203,7 +1203,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 4938024956918505769}
   m_Direction: 2
   m_Value: 1
-  m_Size: 0.9996843
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -3443,7 +3443,8 @@ MonoBehaviour:
   MouseSenseSlider: {fileID: 8366463391311208120}
   ApplyScreenChangesButton: {fileID: 1988123416854403535}
   FullscreenToggle: {fileID: 7874933046546460058}
-  CustomResolutionDisabler: {fileID: 284915366707851742}
+  ResolutionDropdown: {fileID: 7398885824286696178}
+  CustomResolutionDisabler: {fileID: 2321628899186316201}
   FovSlider: {fileID: 3905335298599782098}
   FovInputField: {fileID: 2937812011360591793}
   ApplyQualityChangesButton: {fileID: 8434883759233551302}
@@ -14126,9 +14127,9 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 8098534309039454614}
-        m_TargetAssemblyTypeName: UISettingsPanel, Assembly-CSharp
-        m_MethodName: OnDropdown_Resolution
+      - m_Target: {fileID: 657464865685822195}
+        m_TargetAssemblyTypeName: SettingsMenuCanvas, Assembly-CSharp
+        m_MethodName: OnResolutionDropdownValueChanged
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

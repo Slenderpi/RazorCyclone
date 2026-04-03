@@ -102,6 +102,51 @@ public static class Util {
 		//}
 		return math.normalize(math.lerp(u, v, t));
 	}
+
+
+	/// <summary>
+	/// Returns an int2 where both components are the simplified version of the provided int2, where int2 is
+	/// treated as the fraction (v.x / v.y).<br/>
+	/// Assumes that the provided numbers are positive.
+	/// </summary>
+	/// <param name="v">The fraction to simplify.</param>
+	/// <returns>Simplified version of (v.x / v.y).</returns>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public static int2 simplify(in int2 v) {
+		return simplify(v.x, v.y);
+	}
+
+	/// <summary>
+	/// Returns an int2 where both components are the simplified version of (n / d).<br/>
+	/// Assumes that the provided numbers are positive.
+	/// </summary>
+	/// <param name="n">Numerator.</param>
+	/// <param name="d">Denominator.</param>
+	/// <returns>Simplified version of (n / d).</returns>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public static int2 simplify(int n, int d) {
+		int gcd = Util.gcd(n, d);
+		return new() {
+			x = n / gcd,
+			y = d / gcd
+		};
+	}
+
+	/// <summary>
+	/// Finds the greatest common denominator of two integers using Euclid's algorithm.<br/>
+	/// Assumes that the provided numbers are positive.
+	/// </summary>
+	/// <param name="x">A positive integer.</param>
+	/// <param name="d">A positive integer.</param>
+	/// <returns>The gcd of the two integers.</returns>
+	public static int gcd(int x, int d) {
+		while (!IsNearZero(d)) {
+			int temp = d;
+			d = x % d;
+			x = temp;
+		}
+		return x;
+	}
 #pragma warning restore IDE1006 // Naming Styles
 
 	/// <summary>
