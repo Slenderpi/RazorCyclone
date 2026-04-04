@@ -15,7 +15,7 @@ public class GameScreenSettings {
 	/// The FPS limit. A value of -1 means unlimited.
 	/// </summary>
 	public int FpsLimit;
-	public float FieldOfView;
+	public int FieldOfView;
 
 	public Resolution Resolution => new() {
 		width = GameManager.Resolutions.GetAllResolutionsNoRefreshRate()[CurrentResolutionOptionChoice].x,
@@ -32,7 +32,7 @@ public class GameScreenSettings {
 		},
 		IsVsyncEnabled = true,
 		FpsLimit = -1,
-		FieldOfView = 90f
+		FieldOfView = 90
 	};
 
 	/// <summary>

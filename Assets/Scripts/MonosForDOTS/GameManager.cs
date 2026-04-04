@@ -19,6 +19,11 @@ public class GameManager : MonoBehaviour {
 	public static Action A_OnGamePaused;
 	public static Action A_OnPlayerSpawned;
 
+	/// <summary>
+	/// int: newFov
+	/// </summary>
+	public static Action<int> A_OnFovChanged;
+
 	//public static Action A_OnGameSettingsChanged;
 
 	/// <summary>
@@ -67,6 +72,7 @@ public class GameManager : MonoBehaviour {
 	private void Start() {
 		entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
 		StartCoroutine(WaitForEntityBakerSingleton());
+		A_OnFovChanged?.Invoke(_settings.ScreenSettings.FieldOfView);
 	}
 
 	IEnumerator WaitForEntityBakerSingleton() {
@@ -92,7 +98,7 @@ public class GameManager : MonoBehaviour {
 	/// </summary>
 	public static void GoToMainMenu() {
 		// TODO
-		Debug.LogWarning("GameManager: Main menu not yet implemented.");
+		Debug.LogWarning("[GameManager]: Main menu not yet implemented.");
 		ChangeMenuTo(EMenu.MainMenu);
 	}
 
@@ -114,12 +120,12 @@ public class GameManager : MonoBehaviour {
 
 	public static bool TrySpawnPlayer() {
 		if (TryGetPlayerEntity(out Singleton._playerEntity)) {
-			Debug.LogWarning("An existing player was found. TrySpawnPlayer() cancelled.");
+			Debug.LogWarning("[GameManager]: An existing player was found. TrySpawnPlayer() cancelled.");
 			HideMouse();
 			return false;
 		}
 		if (!TryGetEntityBakerSingleton(out EntityBakerSingleton entityBakerSingleton)) {
-			Debug.LogWarning("The EntityBakerSingleton could not be found.");
+			Debug.LogWarning("[GameManager]: The EntityBakerSingleton could not be found.");
 			return false;
 		}
 		Singleton._playerEntity = Singleton.entityManager.Instantiate(entityBakerSingleton.Player);
@@ -217,6 +223,7 @@ public class GameManager : MonoBehaviour {
 		);
 		QualitySettings.vSyncCount = s.IsVsyncEnabled ? 1 : 0;
 		Application.targetFrameRate = s.FpsLimit;
+		A_OnFovChanged?.Invoke(s.FieldOfView);
 		{
 			string strVsyncEnabled = QualitySettings.vSyncCount == 1 ? "enabled" : "disabled";
 			Debug.Log(
@@ -225,7 +232,7 @@ public class GameManager : MonoBehaviour {
 				$"\t> Refresh rate: {Screen.currentResolution.refreshRateRatio.value}\n" +
 				$"\t> VSync: {strVsyncEnabled}\n" +
 				$"\t> FPS limit: {Application.targetFrameRate}\n" +
-				$"\t> FOV: TODO"
+				$"\t> FOV: {s.FieldOfView}"
 			);
 		}
 	}

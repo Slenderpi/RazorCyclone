@@ -152,9 +152,7 @@ public class SettingsMenuCanvas : MonoBehaviour {
 	}
 
 	public void OnFpsLimitSliderValueChanged(float val) {
-		int fps = Mathf.RoundToInt(val);
-		if (fps >= FpsLimitSlider.maxValue)
-			fps = -1;
+		int fps = val >= FpsLimitSlider.maxValue ? -1 : (int)val;
 		pendingChanges.ScreenSettings.FpsLimit = fps;
 		FpsLimitInputField.SetTextWithoutNotify(FpsLimitToString(fps));
 		OnScreenSettingsChanged();
@@ -182,9 +180,9 @@ public class SettingsMenuCanvas : MonoBehaviour {
 	}
 
 	public void OnFovSliderValueChanged(float val) {
-		val = Mathf.Round(val);
-		FovInputField.SetTextWithoutNotify(((int)val).ToString());
-		pendingChanges.ScreenSettings.FieldOfView = val;
+		int fov = (int)val;
+		FovInputField.SetTextWithoutNotify(fov.ToString());
+		pendingChanges.ScreenSettings.FieldOfView = fov;
 		OnScreenSettingsChanged();
 	}
 
@@ -197,15 +195,15 @@ public class SettingsMenuCanvas : MonoBehaviour {
 	}
 
 	public void OnFovInputEndEdit(string str) {
-		if (float.TryParse(str, out float desiredFov)) {
+		if (int.TryParse(str, out int desiredFov)) {
 			if (desiredFov < FovSlider.minValue)
-				desiredFov = FovSlider.minValue;
+				desiredFov = (int)FovSlider.minValue;
 			else if (desiredFov > FovSlider.maxValue)
-				desiredFov = FovSlider.maxValue;
+				desiredFov = (int)FovSlider.maxValue;
 			pendingChanges.ScreenSettings.FieldOfView = desiredFov;
 		}
 		FovSlider.SetValueWithoutNotify(pendingChanges.ScreenSettings.FieldOfView);
-		FovInputField.SetTextWithoutNotify(((int)pendingChanges.ScreenSettings.FieldOfView).ToString());
+		FovInputField.SetTextWithoutNotify(pendingChanges.ScreenSettings.FieldOfView.ToString());
 		OnScreenSettingsChanged();
 	}
 
@@ -375,7 +373,7 @@ public class SettingsMenuCanvas : MonoBehaviour {
 		FpsLimitInputField.SetTextWithoutNotify(FpsLimitToString(settings.FpsLimit));
 		FpsLimitDisabler.SetActive(settings.IsVsyncEnabled);
 		FovSlider.SetValueWithoutNotify(settings.FieldOfView);
-		FovInputField.SetTextWithoutNotify(Mathf.RoundToInt(settings.FieldOfView).ToString());
+		FovInputField.SetTextWithoutNotify(settings.FieldOfView.ToString());
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
