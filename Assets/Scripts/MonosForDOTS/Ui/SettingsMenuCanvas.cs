@@ -45,13 +45,15 @@ public class SettingsMenuCanvas : MonoBehaviour {
 
 	[Header("Screen references")]
 	[SerializeField]
-	Button ApplyScreenChangesButton;
+	GameObject ApplyScreenChangesButton;
 	[SerializeField]
-	Toggle FullscreenToggle;
+	TMP_Dropdown FullScreenModeDropdown;
 	[SerializeField]
 	TMP_Dropdown ResolutionDropdown;
 	[SerializeField]
 	TMP_Dropdown RefreshRateDropdown;
+	[SerializeField]
+	GameObject RefreshRateDisabler;
 	[SerializeField]
 	Toggle VSyncToggle;
 	[SerializeField]
@@ -91,7 +93,7 @@ public class SettingsMenuCanvas : MonoBehaviour {
 	}
 
 	private void Start() {
-		InitDropdowns();
+		InitResolutionDropdown();
 	}
 
 	public void OnBackButtonClicked() {
@@ -129,19 +131,26 @@ public class SettingsMenuCanvas : MonoBehaviour {
 	/*																						*/
 	/****************************************************************************************/
 
-	public void OnFullscreenValueChanged(bool isOn) {
-		pendingChanges.ScreenSettings.IsFullscreen = isOn;
+	public void OnFullScreenDropdownValueChanged(int index) {
+		pendingChanges.ScreenSettings.FullScreenMode = FullScreenModeOptionToEnum(index);
+		if (pendingChanges.ScreenSettings.FullScreenMode == FullScreenMode.ExclusiveFullScreen) {
+			if (RefreshRateDisabler.activeSelf)
+				RefreshRateDisabler.SetActive(false);
+			UpdateRefreshRateOptions();
+		} else if (!RefreshRateDisabler.activeSelf)
+			RefreshRateDisabler.SetActive(true);
 		OnScreenSettingsChanged();
 	}
 
 	public void OnResolutionDropdownValueChanged(int index) {
 		pendingChanges.ScreenSettings.CurrentResolutionOptionChoice = index;
+		UpdateRefreshRateOptions();
 		OnScreenSettingsChanged();
 	}
 
 	public void OnRefreshRateDropdownValueChanged(int index) {
-		// TODO
-		Debug.Log($"Selected refresh rate: {RefreshRateDropdown.options[index].text}");
+		SetPendingRefreshRateFromDropdown(index);
+		Debug.Log($"Selected refresh rate: {pendingChanges.ScreenSettings.CurrentRefreshRate.value}");
 		OnScreenSettingsChanged();
 	}
 
@@ -209,7 +218,7 @@ public class SettingsMenuCanvas : MonoBehaviour {
 
 	public void OnScreenApplyButtonClicked() {
 		hasPendingChanges = false;
-		ApplyScreenChangesButton.gameObject.SetActive(false);
+		ApplyScreenChangesButton.SetActive(false);
 		GameManager.ChangeScreenSettings(pendingChanges.ScreenSettings);
 	}
 
@@ -275,7 +284,7 @@ public class SettingsMenuCanvas : MonoBehaviour {
 			case ESettingsCategory.Screen:
 				ScreenCategory.SetActive(newEnabled);
 				ButtonScreen.interactable = !newEnabled;
-				ApplyScreenChangesButton.gameObject.SetActive(false);
+				ApplyScreenChangesButton.SetActive(false);
 				break;
 			case ESettingsCategory.Quality:
 				QualityCategory.SetActive(newEnabled);
@@ -299,19 +308,19 @@ public class SettingsMenuCanvas : MonoBehaviour {
 		if (pendingChanges.ScreenSettings == GameManager.GetGameSettings().ScreenSettings) {
 			if (hasPendingChanges) {
 				hasPendingChanges = false;
-				ApplyScreenChangesButton.gameObject.SetActive(false);
+				ApplyScreenChangesButton.SetActive(false);
 			}
 		} else {
 			if (!hasPendingChanges) {
 				hasPendingChanges = true;
-				ApplyScreenChangesButton.gameObject.SetActive(true);
+				ApplyScreenChangesButton.SetActive(true);
 			}
 		}
 	}
 
 	void DiscardPendingScreenChanges() {
 		hasPendingChanges = false;
-		ApplyScreenChangesButton.gameObject.SetActive(false);
+		ApplyScreenChangesButton.SetActive(false);
 		pendingChanges.ScreenSettings.SetFrom(GameManager.GetGameSettings().ScreenSettings);
 		SetScreenSettingsTo(pendingChanges.ScreenSettings);
 	}
@@ -347,27 +356,46 @@ public class SettingsMenuCanvas : MonoBehaviour {
 
 	}
 
-	void InitDropdowns() {
+	void InitResolutionDropdown() {
 		int2[] resOps = GameManager.Resolutions.GetAllResolutionsNoRefreshRate();
 		List<string> optStrs = new(resOps.Length);
 		for (int i = 0; i < resOps.Length; i++)
 			optStrs.Add($"{resOps[i].x} x {resOps[i].y}");
 		ResolutionDropdown.ClearOptions();
 		ResolutionDropdown.AddOptions(optStrs);
+	}
 
-		RefreshRate[] rrOps = GameManager.Resolutions.GetAllRefreshRates();
-		optStrs.Clear();
-		optStrs.Capacity = rrOps.Length;
-		foreach (RefreshRate rr in rrOps)
-			optStrs.Add($"{rr.value} Hz");
+	void UpdateRefreshRateOptions() {
+		ResolutionOptions resops = GameManager.Resolutions;
+		GameScreenSettings ss = pendingChanges.ScreenSettings;
+		RefreshRate rrBeforeDropdownUpdate = pendingChanges.ScreenSettings.CurrentRefreshRate;
+		int rrdIndex = resops.GetRefreshRateOptionSameOrBetterTo(ss.CurrentRefreshRate, ss.CurrentResolutionOptionChoice);
 		RefreshRateDropdown.ClearOptions();
-		RefreshRateDropdown.AddOptions(optStrs);
+		RefreshRateDropdown.AddOptions(resops.GetRefreshRatesOptionsForResolution(ss.CurrentResolutionOptionChoice));
+		RefreshRateDropdown.SetValueWithoutNotify(rrdIndex);
+		SetPendingRefreshRateFromDropdown(rrdIndex);
+		if (!Util.equal(rrBeforeDropdownUpdate, pendingChanges.ScreenSettings.CurrentRefreshRate)) {
+			Debug.Log($"[Settings-RefreshRate]: Resolution dropdown update caused the selected RefreshRate to change (was {rrBeforeDropdownUpdate.value}, now {pendingChanges.ScreenSettings.CurrentRefreshRate.value}).");
+			OnScreenSettingsChanged();
+		}
+	}
+
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	void SetPendingRefreshRateFromDropdown(int dropdownIndex) {
+		pendingChanges.ScreenSettings.CurrentRefreshRate = GameManager.Resolutions.GetRefreshRateFrom(
+			pendingChanges.ScreenSettings.CurrentResolutionOptionChoice,
+			dropdownIndex
+		);
 	}
 
 	void SetScreenSettingsTo(GameScreenSettings settings) {
-		FullscreenToggle.SetIsOnWithoutNotify(settings.IsFullscreen);
+		FullScreenModeDropdown.SetValueWithoutNotify(FullScreenModeEnumToOption(settings.FullScreenMode));
 		ResolutionDropdown.SetValueWithoutNotify(settings.CurrentResolutionOptionChoice);
-		//RefreshRateDropdown.SetValueWithoutNotify(settings.CurrentRefreshRateOptionChoice);
+		if (settings.FullScreenMode == FullScreenMode.ExclusiveFullScreen) {
+			RefreshRateDisabler.SetActive(false);
+			UpdateRefreshRateOptions();
+		} else
+			RefreshRateDisabler.SetActive(true);
 		VSyncToggle.SetIsOnWithoutNotify(settings.IsVsyncEnabled);
 		FpsLimitSlider.SetValueWithoutNotify(settings.FpsLimit != -1 ? settings.FpsLimit : FpsLimitSlider.maxValue);
 		FpsLimitInputField.SetTextWithoutNotify(FpsLimitToString(settings.FpsLimit));
@@ -379,6 +407,24 @@ public class SettingsMenuCanvas : MonoBehaviour {
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	string FpsLimitToString(int fpsLimit) {
 		return fpsLimit == -1 ? "Unlimited" : fpsLimit.ToString();
+	}
+
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	FullScreenMode FullScreenModeOptionToEnum(int option) {
+		return option switch {
+			0 => FullScreenMode.ExclusiveFullScreen,
+			1 => FullScreenMode.FullScreenWindow,
+			_ => FullScreenMode.Windowed,
+		};
+	}
+
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	int FullScreenModeEnumToOption(FullScreenMode fsm) {
+		return fsm switch {
+			FullScreenMode.ExclusiveFullScreen => 0,
+			FullScreenMode.FullScreenWindow => 1,
+			_ => 2
+		};
 	}
 
 }

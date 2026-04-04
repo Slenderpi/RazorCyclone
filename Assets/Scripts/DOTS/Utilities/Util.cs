@@ -81,6 +81,17 @@ public static class Util {
 	}
 
 	/// <summary>
+	/// Checks if two RefreshRates are equal.
+	/// </summary>
+	/// <param name="r"></param>
+	/// <param name="s"></param>
+	/// <returns>True if equal.</returns>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public static bool equal(in RefreshRate r, in RefreshRate s) {
+		return r.numerator == s.numerator && r.denominator == s.denominator;
+	}
+
+	/// <summary>
 	/// Lerps between two normalized vectors, than normalize result.<br/>
 	/// If the provided vectors are the same length, the effect is similar to slerping a vector.
 	/// </summary>

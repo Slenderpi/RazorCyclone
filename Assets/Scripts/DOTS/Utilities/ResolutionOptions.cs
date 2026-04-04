@@ -15,12 +15,16 @@ public class ResolutionOptions {
 	/// All resolutions available on the current system, sorted by resolution in descending order.
 	/// </summary>
 	readonly int2[] _resolutionsNoRefreshRate;
-	//readonly int2[] _uniqueResolutions;
-	//readonly int2[] _aspectRatios;
 	/// <summary>
-	/// All available refresh rates on the current system, sorted by refresh rate in descending order.
+	/// Each resolution has its share of available refresh rates. This array tracks them.<br/>
+	/// Key: option index in _resolutionsNoRefreshRate.<br/>
+	/// Value: a list of available refresh rates for this resolution. Refresh rates sorted in descending order.
 	/// </summary>
-	readonly RefreshRate[] _refreshRatios;
+	readonly List<RefreshRate>[] _refreshRateOptions;
+	///// <summary>
+	///// All available refresh rates on the current system, sorted by refresh rate in descending order.
+	///// </summary>
+	//readonly RefreshRate[] _refreshRatios;
 
 
 
@@ -33,69 +37,34 @@ public class ResolutionOptions {
 			return cmp != 0 ? cmp : b.refreshRateRatio.CompareTo(a.refreshRateRatio);
 		});
 		_resolutionsNoRefreshRate = _resolutions.Select(r => new int2(r.width, r.height)).Distinct().ToArray();
-		string str = "";
-		string str2 = "ALL REFRESH RATES:\n";
+		_refreshRateOptions = new List<RefreshRate>[_resolutionsNoRefreshRate.Length];
+		Resolution lastRes = _resolutions[0];
+		_refreshRateOptions[0] = new() { lastRes.refreshRateRatio };
+		int currResIndex = 0;
+		foreach (Resolution r in _resolutions) {
+			if (r.height != lastRes.height || r.width != lastRes.width) {
+				_refreshRateOptions[++currResIndex] = new() { lastRes.refreshRateRatio };
+				lastRes = r;
+			} else {
+				// Don't add duplicates
+				if (!Util.equal(_refreshRateOptions[currResIndex][^1], r.refreshRateRatio))
+					_refreshRateOptions[currResIndex].Add(r.refreshRateRatio);
+			}
+		}
 		{
+			string str = "";
 			foreach (Resolution r in _resolutions) {
 				str += $"{r.width,4} x {r.height,-4} @ {r.refreshRateRatio.value}\n";
 			}
-			Debug.Log($"ALL RESOLUTIONS (count: {_resolutions.Length}):\n" + str);
-			str = $"ALL RESOLUTIONS (no refresh rate) (count: {_resolutionsNoRefreshRate.Length}):\n";
-			for (int i = 0; i < _resolutionsNoRefreshRate.Length; i++)
-				str += $"{i,2}: {_resolutionsNoRefreshRate[i].x,4} x {_resolutionsNoRefreshRate[i].y,-4}\n";
-			Debug.Log(str);
-			//str = "Aspect ratios:\n";
-		}
-		//HashSet<int2> aspRatios = new();
-		HashSet<RefreshRate> refRatios = new();
-		foreach (Resolution r in _resolutions) {
-			int2 aspRatio = Util.simplify(new(r.width, r.height));
-			{
-				//str += (!aspRatios.Contains(aspRatio) ? "ADDED: " : "skip: ") + $"{aspRatio.x}:{aspRatio.y} ({r.width} / {r.height})\n";
-				str2 += (!refRatios.Contains(r.refreshRateRatio) ? "ADDED: " : "skip: ") + $"{r.refreshRateRatio.value}\n";
-			}
-			refRatios.Add(r.refreshRateRatio);
-			//aspRatios.Add(aspRatio);
-		}
-		{
-			//Debug.Log(str);
-			Debug.Log(str2);
-			//str = "Final aspect ratios:\n";
-		}
-
-		//_aspectRatios = aspRatios.ToArray();
-		//Array.Sort(_aspectRatios, (a, b) => {
-		//	int cmp = b.x.CompareTo(a.x);
-		//	return cmp != 0 ? cmp : a.y.CompareTo(b.y);
-		//});
-		//{
-		//	for (int i = 0; i < _aspectRatios.Length; i++)
-		//		str += $"{i + 1,2} | {_aspectRatios[i].x}:{_aspectRatios[i].y}\n";
-		//	Debug.Log(str);
-		//}
-
-		_refreshRatios = refRatios.ToArray();
-		Array.Sort(_refreshRatios, (a, b) => b.CompareTo(a));
-		{
-			str = "Final refresh rate options:\n";
-			for (int i = 0; i < _refreshRatios.Length; i++) {
-				str += $"{i + 1,2} | {_refreshRatios[i].value} Hz\n";
+			Debug.Log($"ALL RESOLUTIONS WITH ALL REFRESH RATES (count: {_resolutions.Length}):\n" + str);
+			str = $"RESOLUTIONS, condensed, with refresh rate options (count: {_resolutionsNoRefreshRate.Length}):";
+			for (int i = 0; i < _resolutionsNoRefreshRate.Length; i++) {
+				str += $"\n{i,2}: {_resolutionsNoRefreshRate[i].x,4} x {_resolutionsNoRefreshRate[i].y,-4} |";
+				foreach (RefreshRate rr in _refreshRateOptions[i])
+					str += $" ({rr.value}) ";
 			}
 			Debug.Log(str);
 		}
-
-		//{
-		//	str = "Unique resolutions:\n";
-		//	_uniqueResolutions = Screen.resolutions
-		//							   .Select(r => new int2(r.width, r.height))
-		//							   .Distinct()
-		//							   .OrderByDescending(r => r.x * r.y)
-		//							   .ToArray();
-		//	foreach (int2 res in _uniqueResolutions) {
-		//		str += $"{res.x,4} x {res.y,-4}\n";
-		//	}
-		//	Debug.Log(str);
-		//}
 
 		Debug.LogWarning("---- ==== DONE ==== ----");
 	}
@@ -104,7 +73,67 @@ public class ResolutionOptions {
 
 	public int2[] GetAllResolutionsNoRefreshRate() => _resolutionsNoRefreshRate;
 
-	public RefreshRate[] GetAllRefreshRates() => _refreshRatios;
+	public RefreshRate GetRefreshRateFrom(int resolutionOption, int refreshRateOption) => _refreshRateOptions[resolutionOption][refreshRateOption];
+
+	public List<string> GetRefreshRatesOptionsForResolution(int resolutionOption) => _refreshRateOptions[resolutionOption].Select(rr => $"{rr.value} Hz").ToList();
+
+	/// <summary>
+	/// Given the current resolution option and a RefreshRate, finds either the index of the RefreshRate in this resolution
+	/// option's list of RefreshRates, or, if the exact RefreshRate does not exist, finds the next best one.<br/>
+	/// <br/>
+	/// Example:<br/>
+	/// List of RefreshRates for a given resolution: [144, 120, 85, 60, 30]<br/>
+	/// An input refreshRate of 85 returns index 2 (85);<br/>
+	/// An input refreshRate of 88 returns index 1 (120);<br/>
+	/// An input refreshRate of 24 returns index 4 (30);
+	/// </summary>
+	/// <param name="refreshRate">Input RefreshRate.</param>
+	/// <param name="resolutionOption">The resolution option to search in.</param>
+	/// <returns>The index of the RefreshRate if found, or the index of the next higher RefresRate if not.</returns>
+	public int GetRefreshRateOptionSameOrBetterTo(in RefreshRate refreshRate, int resolutionOption) {
+		// TODO OPTIONAL: The refresh rates are stored in descending order. Can use binary search to get the value
+		List<RefreshRate> rates = _refreshRateOptions[resolutionOption];
+		if (rates[0].value < refreshRate.value)
+			// This handles the case where the given refreshRate is higher than everything in this option list
+			return 0;
+		int i = 0;
+		for (; i < rates.Count; i++)
+			if (Util.equal(rates[i], refreshRate))
+				return i;
+			else if (rates[i].value < refreshRate.value)
+				return i - 1;
+		return i - 1;
+	}
+
+	/// <summary>
+	/// Given the current resolution option and a RefreshRate, finds the RefreshRate option that is closest in value
+	/// to the given RefreshRate.<br/>
+	/// <br/>
+	/// Example:<br/>
+	/// List of RefreshRates for a given resolution: [144, 120, 85, 60, 30]<br/>
+	/// An input refreshRate of 85 returns index 2 (85);<br/>
+	/// An input refreshRate of 80 returns index 2 (85);<br/>
+	/// An input refreshRate of 70 returns index 3 (60);
+	/// </summary>
+	/// <param name="refreshRate">RefreshRate to be close to.</param>
+	/// <param name="resolutionOption">The resolution option to search in.</param>
+	/// <returns>Index of the RefreshRate option.</returns>
+	public int GetRefreshRateOptionClosestToThis(in RefreshRate refreshRate, int resolutionOption) {
+		// TODO OPTIONAL: The refresh rates are stored in descending order. Can use binary search to get the value
+		List<RefreshRate> rates = _refreshRateOptions[resolutionOption];
+		int closestIndex = 0;
+		double bestDiff = math.abs(rates[closestIndex].value - refreshRate.value);
+		for (int i = 1; i < rates.Count; i++) {
+			double diff = math.abs(rates[i].value - refreshRate.value);
+			if (diff < bestDiff) {
+				bestDiff = diff;
+				closestIndex = i;
+			}
+		}
+		return closestIndex;
+	}
+
+	//public RefreshRate[] GetAllRefreshRates() => _refreshRatios;
 
 	/// <summary>
 	/// Determines if a specific resolution is one of the known resolutions, irregardless of refresh rate.

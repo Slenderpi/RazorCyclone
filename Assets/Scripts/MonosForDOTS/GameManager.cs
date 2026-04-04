@@ -218,7 +218,7 @@ public class GameManager : MonoBehaviour {
 		Screen.SetResolution(
 			res.width,
 			res.height,
-			s.IsFullscreen ? FullScreenMode.FullScreenWindow : FullScreenMode.Windowed,
+			s.FullScreenMode,
 			res.refreshRateRatio
 		);
 		QualitySettings.vSyncCount = s.IsVsyncEnabled ? 1 : 0;
@@ -228,8 +228,9 @@ public class GameManager : MonoBehaviour {
 			string strVsyncEnabled = QualitySettings.vSyncCount == 1 ? "enabled" : "disabled";
 			Debug.Log(
 				$"[ApplyNewScreenSettings]: Screen settings changed! Screen updated to:\n" +
+				$"\t> Full Screen Mode: {Screen.fullScreenMode}\n" +
 				$"\t> Resolution: {Screen.currentResolution.width} x {Screen.currentResolution.height} (option {s.CurrentResolutionOptionChoice})\n" +
-				$"\t> Refresh rate: {Screen.currentResolution.refreshRateRatio.value}\n" +
+				$"\t> Refresh rate: {Screen.currentResolution.refreshRateRatio.value} (should be {_settings.ScreenSettings.CurrentRefreshRate.value})\n" +
 				$"\t> VSync: {strVsyncEnabled}\n" +
 				$"\t> FPS limit: {Application.targetFrameRate}\n" +
 				$"\t> FOV: {s.FieldOfView}"

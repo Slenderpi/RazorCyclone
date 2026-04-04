@@ -3,13 +3,13 @@ using UnityEngine;
 
 public class GameScreenSettings {
 
-	public bool IsFullscreen;
+	public FullScreenMode FullScreenMode;
 	/// <summary>
-	/// The index of the current resolution in ResolutionOptions._resolutionsNoRefreshRate. Determines the current resolution.<br/>
-	/// A value of -1 means the custom resolution CachedCustomResolution is in use.
+	/// The index of the current resolution in ResolutionOptions._resolutionsNoRefreshRate. Determines the current resolution.
 	/// </summary>
 	public int CurrentResolutionOptionChoice;
 	public RefreshRate CurrentRefreshRate;
+	//public int CurrentRefreshRateOptionChoice;
 	public bool IsVsyncEnabled;
 	/// <summary>
 	/// The FPS limit. A value of -1 means unlimited.
@@ -24,7 +24,7 @@ public class GameScreenSettings {
 	};
 
 	public static GameScreenSettings Default => new() {
-		IsFullscreen = true,
+		FullScreenMode = FullScreenMode.ExclusiveFullScreen,
 		CurrentResolutionOptionChoice = 0,
 		CurrentRefreshRate = new() {
 			numerator = 60,
@@ -41,7 +41,7 @@ public class GameScreenSettings {
 	/// <returns>A deep clone.</returns>
 	public GameScreenSettings Clone() {
 		return new() {
-			IsFullscreen = IsFullscreen,
+			FullScreenMode = FullScreenMode,
 			CurrentResolutionOptionChoice = CurrentResolutionOptionChoice,
 			CurrentRefreshRate = CurrentRefreshRate,
 			IsVsyncEnabled = IsVsyncEnabled,
@@ -54,18 +54,18 @@ public class GameScreenSettings {
 	/// Sets settings based on what the current Screen is set to. A sort of 'Init' function.
 	/// </summary>
 	public void SetValuesBasedOnCurrentScreen(ResolutionOptions resops) {
-		IsFullscreen = Screen.fullScreen;
+		FullScreenMode = Screen.fullScreenMode;
 		Resolution screenResolution = Screen.currentResolution;
 		CurrentResolutionOptionChoice = resops.IndexOf(new(screenResolution.width, screenResolution.height));
 		IsVsyncEnabled = QualitySettings.vSyncCount > 0;
 		FpsLimit = Application.targetFrameRate;
 		{
-			Debug.Log($"[INIT SCREEN]: IsFullscreen: {IsFullscreen} | Resolution: {screenResolution.width} x {screenResolution.height} (option {CurrentResolutionOptionChoice}) | IsVsyncEnabled: {IsVsyncEnabled} | FpsLimit: {FpsLimit}");
+			Debug.Log($"[INIT SCREEN]: FullScreenMode: {FullScreenMode} | Resolution: {screenResolution.width} x {screenResolution.height} @ {CurrentRefreshRate} (option {CurrentResolutionOptionChoice}) | IsVsyncEnabled: {IsVsyncEnabled} | FpsLimit: {FpsLimit}");
 		}
 	}
 
 	public void SetFrom(GameScreenSettings other) {
-		IsFullscreen = other.IsFullscreen;
+		FullScreenMode = other.FullScreenMode;
 		CurrentResolutionOptionChoice = other.CurrentResolutionOptionChoice;
 		CurrentRefreshRate = other.CurrentRefreshRate;
 		IsVsyncEnabled = other.IsVsyncEnabled;
@@ -78,10 +78,9 @@ public class GameScreenSettings {
 		if (a is null || b is null) return false;
 		return Mathf.Approximately(a.FpsLimit, b.FpsLimit)
 			&& Mathf.Approximately(a.FieldOfView, b.FieldOfView)
-			&& a.IsFullscreen == b.IsFullscreen
+			&& a.FullScreenMode == b.FullScreenMode
 			&& a.CurrentResolutionOptionChoice == b.CurrentResolutionOptionChoice
-			&& a.CurrentRefreshRate.numerator == b.CurrentRefreshRate.numerator
-			&& a.CurrentRefreshRate.denominator == b.CurrentRefreshRate.denominator
+			&& Util.equal(a.CurrentRefreshRate, b.CurrentRefreshRate)
 			&& a.IsVsyncEnabled == b.IsVsyncEnabled;
 	}
 
@@ -89,6 +88,6 @@ public class GameScreenSettings {
 
 	public override bool Equals(object other) => this == other as GameScreenSettings;
 
-	public override int GetHashCode() => HashCode.Combine(IsFullscreen, CurrentResolutionOptionChoice, CurrentRefreshRate, IsVsyncEnabled, FpsLimit, FieldOfView);
+	public override int GetHashCode() => HashCode.Combine(FullScreenMode, CurrentResolutionOptionChoice, CurrentRefreshRate, IsVsyncEnabled, FpsLimit, FieldOfView);
 
 }
