@@ -1,11 +1,9 @@
 using System;
-using Unity.Mathematics;
 using UnityEngine;
 
 public class GameScreenSettings {
 
 	public bool IsFullscreen;
-	//public Resolution ScreenResolution;
 	/// <summary>
 	/// The index of the current resolution in ResolutionOptions._resolutionsNoRefreshRate. Determines the current resolution.<br/>
 	/// A value of -1 means the custom resolution CachedCustomResolution is in use.
@@ -13,7 +11,10 @@ public class GameScreenSettings {
 	public int CurrentResolutionOptionChoice;
 	public RefreshRate CurrentRefreshRate;
 	public bool IsVsyncEnabled;
-	public float FpsLimit;
+	/// <summary>
+	/// The FPS limit. A value of -1 means unlimited.
+	/// </summary>
+	public int FpsLimit;
 	public float FieldOfView;
 
 	public Resolution Resolution => new() {
@@ -30,7 +31,7 @@ public class GameScreenSettings {
 			denominator = 1
 		},
 		IsVsyncEnabled = true,
-		FpsLimit = 0f,
+		FpsLimit = -1,
 		FieldOfView = 90f
 	};
 
@@ -58,7 +59,9 @@ public class GameScreenSettings {
 		CurrentResolutionOptionChoice = resops.IndexOf(new(screenResolution.width, screenResolution.height));
 		IsVsyncEnabled = QualitySettings.vSyncCount > 0;
 		FpsLimit = Application.targetFrameRate;
-		Debug.Log($"[INIT SCREEN]: IsFullscreen: {IsFullscreen} | Resolution: {screenResolution.width} x {screenResolution.height} (option {CurrentResolutionOptionChoice}) | IsVsyncEnabled: {IsVsyncEnabled} | FpsLimit: {FpsLimit}");
+		{
+			Debug.Log($"[INIT SCREEN]: IsFullscreen: {IsFullscreen} | Resolution: {screenResolution.width} x {screenResolution.height} (option {CurrentResolutionOptionChoice}) | IsVsyncEnabled: {IsVsyncEnabled} | FpsLimit: {FpsLimit}");
+		}
 	}
 
 	public void SetFrom(GameScreenSettings other) {

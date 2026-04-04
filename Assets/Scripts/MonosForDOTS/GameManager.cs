@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Unity.Entities;
 using UnityEngine;
@@ -153,7 +152,6 @@ public class GameManager : MonoBehaviour {
 	/// <param name="newSettings">New screen settings.</param>
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static void ChangeScreenSettings(GameScreenSettings newSettings) {
-		Debug.Log("Screen settings changed!");
 		Singleton.ApplyNewScreenSettings(newSettings);
 	}
 	
@@ -211,9 +209,6 @@ public class GameManager : MonoBehaviour {
 		_settings.ScreenSettings.SetFrom(newSettings);
 		GameScreenSettings s = _settings.ScreenSettings;
 		Resolution res = s.Resolution;
-		{
-			Debug.Log($"[ApplyNewScreenSettings]: Setting resolution to option {s.CurrentResolutionOptionChoice}: {res.width} x {res.height}");
-		}
 		Screen.SetResolution(
 			res.width,
 			res.height,
@@ -221,6 +216,18 @@ public class GameManager : MonoBehaviour {
 			res.refreshRateRatio
 		);
 		QualitySettings.vSyncCount = s.IsVsyncEnabled ? 1 : 0;
+		Application.targetFrameRate = s.FpsLimit;
+		{
+			string strVsyncEnabled = QualitySettings.vSyncCount == 1 ? "enabled" : "disabled";
+			Debug.Log(
+				$"[ApplyNewScreenSettings]: Screen settings changed! Screen updated to:\n" +
+				$"\t> Resolution: {Screen.currentResolution.width} x {Screen.currentResolution.height} (option {s.CurrentResolutionOptionChoice})\n" +
+				$"\t> Refresh rate: {Screen.currentResolution.refreshRateRatio.value}\n" +
+				$"\t> VSync: {strVsyncEnabled}\n" +
+				$"\t> FPS limit: {Application.targetFrameRate}\n" +
+				$"\t> FOV: TODO"
+			);
+		}
 	}
 
 	void ApplyNewQualitySettings(GameQualitySettings newSettings) {

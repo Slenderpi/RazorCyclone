@@ -1,10 +1,8 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using TMPro;
 using Unity.Mathematics;
 using UnityEngine;
-using UnityEngine.Rendering;
 using UnityEngine.UI;
 
 public class SettingsMenuCanvas : MonoBehaviour {
@@ -109,13 +107,13 @@ public class SettingsMenuCanvas : MonoBehaviour {
 	public void OnMouseSenseSliderValueChanged(float val) {
 		pendingChanges.ControlSettings.MouseSensitivity = val;
 		GameManager.ChangeControlSettings(pendingChanges.ControlSettings);
-		MouseSenseInputField.SetTextWithoutNotify($"{Mathf.RoundToInt(val)}");
+		MouseSenseInputField.SetTextWithoutNotify(Mathf.RoundToInt(val).ToString());
 	}
 
 	public void OnMouseSenseInputEndEdit(string val) {
 		if (!float.TryParse(val, out float desiredMouseSense) || desiredMouseSense <= 0f || desiredMouseSense >= 10000f) {
 			// Invalid values are ignored and the input field gets reset
-			MouseSenseInputField.SetTextWithoutNotify($"{GameManager.GetGameSettings().ControlSettings.MouseSensitivity}");
+			MouseSenseInputField.SetTextWithoutNotify(GameManager.GetGameSettings().ControlSettings.MouseSensitivity.ToString());
 			return;
 		}
 		pendingChanges.ControlSettings.MouseSensitivity = desiredMouseSense;
@@ -138,7 +136,6 @@ public class SettingsMenuCanvas : MonoBehaviour {
 
 	public void OnResolutionDropdownValueChanged(int index) {
 		pendingChanges.ScreenSettings.CurrentResolutionOptionChoice = index;
-		Debug.Log($"Selected resolution: {ResolutionDropdown.options[index].text}");
 		OnScreenSettingsChanged();
 	}
 
@@ -149,15 +146,17 @@ public class SettingsMenuCanvas : MonoBehaviour {
 	}
 
 	public void OnVSyncValueChanged(bool isOn) {
-		// TODO
 		pendingChanges.ScreenSettings.IsVsyncEnabled = isOn;
+		FpsLimitDisabler.SetActive(isOn);
 		OnScreenSettingsChanged();
 	}
 
 	public void OnFpsLimitSliderValueChanged(float val) {
 		int fps = Mathf.RoundToInt(val);
+		if (fps >= FpsLimitSlider.maxValue)
+			fps = -1;
 		pendingChanges.ScreenSettings.FpsLimit = fps;
-		FpsLimitInputField.SetTextWithoutNotify(fps == Mathf.RoundToInt(FpsLimitSlider.maxValue) ? "Unlimited" : $"{fps}");
+		FpsLimitInputField.SetTextWithoutNotify(FpsLimitToString(fps));
 		OnScreenSettingsChanged();
 	}
 
@@ -170,15 +169,23 @@ public class SettingsMenuCanvas : MonoBehaviour {
 	}
 
 	public void OnFpsLimitInputEndEdit(string str) {
-		// TODO
-
+		if (int.TryParse(str, out int desiredFpsLimit)) {
+			if (desiredFpsLimit < FpsLimitSlider.minValue)
+				desiredFpsLimit = (int)FpsLimitSlider.minValue;
+			else if (desiredFpsLimit >= FpsLimitSlider.maxValue)
+				desiredFpsLimit = -1;
+			pendingChanges.ScreenSettings.FpsLimit = desiredFpsLimit;
+		}
+		FpsLimitSlider.SetValueWithoutNotify(pendingChanges.ScreenSettings.FpsLimit != -1 ? pendingChanges.ScreenSettings.FpsLimit : FpsLimitSlider.maxValue);
+		FpsLimitInputField.SetTextWithoutNotify(FpsLimitToString(pendingChanges.ScreenSettings.FpsLimit));
+		OnScreenSettingsChanged();
 	}
 
 	public void OnFovSliderValueChanged(float val) {
 		val = Mathf.Round(val);
-		Debug.Log($"[SettingsMenuCanvas]: Fov changed via slider to {val}");
-		FovInputField.SetTextWithoutNotify($"{val}");
+		FovInputField.SetTextWithoutNotify(((int)val).ToString());
 		pendingChanges.ScreenSettings.FieldOfView = val;
+		OnScreenSettingsChanged();
 	}
 
 	public void OnFovInputValueChanged(string str) {
@@ -198,7 +205,8 @@ public class SettingsMenuCanvas : MonoBehaviour {
 			pendingChanges.ScreenSettings.FieldOfView = desiredFov;
 		}
 		FovSlider.SetValueWithoutNotify(pendingChanges.ScreenSettings.FieldOfView);
-		FovInputField.SetTextWithoutNotify($"{pendingChanges.ScreenSettings.FieldOfView}");
+		FovInputField.SetTextWithoutNotify(((int)pendingChanges.ScreenSettings.FieldOfView).ToString());
+		OnScreenSettingsChanged();
 	}
 
 	public void OnScreenApplyButtonClicked() {
@@ -325,8 +333,8 @@ public class SettingsMenuCanvas : MonoBehaviour {
 	void InitAllSettingsValues() {
 		/** CONTROLS **/
 		GameControlSettings csettings = GameManager.GetGameSettings().ControlSettings;
-		MouseSenseInputField.SetTextWithoutNotify($"{Mathf.RoundToInt(csettings.MouseSensitivity)}");
-		MouseSenseSlider.SetValueWithoutNotify(Mathf.Clamp(csettings.MouseSensitivity, MouseSenseSlider.minValue, MouseSenseSlider.maxValue));
+		MouseSenseInputField.SetTextWithoutNotify(csettings.MouseSensitivity.ToString());
+		MouseSenseSlider.SetValueWithoutNotify(csettings.MouseSensitivity);
 
 		/** SCREEN **/
 		GameScreenSettings ssettings = GameManager.GetGameSettings().ScreenSettings;
@@ -362,8 +370,17 @@ public class SettingsMenuCanvas : MonoBehaviour {
 		FullscreenToggle.SetIsOnWithoutNotify(settings.IsFullscreen);
 		ResolutionDropdown.SetValueWithoutNotify(settings.CurrentResolutionOptionChoice);
 		//RefreshRateDropdown.SetValueWithoutNotify(settings.CurrentRefreshRateOptionChoice);
+		VSyncToggle.SetIsOnWithoutNotify(settings.IsVsyncEnabled);
+		FpsLimitSlider.SetValueWithoutNotify(settings.FpsLimit != -1 ? settings.FpsLimit : FpsLimitSlider.maxValue);
+		FpsLimitInputField.SetTextWithoutNotify(FpsLimitToString(settings.FpsLimit));
+		FpsLimitDisabler.SetActive(settings.IsVsyncEnabled);
 		FovSlider.SetValueWithoutNotify(settings.FieldOfView);
-		FovInputField.SetTextWithoutNotify($"{settings.FieldOfView}");
+		FovInputField.SetTextWithoutNotify(Mathf.RoundToInt(settings.FieldOfView).ToString());
+	}
+
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	string FpsLimitToString(int fpsLimit) {
+		return fpsLimit == -1 ? "Unlimited" : fpsLimit.ToString();
 	}
 
 }
