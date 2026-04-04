@@ -62,7 +62,7 @@ public class GameManager : MonoBehaviour {
 		_resolutionOptions = new();
 		// TODO: Load settings
 		_settings = GameSettings.Default;
-		_settings.ScreenSettings.SetValuesBasedOnCurrentScreen();
+		_settings.ScreenSettings.SetValuesBasedOnCurrentScreen(_resolutionOptions);
 	}
 
 	private void Start() {
@@ -210,11 +210,15 @@ public class GameManager : MonoBehaviour {
 	void ApplyNewScreenSettings(GameScreenSettings newSettings) {
 		_settings.ScreenSettings.SetFrom(newSettings);
 		GameScreenSettings s = _settings.ScreenSettings;
+		Resolution res = s.Resolution;
+		{
+			Debug.Log($"[ApplyNewScreenSettings]: Setting resolution to option {s.CurrentResolutionOptionChoice}: {res.width} x {res.height}");
+		}
 		Screen.SetResolution(
-			s.ScreenResolution.width,
-			s.ScreenResolution.height,
+			res.width,
+			res.height,
 			s.IsFullscreen ? FullScreenMode.FullScreenWindow : FullScreenMode.Windowed,
-			s.ScreenResolution.refreshRateRatio
+			res.refreshRateRatio
 		);
 		QualitySettings.vSyncCount = s.IsVsyncEnabled ? 1 : 0;
 	}

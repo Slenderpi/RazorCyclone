@@ -11,6 +11,10 @@ public class ResolutionOptions {
 	/// All resolutions available on the current system, sorted by resolution (descending) and then refresh rate (descending).
 	/// </summary>
 	readonly Resolution[] _resolutions;
+	/// <summary>
+	/// All resolutions available on the current system, sorted by resolution in descending order.
+	/// </summary>
+	readonly int2[] _resolutionsNoRefreshRate;
 	//readonly int2[] _uniqueResolutions;
 	//readonly int2[] _aspectRatios;
 	/// <summary>
@@ -21,17 +25,24 @@ public class ResolutionOptions {
 
 
 	public ResolutionOptions() {
-		_resolutions = Screen.resolutions.Distinct().ToArray();
+		_resolutions = Screen.resolutions.ToArray();
 		Array.Sort(_resolutions, (a, b) => {
-			int cmp = (b.width * b.height).CompareTo(a.width * a.height);
+			int cmp = b.width.CompareTo(a.width);
+			if (cmp == 0)
+				cmp = b.height.CompareTo(a.height);
 			return cmp != 0 ? cmp : b.refreshRateRatio.CompareTo(a.refreshRateRatio);
 		});
-		string str = "ALL RESOLUTIONS:\n";
+		_resolutionsNoRefreshRate = _resolutions.Select(r => new int2(r.width, r.height)).Distinct().ToArray();
+		string str = "";
 		string str2 = "ALL REFRESH RATES:\n";
 		{
 			foreach (Resolution r in _resolutions) {
-				str += $"{r.width} x {r.height} @ {r.refreshRateRatio.value}\n";
+				str += $"{r.width,4} x {r.height,-4} @ {r.refreshRateRatio.value}\n";
 			}
+			Debug.Log($"ALL RESOLUTIONS (count: {_resolutions.Length}):\n" + str);
+			str = $"ALL RESOLUTIONS (no refresh rate) (count: {_resolutionsNoRefreshRate.Length}):\n";
+			for (int i = 0; i < _resolutionsNoRefreshRate.Length; i++)
+				str += $"{i,2}: {_resolutionsNoRefreshRate[i].x,4} x {_resolutionsNoRefreshRate[i].y,-4}\n";
 			Debug.Log(str);
 			//str = "Aspect ratios:\n";
 		}
@@ -91,6 +102,8 @@ public class ResolutionOptions {
 
 	public Resolution[] GetAllResolutions() => _resolutions;
 
+	public int2[] GetAllResolutionsNoRefreshRate() => _resolutionsNoRefreshRate;
+
 	public RefreshRate[] GetAllRefreshRates() => _refreshRatios;
 
 	/// <summary>
@@ -99,7 +112,7 @@ public class ResolutionOptions {
 	/// <param name="r">The resolution to check.</param>
 	/// <returns>True if the resolution is found.</returns>
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	public bool IsKnownResolution(Resolution r) {
+	public bool IsKnownResolution(int2 r) {
 		return IndexOf(r) != -1;
 	}
 
@@ -108,10 +121,10 @@ public class ResolutionOptions {
 	/// </summary>
 	/// <param name="r">The resolution to find.</param>
 	/// <returns>The index of the resolution, or -1 if not found.</returns>
-	public int IndexOf(Resolution r) {
+	public int IndexOf(int2 r) {
 		// TODO OPTIONAL: _resolutions is sorted in descending. Could implement a binary search method.
 		for (int i = 0; i < _resolutions.Length; i++)
-			if (_resolutions[i].width == r.width && _resolutions[i].height == r.height)
+			if (_resolutionsNoRefreshRate[i].x == r.x && _resolutionsNoRefreshRate[i].y == r.y)
 				return i;
 		return -1;
 	}

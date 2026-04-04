@@ -1,7 +1,10 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using TMPro;
+using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.UI;
 
 public class SettingsMenuCanvas : MonoBehaviour {
@@ -50,7 +53,15 @@ public class SettingsMenuCanvas : MonoBehaviour {
 	[SerializeField]
 	TMP_Dropdown ResolutionDropdown;
 	[SerializeField]
-	GameObject CustomResolutionDisabler;
+	TMP_Dropdown RefreshRateDropdown;
+	[SerializeField]
+	Toggle VSyncToggle;
+	[SerializeField]
+	Slider FpsLimitSlider;
+	[SerializeField]
+	TMP_InputField FpsLimitInputField;
+	[SerializeField]
+	GameObject FpsLimitDisabler;
 	[SerializeField]
 	Slider FovSlider;
 	[SerializeField]
@@ -79,6 +90,10 @@ public class SettingsMenuCanvas : MonoBehaviour {
 
 		GameManager.A_OnMenuChanged += OnMenuChanged;
 		//GameManager.A_OnPlayerSpawned += OnPlayerSpawned; // TODO: Make a better way to Init() the settings ui
+	}
+
+	private void Start() {
+		InitDropdowns();
 	}
 
 	public void OnBackButtonClicked() {
@@ -118,37 +133,50 @@ public class SettingsMenuCanvas : MonoBehaviour {
 
 	public void OnFullscreenValueChanged(bool isOn) {
 		pendingChanges.ScreenSettings.IsFullscreen = isOn;
-		CustomResolutionDisabler.SetActive(isOn || !pendingChanges.ScreenSettings.IsUsingCustomResolution);
 		OnScreenSettingsChanged();
 	}
 
 	public void OnResolutionDropdownValueChanged(int index) {
-		if (index == 0) {
-			pendingChanges.ScreenSettings.IsUsingCustomResolution = true;
-			// TODO: Custom resolution input fields
-			pendingChanges.ScreenSettings.ScreenResolution = new() {
-				width = 1, // TODO
-				height = 1, // TODO
-				refreshRateRatio = pendingChanges.ScreenSettings.ScreenResolution.refreshRateRatio
-			};
-			CustomResolutionDisabler.SetActive(pendingChanges.ScreenSettings.IsFullscreen);
-			Debug.Log("Selected resolution: CUSTOM");
-		} else {
-			pendingChanges.ScreenSettings.IsUsingCustomResolution = false;
-			pendingChanges.ScreenSettings.ScreenResolution = new() {
-				width = GameManager.Resolutions.GetAllResolutions()[index - 1].width,
-				height = GameManager.Resolutions.GetAllResolutions()[index - 1].height,
-				refreshRateRatio = pendingChanges.ScreenSettings.ScreenResolution.refreshRateRatio
-			};
-			CustomResolutionDisabler.SetActive(true);
-			Debug.Log($"Selected resolution: {pendingChanges.ScreenSettings.ScreenResolution.width} x {pendingChanges.ScreenSettings.ScreenResolution.height}");
-		}
+		pendingChanges.ScreenSettings.CurrentResolutionOptionChoice = index;
+		Debug.Log($"Selected resolution: {ResolutionDropdown.options[index].text}");
 		OnScreenSettingsChanged();
+	}
+
+	public void OnRefreshRateDropdownValueChanged(int index) {
+		// TODO
+		Debug.Log($"Selected refresh rate: {RefreshRateDropdown.options[index].text}");
+		OnScreenSettingsChanged();
+	}
+
+	public void OnVSyncValueChanged(bool isOn) {
+		// TODO
+		pendingChanges.ScreenSettings.IsVsyncEnabled = isOn;
+		OnScreenSettingsChanged();
+	}
+
+	public void OnFpsLimitSliderValueChanged(float val) {
+		int fps = Mathf.RoundToInt(val);
+		pendingChanges.ScreenSettings.FpsLimit = fps;
+		FpsLimitInputField.SetTextWithoutNotify(fps == Mathf.RoundToInt(FpsLimitSlider.maxValue) ? "Unlimited" : $"{fps}");
+		OnScreenSettingsChanged();
+	}
+
+	public void OnFpsLimitInputValueChanged(string str) {
+		if (str == string.Empty)
+			return;
+		if (!int.TryParse(str, out int _))
+			// This handles the case where the user attempts to input '-'.
+			FpsLimitInputField.SetTextWithoutNotify("");
+	}
+
+	public void OnFpsLimitInputEndEdit(string str) {
+		// TODO
+
 	}
 
 	public void OnFovSliderValueChanged(float val) {
 		val = Mathf.Round(val);
-		Debug.Log($"Fov changed via slider to {val}");
+		Debug.Log($"[SettingsMenuCanvas]: Fov changed via slider to {val}");
 		FovInputField.SetTextWithoutNotify($"{val}");
 		pendingChanges.ScreenSettings.FieldOfView = val;
 	}
@@ -175,7 +203,7 @@ public class SettingsMenuCanvas : MonoBehaviour {
 
 	public void OnScreenApplyButtonClicked() {
 		hasPendingChanges = false;
-		ApplyScreenChangesButton.interactable = false;
+		ApplyScreenChangesButton.gameObject.SetActive(false);
 		GameManager.ChangeScreenSettings(pendingChanges.ScreenSettings);
 	}
 
@@ -212,6 +240,9 @@ public class SettingsMenuCanvas : MonoBehaviour {
 		if (hasPendingChanges) {
 			// TODO: ask to apply/discard changes first
 			Debug.Log("There were pending settings changes. Pending confirmation not yet implemented, so these changes will be discarded.");
+			{ // Discard changes for now
+				DiscardPendingScreenChanges();
+			}
 		}
 		SetCategoryEnabled(currentCategory, false);
 		currentCategory = newCategory;
@@ -238,12 +269,12 @@ public class SettingsMenuCanvas : MonoBehaviour {
 			case ESettingsCategory.Screen:
 				ScreenCategory.SetActive(newEnabled);
 				ButtonScreen.interactable = !newEnabled;
-				ApplyScreenChangesButton.interactable = false;
+				ApplyScreenChangesButton.gameObject.SetActive(false);
 				break;
 			case ESettingsCategory.Quality:
 				QualityCategory.SetActive(newEnabled);
 				ButtonQuality.interactable = !newEnabled;
-				ApplyQualityChangesButton.interactable = false;
+				ApplyQualityChangesButton.gameObject.SetActive(false);
 				break;
 			case ESettingsCategory.Audio:
 				AudioCategory.SetActive(newEnabled);
@@ -262,14 +293,21 @@ public class SettingsMenuCanvas : MonoBehaviour {
 		if (pendingChanges.ScreenSettings == GameManager.GetGameSettings().ScreenSettings) {
 			if (hasPendingChanges) {
 				hasPendingChanges = false;
-				ApplyScreenChangesButton.interactable = false;
+				ApplyScreenChangesButton.gameObject.SetActive(false);
 			}
 		} else {
 			if (!hasPendingChanges) {
 				hasPendingChanges = true;
-				ApplyScreenChangesButton.interactable = true;
+				ApplyScreenChangesButton.gameObject.SetActive(true);
 			}
 		}
+	}
+
+	void DiscardPendingScreenChanges() {
+		hasPendingChanges = false;
+		ApplyScreenChangesButton.gameObject.SetActive(false);
+		pendingChanges.ScreenSettings.SetFrom(GameManager.GetGameSettings().ScreenSettings);
+		SetScreenSettingsTo(pendingChanges.ScreenSettings);
 	}
 
 	void InitCategoryAndCategoryButtonStates() {
@@ -292,28 +330,40 @@ public class SettingsMenuCanvas : MonoBehaviour {
 
 		/** SCREEN **/
 		GameScreenSettings ssettings = GameManager.GetGameSettings().ScreenSettings;
-		FullscreenToggle.SetIsOnWithoutNotify(ssettings.IsFullscreen);
-		{ // INIT RESOLUTION OPTIONS
-			Resolution[] resOps = GameManager.Resolutions.GetAllResolutions();
-			List<string> resOptStrs = new(resOps.Length + 1) { "Custom" };
-			for (int i = 0; i < resOps.Length; i++)
-				resOptStrs.Add($"{resOps[i].width} x {resOps[i].height}");
-			ResolutionDropdown.ClearOptions();
-			ResolutionDropdown.AddOptions(resOptStrs);
-			int currentResOption = GameManager.Resolutions.IndexOf(ssettings.ScreenResolution);
-			Debug.Log($"Current resolution ({ssettings.ScreenResolution.width} x {ssettings.ScreenResolution.height}) is " + (currentResOption == -1 ? "custom." : $"option {currentResOption + 1}."));
-			// Set to either Custom or the found resolution option
-			ResolutionDropdown.SetValueWithoutNotify(currentResOption == -1 ? 0 : currentResOption + 1);
-		}
-		CustomResolutionDisabler.SetActive(ssettings.IsFullscreen || !ssettings.IsUsingCustomResolution);
-		FovSlider.SetValueWithoutNotify(ssettings.FieldOfView);
-		FovInputField.SetTextWithoutNotify($"{ssettings}");
+		SetScreenSettingsTo(ssettings);
 
 		/** QUALITY **/
 		GameQualitySettings qsettings = GameManager.GetGameSettings().QualitySettings;
-		
-		/** AUDIO **/
 
+
+		/** AUDIO **/
+		GameAudioSettings asettings = GameManager.GetGameSettings().AudioSettings;
+
+	}
+
+	void InitDropdowns() {
+		int2[] resOps = GameManager.Resolutions.GetAllResolutionsNoRefreshRate();
+		List<string> optStrs = new(resOps.Length);
+		for (int i = 0; i < resOps.Length; i++)
+			optStrs.Add($"{resOps[i].x} x {resOps[i].y}");
+		ResolutionDropdown.ClearOptions();
+		ResolutionDropdown.AddOptions(optStrs);
+
+		RefreshRate[] rrOps = GameManager.Resolutions.GetAllRefreshRates();
+		optStrs.Clear();
+		optStrs.Capacity = rrOps.Length;
+		foreach (RefreshRate rr in rrOps)
+			optStrs.Add($"{rr.value} Hz");
+		RefreshRateDropdown.ClearOptions();
+		RefreshRateDropdown.AddOptions(optStrs);
+	}
+
+	void SetScreenSettingsTo(GameScreenSettings settings) {
+		FullscreenToggle.SetIsOnWithoutNotify(settings.IsFullscreen);
+		ResolutionDropdown.SetValueWithoutNotify(settings.CurrentResolutionOptionChoice);
+		//RefreshRateDropdown.SetValueWithoutNotify(settings.CurrentRefreshRateOptionChoice);
+		FovSlider.SetValueWithoutNotify(settings.FieldOfView);
+		FovInputField.SetTextWithoutNotify($"{settings.FieldOfView}");
 	}
 
 }
