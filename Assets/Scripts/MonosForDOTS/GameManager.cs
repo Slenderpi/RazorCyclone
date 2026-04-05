@@ -230,7 +230,7 @@ public class GameManager : MonoBehaviour {
 				$"[ApplyNewScreenSettings]: Screen settings changed! Screen updated to:\n" +
 				$"\t> Full Screen Mode: {Screen.fullScreenMode}\n" +
 				$"\t> Resolution: {Screen.currentResolution.width} x {Screen.currentResolution.height} (option {s.CurrentResolutionOptionChoice})\n" +
-				$"\t> Refresh rate: {Screen.currentResolution.refreshRateRatio.value} (should be {_settings.ScreenSettings.CurrentRefreshRate.value})\n" +
+				$"\t> Refresh rate: {Screen.currentResolution.refreshRateRatio.value}\n" +
 				$"\t> VSync: {strVsyncEnabled}\n" +
 				$"\t> FPS limit: {Application.targetFrameRate}\n" +
 				$"\t> FOV: {s.FieldOfView}"

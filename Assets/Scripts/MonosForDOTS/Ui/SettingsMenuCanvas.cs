@@ -133,12 +133,7 @@ public class SettingsMenuCanvas : MonoBehaviour {
 
 	public void OnFullScreenDropdownValueChanged(int index) {
 		pendingChanges.ScreenSettings.FullScreenMode = FullScreenModeOptionToEnum(index);
-		if (pendingChanges.ScreenSettings.FullScreenMode == FullScreenMode.ExclusiveFullScreen) {
-			if (RefreshRateDisabler.activeSelf)
-				RefreshRateDisabler.SetActive(false);
-			UpdateRefreshRateOptions();
-		} else if (!RefreshRateDisabler.activeSelf)
-			RefreshRateDisabler.SetActive(true);
+		UpdateRefreshRateOptions();
 		OnScreenSettingsChanged();
 	}
 
@@ -366,17 +361,27 @@ public class SettingsMenuCanvas : MonoBehaviour {
 	}
 
 	void UpdateRefreshRateOptions() {
-		ResolutionOptions resops = GameManager.Resolutions;
 		GameScreenSettings ss = pendingChanges.ScreenSettings;
-		RefreshRate rrBeforeDropdownUpdate = pendingChanges.ScreenSettings.CurrentRefreshRate;
-		int rrdIndex = resops.GetRefreshRateOptionSameOrBetterTo(ss.CurrentRefreshRate, ss.CurrentResolutionOptionChoice);
-		RefreshRateDropdown.ClearOptions();
-		RefreshRateDropdown.AddOptions(resops.GetRefreshRatesOptionsForResolution(ss.CurrentResolutionOptionChoice));
-		RefreshRateDropdown.SetValueWithoutNotify(rrdIndex);
-		SetPendingRefreshRateFromDropdown(rrdIndex);
-		if (!Util.equal(rrBeforeDropdownUpdate, pendingChanges.ScreenSettings.CurrentRefreshRate)) {
-			Debug.Log($"[Settings-RefreshRate]: Resolution dropdown update caused the selected RefreshRate to change (was {rrBeforeDropdownUpdate.value}, now {pendingChanges.ScreenSettings.CurrentRefreshRate.value}).");
-			OnScreenSettingsChanged();
+		if (ss.FullScreenMode == FullScreenMode.ExclusiveFullScreen) {
+			if (RefreshRateDisabler.activeSelf)
+				RefreshRateDisabler.SetActive(false);
+			ResolutionOptions resops = GameManager.Resolutions;
+			RefreshRate rrBeforeDropdownUpdate = pendingChanges.ScreenSettings.CurrentRefreshRate;
+			int rrdIndex = resops.GetRefreshRateOptionSameOrBetterTo(ss.CurrentRefreshRate, ss.CurrentResolutionOptionChoice);
+			RefreshRateDropdown.ClearOptions();
+			RefreshRateDropdown.AddOptions(resops.GetRefreshRatesOptionsForResolution(ss.CurrentResolutionOptionChoice));
+			RefreshRateDropdown.SetValueWithoutNotify(rrdIndex);
+			SetPendingRefreshRateFromDropdown(rrdIndex);
+			if (!Util.equal(rrBeforeDropdownUpdate, pendingChanges.ScreenSettings.CurrentRefreshRate)) {
+				Debug.Log($"[Settings-RefreshRate]: Resolution dropdown update caused the selected RefreshRate to change (was {rrBeforeDropdownUpdate.value}, now {pendingChanges.ScreenSettings.CurrentRefreshRate.value}).");
+				OnScreenSettingsChanged();
+			}
+		} else {
+			if (!RefreshRateDisabler.activeSelf)
+				RefreshRateDisabler.SetActive(true);
+			RefreshRateDropdown.ClearOptions();
+			RefreshRateDropdown.AddOptions(new List<string>() { "---" });
+			RefreshRateDropdown.SetValueWithoutNotify(0);
 		}
 	}
 
@@ -391,11 +396,7 @@ public class SettingsMenuCanvas : MonoBehaviour {
 	void SetScreenSettingsTo(GameScreenSettings settings) {
 		FullScreenModeDropdown.SetValueWithoutNotify(FullScreenModeEnumToOption(settings.FullScreenMode));
 		ResolutionDropdown.SetValueWithoutNotify(settings.CurrentResolutionOptionChoice);
-		if (settings.FullScreenMode == FullScreenMode.ExclusiveFullScreen) {
-			RefreshRateDisabler.SetActive(false);
-			UpdateRefreshRateOptions();
-		} else
-			RefreshRateDisabler.SetActive(true);
+		UpdateRefreshRateOptions();
 		VSyncToggle.SetIsOnWithoutNotify(settings.IsVsyncEnabled);
 		FpsLimitSlider.SetValueWithoutNotify(settings.FpsLimit != -1 ? settings.FpsLimit : FpsLimitSlider.maxValue);
 		FpsLimitInputField.SetTextWithoutNotify(FpsLimitToString(settings.FpsLimit));
