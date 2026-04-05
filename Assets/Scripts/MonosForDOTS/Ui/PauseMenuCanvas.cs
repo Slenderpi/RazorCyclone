@@ -9,9 +9,6 @@ public class PauseMenuCanvas : MonoBehaviour {
 
 	private void Awake() {
 		canvasComp.enabled = false;
-	}
-
-	private void Start() {
 		GameManager.A_OnMenuChanged += OnMenuChanged;
 	}
 

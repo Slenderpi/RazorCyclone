@@ -43,6 +43,7 @@ public class PlayerCameraManager : MonoBehaviour {
 		sodFOV = new SecondOrderDynamicsF(f, z, r, 0);
 		//if (GameManager.Instance)
 		//	c.fieldOfView = GameManager.Instance.CurrentFOV;
+		GameManager.A_OnFovChanged += SetFOV;
 	}
 
 	void LateUpdate() {
@@ -61,7 +62,7 @@ public class PlayerCameraManager : MonoBehaviour {
 #if UNITY_EDITOR
 			sodFOV.SetDynamics(f, z, r);
 #endif
-			updateFOV(
+			UpdateFOV(
 				sodFOV.Update(
 					Mathf.Lerp(
 						0,
@@ -75,14 +76,18 @@ public class PlayerCameraManager : MonoBehaviour {
 		transforms.Dispose();
 	}
 
-	public void SetFOV(float fov) {
+	public void SetFOV(int fov) {
 		currFOV = fov;
-		updateFOV(sodFOV.GetNoUpdate());
+		UpdateFOV(sodFOV.GetNoUpdate());
 	}
 
-	void updateFOV(float addFOV) {
+	void UpdateFOV(float addFOV) {
 		c.fieldOfView = currFOV + addFOV;
 		WeaponCamera.fieldOfView = c.fieldOfView;
+	}
+
+	private void OnDestroy() {
+		GameManager.A_OnFovChanged -= SetFOV;
 	}
 
 	//void OnDestroy() {

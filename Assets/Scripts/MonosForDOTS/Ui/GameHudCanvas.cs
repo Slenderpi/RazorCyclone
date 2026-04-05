@@ -111,11 +111,11 @@ public class GameHudCanvas : MonoBehaviour {
 		InitKillfeed();
 
 		canvasComp.enabled = false;
+
+		GameManager.A_OnMenuChanged += OnMenuChanged;
 	}
 
 	void Start() {
-		GameManager.A_OnMenuChanged += OnMenuChanged;
-
 		mainCamera = Camera.main;
 
 		entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
@@ -245,9 +245,10 @@ public class GameHudCanvas : MonoBehaviour {
 
 	// TODO: Clean code
 	private void HandleMomentumSway(in PlayerInput pinput) {
+		float factor = GameManager.GetGameSettings().ControlSettings.MouseSensitivity / maxLookDelta;
 		Vector2 newPos = new(
-			sodLookX.Update(Mathf.Clamp(-pinput.LookInputDelta.x * GameManager.MouseSensitivity / maxLookDelta, -1, 1), Time.deltaTime),
-			sodLookY.Update(Mathf.Clamp(-pinput.LookInputDelta.y * GameManager.MouseSensitivity / maxLookDelta, -1, 1), Time.deltaTime) * swayYExaggerateFactor
+			sodLookX.Update(Mathf.Clamp(-pinput.LookInputDelta.x * factor, -1, 1), Time.deltaTime),
+			sodLookY.Update(Mathf.Clamp(-pinput.LookInputDelta.y * factor, -1, 1), Time.deltaTime) * swayYExaggerateFactor
 		);
 		MomentumPanel.anchoredPosition = newPos * maxSwayDist;
 	}
